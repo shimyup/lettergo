@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart' as ll;
 import 'package:provider/provider.dart';
+import '../../../core/config/map_config.dart';
 import '../../../core/data/country_cities.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../models/letter.dart';
@@ -19,10 +20,7 @@ class LetterTrackingScreen extends StatefulWidget {
 
 class _LetterTrackingScreenState extends State<LetterTrackingScreen>
     with TickerProviderStateMixin {
-  static const String _stadiaApiKey = String.fromEnvironment(
-    'STADIA_MAPS_API_KEY',
-    defaultValue: '',
-  );
+  // 타일/언어 설정 → MapConfig 중앙 관리 (lib/core/config/map_config.dart)
   final MapController _mapController = MapController();
   late AnimationController _pulseController;
 
@@ -52,14 +50,32 @@ class _LetterTrackingScreenState extends State<LetterTrackingScreen>
     return null;
   }
 
-  bool get _useStadiaTiles {
-    final key = _stadiaApiKey.trim();
-    if (key.isEmpty) return false;
-    final lower = key.toLowerCase();
-    if (lower.contains('your_') || lower.contains('placeholder')) {
-      return false;
+  // ── 이모티콘 헬퍼 ──────────────────────────────────────────────────────────
+  /// letter.deliveryEmoji ("|" 구분 포맷) 파싱 → 운송 모드에 맞는 이모티콘 반환
+  String _resolvedEmoji(Letter letter, TransportMode mode) {
+    final raw = letter.deliveryEmoji;
+    if (raw == null || raw.isEmpty) return mode.emoji;
+    final parts = raw.split('|');
+    if (parts.length == 3) {
+      final idx = mode == TransportMode.truck
+          ? 0
+          : mode == TransportMode.airplane
+          ? 1
+          : 2;
+      final e = parts[idx];
+      if (e.isNotEmpty) return e;
+      // 현재 모드 미선택 → 다른 카테고리에서 선택된 것 표시
+      for (final p in parts) {
+        if (p.isNotEmpty) return p;
+      }
     }
-    return key.length >= 20;
+    // 레거시 단일 이모티콘 호환
+    return raw.isNotEmpty ? raw : mode.emoji;
+  }
+
+  bool get _useStadiaTiles {
+    // MapConfig에서 중앙 관리
+    return MapConfig.hasValidStadiaKey;
   }
 
   String _toMapLang(String langCode) {
@@ -84,19 +100,10 @@ class _LetterTrackingScreenState extends State<LetterTrackingScreen>
     return supported.contains(langCode) ? langCode : 'local';
   }
 
-  String _mapTileUrl(String langCode, {required bool darkMode}) {
-    if (_useStadiaTiles) {
-      final lang = _toMapLang(langCode);
-      final style = darkMode ? 'alidade_smooth_dark' : 'alidade_smooth';
-      return 'https://tiles.stadiamaps.com/tiles/$style/{z}/{x}/{y}.png?api_key=$_stadiaApiKey&language=$lang';
-    }
-    return darkMode
-        ? 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png'
-        : 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png';
-  }
+  String _mapTileUrl(String langCode, {required bool darkMode}) =>
+      MapConfig.tileUrl(langCode, darkMode: darkMode);
 
-  List<String> _tileSubdomains() =>
-      _useStadiaTiles ? const [] : const ['a', 'b', 'c', 'd'];
+  List<String> _tileSubdomains() => MapConfig.subdomains;
 
   @override
   Widget build(BuildContext context) {
@@ -198,7 +205,7 @@ class _LetterTrackingScreenState extends State<LetterTrackingScreen>
   String _statusText(Letter letter) {
     switch (letter.status) {
       case DeliveryStatus.inTransit:
-        return '${letter.currentTransport.emoji}  ${_segmentLabel(letter.currentSegment, letter)}';
+        return '${_resolvedEmoji(letter, letter.currentTransport)}  ${_segmentLabel(letter.currentSegment, letter)}';
       case DeliveryStatus.nearYou:
         return '📍 500m 이내 도착!';
       case DeliveryStatus.delivered:
@@ -341,11 +348,19 @@ class _LetterTrackingScreenState extends State<LetterTrackingScreen>
               ),
             ),
             children: [
+              // ── 기반 타일 ─────────────────────────────────────────────
               TileLayer(
                 urlTemplate: _mapTileUrl(langCode, darkMode: darkMode),
                 subdomains: _tileSubdomains(),
                 userAgentPackageName: 'com.globaldrift.messageInABottle',
               ),
+              // ── 현지어 레이블 오버레이 (야간 + CartoDB 폴백 시) ────────
+              if (MapConfig.labelOverlayUrl(darkMode: darkMode) != null)
+                TileLayer(
+                  urlTemplate: MapConfig.labelOverlayUrl(darkMode: darkMode)!,
+                  subdomains: MapConfig.subdomains,
+                  userAgentPackageName: 'com.globaldrift.messageInABottle',
+                ),
               // 경로 선
               PolylineLayer(polylines: _buildRoutePolylines(letter)),
               // 마커
@@ -523,7 +538,7 @@ class _LetterTrackingScreenState extends State<LetterTrackingScreen>
     final bearing = _calcBearing(seg.from, seg.to);
     final rotationAngle =
         bearing - letter.currentTransport.headingOffsetRadians;
-    final emoji = letter.currentTransport.emoji;
+    final emoji = _resolvedEmoji(letter, letter.currentTransport);
 
     final color = letter.currentTransport == TransportMode.airplane
         ? AppColors.teal
@@ -712,7 +727,10 @@ class _LetterTrackingScreenState extends State<LetterTrackingScreen>
             child: Center(
               child: isCompleted
                   ? Icon(Icons.check_rounded, color: AppColors.teal, size: 14)
-                  : Text(seg.mode.emoji, style: const TextStyle(fontSize: 12)),
+                  : Text(
+                      _resolvedEmoji(letter, seg.mode),
+                      style: const TextStyle(fontSize: 12),
+                    ),
             ),
           ),
           const SizedBox(width: 8),

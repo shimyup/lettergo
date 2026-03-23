@@ -5,6 +5,7 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:latlong2/latlong.dart' as ll;
 import 'package:provider/provider.dart';
+import '../../../core/config/map_config.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/theme/time_theme.dart';
 import '../../../models/letter.dart';
@@ -51,10 +52,7 @@ class WorldMapScreen extends StatefulWidget {
 
 class _WorldMapScreenState extends State<WorldMapScreen>
     with TickerProviderStateMixin {
-  static const String _stadiaApiKey = String.fromEnvironment(
-    'STADIA_MAPS_API_KEY',
-    defaultValue: '',
-  );
+  // 타일 설정은 MapConfig에서 중앙 관리 (lib/core/config/map_config.dart)
   final MapController _mapController = MapController();
   late AnimationController _pulseController;
   Timer? _positionTimer; // 실시간 편지 위치 갱신용 1초 타이머
@@ -83,62 +81,7 @@ class _WorldMapScreenState extends State<WorldMapScreen>
     super.dispose();
   }
 
-  bool get _useStadiaTiles {
-    final key = _stadiaApiKey.trim();
-    if (key.isEmpty) return false;
-    final lower = key.toLowerCase();
-    if (lower.contains('your_') || lower.contains('placeholder')) {
-      return false;
-    }
-    return key.length >= 20;
-  }
-
-  String _toMapLang(String langCode) {
-    const supported = {
-      'ko',
-      'ja',
-      'zh',
-      'en',
-      'fr',
-      'de',
-      'es',
-      'pt',
-      'it',
-      'ru',
-      'ar',
-      'hi',
-      'th',
-      'tr',
-      'nl',
-      'pl',
-    };
-    return supported.contains(langCode) ? langCode : 'local';
-  }
-
-  String _tileUrl(String langCode, {required bool darkMode}) {
-    if (_useStadiaTiles) {
-      final lang = _toMapLang(langCode);
-      final style = darkMode ? 'alidade_smooth_dark' : 'alidade_smooth';
-      return 'https://tiles.stadiamaps.com/tiles/$style/{z}/{x}/{y}.png?api_key=$_stadiaApiKey&language=$lang';
-    }
-    // CartoDB 폴백:
-    //   주간 → rastertiles/voyager: 현지어 레이블 자동 지원 (한국→한글, 일본→일본어 등)
-    //   야간 → dark_nolabels: 레이블 없는 다크 베이스 (레이블은 _labelTileUrl 별도 레이어)
-    return darkMode
-        ? 'https://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}.png'
-        : 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png';
-  }
-
-  /// 야간 모드에서 현지어 레이블 오버레이 URL (Stadia 미사용 시에만 필요)
-  /// → Voyager_only_labels는 현지어 지원 + 투명 배경이라 dark 위에 올릴 수 있음
-  String? _labelTileUrl({required bool darkMode}) {
-    if (_useStadiaTiles) return null; // Stadia는 단일 레이어로 레이블 포함
-    if (!darkMode) return null; // Voyager 주간 타일은 이미 레이블 포함
-    return 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager_only_labels/{z}/{x}/{y}.png';
-  }
-
-  List<String> _tileSubdomains() =>
-      _useStadiaTiles ? const [] : const ['a', 'b', 'c', 'd'];
+  // 타일 URL / 서브도메인 → MapConfig 위임 (중앙 관리)
 
   @override
   Widget build(BuildContext context) {
@@ -175,19 +118,19 @@ class _WorldMapScreenState extends State<WorldMapScreen>
                 ),
               ),
               children: [
-                // ── 기반 타일 (모드 연동: 주간=Voyager현지어 / 야간=Dark무레이블) ──
+                // ── 기반 타일 (MapConfig 중앙 관리) ───────────────────────
                 TileLayer(
-                  urlTemplate: _tileUrl(langCode, darkMode: darkMode),
-                  subdomains: _tileSubdomains(),
+                  urlTemplate: MapConfig.tileUrl(langCode, darkMode: darkMode),
+                  subdomains: MapConfig.subdomains,
                   userAgentPackageName: 'com.globaldrift.miab',
                   maxZoom: 19,
                   maxNativeZoom: 19,
                 ),
-                // ── 현지어 레이블 오버레이 (야간 전용: Voyager 투명 레이블 레이어) ──
-                if (_labelTileUrl(darkMode: darkMode) != null)
+                // ── 현지어 레이블 오버레이 (야간 + CartoDB 폴백 시에만) ─────
+                if (MapConfig.labelOverlayUrl(darkMode: darkMode) != null)
                   TileLayer(
-                    urlTemplate: _labelTileUrl(darkMode: darkMode)!,
-                    subdomains: _tileSubdomains(),
+                    urlTemplate: MapConfig.labelOverlayUrl(darkMode: darkMode)!,
+                    subdomains: MapConfig.subdomains,
                     userAgentPackageName: 'com.globaldrift.miab',
                     maxZoom: 19,
                     maxNativeZoom: 19,
