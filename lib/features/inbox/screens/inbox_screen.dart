@@ -1187,16 +1187,27 @@ class _SentDetailSheet extends StatelessWidget {
               ),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 8),
-                child: letter.deliveryEmoji != null
-                    ? Text(
-                        letter.deliveryEmoji!,
-                        style: const TextStyle(fontSize: 20),
-                      )
-                    : const Icon(
-                        Icons.flight_rounded,
-                        color: AppColors.teal,
-                        size: 18,
-                      ),
+                child: Builder(
+                  builder: (_) {
+                    final raw = letter.deliveryEmoji;
+                    if (raw == null || raw.isEmpty) {
+                      return const Icon(Icons.flight_rounded,
+                          color: AppColors.teal, size: 18);
+                    }
+                    // "|" 구분 포맷 → 선택된 이모티콘만 모아 표시
+                    final parts = raw.split('|');
+                    final selected =
+                        parts.where((e) => e.isNotEmpty).toList();
+                    if (selected.isEmpty) {
+                      return const Icon(Icons.flight_rounded,
+                          color: AppColors.teal, size: 18);
+                    }
+                    return Text(
+                      selected.join(' '),
+                      style: const TextStyle(fontSize: 18),
+                    );
+                  },
+                ),
               ),
               Text(
                 letter.destinationCountryFlag,

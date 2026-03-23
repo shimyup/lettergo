@@ -34,7 +34,26 @@ class _ComposeScreenState extends State<ComposeScreen>
 
   int _paperStyle = 0;
   int _fontStyle = 0;
-  String? _deliveryEmoji; // 유저가 고른 배송 이모티콘 (null = 운송수단 기본값)
+  // 카테고리별 이모티콘 (0=육지, 1=항공, 2=바다) — 각 카테고리에서 1개씩 독립 선택
+  final Map<int, String> _categoryEmojis = {};
+
+  /// 선택된 이모티콘을 "|" 구분 문자열로 직렬화 (Letter 저장용)
+  String? get _deliveryEmojiEncoded {
+    final land = _categoryEmojis[0] ?? '';
+    final air  = _categoryEmojis[1] ?? '';
+    final sea  = _categoryEmojis[2] ?? '';
+    if (land.isEmpty && air.isEmpty && sea.isEmpty) return null;
+    return '$land|$air|$sea';
+  }
+
+  /// 버튼 미리보기용 — 선택된 이모티콘 최대 3개 합친 문자열
+  String get _emojiPreview {
+    final selected = [0, 1, 2]
+        .where((i) => _categoryEmojis.containsKey(i))
+        .map((i) => _categoryEmojis[i]!)
+        .toList();
+    return selected.isEmpty ? '' : selected.join(' ');
+  }
 
   bool _isRandom = true;
   bool _isAnonymous = true;
@@ -178,7 +197,7 @@ class _ComposeScreenState extends State<ComposeScreen>
         destLng: _destLng,
         // compose에서 이미 선택된 도시를 그대로 넘겨 재랜덤을 방지
         destCityName: _selectedCity.isNotEmpty ? _selectedCity : null,
-        deliveryEmoji: _deliveryEmoji,
+        deliveryEmoji: _deliveryEmojiEncoded,
         socialLink: _attachSocial && _socialLinkController.text.isNotEmpty
             ? _socialLinkController.text.trim()
             : null,
@@ -785,39 +804,79 @@ class _ComposeScreenState extends State<ComposeScreen>
           ),
         ),
         const SizedBox(width: 8),
-        // ── 배송 이모티콘 피커 버튼 ──────────────────────────────────────────
+        // ── 배송 이모티콘 꾸미기 버튼 ─────────────────────────────────────────
         GestureDetector(
           onTap: _showEmojiPicker,
           child: Container(
-            width: 52,
-            padding: const EdgeInsets.symmetric(vertical: 10),
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
             decoration: BoxDecoration(
-              color: AppColors.bgCard,
+              gradient: _categoryEmojis.isNotEmpty
+                  ? LinearGradient(
+                      colors: [
+                        AppColors.gold.withValues(alpha: 0.22),
+                        AppColors.teal.withValues(alpha: 0.14),
+                      ],
+                    )
+                  : null,
+              color: _categoryEmojis.isEmpty ? AppColors.bgCard : null,
               borderRadius: BorderRadius.circular(12),
               border: Border.all(
-                color: (_deliveryEmoji != null)
-                    ? AppColors.gold.withValues(alpha: 0.6)
-                    : AppColors.textMuted.withValues(alpha: 0.3),
+                color: _categoryEmojis.isNotEmpty
+                    ? AppColors.gold.withValues(alpha: 0.75)
+                    : AppColors.textMuted.withValues(alpha: 0.35),
+                width: _categoryEmojis.isNotEmpty ? 1.5 : 1.0,
               ),
+              boxShadow: _categoryEmojis.isNotEmpty
+                  ? [
+                      BoxShadow(
+                        color: AppColors.gold.withValues(alpha: 0.18),
+                        blurRadius: 8,
+                        spreadRadius: 1,
+                      ),
+                    ]
+                  : null,
             ),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Text(
-                  _deliveryEmoji ?? '🚀',
-                  style: const TextStyle(fontSize: 18),
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(height: 2),
-                Text(
-                  _deliveryEmoji != null ? '변경' : '꾸미기',
-                  style: TextStyle(
-                    color: _deliveryEmoji != null
-                        ? AppColors.gold
-                        : AppColors.textMuted,
-                    fontSize: 9,
-                    fontWeight: FontWeight.w600,
-                  ),
+                // 선택된 이모티콘 미리보기 or 기본 아이콘
+                _categoryEmojis.isNotEmpty
+                    ? Text(
+                        _emojiPreview,
+                        style: const TextStyle(fontSize: 15),
+                        textAlign: TextAlign.center,
+                      )
+                    : Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: const [
+                          Text('🚚', style: TextStyle(fontSize: 13)),
+                          Text('✈️', style: TextStyle(fontSize: 13)),
+                          Text('🚢', style: TextStyle(fontSize: 13)),
+                        ],
+                      ),
+                const SizedBox(height: 3),
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      Icons.auto_awesome,
+                      size: 9,
+                      color: _categoryEmojis.isNotEmpty
+                          ? AppColors.gold
+                          : AppColors.textMuted,
+                    ),
+                    const SizedBox(width: 2),
+                    Text(
+                      _categoryEmojis.isNotEmpty ? '꾸미는 중' : '꾸미기',
+                      style: TextStyle(
+                        color: _categoryEmojis.isNotEmpty
+                            ? AppColors.gold
+                            : AppColors.textMuted,
+                        fontSize: 9,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ],
                 ),
               ],
             ),
@@ -856,172 +915,271 @@ class _ComposeScreenState extends State<ComposeScreen>
   ];
 
   void _showEmojiPicker() {
-    int _tabIndex = 0;
+    int tabIndex = 0;
     showModalBottomSheet(
       context: context,
       backgroundColor: Colors.transparent,
       isScrollControlled: true,
       useSafeArea: true,
       builder: (_) => StatefulBuilder(
-        builder: (ctx, setSheet) => Container(
-          decoration: const BoxDecoration(
-            color: Color(0xFF0D1421),
-            borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              // ── 핸들 ──
-              Container(
-                margin: const EdgeInsets.only(top: 10),
-                width: 36,
-                height: 4,
-                decoration: BoxDecoration(
-                  color: AppColors.textMuted.withValues(alpha: 0.3),
-                  borderRadius: BorderRadius.circular(2),
+        builder: (ctx, setSheet) {
+          final tabColors = [AppColors.gold, AppColors.teal, const Color(0xFF60A5FA)];
+          final tabLabel = ['🛣️ 육지', '✈️ 항공', '🌊 바다'];
+          final selectedInTab = _categoryEmojis[tabIndex];
+
+          return Container(
+            decoration: const BoxDecoration(
+              color: Color(0xFF0D1421),
+              borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // ── 핸들 ──────────────────────────────────────────────────
+                Container(
+                  margin: const EdgeInsets.only(top: 10),
+                  width: 36,
+                  height: 4,
+                  decoration: BoxDecoration(
+                    color: AppColors.textMuted.withValues(alpha: 0.3),
+                    borderRadius: BorderRadius.circular(2),
+                  ),
                 ),
-              ),
-              Padding(
-                padding: const EdgeInsets.fromLTRB(20, 14, 20, 0),
-                child: Row(
-                  children: [
-                    const Text('🎨', style: TextStyle(fontSize: 20)),
-                    const SizedBox(width: 8),
-                    const Expanded(
-                      child: Text(
-                        '배송 이모티콘 선택',
-                        style: TextStyle(
-                          color: AppColors.textPrimary,
-                          fontWeight: FontWeight.w700,
-                          fontSize: 16,
+                // ── 헤더 ─────────────────────────────────────────────────
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(20, 14, 12, 0),
+                  child: Row(
+                    children: [
+                      const Text('🎨', style: TextStyle(fontSize: 20)),
+                      const SizedBox(width: 8),
+                      const Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              '배송 이모티콘 꾸미기',
+                              style: TextStyle(
+                                color: AppColors.textPrimary,
+                                fontWeight: FontWeight.w700,
+                                fontSize: 15,
+                              ),
+                            ),
+                            Text(
+                              '각 카테고리에서 1개씩 조합 선택 가능',
+                              style: TextStyle(
+                                color: AppColors.textMuted,
+                                fontSize: 11,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      if (_categoryEmojis.isNotEmpty)
+                        TextButton(
+                          onPressed: () {
+                            setState(() => _categoryEmojis.clear());
+                            setSheet(() {});
+                          },
+                          style: TextButton.styleFrom(
+                            padding: const EdgeInsets.symmetric(horizontal: 8),
+                            minimumSize: Size.zero,
+                          ),
+                          child: const Text(
+                            '초기화',
+                            style: TextStyle(
+                                color: AppColors.textMuted, fontSize: 12),
+                          ),
+                        ),
+                      IconButton(
+                        onPressed: () => Navigator.pop(ctx),
+                        icon: const Icon(Icons.close,
+                            color: AppColors.textMuted, size: 20),
+                      ),
+                    ],
+                  ),
+                ),
+                // ── 현재 조합 미리보기 ──────────────────────────────────────
+                if (_categoryEmojis.isNotEmpty)
+                  Container(
+                    margin: const EdgeInsets.fromLTRB(16, 10, 16, 0),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                    decoration: BoxDecoration(
+                      color: AppColors.bgCard,
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(
+                          color: AppColors.gold.withValues(alpha: 0.3)),
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Text('선택 조합  ',
+                            style: TextStyle(
+                                color: AppColors.textMuted, fontSize: 12)),
+                        for (int i = 0; i < 3; i++) ...[
+                          if (_categoryEmojis.containsKey(i)) ...[
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 8, vertical: 4),
+                              decoration: BoxDecoration(
+                                color: tabColors[i].withValues(alpha: 0.12),
+                                borderRadius: BorderRadius.circular(8),
+                                border: Border.all(
+                                    color: tabColors[i].withValues(alpha: 0.4)),
+                              ),
+                              child: Text(_categoryEmojis[i]!,
+                                  style: const TextStyle(fontSize: 20)),
+                            ),
+                            if (i < 2 && _categoryEmojis.keys.any((k) => k > i))
+                              const Padding(
+                                padding: EdgeInsets.symmetric(horizontal: 6),
+                                child: Text('+',
+                                    style: TextStyle(
+                                        color: AppColors.textMuted,
+                                        fontSize: 14)),
+                              ),
+                          ],
+                        ],
+                      ],
+                    ),
+                  ),
+                // ── 카테고리 탭 ───────────────────────────────────────────
+                Padding(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                  child: Row(
+                    children: List.generate(
+                      3,
+                      (i) => Expanded(
+                        child: GestureDetector(
+                          onTap: () => setSheet(() => tabIndex = i),
+                          child: Container(
+                            margin: EdgeInsets.only(left: i == 0 ? 0 : 6),
+                            padding: const EdgeInsets.symmetric(vertical: 8),
+                            decoration: BoxDecoration(
+                              color: tabIndex == i
+                                  ? tabColors[i].withValues(alpha: 0.15)
+                                  : AppColors.bgCard,
+                              borderRadius: BorderRadius.circular(10),
+                              border: Border.all(
+                                color: tabIndex == i
+                                    ? tabColors[i].withValues(alpha: 0.7)
+                                    : _categoryEmojis.containsKey(i)
+                                        ? tabColors[i].withValues(alpha: 0.35)
+                                        : AppColors.textMuted
+                                            .withValues(alpha: 0.2),
+                                width: tabIndex == i ? 1.5 : 1.0,
+                              ),
+                            ),
+                            child: Stack(
+                              alignment: Alignment.topRight,
+                              children: [
+                                Center(
+                                  child: Text(
+                                    tabLabel[i],
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                      fontSize: 11,
+                                      fontWeight: tabIndex == i
+                                          ? FontWeight.w700
+                                          : FontWeight.w400,
+                                      color: tabIndex == i
+                                          ? tabColors[i]
+                                          : AppColors.textSecondary,
+                                    ),
+                                  ),
+                                ),
+                                // 선택 완료 배지
+                                if (_categoryEmojis.containsKey(i))
+                                  Positioned(
+                                    top: -4,
+                                    right: 4,
+                                    child: Container(
+                                      width: 8,
+                                      height: 8,
+                                      decoration: BoxDecoration(
+                                        color: tabColors[i],
+                                        shape: BoxShape.circle,
+                                      ),
+                                    ),
+                                  ),
+                              ],
+                            ),
+                          ),
                         ),
                       ),
                     ),
-                    // 기본값으로 되돌리기
-                    if (_deliveryEmoji != null)
-                      TextButton(
-                        onPressed: () {
-                          setState(() => _deliveryEmoji = null);
-                          Navigator.pop(ctx);
+                  ),
+                ),
+                // ── 이모티콘 그리드 ───────────────────────────────────────
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 0, 16, 24),
+                  child: GridView.builder(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    gridDelegate:
+                        const SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 6,
+                      crossAxisSpacing: 8,
+                      mainAxisSpacing: 8,
+                      childAspectRatio: 1,
+                    ),
+                    itemCount:
+                        (_emojiGroups[tabIndex]['emojis'] as List).length,
+                    itemBuilder: (_, i) {
+                      final emoji =
+                          (_emojiGroups[tabIndex]['emojis'] as List)[i]
+                              as String;
+                      final isSelected = selectedInTab == emoji;
+                      return GestureDetector(
+                        onTap: () {
+                          setState(() {
+                            if (isSelected) {
+                              // 이미 선택된 거 다시 탭하면 해제
+                              _categoryEmojis.remove(tabIndex);
+                            } else {
+                              _categoryEmojis[tabIndex] = emoji;
+                            }
+                          });
+                          setSheet(() {});
+                          // 자동 닫기 없이 계속 선택 가능
                         },
-                        child: const Text(
-                          '기본값',
-                          style: TextStyle(
-                              color: AppColors.textMuted, fontSize: 12),
-                        ),
-                      ),
-                    IconButton(
-                      onPressed: () => Navigator.pop(ctx),
-                      icon: const Icon(
-                        Icons.close,
-                        color: AppColors.textMuted,
-                        size: 20,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              // ── 카테고리 탭 ──
-              Padding(
-                padding: const EdgeInsets.symmetric(
-                    horizontal: 16, vertical: 10),
-                child: Row(
-                  children: List.generate(
-                    _emojiGroups.length,
-                    (i) => Expanded(
-                      child: GestureDetector(
-                        onTap: () => setSheet(() => _tabIndex = i),
-                        child: Container(
-                          margin: EdgeInsets.only(
-                              left: i == 0 ? 0 : 4),
-                          padding: const EdgeInsets.symmetric(
-                              vertical: 8),
+                        child: AnimatedContainer(
+                          duration: const Duration(milliseconds: 150),
                           decoration: BoxDecoration(
-                            color: _tabIndex == i
-                                ? AppColors.gold
-                                    .withValues(alpha: 0.18)
+                            color: isSelected
+                                ? tabColors[tabIndex].withValues(alpha: 0.18)
                                 : AppColors.bgCard,
                             borderRadius: BorderRadius.circular(10),
                             border: Border.all(
-                              color: _tabIndex == i
-                                  ? AppColors.gold
-                                      .withValues(alpha: 0.6)
-                                  : AppColors.textMuted
-                                      .withValues(alpha: 0.2),
+                              color: isSelected
+                                  ? tabColors[tabIndex]
+                                  : AppColors.textMuted.withValues(alpha: 0.15),
+                              width: isSelected ? 2.0 : 1.0,
                             ),
+                            boxShadow: isSelected
+                                ? [
+                                    BoxShadow(
+                                      color: tabColors[tabIndex]
+                                          .withValues(alpha: 0.25),
+                                      blurRadius: 6,
+                                    ),
+                                  ]
+                                : null,
                           ),
-                          child: Text(
-                            _emojiGroups[i]['tab'] as String,
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              fontSize: 12,
-                              fontWeight: _tabIndex == i
-                                  ? FontWeight.w700
-                                  : FontWeight.w400,
-                              color: _tabIndex == i
-                                  ? AppColors.gold
-                                  : AppColors.textSecondary,
-                            ),
+                          child: Center(
+                            child: Text(emoji,
+                                style: const TextStyle(fontSize: 22)),
                           ),
                         ),
-                      ),
-                    ),
+                      );
+                    },
                   ),
                 ),
-              ),
-              // ── 이모티콘 그리드 ──
-              Padding(
-                padding: const EdgeInsets.fromLTRB(16, 0, 16, 24),
-                child: GridView.builder(
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  gridDelegate:
-                      const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 6,
-                    crossAxisSpacing: 8,
-                    mainAxisSpacing: 8,
-                    childAspectRatio: 1,
-                  ),
-                  itemCount: (_emojiGroups[_tabIndex]['emojis']
-                          as List)
-                      .length,
-                  itemBuilder: (_, i) {
-                    final emoji = (_emojiGroups[_tabIndex]['emojis']
-                        as List)[i] as String;
-                    final isSelected = _deliveryEmoji == emoji;
-                    return GestureDetector(
-                      onTap: () {
-                        setState(() => _deliveryEmoji = emoji);
-                        Navigator.pop(ctx);
-                      },
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color: isSelected
-                              ? AppColors.gold.withValues(alpha: 0.15)
-                              : AppColors.bgCard,
-                          borderRadius: BorderRadius.circular(10),
-                          border: Border.all(
-                            color: isSelected
-                                ? AppColors.gold
-                                : AppColors.textMuted
-                                    .withValues(alpha: 0.15),
-                            width: isSelected ? 1.5 : 1,
-                          ),
-                        ),
-                        child: Center(
-                          child: Text(
-                            emoji,
-                            style: const TextStyle(fontSize: 22),
-                          ),
-                        ),
-                      ),
-                    );
-                  },
-                ),
-              ),
-            ],
-          ),
-        ),
+              ],
+            ),
+          );
+        },
       ),
     );
   }

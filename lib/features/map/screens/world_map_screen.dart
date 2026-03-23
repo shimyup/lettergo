@@ -121,9 +121,20 @@ class _WorldMapScreenState extends State<WorldMapScreen>
       final style = darkMode ? 'alidade_smooth_dark' : 'alidade_smooth';
       return 'https://tiles.stadiamaps.com/tiles/$style/{z}/{x}/{y}.png?api_key=$_stadiaApiKey&language=$lang';
     }
+    // CartoDB 폴백:
+    //   주간 → rastertiles/voyager: 현지어 레이블 자동 지원 (한국→한글, 일본→일본어 등)
+    //   야간 → dark_nolabels: 레이블 없는 다크 베이스 (레이블은 _labelTileUrl 별도 레이어)
     return darkMode
-        ? 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png'
-        : 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png';
+        ? 'https://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}.png'
+        : 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png';
+  }
+
+  /// 야간 모드에서 현지어 레이블 오버레이 URL (Stadia 미사용 시에만 필요)
+  /// → Voyager_only_labels는 현지어 지원 + 투명 배경이라 dark 위에 올릴 수 있음
+  String? _labelTileUrl({required bool darkMode}) {
+    if (_useStadiaTiles) return null; // Stadia는 단일 레이어로 레이블 포함
+    if (!darkMode) return null; // Voyager 주간 타일은 이미 레이블 포함
+    return 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager_only_labels/{z}/{x}/{y}.png';
   }
 
   List<String> _tileSubdomains() =>
@@ -164,7 +175,7 @@ class _WorldMapScreenState extends State<WorldMapScreen>
                 ),
               ),
               children: [
-                // ── 기반 타일 (모드 연동: 밝은/다크/자동) ─────────────────
+                // ── 기반 타일 (모드 연동: 주간=Voyager현지어 / 야간=Dark무레이블) ──
                 TileLayer(
                   urlTemplate: _tileUrl(langCode, darkMode: darkMode),
                   subdomains: _tileSubdomains(),
@@ -172,6 +183,15 @@ class _WorldMapScreenState extends State<WorldMapScreen>
                   maxZoom: 19,
                   maxNativeZoom: 19,
                 ),
+                // ── 현지어 레이블 오버레이 (야간 전용: Voyager 투명 레이블 레이어) ──
+                if (_labelTileUrl(darkMode: darkMode) != null)
+                  TileLayer(
+                    urlTemplate: _labelTileUrl(darkMode: darkMode)!,
+                    subdomains: _tileSubdomains(),
+                    userAgentPackageName: 'com.globaldrift.miab',
+                    maxZoom: 19,
+                    maxNativeZoom: 19,
+                  ),
                 // ── 배송 경로선 ────────────────────────────────────────────
                 if (_showRouteLines)
                   PolylineLayer(polylines: _buildRoutePolylines(letters)),
@@ -1118,10 +1138,29 @@ class _TransportMarker extends StatelessWidget {
         final isNearby = letter.status == DeliveryStatus.nearYou;
         final phase = (pulseController.value * 2 * pi) % (2 * pi);
         final pulse = (sin(phase) * 0.5 + 0.5);
-        // 유저가 고른 이모티콘 우선 사용, 없으면 운송수단 기본 이모티콘
-        final emoji = isNearby
-            ? '📩'
-            : (letter.deliveryEmoji ?? letter.currentTransport.emoji);
+        // 유저가 고른 이모티콘 우선 — "|" 구분 포맷(land|air|sea) 파싱
+        // 현재 운송수단에 해당하는 카테고리 이모티콘이 있으면 사용, 없으면 기본값
+        String resolvedEmoji() {
+          final raw = letter.deliveryEmoji;
+          if (raw == null || raw.isEmpty) return letter.currentTransport.emoji;
+          final parts = raw.split('|');
+          if (parts.length == 3) {
+            final categoryIndex = letter.currentTransport == TransportMode.truck
+                ? 0
+                : letter.currentTransport == TransportMode.airplane
+                ? 1
+                : 2;
+            final e = parts[categoryIndex];
+            if (e.isNotEmpty) return e;
+            // 현재 카테고리 미선택 → 선택된 것 중 아무거나 표시
+            for (final p in parts) {
+              if (p.isNotEmpty) return p;
+            }
+          }
+          // 레거시 단일 이모티콘 포맷 호환
+          return raw.isNotEmpty ? raw : letter.currentTransport.emoji;
+        }
+        final emoji = isNearby ? '📩' : resolvedEmoji();
         final color = isNearby
             ? AppColors.gold
             : letter.currentTransport == TransportMode.truck
