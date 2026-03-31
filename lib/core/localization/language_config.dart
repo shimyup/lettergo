@@ -72,8 +72,7 @@ class LanguageConfig {
   static String getLanguageCode(String country) =>
       countryToLanguage[country] ?? 'en';
 
-  static String getLanguageName(String code) =>
-      languageNames[code] ?? code;
+  static String getLanguageName(String code) => languageNames[code] ?? code;
 
   // Timezone offset in hours from UTC (approximate, for time-of-day theme)
   static const Map<String, double> countryTimezone = {

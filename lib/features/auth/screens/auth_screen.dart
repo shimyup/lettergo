@@ -1,6 +1,10 @@
+import 'dart:async';
 import 'dart:math';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/gestures.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:geolocator/geolocator.dart';
 import '../../../core/theme/app_theme.dart';
@@ -8,6 +12,7 @@ import '../../../core/services/auth_service.dart';
 import '../../../core/localization/language_config.dart';
 import '../../../core/config/app_links.dart';
 import '../../../state/app_state.dart';
+import '../../../core/services/purchase_service.dart';
 import 'package:provider/provider.dart';
 
 class AuthScreen extends StatefulWidget {
@@ -143,13 +148,32 @@ class _AuthScreenState extends State<AuthScreen>
       username: userData['username'] ?? '',
       country: userData['country'] ?? '대한민국',
       countryFlag: userData['countryFlag'] ?? '🇰🇷',
+      languageCode: userData['languageCode'],
       socialLink: userData['socialLink'],
     );
+    // 이메일을 UserProfile에 저장 (이메일 기반 기능에 필요)
+    if (userData['email']?.isNotEmpty == true) {
+      state.updateProfile(email: userData['email']);
+    }
+    // shimyup@gmail.com → 디버그 빌드에서 자동 브랜드 계정 적용
+    if (context.mounted) {
+      await context.read<PurchaseService>().syncUserIdentity(
+        userId: userData['id'],
+        email: userData['email'],
+      );
+      await context.read<PurchaseService>().applyTestEmailOverride(
+        userData['email'],
+      );
+    }
     final onboardingDone = await AuthService.isOnboardingComplete();
     if (!mounted) return;
-    Navigator.of(
-      context,
-    ).pushReplacementNamed(onboardingDone ? '/home' : '/onboarding');
+
+    if (!onboardingDone) {
+      Navigator.of(context).pushReplacementNamed('/onboarding');
+      return;
+    }
+
+    Navigator.of(context).pushReplacementNamed('/home');
   }
 }
 
@@ -167,7 +191,61 @@ class _LoginTabState extends State<_LoginTab> {
   final _passCtrl = TextEditingController();
   bool _obscurePass = true;
   bool _isLoading = false;
+  bool _rememberMe = false;
   String? _error;
+
+  static const _kRememberMe = 'login_remember_me';
+  static const _kSavedUsername = 'login_saved_username';
+  static const _kSavedPasswordLegacy = 'login_saved_password';
+  static const _kSavedPasswordSecure = 'login_saved_password_secure';
+  static const _secureStorage = FlutterSecureStorage();
+
+  @override
+  void initState() {
+    super.initState();
+    _loadSavedCredentials();
+  }
+
+  Future<void> _loadSavedCredentials() async {
+    final prefs = await SharedPreferences.getInstance();
+    final remember = prefs.getBool(_kRememberMe) ?? false;
+    if (!remember) return;
+    final username = prefs.getString(_kSavedUsername) ?? '';
+    var password = await _secureStorage.read(key: _kSavedPasswordSecure) ?? '';
+    if (password.isEmpty) {
+      final legacyPassword = prefs.getString(_kSavedPasswordLegacy) ?? '';
+      if (legacyPassword.isNotEmpty) {
+        password = legacyPassword;
+        await _secureStorage.write(key: _kSavedPasswordSecure, value: password);
+        await prefs.remove(_kSavedPasswordLegacy);
+      }
+    }
+    if (username.isNotEmpty && mounted) {
+      setState(() {
+        _rememberMe = true;
+        _usernameCtrl.text = username;
+        _passCtrl.text = password;
+      });
+    }
+  }
+
+  Future<void> _saveCredentials() async {
+    final prefs = await SharedPreferences.getInstance();
+    if (_rememberMe) {
+      await prefs.setBool(_kRememberMe, true);
+      await prefs.setString(_kSavedUsername, _usernameCtrl.text.trim());
+      await _secureStorage.write(
+        key: _kSavedPasswordSecure,
+        value: _passCtrl.text,
+      );
+      await prefs.remove(_kSavedPasswordLegacy);
+    } else {
+      await prefs.remove(_kRememberMe);
+      await prefs.remove(_kSavedUsername);
+      await prefs.remove(_kSavedPasswordLegacy);
+      await _secureStorage.delete(key: _kSavedPasswordSecure);
+    }
+  }
 
   @override
   void dispose() {
@@ -196,6 +274,8 @@ class _LoginTabState extends State<_LoginTab> {
       });
       return;
     }
+
+    await _saveCredentials();
 
     final user = await AuthService.getCurrentUser();
     if (user != null) await widget.onLoginSuccess(user);
@@ -233,7 +313,46 @@ class _LoginTabState extends State<_LoginTab> {
               ),
             ),
           ),
-          const SizedBox(height: 28),
+          const SizedBox(height: 14),
+          // ── 아이디/비번 기억하기 ───────────────────────────────────────────
+          GestureDetector(
+            onTap: () => setState(() => _rememberMe = !_rememberMe),
+            child: Row(
+              children: [
+                AnimatedContainer(
+                  duration: const Duration(milliseconds: 150),
+                  width: 20,
+                  height: 20,
+                  decoration: BoxDecoration(
+                    color: _rememberMe ? AppColors.teal : Colors.transparent,
+                    borderRadius: BorderRadius.circular(5),
+                    border: Border.all(
+                      color: _rememberMe
+                          ? AppColors.teal
+                          : AppColors.textMuted.withValues(alpha: 0.5),
+                      width: 1.5,
+                    ),
+                  ),
+                  child: _rememberMe
+                      ? const Icon(
+                          Icons.check_rounded,
+                          size: 14,
+                          color: Color(0xFF0D1421),
+                        )
+                      : null,
+                ),
+                const SizedBox(width: 10),
+                const Text(
+                  '아이디 · 비밀번호 기억하기',
+                  style: TextStyle(
+                    color: AppColors.textSecondary,
+                    fontSize: 13,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 20),
           _AuthButton(
             label: '로그인',
             emoji: '🔑',
@@ -245,6 +364,20 @@ class _LoginTabState extends State<_LoginTab> {
             child: Text.rich(
               TextSpan(
                 children: [
+                  TextSpan(
+                    text: '아이디 찾기',
+                    style: const TextStyle(
+                      color: AppColors.gold,
+                      fontSize: 13,
+                      decoration: TextDecoration.underline,
+                    ),
+                    recognizer: TapGestureRecognizer()
+                      ..onTap = () => _showFindIdDialog(),
+                  ),
+                  const TextSpan(
+                    text: '   ·   ',
+                    style: TextStyle(color: AppColors.textMuted, fontSize: 13),
+                  ),
                   TextSpan(
                     text: '비밀번호 찾기',
                     style: const TextStyle(
@@ -269,7 +402,365 @@ class _LoginTabState extends State<_LoginTab> {
               ),
             ),
           ),
+          // ── 디버그 전용: 빠른 로그인 ──────────────────────────────────────
+          if (kDebugMode) ...[
+            const SizedBox(height: 16),
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: Colors.purple.withValues(alpha: 0.08),
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(color: Colors.purple.withValues(alpha: 0.3)),
+              ),
+              child: Column(
+                children: [
+                  const Text(
+                    '🔧 DEBUG: 빠른 테스트',
+                    style: TextStyle(
+                      color: Colors.purple,
+                      fontSize: 11,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.purple,
+                        padding: const EdgeInsets.symmetric(vertical: 10),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                      ),
+                      onPressed: () async {
+                        setState(() => _isLoading = true);
+                        // 테스트 계정 자동 생성 or 로그인
+                        const testUser = 'testuser123';
+                        const testPw = 'Test1234!';
+                        final taken = await AuthService.isUsernameTaken(
+                          testUser,
+                        );
+                        if (!taken) {
+                          await AuthService.signUp(
+                            username: testUser,
+                            password: testPw,
+                            email: 'test@lettergo.app',
+                            country: '대한민국',
+                            countryFlag: '🇰🇷',
+                          );
+                        }
+                        final err = await AuthService.login(
+                          username: testUser,
+                          password: testPw,
+                        );
+                        if (!mounted) return;
+                        if (err == null) {
+                          final userData = await AuthService.getCurrentUser();
+                          if (userData != null && mounted) {
+                            await widget.onLoginSuccess(userData);
+                          }
+                        }
+                        if (mounted) setState(() => _isLoading = false);
+                      },
+                      child: const Text(
+                        '테스트 계정으로 로그인',
+                        style: TextStyle(fontSize: 12, color: Colors.white),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
         ],
+      ),
+    );
+  }
+
+  // ── 아이디 찾기 ─────────────────────────────────────────────────────────────
+  void _showFindIdDialog() {
+    final emailCtrl = TextEditingController();
+    bool isLoading = false;
+
+    showDialog(
+      context: context,
+      builder: (dialogCtx) => StatefulBuilder(
+        builder: (sCtx, setS) => AlertDialog(
+          backgroundColor: AppColors.bgCard,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+          title: const Text(
+            '아이디 찾기',
+            style: TextStyle(
+              color: AppColors.textPrimary,
+              fontSize: 18,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text(
+                '가입 시 등록한 이메일을 입력하면\n아이디와 임시 비밀번호를 발급해 드립니다.',
+                style: TextStyle(
+                  color: AppColors.textSecondary,
+                  fontSize: 13,
+                  height: 1.6,
+                ),
+              ),
+              const SizedBox(height: 14),
+              TextField(
+                controller: emailCtrl,
+                keyboardType: TextInputType.emailAddress,
+                style: const TextStyle(
+                  color: AppColors.textPrimary,
+                  fontSize: 14,
+                ),
+                decoration: InputDecoration(
+                  hintText: '가입 이메일',
+                  hintStyle: const TextStyle(color: AppColors.textMuted),
+                  prefixIcon: const Icon(
+                    Icons.email_outlined,
+                    color: AppColors.textMuted,
+                    size: 18,
+                  ),
+                  filled: true,
+                  fillColor: AppColors.bgSurface,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                    borderSide: const BorderSide(color: Color(0xFF1F2D44)),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                    borderSide: const BorderSide(color: Color(0xFF1F2D44)),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                    borderSide: const BorderSide(color: AppColors.gold),
+                  ),
+                ),
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: isLoading ? null : () => Navigator.pop(dialogCtx),
+              child: const Text(
+                '취소',
+                style: TextStyle(color: AppColors.textMuted),
+              ),
+            ),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.gold,
+                foregroundColor: const Color(0xFF0D1421),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+              ),
+              onPressed: isLoading
+                  ? null
+                  : () async {
+                      final email = emailCtrl.text.trim();
+                      if (email.isEmpty) return;
+                      setS(() => isLoading = true);
+
+                      // 이메일로 아이디 조회
+                      final idResult = await AuthService.findId(email: email);
+
+                      if (!mounted || !context.mounted || !dialogCtx.mounted)
+                        return;
+
+                      if (idResult['success'] != true) {
+                        setS(() => isLoading = false);
+                        Navigator.pop(dialogCtx);
+                        showDialog(
+                          context: context,
+                          builder: (_) => AlertDialog(
+                            backgroundColor: AppColors.bgCard,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(16),
+                            ),
+                            title: const Text(
+                              '찾기 실패',
+                              style: TextStyle(color: AppColors.textPrimary),
+                            ),
+                            content: Text(
+                              idResult['error'] ?? '해당 이메일로 가입된 계정을 찾을 수 없습니다.',
+                              style: const TextStyle(
+                                color: AppColors.error,
+                                fontSize: 13,
+                              ),
+                            ),
+                            actions: [
+                              TextButton(
+                                onPressed: () => Navigator.pop(context),
+                                child: const Text(
+                                  '확인',
+                                  style: TextStyle(color: AppColors.textMuted),
+                                ),
+                              ),
+                            ],
+                          ),
+                        );
+                        return;
+                      }
+
+                      final foundUsername =
+                          idResult['username'] as String? ?? '';
+
+                      // 임시 비밀번호 발급
+                      final pwResult = await AuthService.resetPassword(
+                        username: foundUsername,
+                        email: email,
+                      );
+
+                      if (!mounted || !context.mounted || !dialogCtx.mounted)
+                        return;
+                      Navigator.pop(dialogCtx);
+
+                      final pwOk = pwResult['success'] == true;
+                      showDialog(
+                        context: context,
+                        builder: (_) => AlertDialog(
+                          backgroundColor: AppColors.bgCard,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                          title: const Text(
+                            '계정 정보 확인',
+                            style: TextStyle(
+                              color: AppColors.textPrimary,
+                              fontSize: 16,
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                          content: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              // 아이디 표시
+                              Container(
+                                width: double.infinity,
+                                padding: const EdgeInsets.all(12),
+                                decoration: BoxDecoration(
+                                  color: AppColors.gold.withValues(alpha: 0.10),
+                                  borderRadius: BorderRadius.circular(10),
+                                  border: Border.all(
+                                    color: AppColors.gold.withValues(
+                                      alpha: 0.35,
+                                    ),
+                                  ),
+                                ),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    const Text(
+                                      '아이디',
+                                      style: TextStyle(
+                                        color: AppColors.textMuted,
+                                        fontSize: 11,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 4),
+                                    Text(
+                                      foundUsername,
+                                      style: const TextStyle(
+                                        color: AppColors.gold,
+                                        fontSize: 17,
+                                        fontWeight: FontWeight.w700,
+                                        letterSpacing: 0.5,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              if (pwOk) ...[
+                                const SizedBox(height: 10),
+                                // 임시 비밀번호 표시
+                                Container(
+                                  width: double.infinity,
+                                  padding: const EdgeInsets.all(12),
+                                  decoration: BoxDecoration(
+                                    color: AppColors.teal.withValues(
+                                      alpha: 0.10,
+                                    ),
+                                    borderRadius: BorderRadius.circular(10),
+                                    border: Border.all(
+                                      color: AppColors.teal.withValues(
+                                        alpha: 0.35,
+                                      ),
+                                    ),
+                                  ),
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      const Text(
+                                        '임시 비밀번호',
+                                        style: TextStyle(
+                                          color: AppColors.textMuted,
+                                          fontSize: 11,
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                      ),
+                                      const SizedBox(height: 4),
+                                      Text(
+                                        pwResult['tempPassword'] as String? ??
+                                            '',
+                                        style: const TextStyle(
+                                          color: AppColors.teal,
+                                          fontSize: 17,
+                                          fontWeight: FontWeight.w700,
+                                          letterSpacing: 1.0,
+                                        ),
+                                      ),
+                                      const SizedBox(height: 6),
+                                      Text(
+                                        '${pwResult['expiresInMinutes']}분 후 만료 · 로그인 후 반드시 변경해주세요',
+                                        style: const TextStyle(
+                                          color: AppColors.textMuted,
+                                          fontSize: 10,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ],
+                          ),
+                          actions: [
+                            TextButton(
+                              onPressed: () => Navigator.pop(context),
+                              child: const Text(
+                                '확인',
+                                style: TextStyle(color: AppColors.textMuted),
+                              ),
+                            ),
+                          ],
+                        ),
+                      );
+                    },
+              child: isLoading
+                  ? const SizedBox(
+                      width: 16,
+                      height: 16,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        color: Color(0xFF0D1421),
+                      ),
+                    )
+                  : const Text(
+                      '찾기',
+                      style: TextStyle(fontWeight: FontWeight.w700),
+                    ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -408,16 +899,16 @@ class _SignupTab extends StatefulWidget {
 }
 
 class _SignupTabState extends State<_SignupTab> {
-  final _emailCtrl    = TextEditingController();
+  final _emailCtrl = TextEditingController();
   final _usernameCtrl = TextEditingController();
-  final _passCtrl     = TextEditingController();
-  final _socialCtrl   = TextEditingController();
+  final _passCtrl = TextEditingController();
+  final _socialCtrl = TextEditingController();
 
-  bool _obscurePass    = true;
-  bool _isLoading      = false;
+  bool _obscurePass = true;
+  bool _isLoading = false;
   String? _error;
   String _selectedCountry = '대한민국';
-  String _selectedFlag    = '🇰🇷';
+  String _selectedFlag = '🇰🇷';
 
   // ── 검증 상태 ──
   String? _usernameError; // 실시간 아이디 에러
@@ -425,13 +916,20 @@ class _SignupTabState extends State<_SignupTab> {
   bool _usernameTaken = false;
 
   // ── 동의 상태 ──
-  bool _agreePrivacy   = false;
-  bool _agreeLocation  = false; // 동의 체크
+  bool _agreePrivacy = false;
+  bool _agreeLocation = false; // 동의 체크
   bool _locationGranted = false; // 실제 OS 권한 허용 여부
 
+  // ── 이메일 인증 OTP 상태 ──
+  bool _showOtpScreen = false; // OTP 입력 화면 표시 여부
+  final _otpCtrl = TextEditingController();
+  String? _otpError;
+  String? _devOtpCode; // 개발용: 생성된 OTP 코드 (실제 배포시 제거)
+  int _otpCountdown = 0; // 남은 시간 (초)
+  Timer? _otpTimer; // 타이머
+
   // 가입 버튼 활성화 조건
-  bool get _canSignUp =>
-      _agreePrivacy && _agreeLocation && _locationGranted && !_isLoading;
+  bool get _canSignUp => _agreePrivacy && !_isLoading;
 
   @override
   void initState() {
@@ -447,7 +945,7 @@ class _SignupTabState extends State<_SignupTab> {
     if (mounted) {
       setState(() {
         _selectedCountry = data['country'] ?? '대한민국';
-        _selectedFlag    = data['countryFlag'] ?? '🇰🇷';
+        _selectedFlag = data['countryFlag'] ?? '🇰🇷';
       });
     }
   }
@@ -484,33 +982,103 @@ class _SignupTabState extends State<_SignupTab> {
     _usernameCtrl.dispose();
     _passCtrl.dispose();
     _socialCtrl.dispose();
+    _otpCtrl.dispose();
+    _otpTimer?.cancel();
     super.dispose();
   }
 
+  /// Step 1: 폼 검증 후 OTP 발송 화면으로 전환
   Future<void> _signUp() async {
     if (!_agreePrivacy) {
       setState(() => _error = '개인정보 처리방침에 동의해야 가입할 수 있습니다.');
       return;
     }
-    if (!_locationGranted) {
-      setState(() => _error = '위치 권한을 허용해야 편지를 보내고 받을 수 있습니다.');
+    // 폼 기본 검증
+    final emailVal = _emailCtrl.text.trim();
+    if (emailVal.isEmpty) {
+      setState(() => _error = '이메일을 입력해주세요.');
       return;
     }
-    setState(() { _isLoading = true; _error = null; });
+    final emailErr = AuthService.validateEmail(emailVal);
+    if (emailErr != null) {
+      setState(() => _error = emailErr);
+      return;
+    }
+    final taken = await AuthService.isEmailTaken(emailVal);
+    if (taken) {
+      setState(() => _error = '이미 가입된 이메일입니다.');
+      return;
+    }
+
+    setState(() {
+      _isLoading = true;
+      _error = null;
+    });
+
+    // OTP 생성 (rate limit 초과 시 null 반환)
+    final code = AuthService.generateEmailOtp(emailVal);
+
+    if (!mounted) return;
+    if (code == null) {
+      final cooldown = AuthService.otpCooldownSecondsRemaining;
+      setState(() {
+        _isLoading = false;
+        _error = cooldown > 0
+            ? '잠시 후 다시 시도해주세요. (${cooldown}초 후 재시도 가능)'
+            : '인증 코드 요청 횟수를 초과했습니다. 잠시 후 다시 시도해주세요.';
+      });
+      return;
+    }
+
+    setState(() {
+      _isLoading = false;
+      _showOtpScreen = true;
+      _devOtpCode = code; // 개발용 표시 (배포시 제거)
+      _otpError = null;
+      _otpCountdown = AuthService.otpRemainingSeconds;
+    });
+    _startOtpTimer();
+  }
+
+  /// Step 2: OTP 확인 후 실제 회원가입 완료
+  Future<void> _verifyOtpAndComplete() async {
+    final emailVal = _emailCtrl.text.trim();
+    final otpVal = _otpCtrl.text.trim();
+
+    if (otpVal.length != 6) {
+      setState(() => _otpError = '6자리 코드를 입력해주세요.');
+      return;
+    }
+
+    final otpErr = AuthService.verifyEmailOtp(emailVal, otpVal);
+    if (otpErr != null) {
+      setState(() => _otpError = otpErr);
+      return;
+    }
+
+    // OTP 인증 성공 → 실제 회원가입 진행
+    setState(() {
+      _isLoading = true;
+      _otpError = null;
+    });
 
     final err = await AuthService.signUp(
-      username:     _usernameCtrl.text,
-      password:     _passCtrl.text,
-      email:        _emailCtrl.text.trim(),
-      country:      _selectedCountry,
-      countryFlag:  _selectedFlag,
-      socialLink:   _socialCtrl.text.isNotEmpty ? _socialCtrl.text : null,
+      username: _usernameCtrl.text,
+      password: _passCtrl.text,
+      email: emailVal,
+      country: _selectedCountry,
+      countryFlag: _selectedFlag,
+      languageCode: LanguageConfig.getLanguageCode(_selectedCountry),
+      socialLink: _socialCtrl.text.isNotEmpty ? _socialCtrl.text : null,
     );
 
     if (!mounted) return;
 
     if (err != null) {
-      setState(() { _isLoading = false; _error = err; });
+      setState(() {
+        _isLoading = false;
+        _otpError = err;
+      });
       return;
     }
 
@@ -518,10 +1086,49 @@ class _SignupTabState extends State<_SignupTab> {
     if (user != null) await widget.onSignupSuccess(user);
   }
 
+  /// OTP 재발송
+  void _resendOtp() {
+    _otpTimer?.cancel();
+    final emailVal = _emailCtrl.text.trim();
+    final code = AuthService.generateEmailOtp(emailVal);
+    if (code == null) {
+      final cooldown = AuthService.otpCooldownSecondsRemaining;
+      setState(() {
+        _otpError = cooldown > 0
+            ? '${cooldown}초 후 재발송 가능합니다.'
+            : '인증 코드 요청 횟수를 초과했습니다. 잠시 후 다시 시도해주세요.';
+      });
+      return;
+    }
+    setState(() {
+      _otpCtrl.clear();
+      _otpError = null;
+      _devOtpCode = code;
+      _otpCountdown = AuthService.otpRemainingSeconds;
+    });
+    _startOtpTimer();
+  }
+
+  void _startOtpTimer() {
+    _otpTimer?.cancel();
+    _otpTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      final remaining = AuthService.otpRemainingSeconds;
+      if (!mounted) {
+        timer.cancel();
+        return;
+      }
+      setState(() => _otpCountdown = remaining);
+      if (remaining <= 0) timer.cancel();
+    });
+  }
+
   /// 위치 동의 체크박스 탭 → OS 권한 요청
   Future<void> _onLocationConsentTap(bool? checked) async {
     if (checked != true) {
-      setState(() { _agreeLocation = false; _locationGranted = false; });
+      setState(() {
+        _agreeLocation = false;
+        _locationGranted = false;
+      });
       return;
     }
     // 동의 체크 시 즉시 OS 위치 권한 요청
@@ -529,19 +1136,19 @@ class _SignupTabState extends State<_SignupTab> {
     if (permission == LocationPermission.denied) {
       permission = await Geolocator.requestPermission();
     }
-    final granted = permission == LocationPermission.whileInUse ||
+    final granted =
+        permission == LocationPermission.whileInUse ||
         permission == LocationPermission.always;
     if (!mounted) return;
     setState(() {
-      _agreeLocation   = granted || permission == LocationPermission.deniedForever;
+      _agreeLocation =
+          granted || permission == LocationPermission.deniedForever;
       _locationGranted = granted;
     });
     if (!granted) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: const Text(
-            '위치 권한이 거부되었습니다.\n설정 → 앱 → 위치에서 허용해주세요.',
-          ),
+          content: const Text('위치 권한이 거부되었습니다.\n설정 → 앱 → 위치에서 허용해주세요.'),
           backgroundColor: AppColors.bgCard,
           behavior: SnackBarBehavior.floating,
           duration: const Duration(seconds: 4),
@@ -550,7 +1157,9 @@ class _SignupTabState extends State<_SignupTab> {
             textColor: AppColors.teal,
             onPressed: () => Geolocator.openAppSettings(),
           ),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
         ),
       );
     }
@@ -558,6 +1167,11 @@ class _SignupTabState extends State<_SignupTab> {
 
   @override
   Widget build(BuildContext context) {
+    if (_showOtpScreen) return _buildOtpScreen(context);
+    return _buildSignupForm(context);
+  }
+
+  Widget _buildSignupForm(BuildContext context) {
     return SingleChildScrollView(
       padding: const EdgeInsets.fromLTRB(24, 20, 24, 24),
       child: Column(
@@ -622,14 +1236,17 @@ class _SignupTabState extends State<_SignupTab> {
               child: Row(
                 children: [
                   Container(
-                    width: 36, height: 36,
+                    width: 36,
+                    height: 36,
                     decoration: BoxDecoration(
                       color: AppColors.bgSurface,
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Center(
-                      child: Text(_selectedFlag,
-                          style: const TextStyle(fontSize: 20)),
+                      child: Text(
+                        _selectedFlag,
+                        style: const TextStyle(fontSize: 20),
+                      ),
                     ),
                   ),
                   const SizedBox(width: 12),
@@ -637,19 +1254,29 @@ class _SignupTabState extends State<_SignupTab> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Text('거주 국가',
-                            style: TextStyle(
-                                color: AppColors.textMuted, fontSize: 11)),
-                        Text(_selectedCountry,
-                            style: const TextStyle(
-                                color: AppColors.textPrimary,
-                                fontWeight: FontWeight.w600,
-                                fontSize: 14)),
+                        const Text(
+                          '거주 국가',
+                          style: TextStyle(
+                            color: AppColors.textMuted,
+                            fontSize: 11,
+                          ),
+                        ),
+                        Text(
+                          _selectedCountry,
+                          style: const TextStyle(
+                            color: AppColors.textPrimary,
+                            fontWeight: FontWeight.w600,
+                            fontSize: 14,
+                          ),
+                        ),
                       ],
                     ),
                   ),
-                  const Icon(Icons.arrow_forward_ios_rounded,
-                      size: 12, color: AppColors.textMuted),
+                  const Icon(
+                    Icons.arrow_forward_ios_rounded,
+                    size: 12,
+                    color: AppColors.textMuted,
+                  ),
                 ],
               ),
             ),
@@ -686,17 +1313,26 @@ class _SignupTabState extends State<_SignupTab> {
                 ? Icons.location_on_rounded
                 : Icons.location_off_rounded,
             iconColor: _locationGranted ? AppColors.teal : AppColors.textMuted,
-            title: '(필수) 현재 위치 사용 동의',
-            description: '편지 발송·수신·지도 기능은 현재 위치가 필요합니다.\n'
-                '동의 시 위치 권한 허용 창이 나타납니다.',
+            title: '(선택) 현재 위치 사용 동의',
+            description:
+                '가입 후 편지 발송 시점에도 위치 권한을 요청할 수 있어요.\n'
+                '지금 동의하면 위치 기반 기능을 바로 사용할 수 있습니다.',
             statusWidget: _locationGranted
-                ? const Row(mainAxisSize: MainAxisSize.min, children: [
-                    Icon(Icons.check_circle_rounded,
-                        color: AppColors.teal, size: 14),
-                    SizedBox(width: 4),
-                    Text('허용됨',
-                        style: TextStyle(color: AppColors.teal, fontSize: 11)),
-                  ])
+                ? const Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        Icons.check_circle_rounded,
+                        color: AppColors.teal,
+                        size: 14,
+                      ),
+                      SizedBox(width: 4),
+                      Text(
+                        '허용됨',
+                        style: TextStyle(color: AppColors.teal, fontSize: 11),
+                      ),
+                    ],
+                  )
                 : null,
             onCheckChanged: _onLocationConsentTap,
           ),
@@ -710,6 +1346,250 @@ class _SignupTabState extends State<_SignupTab> {
             enabled: _canSignUp,
             onTap: _signUp,
           ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildOtpScreen(BuildContext context) {
+    final email = _emailCtrl.text.trim();
+    final expired = _otpCountdown <= 0;
+
+    return SingleChildScrollView(
+      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // 뒤로가기
+          GestureDetector(
+            onTap: () {
+              _otpTimer?.cancel();
+              setState(() {
+                _showOtpScreen = false;
+                _otpCtrl.clear();
+                _otpError = null;
+              });
+            },
+            child: Row(
+              children: [
+                Icon(
+                  Icons.arrow_back_ios_new_rounded,
+                  size: 16,
+                  color: AppColors.textSecondary,
+                ),
+                const SizedBox(width: 6),
+                Text(
+                  '이메일 입력으로 돌아가기',
+                  style: TextStyle(
+                    color: AppColors.textSecondary,
+                    fontSize: 13,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 32),
+
+          // 아이콘 + 제목
+          Center(
+            child: Column(
+              children: [
+                Container(
+                  width: 64,
+                  height: 64,
+                  decoration: BoxDecoration(
+                    color: AppColors.teal.withValues(alpha: 0.12),
+                    shape: BoxShape.circle,
+                  ),
+                  child: Icon(
+                    Icons.mark_email_read_rounded,
+                    size: 32,
+                    color: AppColors.teal,
+                  ),
+                ),
+                const SizedBox(height: 16),
+                const Text(
+                  '이메일 인증',
+                  style: TextStyle(
+                    color: AppColors.textPrimary,
+                    fontSize: 22,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  '$email\n으로 인증 코드를 발송했습니다.',
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(
+                    color: AppColors.textSecondary,
+                    fontSize: 14,
+                    height: 1.5,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 32),
+
+          // 개발용: OTP 코드 표시 (배포 시 이 블록 제거)
+          if (_devOtpCode != null) ...[
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: const Color(0xFFFF8A5C).withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(
+                  color: const Color(0xFFFF8A5C).withValues(alpha: 0.4),
+                ),
+              ),
+              child: Column(
+                children: [
+                  const Text(
+                    '[개발용] 실제 배포 시 이 박스는 제거됩니다.',
+                    style: TextStyle(color: Color(0xFFFF8A5C), fontSize: 10),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    '인증 코드: $_devOtpCode',
+                    style: const TextStyle(
+                      color: Color(0xFFFF8A5C),
+                      fontSize: 22,
+                      fontWeight: FontWeight.w800,
+                      letterSpacing: 6,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 20),
+          ],
+
+          // OTP 입력 필드 (6자리)
+          TextField(
+            controller: _otpCtrl,
+            keyboardType: TextInputType.number,
+            maxLength: 6,
+            textAlign: TextAlign.center,
+            style: const TextStyle(
+              color: AppColors.textPrimary,
+              fontSize: 28,
+              fontWeight: FontWeight.w700,
+              letterSpacing: 12,
+            ),
+            decoration: InputDecoration(
+              hintText: '------',
+              hintStyle: TextStyle(
+                color: AppColors.textMuted.withValues(alpha: 0.4),
+                fontSize: 28,
+                letterSpacing: 12,
+              ),
+              counterText: '',
+              filled: true,
+              fillColor: AppColors.bgCard,
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(14),
+                borderSide: BorderSide(
+                  color: AppColors.textMuted.withValues(alpha: 0.2),
+                ),
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(14),
+                borderSide: BorderSide(
+                  color: AppColors.textMuted.withValues(alpha: 0.2),
+                ),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(14),
+                borderSide: const BorderSide(color: AppColors.teal, width: 1.5),
+              ),
+              errorText: _otpError,
+              errorStyle: const TextStyle(color: Colors.red, fontSize: 12),
+            ),
+            onChanged: (_) {
+              if (_otpError != null) setState(() => _otpError = null);
+            },
+          ),
+          const SizedBox(height: 12),
+
+          // 카운트다운 + 재발송
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              if (!expired) ...[
+                Icon(
+                  Icons.timer_outlined,
+                  size: 14,
+                  color: AppColors.textMuted,
+                ),
+                const SizedBox(width: 4),
+                Text(
+                  '${(_otpCountdown ~/ 60).toString().padLeft(2, '0')}:${(_otpCountdown % 60).toString().padLeft(2, '0')} 후 만료',
+                  style: const TextStyle(
+                    color: AppColors.textMuted,
+                    fontSize: 12,
+                  ),
+                ),
+                const SizedBox(width: 12),
+              ],
+              GestureDetector(
+                onTap: _resendOtp,
+                child: Text(
+                  expired ? '코드 재발송' : '재발송',
+                  style: TextStyle(
+                    color: expired ? AppColors.teal : AppColors.textSecondary,
+                    fontSize: 12,
+                    fontWeight: expired ? FontWeight.w700 : FontWeight.normal,
+                    decoration: TextDecoration.underline,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 32),
+
+          // 확인 버튼
+          SizedBox(
+            width: double.infinity,
+            child: ElevatedButton(
+              onPressed: _isLoading || expired ? null : _verifyOtpAndComplete,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.teal,
+                foregroundColor: Colors.white,
+                disabledBackgroundColor: AppColors.bgCard,
+                padding: const EdgeInsets.symmetric(vertical: 16),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(14),
+                ),
+              ),
+              child: _isLoading
+                  ? const SizedBox(
+                      width: 20,
+                      height: 20,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        color: Colors.white,
+                      ),
+                    )
+                  : const Text(
+                      '인증 완료 · 가입하기',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+            ),
+          ),
+
+          if (expired) ...[
+            const SizedBox(height: 12),
+            Center(
+              child: Text(
+                '인증 코드가 만료되었습니다. 재발송을 눌러주세요.',
+                style: TextStyle(color: Colors.red.shade400, fontSize: 12),
+              ),
+            ),
+          ],
         ],
       ),
     );
@@ -1021,11 +1901,11 @@ class _AuthButton extends StatelessWidget {
       child: ElevatedButton(
         onPressed: active ? onTap : null,
         style: ElevatedButton.styleFrom(
-          backgroundColor:
-              active ? AppColors.gold : AppColors.gold.withValues(alpha: 0.3),
+          backgroundColor: active
+              ? AppColors.gold
+              : AppColors.gold.withValues(alpha: 0.3),
           foregroundColor: AppColors.bgDeep,
-          disabledBackgroundColor:
-              AppColors.gold.withValues(alpha: 0.25),
+          disabledBackgroundColor: AppColors.gold.withValues(alpha: 0.25),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(14),
           ),
@@ -1033,20 +1913,26 @@ class _AuthButton extends StatelessWidget {
         ),
         child: isLoading
             ? const SizedBox(
-                width: 22, height: 22,
+                width: 22,
+                height: 22,
                 child: CircularProgressIndicator(
-                    strokeWidth: 2, color: AppColors.bgDeep),
+                  strokeWidth: 2,
+                  color: AppColors.bgDeep,
+                ),
               )
             : Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(emoji, style: const TextStyle(fontSize: 18)),
                   const SizedBox(width: 8),
-                  Text(label,
-                      style: const TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w700,
-                          letterSpacing: 0.5)),
+                  Text(
+                    label,
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w700,
+                      letterSpacing: 0.5,
+                    ),
+                  ),
                 ],
               ),
       ),
@@ -1065,13 +1951,17 @@ class _FieldError extends StatelessWidget {
       padding: const EdgeInsets.only(top: 4, left: 12),
       child: Row(
         children: [
-          const Icon(Icons.info_outline_rounded,
-              size: 12, color: AppColors.error),
+          const Icon(
+            Icons.info_outline_rounded,
+            size: 12,
+            color: AppColors.error,
+          ),
           const SizedBox(width: 4),
           Expanded(
-            child: Text(message,
-                style:
-                    const TextStyle(color: AppColors.error, fontSize: 11)),
+            child: Text(
+              message,
+              style: const TextStyle(color: AppColors.error, fontSize: 11),
+            ),
           ),
         ],
       ),
@@ -1126,19 +2016,27 @@ class _ConsentCard extends StatelessWidget {
               Icon(icon, color: iconColor, size: 16),
               const SizedBox(width: 6),
               Expanded(
-                child: Text(title,
-                    style: const TextStyle(
-                        color: AppColors.textPrimary,
-                        fontSize: 13,
-                        fontWeight: FontWeight.w600)),
+                child: Text(
+                  title,
+                  style: const TextStyle(
+                    color: AppColors.textPrimary,
+                    fontSize: 13,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
               ),
-              if (statusWidget != null) statusWidget!,
+              if (statusWidget case final widget?) widget,
             ],
           ),
           const SizedBox(height: 6),
-          Text(description,
-              style: const TextStyle(
-                  color: AppColors.textSecondary, fontSize: 11, height: 1.5)),
+          Text(
+            description,
+            style: const TextStyle(
+              color: AppColors.textSecondary,
+              fontSize: 11,
+              height: 1.5,
+            ),
+          ),
           const SizedBox(height: 8),
           Row(
             children: [
@@ -1152,12 +2050,15 @@ class _ConsentCard extends StatelessWidget {
               ),
               const SizedBox(width: 4),
               Expanded(
-                child: Text('동의합니다',
-                    style: TextStyle(
-                        color: checked
-                            ? AppColors.textPrimary
-                            : AppColors.textSecondary,
-                        fontSize: 12)),
+                child: Text(
+                  '동의합니다',
+                  style: TextStyle(
+                    color: checked
+                        ? AppColors.textPrimary
+                        : AppColors.textSecondary,
+                    fontSize: 12,
+                  ),
+                ),
               ),
               if (linkLabel != null && onLinkTap != null)
                 TextButton(
@@ -1167,9 +2068,10 @@ class _ConsentCard extends StatelessWidget {
                     minimumSize: Size.zero,
                     tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                   ),
-                  child: Text(linkLabel!,
-                      style: const TextStyle(
-                          color: AppColors.teal, fontSize: 11)),
+                  child: Text(
+                    linkLabel!,
+                    style: const TextStyle(color: AppColors.teal, fontSize: 11),
+                  ),
                 ),
             ],
           ),

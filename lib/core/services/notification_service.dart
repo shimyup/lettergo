@@ -25,13 +25,17 @@ class NotificationService {
   static Future<void> requestPermissions() async {
     try {
       // iOS / macOS
-      final ios = _plugin.resolvePlatformSpecificImplementation<
-          IOSFlutterLocalNotificationsPlugin>();
+      final ios = _plugin
+          .resolvePlatformSpecificImplementation<
+            IOSFlutterLocalNotificationsPlugin
+          >();
       await ios?.requestPermissions(alert: true, badge: true, sound: true);
 
       // Android 13+ (API 33+) — POST_NOTIFICATIONS 런타임 권한 필요
-      final android = _plugin.resolvePlatformSpecificImplementation<
-          AndroidFlutterLocalNotificationsPlugin>();
+      final android = _plugin
+          .resolvePlatformSpecificImplementation<
+            AndroidFlutterLocalNotificationsPlugin
+          >();
       await android?.requestNotificationsPermission();
     } catch (e) {
       debugPrint('Notification permission error: $e');
@@ -84,7 +88,10 @@ class NotificationService {
         presentBadge: true,
         presentSound: true,
       );
-      const details = NotificationDetails(android: androidDetails, iOS: iosDetails);
+      const details = NotificationDetails(
+        android: androidDetails,
+        iOS: iosDetails,
+      );
       await _plugin.show(
         1,
         '💌 새 편지가 도착했어요!',
@@ -114,7 +121,10 @@ class NotificationService {
         presentBadge: true,
         presentSound: true,
       );
-      const details = NotificationDetails(android: androidDetails, iOS: iosDetails);
+      const details = NotificationDetails(
+        android: androidDetails,
+        iOS: iosDetails,
+      );
       await _plugin.show(
         2,
         '💬 $senderName님의 메시지',

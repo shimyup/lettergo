@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import '../core/theme/app_theme.dart';
 import '../state/app_state.dart';
@@ -7,6 +8,7 @@ import '../features/compose/screens/compose_screen.dart';
 import '../features/inbox/screens/inbox_screen.dart';
 import '../features/tower/screens/tower_screen.dart';
 import '../features/profile/profile_screen.dart';
+import 'offline_banner.dart';
 
 class MainScaffold extends StatefulWidget {
   const MainScaffold({super.key});
@@ -28,6 +30,8 @@ class _MainScaffoldState extends State<MainScaffold>
 
   late AnimationController _fabPulseController;
   late Animation<double> _fabPulse;
+  late AnimationController _fabTapController;
+  late Animation<double> _fabTapScale;
 
   @override
   void initState() {
@@ -39,15 +43,27 @@ class _MainScaffoldState extends State<MainScaffold>
     _fabPulse = Tween<double>(begin: 0.0, end: 1.0).animate(
       CurvedAnimation(parent: _fabPulseController, curve: Curves.easeInOut),
     );
+    // FAB 탭 시 눌리는 효과
+    _fabTapController = AnimationController(
+      duration: const Duration(milliseconds: 100),
+      vsync: this,
+    );
+    _fabTapScale = Tween<double>(begin: 1.0, end: 0.87).animate(
+      CurvedAnimation(parent: _fabTapController, curve: Curves.easeOut),
+    );
   }
 
   @override
   void dispose() {
     _fabPulseController.dispose();
+    _fabTapController.dispose();
     super.dispose();
   }
 
   void _openCompose(BuildContext ctx) {
+    // 가벼운 햅틱 + 버튼 눌림 애니메이션
+    HapticFeedback.lightImpact();
+    _fabTapController.forward().then((_) => _fabTapController.reverse());
     Navigator.push(
       ctx,
       PageRouteBuilder(
@@ -65,47 +81,59 @@ class _MainScaffoldState extends State<MainScaffold>
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<AppState>(
-      builder: (context, state, _) {
-        return Scaffold(
-          backgroundColor: Colors.transparent,
-          body: Container(
-            decoration: BoxDecoration(
-              gradient: AppTimeColors.of(context).backgroundGradient,
+    // unreadCount + totalDMUnread만 구독 → 편지/DM 뱃지 변경 시에만 rebuild
+    final badgeCount = context.select<AppState, int>(
+      (s) => s.unreadCount + s.totalDMUnread,
+    );
+    return Scaffold(
+      backgroundColor: Colors.transparent,
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: AppTimeColors.of(context).backgroundGradient,
+        ),
+        child: Column(
+          children: [
+            const OfflineBanner(),
+            Expanded(
+              child: IndexedStack(index: _currentIndex, children: _pages),
             ),
-            child: IndexedStack(index: _currentIndex, children: _pages),
-          ),
-          bottomNavigationBar: _buildBottomNav(context, state),
+          ],
+        ),
+      ),
+      bottomNavigationBar: _buildBottomNav(context, badgeCount),
           floatingActionButton: AnimatedBuilder(
-            animation: _fabPulse,
+            animation: Listenable.merge([_fabPulse, _fabTapController]),
             builder: (_, __) => GestureDetector(
               onTap: () => _openCompose(context),
-              child: Container(
-                width: 56,
-                height: 56,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  gradient: const LinearGradient(
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                    colors: [
-                      AppColors.goldLight,
-                      AppColors.gold,
-                      AppColors.goldDark,
+              child: Transform.scale(
+                scale: _fabTapScale.value,
+                child: Container(
+                  width: 56,
+                  height: 56,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    gradient: const LinearGradient(
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                      colors: [
+                        AppColors.goldLight,
+                        AppColors.gold,
+                        AppColors.goldDark,
+                      ],
+                    ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: AppColors.gold.withValues(
+                          alpha: 0.35 + _fabPulse.value * 0.25,
+                        ),
+                        blurRadius: 16,
+                        spreadRadius: 2,
+                      ),
                     ],
                   ),
-                  boxShadow: [
-                    BoxShadow(
-                      color: AppColors.gold.withValues(
-                        alpha: 0.35 + _fabPulse.value * 0.25,
-                      ),
-                      blurRadius: 16,
-                      spreadRadius: 2,
-                    ),
-                  ],
-                ),
-                child: const Center(
-                  child: Text('✍️', style: TextStyle(fontSize: 26)),
+                  child: const Center(
+                    child: Text('✍️', style: TextStyle(fontSize: 26)),
+                  ),
                 ),
               ),
             ),
@@ -113,67 +141,87 @@ class _MainScaffoldState extends State<MainScaffold>
           floatingActionButtonLocation:
               FloatingActionButtonLocation.centerDocked,
         );
-      },
-    );
   }
 
-  Widget _buildBottomNav(BuildContext ctx, AppState state) {
+  Widget _buildBottomNav(BuildContext ctx, int badgeCount) {
     return Container(
       decoration: BoxDecoration(
         color: AppTimeColors.of(ctx).bgDeep,
-        border: Border(
-          top: BorderSide(color: AppColors.gold.withOpacity(0.1), width: 1),
-        ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.5),
+            color: Colors.black.withValues(alpha: 0.5),
             blurRadius: 20,
             offset: const Offset(0, -5),
           ),
         ],
       ),
-      child: SafeArea(
-        child: SizedBox(
-          height: 64,
-          child: Row(
-            children: [
-              Expanded(
-                child: _NavItem(
-                  icon: Icons.public_rounded,
-                  label: '지도',
-                  isSelected: _currentIndex == 0,
-                  onTap: () => setState(() => _currentIndex = 0),
-                ),
-              ),
-              Expanded(
-                child: _NavItemWithBadge(
-                  icon: Icons.mail_rounded,
-                  label: '편지함',
-                  isSelected: _currentIndex == 1,
-                  badgeCount: state.unreadCount + state.totalDMUnread,
-                  onTap: () => setState(() => _currentIndex = 1),
-                ),
-              ),
-              const SizedBox(width: 56), // center space for FAB
-              Expanded(
-                child: _NavItem(
-                  icon: Icons.apartment_rounded,
-                  label: '타워',
-                  isSelected: _currentIndex == 2,
-                  onTap: () => setState(() => _currentIndex = 2),
-                ),
-              ),
-              Expanded(
-                child: _NavItem(
-                  icon: Icons.person_rounded,
-                  label: '프로필',
-                  isSelected: _currentIndex == 3,
-                  onTap: () => setState(() => _currentIndex = 3),
-                ),
-              ),
-            ],
+      child: Stack(
+        children: [
+          Positioned(
+            top: 0,
+            left: 0,
+            right: 0,
+            child: LayoutBuilder(
+              builder: (context, constraints) {
+                return Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: List.generate((constraints.maxWidth / 8).floor(), (
+                    index,
+                  ) {
+                    return Container(
+                      width: 4,
+                      height: 1,
+                      color: AppColors.gold.withValues(alpha: 0.3),
+                    );
+                  }),
+                );
+              },
+            ),
           ),
-        ),
+          SafeArea(
+            child: SizedBox(
+              height: 64,
+              child: Row(
+                children: [
+                  Expanded(
+                    child: _NavItem(
+                      icon: Icons.public_rounded,
+                      label: '지도',
+                      isSelected: _currentIndex == 0,
+                      onTap: () => setState(() => _currentIndex = 0),
+                    ),
+                  ),
+                  Expanded(
+                    child: _NavItemWithBadge(
+                      icon: Icons.mail_rounded,
+                      label: '편지함',
+                      isSelected: _currentIndex == 1,
+                      badgeCount: badgeCount,
+                      onTap: () => setState(() => _currentIndex = 1),
+                    ),
+                  ),
+                  const SizedBox(width: 56), // center space for FAB
+                  Expanded(
+                    child: _NavItem(
+                      icon: Icons.apartment_rounded,
+                      label: '타워',
+                      isSelected: _currentIndex == 2,
+                      onTap: () => setState(() => _currentIndex = 2),
+                    ),
+                  ),
+                  Expanded(
+                    child: _NavItem(
+                      icon: Icons.person_rounded,
+                      label: '프로필',
+                      isSelected: _currentIndex == 3,
+                      onTap: () => setState(() => _currentIndex = 3),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

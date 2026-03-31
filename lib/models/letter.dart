@@ -2,7 +2,10 @@ import 'dart:math';
 import '../core/data/country_cities.dart';
 
 // ── 편지 타입 ──────────────────────────────────────────────────────────────────
-enum LetterType { normal, express }
+enum LetterType { normal, express, brandExpress }
+
+// ── 발신자 등급 (시각적 구분용) ────────────────────────────────────────────────
+enum LetterSenderTier { free, premium, brand }
 
 // ── 배송 상태 ──────────────────────────────────────────────────────────────────
 enum DeliveryStatus {
@@ -175,6 +178,7 @@ class Letter {
   final String destinationCountry;
   final String destinationCountryFlag;
   final String? destinationCity; // 구/동 단위 배송 도착지
+  String? destinationDisplayAddress; // 현지 언어 3단계 표시 주소 (화면 전용, 지연 보완 가능)
   final List<RouteSegment> segments; // 배송 구간 목록
   int currentSegmentIndex; // 현재 구간 인덱스
   DeliveryStatus status;
@@ -189,12 +193,20 @@ class Letter {
   LetterType letterType;
   int reportCount;
   Set<String> reportedBy;
+  // ── 지역 내 최대 읽기 인원 (기본 3명) ──────────────────────────────────────
+  int readCount;         // 현재까지 읽은 인원 수
+  static const int maxReadersDefault = 3;
+  int maxReaders;        // 최대 읽기 가능 인원
   int likeCount;
   int ratingTotal;
   int ratingCount;
   final int paperStyle;
   final int fontStyle;
   final String? deliveryEmoji; // 유저가 고른 배송 이모티콘 (없으면 운송수단 기본값)
+  bool hasReplied; // 수신자가 이미 답장했는지 여부 (1회 제한)
+  final String? imageUrl; // 첨부 이미지 로컬 경로 (프리미엄)
+  final bool senderIsBrand; // 발신자가 브랜드/크리에이터 계정인지
+  final LetterSenderTier senderTier; // 발신자 등급 (시각 구분)
 
   Letter({
     required this.id,
@@ -208,6 +220,7 @@ class Letter {
     required this.destinationCountry,
     required this.destinationCountryFlag,
     this.destinationCity,
+    this.destinationDisplayAddress,
     required this.segments,
     this.currentSegmentIndex = 0,
     this.status = DeliveryStatus.inTransit,
@@ -222,13 +235,61 @@ class Letter {
     this.letterType = LetterType.normal,
     this.reportCount = 0,
     Set<String>? reportedBy,
+    this.readCount = 0,
+    this.maxReaders = maxReadersDefault,
     this.likeCount = 0,
     this.ratingTotal = 0,
     this.ratingCount = 0,
     this.paperStyle = 0,
     this.fontStyle = 0,
     this.deliveryEmoji,
+    this.hasReplied = false,
+    this.imageUrl,
+    this.senderIsBrand = false,
+    this.senderTier = LetterSenderTier.free,
   }) : reportedBy = reportedBy ?? {};
+
+  /// 인박스용 독립 복사본 (worldLetters에서 제거 전 inbox에 추가할 때 사용)
+  Letter clone() => Letter(
+    id: id,
+    senderId: senderId,
+    senderName: senderName,
+    senderCountry: senderCountry,
+    senderCountryFlag: senderCountryFlag,
+    content: content,
+    originLocation: originLocation,
+    destinationLocation: destinationLocation,
+    destinationCountry: destinationCountry,
+    destinationCountryFlag: destinationCountryFlag,
+    destinationCity: destinationCity,
+    destinationDisplayAddress: destinationDisplayAddress,
+    segments: segments,
+    currentSegmentIndex: currentSegmentIndex,
+    status: status,
+    sentAt: sentAt,
+    arrivedAt: arrivedAt,
+    readAt: readAt,
+    arrivalTime: arrivalTime,
+    isAnonymous: isAnonymous,
+    socialLink: socialLink,
+    estimatedTotalMinutes: estimatedTotalMinutes,
+    isReadByRecipient: isReadByRecipient,
+    letterType: letterType,
+    reportCount: reportCount,
+    reportedBy: Set<String>.from(reportedBy),
+    likeCount: likeCount,
+    ratingTotal: ratingTotal,
+    ratingCount: ratingCount,
+    paperStyle: paperStyle,
+    fontStyle: fontStyle,
+    deliveryEmoji: deliveryEmoji,
+    hasReplied: hasReplied,
+    imageUrl: imageUrl,
+    senderIsBrand: senderIsBrand,
+    senderTier: senderTier,
+    readCount: readCount,
+    maxReaders: maxReaders,
+  );
 
   double get avgRating => ratingCount > 0 ? ratingTotal / ratingCount : 0.0;
   bool get isBlocked => reportCount >= 3;
@@ -282,13 +343,17 @@ class Letter {
   }
 
   String get currentStageLabel {
-    if (status == DeliveryStatus.nearYou) return '📍 500m 이내 도착!';
+    if (status == DeliveryStatus.nearYou) return '📍 2km 이내 도착!';
     if (status == DeliveryStatus.deliveredFar) return '📬 목적지 도착 - 현지 수령 필요';
     if (status == DeliveryStatus.delivered || status == DeliveryStatus.read) {
       return '✅ 배달 완료';
     }
     final seg = currentSegment;
-    return '${seg.mode.emoji}  ${seg.fromName} → ${seg.toName}';
+    final isLastSeg = currentSegmentIndex >= segments.length - 1;
+    final toDisplay = (isLastSeg && destinationDisplayAddress != null)
+        ? destinationDisplayAddress!
+        : seg.toName;
+    return '${seg.mode.emoji}  ${seg.fromName} → $toDisplay';
   }
 
   // ── 현실적인 배송 예상 시간 ─────────────────────────────────────────────────
@@ -384,6 +449,8 @@ class Letter {
     'destinationCountry': destinationCountry,
     'destinationCountryFlag': destinationCountryFlag,
     'destinationCity': destinationCity,
+    if (destinationDisplayAddress != null)
+      'destinationDisplayAddress': destinationDisplayAddress,
     'segments': segments.map((s) => s.toJson()).toList(),
     'currentSegmentIndex': currentSegmentIndex,
     'status': status.index,
@@ -404,24 +471,31 @@ class Letter {
     'paperStyle': paperStyle,
     'fontStyle': fontStyle,
     if (deliveryEmoji != null) 'deliveryEmoji': deliveryEmoji,
+    'hasReplied': hasReplied,
+    if (imageUrl != null) 'imageUrl': imageUrl,
+    'senderIsBrand': senderIsBrand,
+    'senderTier': senderTier.index,
+    'readCount': readCount,
+    'maxReaders': maxReaders,
   };
 
   static Letter fromJson(Map<String, dynamic> j) => Letter(
     id: j['id'] as String,
-    senderId: j['senderId'] as String,
-    senderName: j['senderName'] as String,
-    senderCountry: j['senderCountry'] as String,
-    senderCountryFlag: j['senderCountryFlag'] as String,
-    content: j['content'] as String,
+    senderId: (j['senderId'] as String?) ?? '',
+    senderName: (j['senderName'] as String?) ?? '',
+    senderCountry: (j['senderCountry'] as String?) ?? '',
+    senderCountryFlag: (j['senderCountryFlag'] as String?) ?? '🌍',
+    content: (j['content'] as String?) ?? '',
     originLocation: LatLng.fromJson(
       j['originLocation'] as Map<String, dynamic>,
     ),
     destinationLocation: LatLng.fromJson(
       j['destinationLocation'] as Map<String, dynamic>,
     ),
-    destinationCountry: j['destinationCountry'] as String,
-    destinationCountryFlag: j['destinationCountryFlag'] as String,
+    destinationCountry: (j['destinationCountry'] as String?) ?? '',
+    destinationCountryFlag: (j['destinationCountryFlag'] as String?) ?? '🌍',
     destinationCity: j['destinationCity'] as String?,
+    destinationDisplayAddress: j['destinationDisplayAddress'] as String?,
     segments: (j['segments'] as List)
         .map((s) => RouteSegment.fromJson(s as Map<String, dynamic>))
         .toList(),
@@ -450,6 +524,12 @@ class Letter {
     paperStyle: j['paperStyle'] as int? ?? 0,
     fontStyle: j['fontStyle'] as int? ?? 0,
     deliveryEmoji: j['deliveryEmoji'] as String?,
+    hasReplied: j['hasReplied'] as bool? ?? false,
+    imageUrl: j['imageUrl'] as String?,
+    senderIsBrand: j['senderIsBrand'] as bool? ?? false,
+    senderTier: LetterSenderTier.values[j['senderTier'] as int? ?? 0],
+    readCount: j['readCount'] as int? ?? 0,
+    maxReaders: j['maxReaders'] as int? ?? Letter.maxReadersDefault,
   );
 }
 
@@ -677,9 +757,366 @@ class LogisticsHubs {
       seaportLng: 100.9014,
       seaportName: '레암차방항',
     ),
+    '네덜란드': _CountryHub(
+      cityLat: 52.3676,
+      cityLng: 4.9041,
+      cityName: '암스테르담',
+      airportLat: 52.3086,
+      airportLng: 4.7639,
+      airportName: '스키폴공항',
+      seaportLat: 51.9225,
+      seaportLng: 4.4792,
+      seaportName: '로테르담항',
+    ),
+    '스웨덴': _CountryHub(
+      cityLat: 59.3293,
+      cityLng: 18.0686,
+      cityName: '스톡홀름',
+      airportLat: 59.6519,
+      airportLng: 17.9186,
+      airportName: '알란다공항',
+      seaportLat: 57.7089,
+      seaportLng: 11.9746,
+      seaportName: '예테보리항',
+    ),
+    '노르웨이': _CountryHub(
+      cityLat: 59.9139,
+      cityLng: 10.7522,
+      cityName: '오슬로',
+      airportLat: 60.1939,
+      airportLng: 11.1004,
+      airportName: '가르데르모엔공항',
+      seaportLat: 59.9050,
+      seaportLng: 10.7375,
+      seaportName: '오슬로항',
+    ),
+    '포르투갈': _CountryHub(
+      cityLat: 38.7169,
+      cityLng: -9.1399,
+      cityName: '리스본',
+      airportLat: 38.7814,
+      airportLng: -9.1359,
+      airportName: '움베르토공항',
+      seaportLat: 38.7078,
+      seaportLng: -9.1366,
+      seaportName: '리스본항',
+    ),
+    '인도네시아': _CountryHub(
+      cityLat: -6.2088,
+      cityLng: 106.8456,
+      cityName: '자카르타',
+      airportLat: -6.1256,
+      airportLng: 106.6558,
+      airportName: '수카르노하타공항',
+      seaportLat: -6.1000,
+      seaportLng: 106.8833,
+      seaportName: '탄중프리옥항',
+    ),
+    '말레이시아': _CountryHub(
+      cityLat: 3.1390,
+      cityLng: 101.6869,
+      cityName: '쿠알라룸푸르',
+      airportLat: 2.7456,
+      airportLng: 101.7099,
+      airportName: 'KLIA공항',
+      seaportLat: 3.0000,
+      seaportLng: 101.3667,
+      seaportName: '클랑항',
+    ),
+    '싱가포르': _CountryHub(
+      cityLat: 1.3521,
+      cityLng: 103.8198,
+      cityName: '싱가포르',
+      airportLat: 1.3644,
+      airportLng: 103.9915,
+      airportName: '창이공항',
+      seaportLat: 1.2600,
+      seaportLng: 103.8200,
+      seaportName: '싱가포르항',
+    ),
+    '뉴질랜드': _CountryHub(
+      cityLat: -36.8485,
+      cityLng: 174.7633,
+      cityName: '오클랜드',
+      airportLat: -37.0082,
+      airportLng: 174.7850,
+      airportName: '오클랜드공항',
+      seaportLat: -36.8410,
+      seaportLng: 174.7680,
+      seaportName: '오클랜드항',
+    ),
+    '필리핀': _CountryHub(
+      cityLat: 14.5995,
+      cityLng: 120.9842,
+      cityName: '마닐라',
+      airportLat: 14.5086,
+      airportLng: 121.0197,
+      airportName: '니노이아키노공항',
+      seaportLat: 14.5833,
+      seaportLng: 120.9667,
+      seaportName: '마닐라항',
+    ),
+    '베트남': _CountryHub(
+      cityLat: 21.0285,
+      cityLng: 105.8542,
+      cityName: '하노이',
+      airportLat: 21.2212,
+      airportLng: 105.8072,
+      airportName: '노이바이공항',
+      seaportLat: 10.7622,
+      seaportLng: 106.6820,
+      seaportName: '호찌민항',
+    ),
+    '그리스': _CountryHub(
+      cityLat: 37.9838,
+      cityLng: 23.7275,
+      cityName: '아테네',
+      airportLat: 37.9364,
+      airportLng: 23.9445,
+      airportName: '엘레프테리오스베니젤로스공항',
+      seaportLat: 37.9408,
+      seaportLng: 23.6319,
+      seaportName: '피레우스항',
+    ),
+    '이스라엘': _CountryHub(
+      cityLat: 31.7683,
+      cityLng: 35.2137,
+      cityName: '예루살렘',
+      airportLat: 31.9965,
+      airportLng: 34.8854,
+      airportName: '벤구리온공항',
+      seaportLat: 32.8231,
+      seaportLng: 34.9808,
+      seaportName: '하이파항',
+    ),
+    '사우디아라비아': _CountryHub(
+      cityLat: 24.7136,
+      cityLng: 46.6753,
+      cityName: '리야드',
+      airportLat: 24.9576,
+      airportLng: 46.6988,
+      airportName: '킹칼리드공항',
+      seaportLat: 21.5433,
+      seaportLng: 39.1728,
+      seaportName: '제다항',
+    ),
+    'UAE': _CountryHub(
+      cityLat: 25.2048,
+      cityLng: 55.2708,
+      cityName: '두바이',
+      airportLat: 25.2532,
+      airportLng: 55.3657,
+      airportName: '두바이국제공항',
+      seaportLat: 25.2697,
+      seaportLng: 55.3095,
+      seaportName: '두바이항',
+    ),
+    '파키스탄': _CountryHub(
+      cityLat: 33.6844,
+      cityLng: 73.0479,
+      cityName: '이슬라마바드',
+      airportLat: 24.9008,
+      airportLng: 67.1681,
+      airportName: '진나국제공항',
+      seaportLat: 24.8460,
+      seaportLng: 67.0104,
+      seaportName: '카라치항',
+    ),
+    '방글라데시': _CountryHub(
+      cityLat: 23.8103,
+      cityLng: 90.4125,
+      cityName: '다카',
+      airportLat: 23.8433,
+      airportLng: 90.3979,
+      airportName: '하즈라트샤잘랄공항',
+      seaportLat: 22.3419,
+      seaportLng: 91.8152,
+      seaportName: '치타공항',
+    ),
+    '나이지리아': _CountryHub(
+      cityLat: 9.0765,
+      cityLng: 7.3986,
+      cityName: '아부자',
+      airportLat: 6.5774,
+      airportLng: 3.3212,
+      airportName: '무르탈라모하메드공항',
+      seaportLat: 6.4432,
+      seaportLng: 3.3699,
+      seaportName: '라고스아파파항',
+    ),
+    '케냐': _CountryHub(
+      cityLat: -1.2921,
+      cityLng: 36.8219,
+      cityName: '나이로비',
+      airportLat: -1.3192,
+      airportLng: 36.9275,
+      airportName: '조모케냐타공항',
+      seaportLat: -4.0500,
+      seaportLng: 39.6667,
+      seaportName: '몸바사항',
+    ),
+    '에티오피아': _CountryHub(
+      cityLat: 9.0054,
+      cityLng: 38.7636,
+      cityName: '아디스아바바',
+      airportLat: 8.9779,
+      airportLng: 38.7993,
+      airportName: '볼레국제공항',
+      seaportLat: 11.5892,
+      seaportLng: 43.1450,
+      seaportName: '지부티항', // 내륙국 → 지부티 경유
+    ),
+    '모로코': _CountryHub(
+      cityLat: 33.9716,
+      cityLng: -6.8498,
+      cityName: '라바트',
+      airportLat: 33.3675,
+      airportLng: -7.5898,
+      airportName: '카사블랑카공항',
+      seaportLat: 33.5731,
+      seaportLng: -7.5898,
+      seaportName: '카사블랑카항',
+    ),
+    '콜롬비아': _CountryHub(
+      cityLat: 4.7110,
+      cityLng: -74.0721,
+      cityName: '보고타',
+      airportLat: 4.7016,
+      airportLng: -74.1469,
+      airportName: '엘도라도공항',
+      seaportLat: 10.4260,
+      seaportLng: -75.5279,
+      seaportName: '카르타헤나항',
+    ),
+    '페루': _CountryHub(
+      cityLat: -12.0464,
+      cityLng: -77.0428,
+      cityName: '리마',
+      airportLat: -12.0219,
+      airportLng: -77.1143,
+      airportName: '호르헤차베스공항',
+      seaportLat: -12.0564,
+      seaportLng: -77.1382,
+      seaportName: '카야오항',
+    ),
+    '칠레': _CountryHub(
+      cityLat: -33.4489,
+      cityLng: -70.6693,
+      cityName: '산티아고',
+      airportLat: -33.3930,
+      airportLng: -70.7858,
+      airportName: '메리노베니테스공항',
+      seaportLat: -33.0472,
+      seaportLng: -71.6127,
+      seaportName: '발파라이소항',
+    ),
+    '덴마크': _CountryHub(
+      cityLat: 55.6761,
+      cityLng: 12.5683,
+      cityName: '코펜하겐',
+      airportLat: 55.6180,
+      airportLng: 12.6508,
+      airportName: '카스트루프공항',
+      seaportLat: 55.6700,
+      seaportLng: 12.6000,
+      seaportName: '코펜하겐항',
+    ),
+    '핀란드': _CountryHub(
+      cityLat: 60.1699,
+      cityLng: 24.9384,
+      cityName: '헬싱키',
+      airportLat: 60.3172,
+      airportLng: 24.9633,
+      airportName: '헬싱키반타공항',
+      seaportLat: 60.1587,
+      seaportLng: 24.9527,
+      seaportName: '헬싱키항',
+    ),
+    '오스트리아': _CountryHub(
+      cityLat: 48.2082,
+      cityLng: 16.3738,
+      cityName: '빈',
+      airportLat: 48.1102,
+      airportLng: 16.5697,
+      airportName: '빈슈베하트공항',
+    ),
+    '폴란드': _CountryHub(
+      cityLat: 52.2297,
+      cityLng: 21.0122,
+      cityName: '바르샤바',
+      airportLat: 52.1657,
+      airportLng: 20.9671,
+      airportName: '쇼팽공항',
+      seaportLat: 54.4021,
+      seaportLng: 18.6601,
+      seaportName: '그단스크항',
+    ),
+    '체코': _CountryHub(
+      cityLat: 50.0755,
+      cityLng: 14.4378,
+      cityName: '프라하',
+      airportLat: 50.1008,
+      airportLng: 14.2600,
+      airportName: '바클라프하벨공항',
+    ),
+    '헝가리': _CountryHub(
+      cityLat: 47.4979,
+      cityLng: 19.0402,
+      cityName: '부다페스트',
+      airportLat: 47.4298,
+      airportLng: 19.2613,
+      airportName: '페렌츠리스트공항',
+    ),
+    '우크라이나': _CountryHub(
+      cityLat: 50.4501,
+      cityLng: 30.5234,
+      cityName: '키이우',
+      airportLat: 50.3450,
+      airportLng: 30.8947,
+      airportName: '보리스필공항',
+      seaportLat: 46.4775,
+      seaportLng: 30.7326,
+      seaportName: '오데사항',
+    ),
   };
 
   static _CountryHub? getHub(String country) => hubs[country];
+
+  // ── 육로 인접 국가 쌍 (국경 공유) ────────────────────────────────────────────
+  // 대한민국·일본 등 도서국가 및 북한으로 막힌 국가는 포함하지 않음
+  static const Set<String> _landBorders = {
+    // 북미
+    '미국|캐나다', '미국|멕시코',
+    // 남미
+    '브라질|아르헨티나', '브라질|콜롬비아', '브라질|페루',
+    '아르헨티나|칠레', '아르헨티나|페루',
+    '칠레|페루', '콜롬비아|페루',
+    // 유럽 서부
+    '프랑스|스페인', '프랑스|이탈리아', '프랑스|독일',
+    '스페인|포르투갈',
+    '독일|네덜란드', '독일|덴마크',
+    '독일|오스트리아', '독일|체코', '독일|폴란드',
+    '이탈리아|오스트리아',
+    '오스트리아|체코', '오스트리아|헝가리',
+    '체코|폴란드',
+    // 유럽 북부
+    '노르웨이|스웨덴', '노르웨이|핀란드', '스웨덴|핀란드',
+    // 유럽 동부
+    '러시아|핀란드', '러시아|폴란드', '러시아|우크라이나',
+    '우크라이나|폴란드', '우크라이나|헝가리',
+    // 중동
+    '그리스|터키', '사우디아라비아|UAE', '이스라엘|이집트',
+    // 아프리카
+    '케냐|에티오피아',
+    // 아시아
+    '인도|파키스탄', '인도|방글라데시', '인도|중국',
+    '중국|러시아', '중국|베트남',
+    '말레이시아|태국',
+  };
+
+  /// 두 나라 사이에 육로 국경이 있는지 확인 (순서 무관)
+  static bool _isLandAdjacent(String a, String b) =>
+      _landBorders.contains('$a|$b') || _landBorders.contains('$b|$a');
 
   /// Node.js의 findNearestHub() 포트 — 임의 좌표에서 가장 가까운 공항 허브 탐색
   static ({String country, LatLng coords, String name}) findNearestHub(
@@ -746,28 +1183,30 @@ class LogisticsHubs {
     final fromHub = getHub(fromCountry);
     final toHub = getHub(toCountry);
 
-    // 허브 정보가 없으면 직선 루트
+    // 허브 정보가 없으면 가장 가까운 공항을 경유하는 임시 루트
     if (fromHub == null || toHub == null) {
-      return [
-        RouteSegment(
-          from: fromCity,
-          to: toCity,
-          mode: TransportMode.airplane,
-          fromName: fromCountry,
-          toName: toCountry,
-          fromType: HubType.city,
-          toType: HubType.destination,
-          estimatedMinutes: 480,
-        ),
-      ];
+      final nearFrom = findNearestHub(fromCity);
+      final nearTo = findNearestHub(toCity);
+      final fakeFromHub = hubs[nearFrom.country]!;
+      final fakeToHub = hubs[nearTo.country]!;
+      return _buildAirRoute(
+        fromCity,
+        fakeFromHub,
+        toCity,
+        fakeToHub,
+        fromCityLabel: fromCityName ?? fromCountry,
+        toCityLabel:
+            toCityName != null ? '$toCountry $toCityName' : toCountry,
+      );
     }
 
     final resolvedFromCityName =
         fromCityName ??
         _nearestCityName(fromCountry, fromCity, fallback: fromHub.cityName);
-    final resolvedToCityName =
+    final rawToCityName =
         toCityName ??
         _nearestCityName(toCountry, toCity, fallback: toHub.cityName);
+    final resolvedToCityName = '$toCountry $rawToCityName';
 
     // 같은 나라 국내 배송
     if (fromCountry == toCountry) {
@@ -828,8 +1267,20 @@ class LogisticsHubs {
       ];
     }
 
+    // ── 인접국 육로 우선 ───────────────────────────────────────────────────────
+    // 육로 국경이 있는 나라끼리는 공항을 거치지 않고 트럭으로 직접 이동
+    if (_isLandAdjacent(fromCountry, toCountry)) {
+      return _buildLandRoute(
+        fromCity,
+        toCity,
+        fromCityLabel: resolvedFromCityName,
+        toCityLabel: resolvedToCityName,
+      );
+    }
+
+    // ── 해외 → 국제공항 경유 필수 ─────────────────────────────────────────────
     final distance = fromCity.distanceTo(toCity);
-    // 5000km 이상 = 항공 또는 선박, 그 이하 = 항공 우선
+    // 5000km 이상 + 해상 허브 있으면 선박, 나머지는 항공
     final useShip = !preferAir && distance > 5000000;
 
     if (useShip && fromHub.seaportLat != null && toHub.seaportLat != null) {
@@ -858,8 +1309,9 @@ class LogisticsHubs {
     LatLng target, {
     required String fallback,
   }) {
-    final list = CountryCities.cities[country];
-    if (list == null || list.isEmpty) return fallback;
+    // 주요 도시 화이트리스트 사용 (경로 표시용 — 인식 가능한 도시명만)
+    final list = CountryCities.majorCitiesOf(country);
+    if (list.isEmpty) return fallback;
     Map<String, dynamic>? best;
     var bestDist = double.infinity;
     for (final city in list) {
@@ -972,6 +1424,48 @@ class LogisticsHubs {
         fromType: HubType.seaport,
         toType: HubType.destination,
         estimatedMinutes: 90,
+      ),
+    ];
+  }
+
+  /// 인접 국가 직접 육로 배송 (국경 검문소 경유 트럭)
+  static List<RouteSegment> _buildLandRoute(
+    LatLng fromCity,
+    LatLng toCity, {
+    required String fromCityLabel,
+    required String toCityLabel,
+  }) {
+    final distance = fromCity.distanceTo(toCity);
+    // 국경 검문소: 두 도시의 중간 지점
+    final borderLat = (fromCity.latitude + toCity.latitude) / 2;
+    final borderLng = (fromCity.longitude + toCity.longitude) / 2;
+    final borderPoint = LatLng(borderLat, borderLng);
+
+    // 트럭 평균 80 km/h, 각 구간 배분
+    final halfMin = (distance / 1000 / 80 * 60 / 2).round().clamp(30, 2160);
+    // 국경 통관 대기 시간: 60~180분
+    const borderWait = 120;
+
+    return [
+      RouteSegment(
+        from: fromCity,
+        to: borderPoint,
+        mode: TransportMode.truck,
+        fromName: fromCityLabel,
+        toName: '국경 검문소',
+        fromType: HubType.city,
+        toType: HubType.localHub,
+        estimatedMinutes: halfMin,
+      ),
+      RouteSegment(
+        from: borderPoint,
+        to: toCity,
+        mode: TransportMode.truck,
+        fromName: '국경 검문소',
+        toName: toCityLabel,
+        fromType: HubType.localHub,
+        toType: HubType.destination,
+        estimatedMinutes: halfMin + borderWait,
       ),
     ];
   }

@@ -30,7 +30,9 @@ class DatabaseService {
   }
 
   // ── 특정 유저의 받은 편지함 조회 ─────────────────────────────────────────────
-  static Future<List<Map<String, dynamic>>> getInboxLetters(String userId) async {
+  static Future<List<Map<String, dynamic>>> getInboxLetters(
+    String userId,
+  ) async {
     if (!isEnabled) return [];
     // Firestore 쿼리: destinationUserId == userId
     return FirestoreService.queryCollection(
@@ -51,7 +53,9 @@ class DatabaseService {
   }
 
   // ── 랭킹 리더보드 조회 ──────────────────────────────────────────────────────
-  static Future<List<Map<String, dynamic>>> getLeaderboard({int limit = 10}) async {
+  static Future<List<Map<String, dynamic>>> getLeaderboard({
+    int limit = 10,
+  }) async {
     if (!isEnabled) return [];
     return FirestoreService.queryCollection(
       'users',

@@ -1,12 +1,17 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/services/auth_service.dart';
+import '../../../core/services/purchase_service.dart';
 import '../../../models/letter.dart';
 import '../../../models/user_profile.dart';
 import '../../../state/app_state.dart';
 import '../../settings/settings_screen.dart';
+import '../../premium/premium_screen.dart';
+import 'package:dotted_border/dotted_border.dart';
+import '../../../widgets/shared_profile_dialogs.dart';
 
 class TowerScreen extends StatefulWidget {
   const TowerScreen({super.key});
@@ -23,6 +28,9 @@ class _TowerScreenState extends State<TowerScreen>
   late Animation<double> _towerRise;
   late Animation<double> _glow;
   late Animation<double> _float;
+
+  // 레벨업 감지용 이전 단계 추적
+  TowerTier? _prevTier;
 
   @override
   void initState() {
@@ -65,10 +73,30 @@ class _TowerScreenState extends State<TowerScreen>
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<AppState>(
-      builder: (context, state, _) {
+    return Consumer2<AppState, PurchaseService>(
+      builder: (context, state, purchase, _) {
         final user = state.currentUser;
         final score = user.activityScore;
+        final hasPremium =
+            purchase.isPremium ||
+            purchase.isBrand ||
+            user.isPremium ||
+            user.isBrand;
+
+        // 타워 단계 상승 감지 → 강렬한 햅틱 피드백
+        final currentTier = score.tier;
+        if (_prevTier != null &&
+            currentTier.tierNumber > _prevTier!.tierNumber) {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (mounted) {
+              HapticFeedback.heavyImpact();
+              Future.delayed(const Duration(milliseconds: 250), () {
+                if (mounted) HapticFeedback.heavyImpact();
+              });
+            }
+          });
+        }
+        _prevTier = currentTier;
 
         return Scaffold(
           backgroundColor: AppTimeColors.of(context).bgDeep,
@@ -77,7 +105,9 @@ class _TowerScreenState extends State<TowerScreen>
               // 앱바
               SliverAppBar(
                 expandedHeight: 0,
-                floating: true,
+                floating: false,
+                pinned: true,
+                toolbarHeight: kToolbarHeight,
                 backgroundColor: AppTimeColors.of(context).bgDeep,
                 title: ShaderMask(
                   shaderCallback: (b) => const LinearGradient(
@@ -93,6 +123,62 @@ class _TowerScreenState extends State<TowerScreen>
                   ),
                 ),
                 actions: [
+                  // 레벨 뱃지 (앱바 오른쪽 — 타워 카드와 완전 분리)
+                  AnimatedBuilder(
+                    animation: _glowController,
+                    builder: (_, __) {
+                      final tierColor = _communityTierColor(score.tier);
+                      return Container(
+                        margin: const EdgeInsets.symmetric(
+                          vertical: 10,
+                          horizontal: 4,
+                        ),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 10,
+                          vertical: 4,
+                        ),
+                        decoration: BoxDecoration(
+                          color: AppColors.bgCard.withValues(alpha: 0.95),
+                          borderRadius: BorderRadius.circular(20),
+                          border: Border.all(
+                            color: tierColor.withValues(
+                              alpha: 0.5 + _glow.value * 0.3,
+                            ),
+                            width: 1.2,
+                          ),
+                          boxShadow: [
+                            BoxShadow(
+                              color: tierColor.withValues(
+                                alpha: _glow.value * 0.25,
+                              ),
+                              blurRadius: 8,
+                            ),
+                          ],
+                        ),
+                        child: Text(
+                          'Lv.${score.tier.tierNumber}  ${score.tier.label}',
+                          style: TextStyle(
+                            color: tierColor,
+                            fontSize: 11,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                  // 타워 꾸미기 버튼 (프리미엄)
+                  TextButton.icon(
+                    onPressed: () => _showTowerCustomizer(context, state),
+                    icon: const Text('🎨', style: TextStyle(fontSize: 14)),
+                    label: const Text(
+                      '꾸미기',
+                      style: TextStyle(
+                        color: AppColors.gold,
+                        fontSize: 13,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ),
                   IconButton(
                     onPressed: () => _showMoreMenu(context, state),
                     icon: const Icon(
@@ -107,7 +193,7 @@ class _TowerScreenState extends State<TowerScreen>
                 child: Column(
                   children: [
                     // ── 타워 시각화 ─────────────────────────────────────────
-                    _buildTowerVisualization(score),
+                    _buildTowerVisualization(score, user, hasPremium),
                     // ── 유저 정보 카드 ────────────────────────────────────────
                     _buildUserCard(context, user, score),
                     const SizedBox(height: 16),
@@ -133,130 +219,273 @@ class _TowerScreenState extends State<TowerScreen>
   }
 
   // ── 타워 시각화 섹션 ─────────────────────────────────────────────────────────
-  Widget _buildTowerVisualization(ActivityScore score) {
-    return Container(
-      height: 320,
-      margin: const EdgeInsets.fromLTRB(20, 0, 20, 0),
-      child: Stack(
-        alignment: Alignment.center,
-        children: [
-          // 도시 배경 스카이라인
-          Positioned(
-            bottom: 0,
-            left: 0,
-            right: 0,
-            child: CustomPaint(
-              size: const Size(double.infinity, 140),
-              painter: _SkylinePainter(),
+  Widget _buildTowerVisualization(
+    ActivityScore score,
+    UserProfile user,
+    bool hasPremium,
+  ) {
+    // 커스텀 색상 적용 (프리미엄 유저)
+    Color tierColor = _communityTierColor(score.tier);
+    if (hasPremium && user.towerColor.isNotEmpty) {
+      try {
+        final hex = user.towerColor.replaceFirst('#', '');
+        tierColor = Color(int.parse('0xFF$hex'));
+      } catch (_) {}
+    }
+    return Column(
+      children: [
+        const SizedBox(height: 8),
+        Container(
+          height: 310,
+          margin: const EdgeInsets.fromLTRB(20, 0, 20, 0),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(20),
+            gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [
+                const Color(0xFF060D1A),
+                tierColor.withValues(alpha: 0.06),
+                const Color(0xFF0D1F3C),
+              ],
+            ),
+            border: Border.all(
+              color: tierColor.withValues(alpha: 0.18),
+              width: 1,
             ),
           ),
-          // 지면
-          Positioned(
-            bottom: 0,
-            left: 0,
-            right: 0,
-            child: Container(
-              height: 32,
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  colors: [
-                    const Color(0xFF0D1F3C).withOpacity(0.0),
-                    const Color(0xFF0D1F3C),
-                  ],
-                ),
-              ),
-            ),
-          ),
-          // 글로우 효과
-          AnimatedBuilder(
-            animation: _glowController,
-            builder: (_, __) => Container(
-              width: 80,
-              height: 80,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                boxShadow: [
-                  BoxShadow(
-                    color: AppColors.gold.withOpacity(_glow.value * 0.3),
-                    blurRadius: 60,
-                    spreadRadius: 20,
-                  ),
-                ],
-              ),
-            ),
-          ),
-          // 타워 본체
-          AnimatedBuilder(
-            animation: Listenable.merge([_towerRise, _floatController]),
-            builder: (_, __) {
-              return Transform.translate(
-                offset: Offset(0, _float.value),
-                child: Transform.scale(
-                  scale: _towerRise.value,
-                  alignment: Alignment.bottomCenter,
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(20),
+            child: Stack(
+              alignment: Alignment.center,
+              children: [
+                // 도시 배경 스카이라인
+                Positioned(
+                  bottom: 0,
+                  left: 0,
+                  right: 0,
                   child: CustomPaint(
-                    size: Size(120, _calcTowerHeight(score)),
-                    painter: _TowerPainter(
-                      floors: score.towerFloors,
-                      tier: score.tier,
-                      glowIntensity: _glow.value,
-                    ),
+                    size: const Size(double.infinity, 140),
+                    painter: _SkylinePainter(),
                   ),
                 ),
-              );
-            },
-          ),
-          // 층수 뱃지
-          Positioned(
-            top: 20,
-            right: 20,
-            child: AnimatedBuilder(
-              animation: _glowController,
-              builder: (_, __) => Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 14,
-                  vertical: 8,
-                ),
-                decoration: BoxDecoration(
-                  color: AppColors.bgCard,
-                  borderRadius: BorderRadius.circular(20),
-                  border: Border.all(
-                    color: AppColors.gold.withOpacity(0.4 + _glow.value * 0.3),
-                    width: 1.5,
-                  ),
-                  boxShadow: [
-                    BoxShadow(
-                      color: AppColors.gold.withOpacity(_glow.value * 0.2),
-                      blurRadius: 12,
-                    ),
-                  ],
-                ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(
-                      score.tier.emoji,
-                      style: const TextStyle(fontSize: 16),
-                    ),
-                    const SizedBox(width: 6),
-                    Text(
-                      '${score.towerFloors}F',
-                      style: const TextStyle(
-                        color: AppColors.gold,
-                        fontSize: 16,
-                        fontWeight: FontWeight.w800,
+                // 지면
+                Positioned(
+                  bottom: 0,
+                  left: 0,
+                  right: 0,
+                  child: Container(
+                    height: 32,
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                        colors: [
+                          const Color(0xFF0D1F3C).withValues(alpha: 0.0),
+                          const Color(0xFF0D1F3C),
+                        ],
                       ),
                     ),
-                  ],
+                  ),
                 ),
-              ),
+                // 별 파티클 (높은 단계일수록 더 많이)
+                ...List.generate((score.tier.tierNumber * 2).clamp(0, 16), (i) {
+                  final rng = Random(i * 31 + score.tier.tierNumber);
+                  final x = rng.nextDouble();
+                  final y = rng.nextDouble() * 0.6;
+                  final size = 1.5 + rng.nextDouble() * 2.5;
+                  return Positioned(
+                    left: x * 320,
+                    top: y * 200,
+                    child: AnimatedBuilder(
+                      animation: _glowController,
+                      builder: (_, __) => Opacity(
+                        opacity:
+                            (0.3 + rng.nextDouble() * 0.5) *
+                            (0.6 + _glow.value * 0.4),
+                        child: Container(
+                          width: size,
+                          height: size,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: i % 3 == 0
+                                ? tierColor
+                                : i % 3 == 1
+                                ? AppColors.gold
+                                : Colors.white,
+                          ),
+                        ),
+                      ),
+                    ),
+                  );
+                }),
+                // 스포트라이트 (landmark 단계)
+                if (score.tier == TowerTier.landmark)
+                  AnimatedBuilder(
+                    animation: _glowController,
+                    builder: (_, __) => Positioned(
+                      bottom: 32,
+                      child: Container(
+                        width: 120,
+                        height: 220,
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            begin: Alignment.topCenter,
+                            end: Alignment.bottomCenter,
+                            colors: [
+                              tierColor.withValues(alpha: _glow.value * 0.18),
+                              Colors.transparent,
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                // 글로우 효과
+                AnimatedBuilder(
+                  animation: _glowController,
+                  builder: (_, __) => Container(
+                    width: 100,
+                    height: 100,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      boxShadow: [
+                        BoxShadow(
+                          color: tierColor.withValues(
+                            alpha: _glow.value * 0.25,
+                          ),
+                          blurRadius: 70,
+                          spreadRadius: 25,
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                // 타워 본체
+                AnimatedBuilder(
+                  animation: Listenable.merge([_towerRise, _floatController]),
+                  builder: (_, __) {
+                    return Transform.translate(
+                      offset: Offset(0, _float.value),
+                      child: Transform.scale(
+                        scale: _towerRise.value,
+                        alignment: Alignment.bottomCenter,
+                        child: CustomPaint(
+                          size: Size(120, _calcTowerHeight(score)),
+                          painter: _TowerPainter(
+                            floors: score.towerFloors,
+                            tier: score.tier,
+                            glowIntensity: _glow.value,
+                            tierColor: tierColor,
+                          ),
+                        ),
+                      ),
+                    );
+                  },
+                ),
+                // 층수 뱃지 (우상단)
+                Positioned(
+                  top: 14,
+                  right: 14,
+                  child: AnimatedBuilder(
+                    animation: _glowController,
+                    builder: (_, __) => Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 7,
+                      ),
+                      decoration: BoxDecoration(
+                        color: AppColors.bgCard.withValues(alpha: 0.9),
+                        borderRadius: BorderRadius.circular(20),
+                        border: Border.all(
+                          color: tierColor.withValues(
+                            alpha: 0.45 + _glow.value * 0.3,
+                          ),
+                          width: 1.5,
+                        ),
+                        boxShadow: [
+                          BoxShadow(
+                            color: tierColor.withValues(
+                              alpha: _glow.value * 0.25,
+                            ),
+                            blurRadius: 12,
+                          ),
+                        ],
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            score.tier.emoji,
+                            style: const TextStyle(fontSize: 15),
+                          ),
+                          if (user.towerAccentEmoji != null) ...[
+                            const SizedBox(width: 3),
+                            Text(
+                              user.towerAccentEmoji!,
+                              style: const TextStyle(fontSize: 14),
+                            ),
+                          ],
+                          const SizedBox(width: 5),
+                          Text(
+                            '${score.towerFloors}F',
+                            style: TextStyle(
+                              color: tierColor,
+                              fontSize: 15,
+                              fontWeight: FontWeight.w800,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+                // 단계 뱃지는 타워 카드 위 별도 행으로 이동됨 (겹침 방지)
+                // 타워 이름 오버레이 (하단 중앙) — Stitch AI 추천
+                Positioned(
+                  bottom: 12,
+                  left: 0,
+                  right: 0,
+                  child: AnimatedBuilder(
+                    animation: _glowController,
+                    builder: (_, __) => Column(
+                      children: [
+                        Text(
+                          'ARCHITECT OF WORDS',
+                          style: TextStyle(
+                            color: tierColor.withValues(
+                              alpha: 0.5 + _glow.value * 0.3,
+                            ),
+                            fontSize: 8,
+                            fontWeight: FontWeight.w700,
+                            letterSpacing: 2.0,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                        const SizedBox(height: 3),
+                        Text(
+                          score.tier.towerName,
+                          style: TextStyle(
+                            color: Colors.white.withValues(
+                              alpha: 0.7 + _glow.value * 0.2,
+                            ),
+                            fontSize: 13,
+                            fontWeight: FontWeight.w600,
+                            fontStyle: FontStyle.italic,
+                            letterSpacing: 0.3,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
-        ],
-      ),
-    );
+        ),
+      ], // Column children
+    ); // Column
   }
 
   double _calcTowerHeight(ActivityScore score) {
@@ -270,120 +499,224 @@ class _TowerScreenState extends State<TowerScreen>
     UserProfile user,
     ActivityScore score,
   ) {
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 20),
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: AppColors.bgCard,
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: AppColors.gold.withOpacity(0.25), width: 1),
-      ),
-      child: Column(
-        children: [
-          Row(
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      child: DottedBorder(
+        borderType: BorderType.RRect,
+        radius: const Radius.circular(20),
+        color: AppColors.gold.withValues(alpha: 0.4),
+        strokeWidth: 2,
+        dashPattern: const [6, 4],
+        child: Container(
+          padding: const EdgeInsets.all(20),
+          decoration: BoxDecoration(
+            color: AppColors.bgCard,
+            borderRadius: BorderRadius.circular(20),
+          ),
+          child: Column(
             children: [
-              // 아바타
-              Container(
-                width: 60,
-                height: 60,
-                decoration: BoxDecoration(
-                  color: AppColors.bgSurface,
-                  borderRadius: BorderRadius.circular(16),
-                  border: Border.all(color: AppColors.gold.withOpacity(0.3)),
-                ),
-                child: Center(
-                  child: Text(
-                    user.countryFlag,
-                    style: const TextStyle(fontSize: 30),
-                  ),
-                ),
-              ),
-              const SizedBox(width: 14),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      user.username,
-                      style: Theme.of(ctx).textTheme.titleLarge?.copyWith(
-                        fontWeight: FontWeight.w800,
+              Row(
+                children: [
+                  // 아바타
+                  Container(
+                    width: 60,
+                    height: 60,
+                    decoration: BoxDecoration(
+                      color: AppColors.bgSurface,
+                      borderRadius: BorderRadius.circular(16),
+                      border: Border.all(
+                        color: AppColors.gold.withValues(alpha: 0.3),
                       ),
                     ),
-                    const SizedBox(height: 3),
-                    Row(
+                    child: Center(
+                      child: Text(
+                        user.countryFlag,
+                        style: const TextStyle(fontSize: 30),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 14),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          user.countryFlag,
-                          style: const TextStyle(fontSize: 14),
+                          user.username,
+                          style: Theme.of(ctx).textTheme.titleLarge?.copyWith(
+                            fontWeight: FontWeight.w800,
+                          ),
                         ),
-                        const SizedBox(width: 4),
-                        Text(
-                          user.country,
-                          style: const TextStyle(
-                            color: AppColors.textSecondary,
-                            fontSize: 13,
+                        const SizedBox(height: 8),
+                        // ── 타워 이름 편집 버튼 ──────────────────────────────
+                        GestureDetector(
+                          onTap: () => showEditTowerNameDialog(
+                            ctx,
+                            ctx.read<AppState>(),
+                          ),
+                          child: AnimatedContainer(
+                            duration: const Duration(milliseconds: 200),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 12,
+                              vertical: 7,
+                            ),
+                            decoration: BoxDecoration(
+                              color: user.customTowerName?.isNotEmpty == true
+                                  ? AppColors.gold.withValues(alpha: 0.12)
+                                  : AppColors.bgSurface,
+                              borderRadius: BorderRadius.circular(10),
+                              border: Border.all(
+                                color: user.customTowerName?.isNotEmpty == true
+                                    ? AppColors.gold.withValues(alpha: 0.55)
+                                    : AppColors.gold.withValues(alpha: 0.35),
+                                width: 1.3,
+                              ),
+                              boxShadow:
+                                  user.customTowerName?.isNotEmpty == true
+                                  ? [
+                                      BoxShadow(
+                                        color: AppColors.gold.withValues(
+                                          alpha: 0.18,
+                                        ),
+                                        blurRadius: 8,
+                                        offset: const Offset(0, 2),
+                                      ),
+                                    ]
+                                  : null,
+                            ),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(
+                                  Icons.apartment_rounded,
+                                  size: 15,
+                                  color:
+                                      user.customTowerName?.isNotEmpty == true
+                                      ? AppColors.gold
+                                      : AppColors.gold.withValues(alpha: 0.55),
+                                ),
+                                const SizedBox(width: 6),
+                                Flexible(
+                                  child: Text(
+                                    user.customTowerName?.isNotEmpty == true
+                                        ? user.customTowerName!
+                                        : '타워 이름을 설정해보세요',
+                                    style: TextStyle(
+                                      color:
+                                          user.customTowerName?.isNotEmpty ==
+                                              true
+                                          ? AppColors.gold
+                                          : AppColors.textMuted,
+                                      fontSize: 13,
+                                      fontWeight:
+                                          user.customTowerName?.isNotEmpty ==
+                                              true
+                                          ? FontWeight.w700
+                                          : FontWeight.w400,
+                                    ),
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ),
+                                const SizedBox(width: 5),
+                                Container(
+                                  padding: const EdgeInsets.all(3),
+                                  decoration: BoxDecoration(
+                                    color: AppColors.gold.withValues(
+                                      alpha: 0.15,
+                                    ),
+                                    borderRadius: BorderRadius.circular(5),
+                                  ),
+                                  child: const Icon(
+                                    Icons.edit_rounded,
+                                    size: 11,
+                                    color: AppColors.gold,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 3),
+                        Row(
+                          children: [
+                            Text(
+                              user.countryFlag,
+                              style: const TextStyle(fontSize: 14),
+                            ),
+                            const SizedBox(width: 4),
+                            Text(
+                              user.country,
+                              style: const TextStyle(
+                                color: AppColors.textSecondary,
+                                fontSize: 13,
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 4),
+                        // 티어 배지
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 10,
+                            vertical: 4,
+                          ),
+                          decoration: BoxDecoration(
+                            color: AppColors.gold.withValues(alpha: 0.1),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: Text(
+                            '${score.tier.emoji}  ${score.tier.label}',
+                            style: const TextStyle(
+                              color: AppColors.gold,
+                              fontSize: 12,
+                              fontWeight: FontWeight.w700,
+                            ),
                           ),
                         ),
                       ],
                     ),
-                    const SizedBox(height: 4),
-                    // 티어 배지
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 10,
-                        vertical: 4,
-                      ),
-                      decoration: BoxDecoration(
-                        color: AppColors.gold.withOpacity(0.1),
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: Text(
-                        '${score.tier.emoji}  ${score.tier.label}',
-                        style: const TextStyle(
-                          color: AppColors.gold,
-                          fontSize: 12,
-                          fontWeight: FontWeight.w700,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-          if (user.socialLink != null) ...[
-            const SizedBox(height: 14),
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-              decoration: BoxDecoration(
-                color: AppColors.teal.withOpacity(0.08),
-                borderRadius: BorderRadius.circular(10),
-                border: Border.all(color: AppColors.teal.withOpacity(0.25)),
-              ),
-              child: Row(
-                children: [
-                  const Icon(
-                    Icons.link_rounded,
-                    size: 14,
-                    color: AppColors.teal,
-                  ),
-                  const SizedBox(width: 6),
-                  Expanded(
-                    child: Text(
-                      user.socialLink!,
-                      style: const TextStyle(
-                        color: AppColors.teal,
-                        fontSize: 12,
-                      ),
-                      overflow: TextOverflow.ellipsis,
-                    ),
                   ),
                 ],
               ),
-            ),
-          ],
-        ],
+              if (user.socialLink != null) ...[
+                const SizedBox(height: 14),
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 14,
+                    vertical: 10,
+                  ),
+                  decoration: BoxDecoration(
+                    color: AppColors.teal.withValues(alpha: 0.08),
+                    borderRadius: BorderRadius.circular(10),
+                    border: Border.all(
+                      color: AppColors.teal.withValues(alpha: 0.25),
+                    ),
+                  ),
+                  child: Row(
+                    children: [
+                      const Icon(
+                        Icons.link_rounded,
+                        size: 14,
+                        color: AppColors.teal,
+                      ),
+                      const SizedBox(width: 6),
+                      Expanded(
+                        child: Text(
+                          user.socialLink!,
+                          style: const TextStyle(
+                            color: AppColors.teal,
+                            fontSize: 12,
+                          ),
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ],
+          ),
+        ),
       ),
     );
   }
@@ -438,59 +771,180 @@ class _TowerScreenState extends State<TowerScreen>
             ],
           ),
           const SizedBox(height: 12),
-          // 총 점수 바
-          Container(
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: AppColors.bgCard,
-              borderRadius: BorderRadius.circular(14),
-              border: Border.all(color: const Color(0xFF1F2D44)),
-            ),
-            child: Column(
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    const Text(
-                      '총 타워 점수',
-                      style: TextStyle(
-                        color: AppColors.textSecondary,
-                        fontSize: 13,
-                        fontWeight: FontWeight.w600,
+          // 10단계 타워 게이지 바
+          _buildTierGauge(ctx, score),
+        ],
+      ),
+    );
+  }
+
+  // ── 10단계 타워 게이지 ────────────────────────────────────────────────────────
+  Widget _buildTierGauge(BuildContext ctx, ActivityScore score) {
+    final tier = score.tier;
+    final tierColor = _communityTierColor(tier);
+    final progress = score.tierProgress;
+    final isMax = tier == TowerTier.landmark;
+
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: AppColors.bgCard,
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: tierColor.withValues(alpha: 0.3)),
+        boxShadow: [
+          BoxShadow(color: tierColor.withValues(alpha: 0.08), blurRadius: 12),
+        ],
+      ),
+      child: Column(
+        children: [
+          // 상단: 현재 단계 + 점수
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Row(
+                children: [
+                  Text(tier.emoji, style: const TextStyle(fontSize: 20)),
+                  const SizedBox(width: 8),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        tier.label,
+                        style: TextStyle(
+                          color: tierColor,
+                          fontSize: 14,
+                          fontWeight: FontWeight.w800,
+                        ),
                       ),
-                    ),
-                    Text(
-                      score.towerHeight.toStringAsFixed(1),
-                      style: const TextStyle(
-                        color: AppColors.gold,
-                        fontSize: 18,
-                        fontWeight: FontWeight.w800,
+                      Text(
+                        '${tier.tierNumber}단계 / 10단계',
+                        style: const TextStyle(
+                          color: AppColors.textMuted,
+                          fontSize: 10,
+                        ),
                       ),
+                    ],
+                  ),
+                ],
+              ),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  Text(
+                    score.towerHeight.toStringAsFixed(1),
+                    style: const TextStyle(
+                      color: AppColors.gold,
+                      fontSize: 18,
+                      fontWeight: FontWeight.w800,
                     ),
-                  ],
-                ),
-                const SizedBox(height: 8),
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(4),
-                  child: LinearProgressIndicator(
-                    value: (score.towerHeight / 120).clamp(0.0, 1.0),
-                    backgroundColor: AppColors.bgSurface,
-                    valueColor: const AlwaysStoppedAnimation<Color>(
-                      AppColors.gold,
+                  ),
+                  const Text(
+                    '활동 점수',
+                    style: TextStyle(color: AppColors.textMuted, fontSize: 10),
+                  ),
+                ],
+              ),
+            ],
+          ),
+          const SizedBox(height: 14),
+          // 10단계 도트 진행 표시
+          Row(
+            children: List.generate(TowerTier.values.length, (i) {
+              final dotTier = TowerTier.values[i];
+              final dotColor = _communityTierColor(dotTier);
+              final isActive = i < tier.tierNumber;
+              final isCurrent = i == tier.tierNumber - 1;
+              return Expanded(
+                child: AnimatedBuilder(
+                  animation: _glowController,
+                  builder: (_, __) => Container(
+                    height: isCurrent ? 10 : 6,
+                    margin: const EdgeInsets.symmetric(horizontal: 1.5),
+                    decoration: BoxDecoration(
+                      color: isActive
+                          ? dotColor.withValues(alpha: isCurrent ? 1.0 : 0.6)
+                          : AppColors.bgSurface,
+                      borderRadius: BorderRadius.circular(3),
+                      boxShadow: isCurrent
+                          ? [
+                              BoxShadow(
+                                color: dotColor.withValues(
+                                  alpha: 0.4 + _glow.value * 0.3,
+                                ),
+                                blurRadius: 6,
+                              ),
+                            ]
+                          : null,
                     ),
-                    minHeight: 8,
                   ),
                 ),
-                const SizedBox(height: 6),
+              );
+            }),
+          ),
+          const SizedBox(height: 10),
+          // 현재 단계 내 진행 바
+          if (!isMax) ...[
+            ClipRRect(
+              borderRadius: BorderRadius.circular(6),
+              child: AnimatedBuilder(
+                animation: _glowController,
+                builder: (_, __) => LinearProgressIndicator(
+                  value: progress,
+                  backgroundColor: AppColors.bgSurface,
+                  valueColor: AlwaysStoppedAnimation<Color>(
+                    tierColor.withValues(alpha: 0.8 + _glow.value * 0.2),
+                  ),
+                  minHeight: 8,
+                ),
+              ),
+            ),
+            const SizedBox(height: 6),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
                 Text(
-                  '공식: (받은 편지 × 1.2) + (답장 × 2.0) + (보낸 편지 × 0.8)',
+                  '${score.tierMin.toInt()}점',
                   style: const TextStyle(
                     color: AppColors.textMuted,
                     fontSize: 10,
-                    fontStyle: FontStyle.italic,
+                  ),
+                ),
+                Text(
+                  '다음 단계: ${score.tierMax.toInt()}점 (${((1 - progress) * (score.tierMax - score.tierMin)).toStringAsFixed(1)}점 필요)',
+                  style: TextStyle(
+                    color: tierColor.withValues(alpha: 0.8),
+                    fontSize: 10,
+                    fontWeight: FontWeight.w600,
                   ),
                 ),
               ],
+            ),
+          ] else ...[
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.symmetric(vertical: 6),
+              decoration: BoxDecoration(
+                color: tierColor.withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(6),
+              ),
+              child: Text(
+                '✨ 최고 등급 달성!',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: tierColor,
+                  fontSize: 12,
+                  fontWeight: FontWeight.w800,
+                ),
+              ),
+            ),
+          ],
+          const SizedBox(height: 6),
+          Text(
+            '공식: (받은 편지 × 1.2) + (답장 × 2.0) + (보낸 편지 × 0.8)',
+            style: const TextStyle(
+              color: AppColors.textMuted,
+              fontSize: 10,
+              fontStyle: FontStyle.italic,
             ),
           ),
         ],
@@ -507,12 +961,12 @@ class _TowerScreenState extends State<TowerScreen>
         decoration: BoxDecoration(
           gradient: LinearGradient(
             colors: [
-              AppColors.gold.withOpacity(0.08),
-              AppColors.teal.withOpacity(0.05),
+              AppColors.gold.withValues(alpha: 0.08),
+              AppColors.teal.withValues(alpha: 0.05),
             ],
           ),
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: AppColors.gold.withOpacity(0.2)),
+          border: Border.all(color: AppColors.gold.withValues(alpha: 0.2)),
         ),
         child: Row(
           children: [
@@ -549,6 +1003,7 @@ class _TowerScreenState extends State<TowerScreen>
   // ── 성취 배지 ────────────────────────────────────────────────────────────────
   Widget _buildAchievements(BuildContext ctx, ActivityScore score) {
     final achievements = [
+      // ── 편지 활동 ──────────────────────────────────────────
       _Achievement(
         emoji: '🌱',
         title: '첫 발걸음',
@@ -573,17 +1028,37 @@ class _TowerScreenState extends State<TowerScreen>
         desc: '편지 10개 보내기',
         unlocked: score.sentCount >= 10,
       ),
+      // ── 타워 단계 달성 ──────────────────────────────────────
+      _Achievement(
+        emoji: '🏡',
+        title: '마을집 건축',
+        desc: '타워 3단계 달성', // house (15점)
+        unlocked: score.towerHeight >= 15,
+      ),
       _Achievement(
         emoji: '🏢',
         title: '빌딩 건축가',
-        desc: '타워 10층 달성',
-        unlocked: score.towerFloors >= 10,
+        desc: '타워 5단계 달성', // building (50점)
+        unlocked: score.towerHeight >= 50,
+      ),
+      _Achievement(
+        emoji: '🏙️',
+        title: '마천루',
+        desc: '타워 7단계 달성', // skyscraper (120점)
+        unlocked: score.towerHeight >= 120,
+      ),
+      // ── 인기·특별 ──────────────────────────────────────────
+      _Achievement(
+        emoji: '❤️',
+        title: '인기 편지꾼',
+        desc: '좋아요 10개 받기',
+        unlocked: score.likeCount >= 10,
       ),
       _Achievement(
         emoji: '🗼',
-        title: '랜드마크',
-        desc: '타워 50층 달성',
-        unlocked: score.towerFloors >= 50,
+        title: '전설의 랜드마크',
+        desc: '타워 최고 단계 달성', // landmark (330점)
+        unlocked: score.towerHeight >= 330,
       ),
     ];
 
@@ -711,9 +1186,11 @@ class _TowerScreenState extends State<TowerScreen>
                   vertical: 4,
                 ),
                 decoration: BoxDecoration(
-                  color: AppColors.gold.withOpacity(0.12),
+                  color: AppColors.gold.withValues(alpha: 0.12),
                   borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: AppColors.gold.withOpacity(0.35)),
+                  border: Border.all(
+                    color: AppColors.gold.withValues(alpha: 0.35),
+                  ),
                 ),
                 child: Text(
                   '내 순위 ${myRank}위',
@@ -746,12 +1223,12 @@ class _TowerScreenState extends State<TowerScreen>
                 ),
                 decoration: BoxDecoration(
                   color: idx == 0
-                      ? AppColors.gold.withOpacity(0.08)
+                      ? AppColors.gold.withValues(alpha: 0.08)
                       : AppColors.bgCard,
                   borderRadius: BorderRadius.circular(14),
                   border: Border.all(
                     color: idx == 0
-                        ? AppColors.gold.withOpacity(0.3)
+                        ? AppColors.gold.withValues(alpha: 0.3)
                         : const Color(0xFF1F2D44),
                   ),
                 ),
@@ -815,9 +1292,11 @@ class _TowerScreenState extends State<TowerScreen>
                         vertical: 5,
                       ),
                       decoration: BoxDecoration(
-                        color: tierColor.withOpacity(0.12),
+                        color: tierColor.withValues(alpha: 0.12),
                         borderRadius: BorderRadius.circular(8),
-                        border: Border.all(color: tierColor.withOpacity(0.35)),
+                        border: Border.all(
+                          color: tierColor.withValues(alpha: 0.35),
+                        ),
                       ),
                       child: Text(
                         '${floors}F',
@@ -845,7 +1324,7 @@ class _TowerScreenState extends State<TowerScreen>
             decoration: BoxDecoration(
               color: AppColors.bgCard,
               borderRadius: BorderRadius.circular(14),
-              border: Border.all(color: AppColors.gold.withOpacity(0.35)),
+              border: Border.all(color: AppColors.gold.withValues(alpha: 0.35)),
             ),
             child: Row(
               children: [
@@ -906,9 +1385,11 @@ class _TowerScreenState extends State<TowerScreen>
                     vertical: 5,
                   ),
                   decoration: BoxDecoration(
-                    color: AppColors.gold.withOpacity(0.12),
+                    color: AppColors.gold.withValues(alpha: 0.12),
                     borderRadius: BorderRadius.circular(8),
-                    border: Border.all(color: AppColors.gold.withOpacity(0.35)),
+                    border: Border.all(
+                      color: AppColors.gold.withValues(alpha: 0.35),
+                    ),
                   ),
                   child: Text(
                     '${myScore.towerFloors}F',
@@ -929,14 +1410,24 @@ class _TowerScreenState extends State<TowerScreen>
 
   Color _communityTierColor(TowerTier tier) {
     switch (tier) {
+      case TowerTier.shack:
+        return const Color(0xFF8B7355);
       case TowerTier.cottage:
         return const Color(0xFFCD7F32);
       case TowerTier.house:
         return const Color(0xFFC0C0C0);
+      case TowerTier.townhouse:
+        return const Color(0xFF90C878);
       case TowerTier.building:
         return AppColors.gold;
-      case TowerTier.skyscraper:
+      case TowerTier.office:
         return AppColors.teal;
+      case TowerTier.skyscraper:
+        return const Color(0xFF60A5FA);
+      case TowerTier.supertall:
+        return const Color(0xFFAB78FF);
+      case TowerTier.megatower:
+        return const Color(0xFFFF9F43);
       case TowerTier.landmark:
         return const Color(0xFFFF6B9D);
     }
@@ -975,7 +1466,7 @@ class _TowerScreenState extends State<TowerScreen>
         decoration: BoxDecoration(
           color: AppColors.bgCard,
           borderRadius: BorderRadius.circular(24),
-          border: Border.all(color: tierColor.withOpacity(0.3)),
+          border: Border.all(color: tierColor.withValues(alpha: 0.3)),
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -1002,7 +1493,7 @@ class _TowerScreenState extends State<TowerScreen>
                     border: Border.all(color: tierColor, width: 2),
                     boxShadow: [
                       BoxShadow(
-                        color: tierColor.withOpacity(0.25),
+                        color: tierColor.withValues(alpha: 0.25),
                         blurRadius: 12,
                       ),
                     ],
@@ -1033,10 +1524,10 @@ class _TowerScreenState extends State<TowerScreen>
                               vertical: 4,
                             ),
                             decoration: BoxDecoration(
-                              color: tierColor.withOpacity(0.15),
+                              color: tierColor.withValues(alpha: 0.15),
                               borderRadius: BorderRadius.circular(8),
                               border: Border.all(
-                                color: tierColor.withOpacity(0.4),
+                                color: tierColor.withValues(alpha: 0.4),
                               ),
                             ),
                             child: Text(
@@ -1067,7 +1558,7 @@ class _TowerScreenState extends State<TowerScreen>
                       color: AppColors.bgSurface,
                       borderRadius: BorderRadius.circular(14),
                       border: Border.all(
-                        color: AppColors.gold.withOpacity(0.2),
+                        color: AppColors.gold.withValues(alpha: 0.2),
                       ),
                     ),
                     child: Column(
@@ -1100,9 +1591,11 @@ class _TowerScreenState extends State<TowerScreen>
                   child: Container(
                     padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
-                      color: tierColor.withOpacity(0.08),
+                      color: tierColor.withValues(alpha: 0.08),
                       borderRadius: BorderRadius.circular(14),
-                      border: Border.all(color: tierColor.withOpacity(0.25)),
+                      border: Border.all(
+                        color: tierColor.withValues(alpha: 0.25),
+                      ),
                     ),
                     child: Column(
                       children: [
@@ -1196,10 +1689,15 @@ class _TowerScreenState extends State<TowerScreen>
     );
   }
 
+  // ignore: unused_element
   void _showEditProfile(BuildContext ctx, AppState state) {
     final nameCtrl = TextEditingController(text: state.currentUser.username);
-    final socialCtrl = TextEditingController(
-      text: state.currentUser.socialLink ?? '',
+    final _socialInitial = state.currentUser.socialLink ?? '';
+    final socialCtrl = TextEditingController.fromValue(
+      TextEditingValue(
+        text: _socialInitial,
+        selection: TextSelection.collapsed(offset: _socialInitial.length),
+      ),
     );
     showModalBottomSheet(
       context: ctx,
@@ -1284,6 +1782,306 @@ class _TowerScreenState extends State<TowerScreen>
                     if (ctx.mounted) Navigator.pop(ctx);
                   },
                   child: const Text('저장'),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  // ── 타워 스킨 커스터마이저 ──────────────────────────────────────────────────
+  void _showTowerCustomizer(BuildContext ctx, AppState state) {
+    final purchase = ctx.read<PurchaseService>();
+    final hasPremium =
+        purchase.isPremium ||
+        purchase.isBrand ||
+        state.currentUser.isPremium ||
+        state.currentUser.isBrand;
+    if (!hasPremium) {
+      // 프리미엄 게이트
+      showModalBottomSheet(
+        context: ctx,
+        backgroundColor: Colors.transparent,
+        builder: (_) => Container(
+          decoration: const BoxDecoration(
+            color: AppColors.bgCard,
+            borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+          ),
+          padding: const EdgeInsets.fromLTRB(24, 16, 24, 40),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                width: 40,
+                height: 4,
+                margin: const EdgeInsets.only(bottom: 20),
+                decoration: BoxDecoration(
+                  color: AppColors.textMuted.withValues(alpha: 0.4),
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+              const Text('🎨', style: TextStyle(fontSize: 48)),
+              const SizedBox(height: 12),
+              const Text(
+                '타워 커스텀',
+                style: TextStyle(
+                  color: AppColors.gold,
+                  fontSize: 18,
+                  fontWeight: FontWeight.w800,
+                ),
+              ),
+              const SizedBox(height: 8),
+              const Text(
+                '색상과 장식 이모지로\n내 타워를 꾸밀 수 있어요.\n\nPremium 전용 기능이에요.',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: AppColors.textSecondary,
+                  fontSize: 13,
+                  height: 1.6,
+                ),
+              ),
+              const SizedBox(height: 20),
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: () {
+                    Navigator.pop(ctx);
+                    Navigator.push(
+                      ctx,
+                      MaterialPageRoute(builder: (_) => const PremiumScreen()),
+                    );
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.gold,
+                    foregroundColor: AppColors.bgDeep,
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(14),
+                    ),
+                  ),
+                  child: const Text(
+                    '👑 프리미엄 시작하기',
+                    style: TextStyle(fontSize: 15, fontWeight: FontWeight.w800),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+      return;
+    }
+
+    // 프리미엄 유저: 커스터마이저 열기
+    String selectedColor = state.currentUser.towerColor;
+    String? selectedEmoji = state.currentUser.towerAccentEmoji;
+
+    const presetColors = [
+      '#FFD700', // 금색 (기본)
+      '#00E5CC', // 청록
+      '#FF6B9D', // 핑크
+      '#4FC3F7', // 하늘
+      '#69F0AE', // 연두
+      '#FF8A5C', // 오렌지
+      '#CE93D8', // 보라
+      '#EF5350', // 빨강
+    ];
+
+    const presetEmojis = [
+      '🌟',
+      '🔥',
+      '⚡',
+      '🌈',
+      '🌸',
+      '🎯',
+      '💫',
+      '🏆',
+      '🌙',
+      '☀️',
+      '🌊',
+      '🎪',
+    ];
+
+    showModalBottomSheet(
+      context: ctx,
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true,
+      builder: (_) => StatefulBuilder(
+        builder: (context, setS) => Container(
+          decoration: const BoxDecoration(
+            color: AppColors.bgCard,
+            borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+          ),
+          padding: EdgeInsets.fromLTRB(
+            24,
+            16,
+            24,
+            MediaQuery.of(context).viewInsets.bottom + 40,
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Center(
+                child: Container(
+                  width: 40,
+                  height: 4,
+                  margin: const EdgeInsets.only(bottom: 20),
+                  decoration: BoxDecoration(
+                    color: AppColors.textMuted.withValues(alpha: 0.4),
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                ),
+              ),
+              const Text(
+                '🎨  타워 꾸미기',
+                style: TextStyle(
+                  color: AppColors.textPrimary,
+                  fontSize: 17,
+                  fontWeight: FontWeight.w800,
+                ),
+              ),
+              const SizedBox(height: 20),
+              // 색상 선택
+              const Text(
+                '글로우 색상',
+                style: TextStyle(
+                  color: AppColors.textSecondary,
+                  fontSize: 13,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              const SizedBox(height: 10),
+              Wrap(
+                spacing: 10,
+                children: presetColors.map((hex) {
+                  final color = Color(int.parse('0xFF${hex.substring(1)}'));
+                  final isSelected = selectedColor == hex;
+                  return GestureDetector(
+                    onTap: () => setS(() => selectedColor = hex),
+                    child: AnimatedContainer(
+                      duration: const Duration(milliseconds: 200),
+                      width: 36,
+                      height: 36,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: color,
+                        border: Border.all(
+                          color: isSelected ? Colors.white : Colors.transparent,
+                          width: 2.5,
+                        ),
+                        boxShadow: isSelected
+                            ? [
+                                BoxShadow(
+                                  color: color.withValues(alpha: 0.6),
+                                  blurRadius: 8,
+                                  spreadRadius: 2,
+                                ),
+                              ]
+                            : [],
+                      ),
+                    ),
+                  );
+                }).toList(),
+              ),
+              const SizedBox(height: 20),
+              // 장식 이모지 선택
+              const Text(
+                '장식 이모지',
+                style: TextStyle(
+                  color: AppColors.textSecondary,
+                  fontSize: 13,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              const SizedBox(height: 10),
+              Wrap(
+                spacing: 8,
+                runSpacing: 8,
+                children: [
+                  // 없음 옵션
+                  GestureDetector(
+                    onTap: () => setS(() => selectedEmoji = null),
+                    child: AnimatedContainer(
+                      duration: const Duration(milliseconds: 200),
+                      width: 44,
+                      height: 44,
+                      decoration: BoxDecoration(
+                        color: selectedEmoji == null
+                            ? AppColors.gold.withValues(alpha: 0.15)
+                            : AppColors.bgSurface,
+                        borderRadius: BorderRadius.circular(10),
+                        border: Border.all(
+                          color: selectedEmoji == null
+                              ? AppColors.gold.withValues(alpha: 0.5)
+                              : AppColors.textMuted.withValues(alpha: 0.2),
+                        ),
+                      ),
+                      child: const Center(
+                        child: Text(
+                          '✗',
+                          style: TextStyle(
+                            color: AppColors.textMuted,
+                            fontSize: 16,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                  ...presetEmojis.map((e) {
+                    final isSel = selectedEmoji == e;
+                    return GestureDetector(
+                      onTap: () => setS(() => selectedEmoji = e),
+                      child: AnimatedContainer(
+                        duration: const Duration(milliseconds: 200),
+                        width: 44,
+                        height: 44,
+                        decoration: BoxDecoration(
+                          color: isSel
+                              ? AppColors.gold.withValues(alpha: 0.15)
+                              : AppColors.bgSurface,
+                          borderRadius: BorderRadius.circular(10),
+                          border: Border.all(
+                            color: isSel
+                                ? AppColors.gold.withValues(alpha: 0.5)
+                                : AppColors.textMuted.withValues(alpha: 0.2),
+                          ),
+                        ),
+                        child: Center(
+                          child: Text(e, style: const TextStyle(fontSize: 22)),
+                        ),
+                      ),
+                    );
+                  }),
+                ],
+              ),
+              const SizedBox(height: 24),
+              // 저장 버튼
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: () {
+                    state.updateTowerSkin(
+                      color: selectedColor,
+                      accentEmoji: selectedEmoji,
+                    );
+                    Navigator.pop(context);
+                    HapticFeedback.mediumImpact();
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.gold,
+                    foregroundColor: AppColors.bgDeep,
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(14),
+                    ),
+                  ),
+                  child: const Text(
+                    '저장하기',
+                    style: TextStyle(fontSize: 15, fontWeight: FontWeight.w800),
+                  ),
                 ),
               ),
             ],
@@ -1525,7 +2323,9 @@ class _TowerScreenState extends State<TowerScreen>
                                     vertical: 2,
                                   ),
                                   decoration: BoxDecoration(
-                                    color: AppColors.teal.withOpacity(0.15),
+                                    color: AppColors.teal.withValues(
+                                      alpha: 0.15,
+                                    ),
                                     borderRadius: BorderRadius.circular(6),
                                   ),
                                   child: const Text(
@@ -1677,7 +2477,7 @@ class _StatCard extends StatelessWidget {
           Text(
             '+${contribution.toStringAsFixed(1)}점',
             style: TextStyle(
-              color: color.withOpacity(0.7),
+              color: color.withValues(alpha: 0.7),
               fontSize: 10,
               fontWeight: FontWeight.w600,
             ),
@@ -1713,18 +2513,30 @@ class _AchievementBadge extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         color: achievement.unlocked
-            ? AppColors.bgCard
-            : AppColors.bgCard.withOpacity(0.4),
+            ? AppColors.gold.withValues(alpha: 0.15)
+            : AppColors.bgSurface,
         borderRadius: BorderRadius.circular(14),
+        boxShadow: achievement.unlocked
+            ? [
+                BoxShadow(
+                  color: AppColors.gold.withValues(alpha: 0.3),
+                  blurRadius: 4,
+                  offset: const Offset(2, 2),
+                ),
+                BoxShadow(
+                  color: Colors.white.withValues(alpha: 0.1),
+                  blurRadius: 2,
+                  offset: const Offset(-1, -1),
+                ),
+              ]
+            : null,
         border: Border.all(
           color: achievement.unlocked
-              ? AppColors.gold.withOpacity(0.4)
-              : const Color(0xFF1F2D44),
-          width: achievement.unlocked ? 1.5 : 1.0,
+              ? AppColors.gold
+              : AppColors.textMuted.withValues(alpha: 0.2),
+          width: 1.5,
+          strokeAlign: BorderSide.strokeAlignInside,
         ),
-        boxShadow: achievement.unlocked
-            ? [BoxShadow(color: AppColors.gold.withOpacity(0.1), blurRadius: 8)]
-            : null,
       ),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -1766,16 +2578,20 @@ class _TowerPainter extends CustomPainter {
   final int floors;
   final TowerTier tier;
   final double glowIntensity;
+  final Color tierColor;
 
   _TowerPainter({
     required this.floors,
     required this.tier,
     required this.glowIntensity,
+    required this.tierColor,
   });
 
   @override
   void paint(Canvas canvas, Size size) {
-    if (tier == TowerTier.cottage || tier == TowerTier.house) {
+    if (tier == TowerTier.shack ||
+        tier == TowerTier.cottage ||
+        tier == TowerTier.house) {
       _drawHouse(canvas, size);
     } else {
       _drawSkyscraper(canvas, size);
@@ -1798,20 +2614,22 @@ class _TowerPainter extends CustomPainter {
       wallPaint,
     );
 
-    // 지붕
+    // 지붕 (티어 색상)
     final roofPaint = Paint()
-      ..color = AppColors.gold.withOpacity(0.8)
+      ..color = tierColor.withValues(alpha: 0.85)
       ..style = PaintingStyle.fill;
     final roofPath = Path()
       ..moveTo(w * 0.0, h * 0.5)
-      ..lineTo(w * 0.5, h * 0.1)
+      ..lineTo(w * 0.5, h * 0.08)
       ..lineTo(w * 1.0, h * 0.5)
       ..close();
     canvas.drawPath(roofPath, roofPaint);
 
     // 창문
     final winPaint = Paint()
-      ..color = AppColors.goldLight.withOpacity(0.6 + glowIntensity * 0.3)
+      ..color = AppColors.goldLight.withValues(
+        alpha: 0.6 + glowIntensity * 0.35,
+      )
       ..style = PaintingStyle.fill;
     canvas.drawRRect(
       RRect.fromRectAndRadius(
@@ -1821,10 +2639,22 @@ class _TowerPainter extends CustomPainter {
       winPaint,
     );
 
+    // 문
+    final doorPaint = Paint()
+      ..color = tierColor.withValues(alpha: 0.5)
+      ..style = PaintingStyle.fill;
+    canvas.drawRRect(
+      RRect.fromRectAndRadius(
+        Rect.fromLTWH(w * 0.4, h * 0.75, w * 0.2, h * 0.25),
+        const Radius.circular(3),
+      ),
+      doorPaint,
+    );
+
     // 글로우
     final glowPaint = Paint()
-      ..color = AppColors.gold.withOpacity(glowIntensity * 0.3)
-      ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 15);
+      ..color = tierColor.withValues(alpha: glowIntensity * 0.25)
+      ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 18);
     canvas.drawRect(Rect.fromLTWH(0, 0, w, h), glowPaint);
   }
 
@@ -1836,14 +2666,18 @@ class _TowerPainter extends CustomPainter {
 
     // 빌딩 윤곽 (테이퍼 형태)
     for (int i = 0; i < floorCount; i++) {
-      final tapering = 1.0 - (i / floorCount) * 0.3;
+      final tapering = 1.0 - (i / floorCount) * 0.28;
       final floorW = w * tapering;
       final floorX = (w - floorW) / 2;
       final floorY = h - (i + 1) * floorH;
 
-      // 층 배경
+      // 층 배경 (티어 색상이 살짝 반영)
       final floorBg = Paint()
-        ..color = const Color(0xFF1A2B4A)
+        ..color = Color.lerp(
+          const Color(0xFF1A2B4A),
+          tierColor.withValues(alpha: 0.15),
+          (i / floorCount) * 0.4,
+        )!
         ..style = PaintingStyle.fill;
       canvas.drawRect(
         Rect.fromLTWH(floorX, floorY, floorW, floorH * 0.9),
@@ -1855,11 +2689,19 @@ class _TowerPainter extends CustomPainter {
       final windowW = (floorW - 4) / windowsPerFloor;
       for (int j = 0; j < windowsPerFloor; j++) {
         final rng = Random(i * 100 + j);
-        final litUp = rng.nextDouble() > 0.3;
+        final litUp = rng.nextDouble() > 0.28;
+        // 높은 단계일수록 창문색이 티어 색상에 가까워짐
+        final winColor = litUp
+            ? Color.lerp(
+                AppColors.goldLight.withValues(
+                  alpha: 0.5 + glowIntensity * 0.35,
+                ),
+                tierColor.withValues(alpha: 0.6 + glowIntensity * 0.3),
+                (tier.tierNumber - 5) / 5.0,
+              )!
+            : const Color(0xFF0D1F3C);
         final winPaint = Paint()
-          ..color = litUp
-              ? AppColors.goldLight.withOpacity(0.5 + glowIntensity * 0.4)
-              : const Color(0xFF0D1F3C)
+          ..color = winColor
           ..style = PaintingStyle.fill;
         canvas.drawRect(
           Rect.fromLTWH(
@@ -1874,7 +2716,7 @@ class _TowerPainter extends CustomPainter {
 
       // 층 구분선
       final linePaint = Paint()
-        ..color = AppColors.gold.withOpacity(0.08)
+        ..color = tierColor.withValues(alpha: 0.1)
         ..strokeWidth = 0.5;
       canvas.drawLine(
         Offset(floorX, floorY + floorH * 0.9),
@@ -1884,23 +2726,26 @@ class _TowerPainter extends CustomPainter {
     }
 
     // 꼭대기 안테나/스파이어
-    if (tier == TowerTier.skyscraper || tier == TowerTier.landmark) {
+    if (tier == TowerTier.skyscraper ||
+        tier == TowerTier.supertall ||
+        tier == TowerTier.megatower ||
+        tier == TowerTier.landmark) {
       final spireP = Paint()
-        ..color = AppColors.gold.withOpacity(0.9)
+        ..color = tierColor.withValues(alpha: 0.9)
         ..strokeWidth = 2
         ..strokeCap = StrokeCap.round;
       canvas.drawLine(Offset(w / 2, 0), Offset(w / 2, h * 0.05), spireP);
       // 안테나 불빛
       final blinkPaint = Paint()
-        ..color = AppColors.error.withOpacity(glowIntensity * 0.8)
-        ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 4);
-      canvas.drawCircle(Offset(w / 2, 3), 3, blinkPaint);
+        ..color = tierColor.withValues(alpha: glowIntensity * 0.9)
+        ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 5);
+      canvas.drawCircle(Offset(w / 2, 3), 3.5, blinkPaint);
     }
 
-    // 전체 글로우
+    // 전체 글로우 (티어 색상)
     final glowPaint = Paint()
-      ..color = AppColors.gold.withOpacity(glowIntensity * 0.15)
-      ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 20);
+      ..color = tierColor.withValues(alpha: glowIntensity * 0.18)
+      ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 22);
     canvas.drawRect(
       Rect.fromLTWH(w * 0.1, h * 0.1, w * 0.8, h * 0.9),
       glowPaint,
@@ -1911,6 +2756,7 @@ class _TowerPainter extends CustomPainter {
   bool shouldRepaint(_TowerPainter old) =>
       old.floors != floors ||
       old.tier != tier ||
+      old.tierColor != tierColor ||
       (old.glowIntensity - glowIntensity).abs() > 0.01;
 }
 
@@ -1942,7 +2788,7 @@ class _SkylinePainter extends CustomPainter {
 
     // 창문 점들
     final winPaint = Paint()
-      ..color = AppColors.gold.withOpacity(0.15)
+      ..color = AppColors.gold.withValues(alpha: 0.15)
       ..style = PaintingStyle.fill;
     for (int i = 0; i < 40; i++) {
       final rng2 = Random(i * 7);

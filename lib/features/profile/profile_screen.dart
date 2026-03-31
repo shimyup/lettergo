@@ -6,8 +6,19 @@ import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/services/auth_service.dart';
+import '../../../core/services/purchase_service.dart';
 import '../../../state/app_state.dart';
 import '../../../models/user_profile.dart';
+import '../../../widgets/shared_profile_dialogs.dart';
+import '../premium/premium_screen.dart';
+import 'stamp_album_screen.dart';
+
+// Premium Screen을 간단히 라우팅하기 위한 프록시
+class _PremiumScreenProxy extends StatelessWidget {
+  const _PremiumScreenProxy();
+  @override
+  Widget build(BuildContext context) => const PremiumScreen();
+}
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -41,92 +52,19 @@ class _ProfileScreenState extends State<ProfileScreen> {
     setState(() => _notifyNearby = value);
   }
 
-  void _showNicknameCooldownMessage(BuildContext ctx, AppState state) {
-    final next = state.nextNicknameChangeAvailableAt;
-    final dateLabel = next == null
-        ? ''
-        : ' (${next.year}.${next.month.toString().padLeft(2, '0')}.${next.day.toString().padLeft(2, '0')} 이후)';
-    _showSnack(
-      ctx,
-      '닉네임은 3개월에 1회만 변경할 수 있어요. 약 ${state.nicknameChangeRemainingDays}일 남았습니다$dateLabel',
-    );
-  }
-
-  // ── 닉네임 수정 ────────────────────────────────────────────────────────────
+  // ── 닉네임 수정 (shared_profile_dialogs.dart로 위임) ──────────────────────
   void _editUsername(BuildContext ctx, AppState state) {
-    final ctrl = TextEditingController(text: state.currentUser.username);
-    showDialog(
-      context: ctx,
-      builder: (_) => AlertDialog(
-        backgroundColor: AppColors.bgCard,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: const Text(
-          '닉네임 수정',
-          style: TextStyle(color: AppColors.textPrimary),
-        ),
-        content: TextField(
-          controller: ctrl,
-          maxLength: 20,
-          style: const TextStyle(color: AppColors.textPrimary),
-          decoration: const InputDecoration(
-            hintText: '새 닉네임',
-            hintStyle: TextStyle(color: AppColors.textMuted),
-            counterStyle: TextStyle(color: AppColors.textMuted),
-            enabledBorder: UnderlineInputBorder(
-              borderSide: BorderSide(color: AppColors.textMuted),
-            ),
-            focusedBorder: UnderlineInputBorder(
-              borderSide: BorderSide(color: AppColors.teal),
-            ),
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx),
-            child: const Text(
-              '취소',
-              style: TextStyle(color: AppColors.textMuted),
-            ),
-          ),
-          TextButton(
-            onPressed: () async {
-              final name = ctrl.text.trim();
-              if (name.length < 2) {
-                ScaffoldMessenger.of(ctx).showSnackBar(
-                  const SnackBar(
-                    content: Text('닉네임은 2자 이상이어야 합니다'),
-                    backgroundColor: AppColors.error,
-                  ),
-                );
-                return;
-              }
-              if (name == state.currentUser.username) {
-                if (ctx.mounted) Navigator.pop(ctx);
-                return;
-              }
-              if (!state.canChangeNicknameNow()) {
-                _showNicknameCooldownMessage(ctx, state);
-                return;
-              }
-              await AuthService.updateProfile(username: name);
-              final changed = state.updateUsername(name);
-              if (!changed) {
-                _showNicknameCooldownMessage(ctx, state);
-                return;
-              }
-              if (ctx.mounted) Navigator.pop(ctx);
-            },
-            child: const Text('저장', style: TextStyle(color: AppColors.teal)),
-          ),
-        ],
-      ),
-    );
+    showEditUsernameDialog(ctx, state);
   }
 
   // ── SNS 링크 수정 ──────────────────────────────────────────────────────────
   void _editSnsLink(BuildContext ctx, AppState state) {
-    final ctrl = TextEditingController(
-      text: state.currentUser.socialLink ?? '',
+    final _initialText = state.currentUser.socialLink ?? '';
+    final ctrl = TextEditingController.fromValue(
+      TextEditingValue(
+        text: _initialText,
+        selection: TextSelection.collapsed(offset: _initialText.length),
+      ),
     );
     showDialog(
       context: ctx,
@@ -537,6 +475,182 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
+  // ── 우표 앨범 배너 ────────────────────────────────────────────────────────
+  Widget _buildStampAlbumBanner(BuildContext ctx, AppState state) {
+    // 수집된 국가 수 계산
+    final countrySet = <String>{};
+    for (final l in state.inbox) {
+      countrySet.add(l.senderCountry);
+    }
+    final countryCount = countrySet.length;
+
+    return GestureDetector(
+      onTap: () => Navigator.push(
+        ctx,
+        MaterialPageRoute(builder: (_) => const StampAlbumScreen()),
+      ),
+      child: Container(
+        margin: const EdgeInsets.symmetric(horizontal: 16),
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+        decoration: BoxDecoration(
+          gradient: const LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [Color(0xFF1A3A2A), Color(0xFF0D2219)],
+          ),
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: AppColors.gold.withValues(alpha: 0.35)),
+        ),
+        child: Row(
+          children: [
+            Container(
+              width: 44,
+              height: 44,
+              decoration: BoxDecoration(
+                color: AppColors.gold.withValues(alpha: 0.1),
+                shape: BoxShape.circle,
+                border: Border.all(
+                  color: AppColors.gold.withValues(alpha: 0.4),
+                ),
+              ),
+              child: const Center(
+                child: Text('🌍', style: TextStyle(fontSize: 22)),
+              ),
+            ),
+            const SizedBox(width: 14),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    'STAMP ALBUM',
+                    style: TextStyle(
+                      color: AppColors.gold,
+                      fontSize: 9,
+                      fontWeight: FontWeight.w700,
+                      letterSpacing: 1.5,
+                    ),
+                  ),
+                  const SizedBox(height: 3),
+                  Text(
+                    countryCount > 0
+                        ? '$countryCount개국 우표 수집됨'
+                        : '아직 수집된 우표 없음',
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const Icon(
+              Icons.arrow_forward_ios_rounded,
+              color: AppColors.gold,
+              size: 14,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // ── 명성 등급 카드 (Stitch AI 추천) ────────────────────────────────────────
+  Widget _buildReputationCard(BuildContext ctx, UserProfile user) {
+    final score = user.activityScore;
+    final tier = score.tier;
+    const tierColors = {
+      'shack': Color(0xFF607D8B),
+      'cottage': Color(0xFF8D6E63),
+      'house': Color(0xFF66BB6A),
+      'townhouse': Color(0xFF26A69A),
+      'building': Color(0xFF42A5F5),
+      'office': Color(0xFF7E57C2),
+      'skyscraper': Color(0xFFEC407A),
+      'supertall': Color(0xFFFF7043),
+      'megatower': Color(0xFFFFCA28),
+      'landmark': Color(0xFFD4AF37),
+    };
+    final tierColor = tierColors[tier.name] ?? AppColors.gold;
+
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 16),
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            tierColor.withValues(alpha: 0.12),
+            tierColor.withValues(alpha: 0.05),
+          ],
+        ),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: tierColor.withValues(alpha: 0.35)),
+      ),
+      child: Row(
+        children: [
+          Container(
+            width: 44,
+            height: 44,
+            decoration: BoxDecoration(
+              color: tierColor.withValues(alpha: 0.15),
+              shape: BoxShape.circle,
+              border: Border.all(color: tierColor.withValues(alpha: 0.5)),
+            ),
+            child: Center(
+              child: Text(tier.emoji, style: const TextStyle(fontSize: 22)),
+            ),
+          ),
+          const SizedBox(width: 14),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  'REPUTATION SCORE',
+                  style: TextStyle(
+                    color: AppColors.textMuted,
+                    fontSize: 9,
+                    fontWeight: FontWeight.w700,
+                    letterSpacing: 1.5,
+                  ),
+                ),
+                const SizedBox(height: 3),
+                Text(
+                  score.reputationTitle,
+                  style: TextStyle(
+                    color: tierColor,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w800,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              Text(
+                score.towerHeight.toStringAsFixed(0),
+                style: TextStyle(
+                  color: tierColor,
+                  fontSize: 20,
+                  fontWeight: FontWeight.w900,
+                ),
+              ),
+              const Text(
+                'pts',
+                style: TextStyle(color: AppColors.textMuted, fontSize: 11),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget _buildFollowSection(
     BuildContext ctx,
     AppState state,
@@ -593,8 +707,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<AppState>(
-      builder: (ctx, state, _) {
+    return Consumer2<AppState, PurchaseService>(
+      builder: (ctx, state, purchase, _) {
         final user = state.currentUser;
 
         return Scaffold(
@@ -605,142 +719,184 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 )
               : CustomScrollView(
                   slivers: [
-                    _buildSliverAppBar(ctx, user, state),
+                    _buildSliverAppBar(ctx, user, state, purchase),
                     SliverToBoxAdapter(
                       child: Column(
                         children: [
-                          _buildStatsRow(ctx, state, user),
-                          const SizedBox(height: 8),
+                          // ① 4열 스탯 (A+C)
+                          _buildFourStatRow(ctx, state, user),
+                          const SizedBox(height: 10),
+                          // ② 구독 + 잔여발송 빠른카드 (B+C)
+                          _buildQuickCardsRow(ctx, state, user, purchase),
+                          const SizedBox(height: 10),
+                          // ③ 타워 등급 + 프로그레스바 (A+B)
+                          _buildTowerProgressCard(ctx, user),
+                          const SizedBox(height: 10),
+                          // ④ 우표 앨범 배너 (A)
+                          _buildStampAlbumBanner(ctx, state),
+                          const SizedBox(height: 10),
+                          // ⑤ 팔로잉/팔로워 탭
                           _buildFollowSection(ctx, state, user),
-                          const SizedBox(height: 8),
-                          _sectionHeader('계정'),
-                          _tile(
-                            icon: Icons.person_rounded,
-                            label: '닉네임',
-                            trailing: Text(
-                              user.username,
-                              style: const TextStyle(
-                                color: AppColors.textMuted,
-                                fontSize: 14,
+                          const SizedBox(height: 10),
+                          // ── 계정 ──
+                          _settingsGroup('계정', [
+                            _groupTile(
+                              icon: Icons.person_rounded,
+                              label: '닉네임',
+                              trailing: Text(
+                                user.username,
+                                style: const TextStyle(
+                                  color: AppColors.textMuted,
+                                  fontSize: 14,
+                                ),
+                              ),
+                              onTap: () => _editUsername(ctx, state),
+                            ),
+                            _groupTile(
+                              icon: Icons.location_city_rounded,
+                              label: '타워 이름',
+                              trailing: Text(
+                                user.customTowerName?.isNotEmpty == true
+                                    ? user.customTowerName!
+                                    : '미설정',
+                                style: const TextStyle(
+                                  color: AppColors.textMuted,
+                                  fontSize: 14,
+                                ),
+                                overflow: TextOverflow.ellipsis,
+                                maxLines: 1,
+                              ),
+                              onTap: () => showEditTowerNameDialog(ctx, state),
+                            ),
+                            _groupTile(
+                              icon: Icons.account_circle_rounded,
+                              label: '프로필 사진',
+                              trailing: Text(
+                                user.profileImagePath?.isNotEmpty == true
+                                    ? '설정됨'
+                                    : '기본',
+                                style: const TextStyle(
+                                  color: AppColors.textMuted,
+                                  fontSize: 14,
+                                ),
+                              ),
+                              onTap: () => _changeProfileImage(ctx, state),
+                            ),
+                            _groupTile(
+                              icon: Icons.link_rounded,
+                              label: 'SNS 링크',
+                              trailing: Text(
+                                user.socialLink?.isNotEmpty == true
+                                    ? user.socialLink!
+                                    : '미설정',
+                                style: const TextStyle(
+                                  color: AppColors.textMuted,
+                                  fontSize: 13,
+                                ),
+                                overflow: TextOverflow.ellipsis,
+                                maxLines: 1,
+                              ),
+                              onTap: () => _editSnsLink(ctx, state),
+                            ),
+                            _groupTile(
+                              icon: Icons.lock_outline_rounded,
+                              label: '비밀번호 변경',
+                              onTap: () => _changePassword(ctx),
+                              isLast: true,
+                            ),
+                          ]),
+                          // ── 공개 설정 ──
+                          _settingsGroup('공개 설정', [
+                            _groupSwitchTile(
+                              icon: Icons.badge_rounded,
+                              label: '닉네임 공개',
+                              subtitle: '다른 사용자에게 닉네임 표시',
+                              value: user.isUsernamePublic,
+                              onChanged: (v) => state.updatePrivacySettings(
+                                isUsernamePublic: v,
                               ),
                             ),
-                            onTap: () => _editUsername(ctx, state),
-                          ),
-                          _tile(
-                            icon: Icons.account_circle_rounded,
-                            label: '프로필 사진',
-                            trailing: Text(
-                              user.profileImagePath?.isNotEmpty == true
-                                  ? '설정됨'
-                                  : '기본',
-                              style: const TextStyle(
-                                color: AppColors.textMuted,
-                                fontSize: 14,
+                            _groupSwitchTile(
+                              icon: Icons.link_rounded,
+                              label: 'SNS 링크 공개',
+                              subtitle: '편지에 SNS 링크 노출 허용',
+                              value: user.isSnsPublic,
+                              onChanged: (v) =>
+                                  state.updatePrivacySettings(isSnsPublic: v),
+                              isLast: true,
+                            ),
+                          ]),
+                          // ── 알림 ──
+                          _settingsGroup('알림', [
+                            _groupSwitchTile(
+                              icon: Icons.notifications_active_rounded,
+                              label: '근처 편지 알림',
+                              subtitle: '2km 이내에 편지가 도착하면 알림',
+                              value: _notifyNearby,
+                              onChanged: _setNotifyNearby,
+                              isLast: true,
+                            ),
+                          ]),
+                          // ── 화면 ──
+                          _settingsGroup('화면', [
+                            _groupTile(
+                              icon: Icons.brightness_6_rounded,
+                              label: '화면 모드',
+                              trailing: Text(
+                                state.displayThemeModeLabel,
+                                style: const TextStyle(
+                                  color: AppColors.textMuted,
+                                  fontSize: 14,
+                                ),
+                              ),
+                              onTap: () => _showThemeModeSelector(ctx, state),
+                              isLast: true,
+                            ),
+                          ]),
+                          // ── 앱 정보 ──
+                          _settingsGroup('앱 정보', [
+                            _groupTile(
+                              icon: Icons.info_outline_rounded,
+                              label: '버전',
+                              trailing: const Text(
+                                '1.0.0',
+                                style: TextStyle(
+                                  color: AppColors.textMuted,
+                                  fontSize: 14,
+                                ),
                               ),
                             ),
-                            onTap: () => _changeProfileImage(ctx, state),
-                          ),
-                          _tile(
-                            icon: Icons.link_rounded,
-                            label: 'SNS 링크',
-                            trailing: Text(
-                              user.socialLink?.isNotEmpty == true
-                                  ? user.socialLink!
-                                  : '미설정',
-                              style: const TextStyle(
-                                color: AppColors.textMuted,
-                                fontSize: 13,
+                            _groupTile(
+                              icon: Icons.public_rounded,
+                              label: '나라',
+                              trailing: Text(
+                                '${user.countryFlag} ${user.country}',
+                                style: const TextStyle(
+                                  color: AppColors.textMuted,
+                                  fontSize: 14,
+                                ),
                               ),
-                              overflow: TextOverflow.ellipsis,
-                              maxLines: 1,
+                              isLast: true,
                             ),
-                            onTap: () => _editSnsLink(ctx, state),
-                          ),
-                          _tile(
-                            icon: Icons.lock_outline_rounded,
-                            label: '비밀번호 변경',
-                            onTap: () => _changePassword(ctx),
-                          ),
-                          const SizedBox(height: 8),
-                          _sectionHeader('공개 설정'),
-                          _switchTile(
-                            icon: Icons.badge_rounded,
-                            label: '닉네임 공개',
-                            subtitle: '다른 사용자에게 닉네임 표시',
-                            value: user.isUsernamePublic,
-                            onChanged: (v) => state.updatePrivacySettings(
-                              isUsernamePublic: v,
+                          ]),
+                          // ── 계정 관리 ──
+                          _settingsGroup('계정 관리', [
+                            _groupTile(
+                              icon: Icons.logout_rounded,
+                              label: '로그아웃',
+                              iconColor: AppColors.textSecondary,
+                              labelColor: AppColors.textSecondary,
+                              onTap: () => _confirmLogout(ctx),
                             ),
-                          ),
-                          _switchTile(
-                            icon: Icons.link_rounded,
-                            label: 'SNS 링크 공개',
-                            subtitle: '편지에 SNS 링크 노출 허용',
-                            value: user.isSnsPublic,
-                            onChanged: (v) =>
-                                state.updatePrivacySettings(isSnsPublic: v),
-                          ),
-                          const SizedBox(height: 8),
-                          _sectionHeader('알림'),
-                          _switchTile(
-                            icon: Icons.notifications_active_rounded,
-                            label: '근처 편지 알림',
-                            subtitle: '500m 이내에 편지가 도착하면 알림',
-                            value: _notifyNearby,
-                            onChanged: _setNotifyNearby,
-                          ),
-                          const SizedBox(height: 8),
-                          _sectionHeader('화면'),
-                          _tile(
-                            icon: Icons.brightness_6_rounded,
-                            label: '화면 모드',
-                            trailing: Text(
-                              state.displayThemeModeLabel,
-                              style: const TextStyle(
-                                color: AppColors.textMuted,
-                                fontSize: 14,
-                              ),
+                            _groupTile(
+                              icon: Icons.delete_forever_rounded,
+                              label: '회원탈퇴',
+                              iconColor: AppColors.error,
+                              labelColor: AppColors.error,
+                              onTap: () => _confirmDeleteAccount(ctx),
+                              isLast: true,
                             ),
-                            onTap: () => _showThemeModeSelector(ctx, state),
-                          ),
-                          const SizedBox(height: 8),
-                          _sectionHeader('앱 정보'),
-                          _tile(
-                            icon: Icons.info_outline_rounded,
-                            label: '버전',
-                            trailing: const Text(
-                              '1.0.0',
-                              style: TextStyle(
-                                color: AppColors.textMuted,
-                                fontSize: 14,
-                              ),
-                            ),
-                          ),
-                          _tile(
-                            icon: Icons.public_rounded,
-                            label: '나라',
-                            trailing: Text(
-                              '${user.countryFlag} ${user.country}',
-                              style: const TextStyle(
-                                color: AppColors.textMuted,
-                                fontSize: 14,
-                              ),
-                            ),
-                          ),
-                          const SizedBox(height: 8),
-                          _sectionHeader('계정 관리'),
-                          _tile(
-                            icon: Icons.logout_rounded,
-                            label: '로그아웃',
-                            color: AppColors.textSecondary,
-                            onTap: () => _confirmLogout(ctx),
-                          ),
-                          _tile(
-                            icon: Icons.delete_forever_rounded,
-                            label: '회원탈퇴',
-                            color: AppColors.error,
-                            onTap: () => _confirmDeleteAccount(ctx),
-                          ),
+                          ]),
                           const SizedBox(height: 60),
                         ],
                       ),
@@ -752,14 +908,52 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  // ── SliverAppBar (프로필 헤더) ─────────────────────────────────────────────
+  // ── 등급별 배경 색상 ────────────────────────────────────────────────────────
+  static Color _tierColor(TowerTier tier) {
+    switch (tier) {
+      case TowerTier.shack:
+        return const Color(0xFF607D8B);
+      case TowerTier.cottage:
+        return const Color(0xFF8D6E63);
+      case TowerTier.house:
+        return const Color(0xFF66BB6A);
+      case TowerTier.townhouse:
+        return const Color(0xFF26A69A);
+      case TowerTier.building:
+        return const Color(0xFF42A5F5);
+      case TowerTier.office:
+        return const Color(0xFF7E57C2);
+      case TowerTier.skyscraper:
+        return const Color(0xFFEC407A);
+      case TowerTier.supertall:
+        return const Color(0xFFFF7043);
+      case TowerTier.megatower:
+        return const Color(0xFFFFCA28);
+      case TowerTier.landmark:
+        return const Color(0xFFD4AF37);
+    }
+  }
+
+  // ── SliverAppBar (프로필 헤더) — A+C 믹스 ─────────────────────────────────
   Widget _buildSliverAppBar(
     BuildContext ctx,
     UserProfile user,
     AppState state,
+    PurchaseService purchase,
   ) {
+    final tier = user.activityScore.tier;
+    final tierClr = _tierColor(tier);
+    final isBrand = purchase.isBrand || user.isBrand;
+    final isPrem = isBrand || purchase.isPremium || user.isPremium;
+    final planLabel = isBrand
+        ? '🏷️ Brand'
+        : isPrem
+        ? '👑 Premium'
+        : null;
+    final planColor = isBrand ? const Color(0xFFFF8A5C) : AppColors.gold;
+
     return SliverAppBar(
-      expandedHeight: 250,
+      expandedHeight: 270,
       pinned: true,
       backgroundColor: AppTimeColors.of(ctx).bgDeep,
       elevation: 0,
@@ -771,142 +965,157 @@ class _ProfileScreenState extends State<ProfileScreen> {
               begin: Alignment.topCenter,
               end: Alignment.bottomCenter,
               colors: [
-                AppColors.bgCard.withOpacity(0.8),
+                tierClr.withValues(alpha: 0.22),
+                tierClr.withValues(alpha: 0.06),
                 AppTimeColors.of(ctx).bgDeep,
               ],
+              stops: const [0.0, 0.5, 1.0],
             ),
           ),
           child: SafeArea(
             bottom: false,
-            child: Center(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  const SizedBox(height: 4),
-                  // 아바타
-                  GestureDetector(
-                    onTap: () => _changeProfileImage(ctx, state),
-                    child: Stack(
-                      clipBehavior: Clip.none,
-                      children: [
-                        Container(
-                          width: 64,
-                          height: 64,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const SizedBox(height: 12),
+                // 아바타 (88px, 등급 색상 테두리 글로우)
+                GestureDetector(
+                  onTap: () => _changeProfileImage(ctx, state),
+                  child: Stack(
+                    clipBehavior: Clip.none,
+                    children: [
+                      Container(
+                        width: 88,
+                        height: 88,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          gradient: LinearGradient(
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                            colors: [tierClr.withValues(alpha: 0.9), tierClr],
+                          ),
+                          boxShadow: [
+                            BoxShadow(
+                              color: tierClr.withValues(alpha: 0.45),
+                              blurRadius: 20,
+                              spreadRadius: 3,
+                            ),
+                          ],
+                        ),
+                        child: _buildAvatarContent(user),
+                      ),
+                      // 등급 뱃지 (우상단 — A방향)
+                      Positioned(
+                        right: -4,
+                        top: -4,
+                        child: Container(
+                          padding: const EdgeInsets.all(4),
+                          decoration: BoxDecoration(
+                            color: AppColors.bgDeep,
+                            shape: BoxShape.circle,
+                            border: Border.all(color: tierClr, width: 1.5),
+                          ),
+                          child: Text(
+                            tier.emoji,
+                            style: const TextStyle(fontSize: 14),
+                          ),
+                        ),
+                      ),
+                      // 편집 버튼 (우하단)
+                      Positioned(
+                        right: -2,
+                        bottom: -2,
+                        child: Container(
+                          width: 24,
+                          height: 24,
                           decoration: BoxDecoration(
                             shape: BoxShape.circle,
-                            gradient: const LinearGradient(
-                              begin: Alignment.topLeft,
-                              end: Alignment.bottomRight,
-                              colors: [
-                                AppColors.goldLight,
-                                AppColors.gold,
-                                AppColors.goldDark,
-                              ],
-                            ),
-                            boxShadow: [
-                              BoxShadow(
-                                color: AppColors.gold.withOpacity(0.35),
-                                blurRadius: 16,
-                                spreadRadius: 2,
-                              ),
-                            ],
-                          ),
-                          child: _buildAvatarContent(user),
-                        ),
-                        Positioned(
-                          right: -2,
-                          bottom: -2,
-                          child: Container(
-                            width: 22,
-                            height: 22,
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              color: AppColors.teal,
-                              border: Border.all(
-                                color: AppTimeColors.of(ctx).bgDeep,
-                                width: 2,
-                              ),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.black.withOpacity(0.25),
-                                  blurRadius: 6,
-                                ),
-                              ],
-                            ),
-                            child: const Icon(
-                              Icons.add_rounded,
-                              size: 14,
-                              color: AppColors.textPrimary,
+                            color: AppColors.teal,
+                            border: Border.all(
+                              color: AppTimeColors.of(ctx).bgDeep,
+                              width: 2,
                             ),
                           ),
+                          child: const Icon(
+                            Icons.edit_rounded,
+                            size: 13,
+                            color: Colors.white,
+                          ),
                         ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    user.username,
-                    style: const TextStyle(
-                      color: AppColors.textPrimary,
-                      fontSize: 18,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                  // 팔로잉/팔로워 수
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      _FollowStatChip(
-                        label: '팔로잉',
-                        count: user.followingIds.length,
-                      ),
-                      const SizedBox(width: 20),
-                      _FollowStatChip(
-                        label: '팔로워',
-                        count: user.followerIds.length,
                       ),
                     ],
                   ),
-                  const SizedBox(height: 6),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        '${user.countryFlag} ${user.country}',
-                        style: const TextStyle(
-                          color: AppColors.textMuted,
-                          fontSize: 13,
+                ),
+                const SizedBox(height: 10),
+                // 닉네임 + 플랜 뱃지 (B방향)
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      user.username,
+                      style: const TextStyle(
+                        color: AppColors.textPrimary,
+                        fontSize: 20,
+                        fontWeight: FontWeight.w800,
+                        letterSpacing: 0.3,
+                      ),
+                    ),
+                    if (planLabel != null) ...[
+                      const SizedBox(width: 8),
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 8,
+                          vertical: 3,
+                        ),
+                        decoration: BoxDecoration(
+                          color: planColor.withValues(alpha: 0.15),
+                          borderRadius: BorderRadius.circular(8),
+                          border: Border.all(
+                            color: planColor.withValues(alpha: 0.5),
+                          ),
+                        ),
+                        child: Text(
+                          planLabel,
+                          style: TextStyle(
+                            color: planColor,
+                            fontSize: 11,
+                            fontWeight: FontWeight.w700,
+                          ),
                         ),
                       ),
-                      if (user.isPremium) ...[
-                        const SizedBox(width: 8),
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 8,
-                            vertical: 2,
-                          ),
-                          decoration: BoxDecoration(
-                            gradient: const LinearGradient(
-                              colors: [AppColors.goldLight, AppColors.goldDark],
-                            ),
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          child: const Text(
-                            'PREMIUM',
-                            style: TextStyle(
-                              color: AppColors.bgDeep,
-                              fontSize: 9,
-                              fontWeight: FontWeight.w800,
-                              letterSpacing: 1,
-                            ),
-                          ),
-                        ),
-                      ],
                     ],
-                  ),
-                ],
-              ),
+                  ],
+                ),
+                const SizedBox(height: 6),
+                // 국가 + 명성 칭호 (A방향)
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      '${user.countryFlag} ${user.country}',
+                      style: const TextStyle(
+                        color: AppColors.textMuted,
+                        fontSize: 13,
+                      ),
+                    ),
+                    const SizedBox(width: 10),
+                    Container(
+                      width: 1,
+                      height: 11,
+                      color: AppColors.textMuted.withValues(alpha: 0.3),
+                    ),
+                    const SizedBox(width: 10),
+                    Text(
+                      user.activityScore.reputationTitle,
+                      style: TextStyle(
+                        color: tierClr,
+                        fontSize: 12,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
             ),
           ),
         ),
@@ -922,59 +1131,374 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  // ── 활동 통계 카드 ─────────────────────────────────────────────────────────
-  Widget _buildStatsRow(BuildContext ctx, AppState state, UserProfile user) {
+  // ── ① 4열 스탯 바 (A+C) ────────────────────────────────────────────────────
+  Widget _buildFourStatRow(BuildContext ctx, AppState state, UserProfile user) {
+    final score = user.activityScore;
+    // 나라 수: 받은 편지 발송 국가
+    final countrySet = state.inbox.map((l) => l.senderCountry).toSet();
+    return Container(
+      margin: const EdgeInsets.fromLTRB(16, 14, 16, 0),
+      padding: const EdgeInsets.symmetric(vertical: 14),
+      decoration: BoxDecoration(
+        color: AppColors.bgCard,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: AppColors.textMuted.withValues(alpha: 0.12)),
+      ),
+      child: Row(
+        children: [
+          _stat4Cell('📬', '${score.sentCount}', '보낸 편지'),
+          _stat4Divider(),
+          _stat4Cell('📥', '${score.receivedCount}', '받은 편지'),
+          _stat4Divider(),
+          _stat4Cell('🌍', '${countrySet.length}', '방문 나라'),
+          _stat4Divider(),
+          _stat4Cell('👥', '${user.followerIds.length}', '팔로워'),
+        ],
+      ),
+    );
+  }
+
+  Widget _stat4Cell(String emoji, String value, String label) {
+    return Expanded(
+      child: Column(
+        children: [
+          Text(emoji, style: const TextStyle(fontSize: 18)),
+          const SizedBox(height: 4),
+          Text(
+            value,
+            style: const TextStyle(
+              color: AppColors.textPrimary,
+              fontSize: 17,
+              fontWeight: FontWeight.w800,
+            ),
+          ),
+          const SizedBox(height: 2),
+          Text(
+            label,
+            style: const TextStyle(color: AppColors.textMuted, fontSize: 10),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _stat4Divider() {
+    return Container(width: 1, height: 44, color: AppColors.bgSurface);
+  }
+
+  // ── ② 구독 카드 + 오늘 발송 잔여 카드 (B+C) ─────────────────────────────────
+  Widget _buildQuickCardsRow(
+    BuildContext ctx,
+    AppState state,
+    UserProfile user,
+    PurchaseService purchase,
+  ) {
+    final isBrand = purchase.isBrand || user.isBrand;
+    final isPremium = isBrand || purchase.isPremium || user.isPremium;
+    final planName = isBrand
+        ? '🏷️ Brand'
+        : isPremium
+        ? '👑 Premium'
+        : '⭐ Free';
+    final planPrice = isBrand
+        ? '₩99,000/월'
+        : isPremium
+        ? '₩4,900/월'
+        : '무료';
+    final planColor = isBrand
+        ? const Color(0xFFFF8A5C)
+        : isPremium
+        ? AppColors.gold
+        : AppColors.textMuted;
+
+    final remaining = state.remainingDailySendCount;
+    final limit = state.dailySendLimit;
+    final quotaPct = limit > 0 ? remaining / limit : 0.0;
+    final quotaColor = quotaPct > 0.4
+        ? AppColors.teal
+        : quotaPct > 0.15
+        ? const Color(0xFFFFCA28)
+        : AppColors.error;
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      child: Row(
+        children: [
+          // 구독 카드
+          Expanded(
+            child: GestureDetector(
+              onTap: () => Navigator.push(
+                ctx,
+                MaterialPageRoute(builder: (_) => const _PremiumScreenProxy()),
+              ),
+              child: Container(
+                padding: const EdgeInsets.all(14),
+                decoration: BoxDecoration(
+                  color: AppColors.bgCard,
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(color: planColor.withValues(alpha: 0.35)),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Text(
+                          '구독 플랜',
+                          style: TextStyle(
+                            color: AppColors.textMuted,
+                            fontSize: 10,
+                            fontWeight: FontWeight.w600,
+                            letterSpacing: 0.8,
+                          ),
+                        ),
+                        const Spacer(),
+                        Icon(
+                          Icons.chevron_right_rounded,
+                          color: AppColors.textMuted,
+                          size: 14,
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 6),
+                    Text(
+                      planName,
+                      style: TextStyle(
+                        color: planColor,
+                        fontSize: 15,
+                        fontWeight: FontWeight.w800,
+                      ),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      planPrice,
+                      style: const TextStyle(
+                        color: AppColors.textSecondary,
+                        fontSize: 12,
+                      ),
+                    ),
+                    if (!isPremium) ...[
+                      const SizedBox(height: 8),
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 10,
+                          vertical: 5,
+                        ),
+                        decoration: BoxDecoration(
+                          gradient: const LinearGradient(
+                            colors: [AppColors.goldLight, AppColors.gold],
+                          ),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: const Text(
+                          '업그레이드 →',
+                          style: TextStyle(
+                            color: AppColors.bgDeep,
+                            fontSize: 11,
+                            fontWeight: FontWeight.w800,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ],
+                ),
+              ),
+            ),
+          ),
+          const SizedBox(width: 10),
+          // 오늘 발송 잔여 카드
+          Expanded(
+            child: Container(
+              padding: const EdgeInsets.all(14),
+              decoration: BoxDecoration(
+                color: AppColors.bgCard,
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(color: quotaColor.withValues(alpha: 0.3)),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    '오늘 발송',
+                    style: TextStyle(
+                      color: AppColors.textMuted,
+                      fontSize: 10,
+                      fontWeight: FontWeight.w600,
+                      letterSpacing: 0.8,
+                    ),
+                  ),
+                  const SizedBox(height: 6),
+                  RichText(
+                    text: TextSpan(
+                      children: [
+                        TextSpan(
+                          text: '$remaining',
+                          style: TextStyle(
+                            color: quotaColor,
+                            fontSize: 22,
+                            fontWeight: FontWeight.w900,
+                          ),
+                        ),
+                        TextSpan(
+                          text: '/$limit',
+                          style: const TextStyle(
+                            color: AppColors.textMuted,
+                            fontSize: 14,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 6),
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(4),
+                    child: LinearProgressIndicator(
+                      value: quotaPct,
+                      minHeight: 5,
+                      backgroundColor: AppColors.bgSurface,
+                      valueColor: AlwaysStoppedAnimation<Color>(quotaColor),
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  const Text(
+                    '내일 자정 초기화',
+                    style: TextStyle(color: AppColors.textMuted, fontSize: 10),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // ── ③ 타워 등급 + 프로그레스바 (A+B) ─────────────────────────────────────
+  Widget _buildTowerProgressCard(BuildContext ctx, UserProfile user) {
     final score = user.activityScore;
     final tier = score.tier;
+    final tierClr = _tierColor(tier);
+    final progress = score.tierProgress;
+    final ptsLeft = (score.tierMax - score.towerHeight).clamp(
+      0,
+      double.infinity,
+    );
+    final isMax = tier == TowerTier.landmark;
 
     return Container(
-      margin: const EdgeInsets.fromLTRB(16, 16, 16, 0),
+      margin: const EdgeInsets.symmetric(horizontal: 16),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: AppColors.bgCard,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.gold.withOpacity(0.2)),
+        border: Border.all(color: tierClr.withValues(alpha: 0.3)),
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [tierClr.withValues(alpha: 0.08), Colors.transparent],
+        ),
       ),
       child: Column(
         children: [
-          // 타워 등급
           Row(
             children: [
-              Text(tier.emoji, style: const TextStyle(fontSize: 28)),
-              const SizedBox(width: 10),
+              // 등급 이모지 + 이름
+              Container(
+                width: 52,
+                height: 52,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: tierClr.withValues(alpha: 0.12),
+                  border: Border.all(color: tierClr.withValues(alpha: 0.4)),
+                ),
+                child: Center(
+                  child: Text(tier.emoji, style: const TextStyle(fontSize: 26)),
+                ),
+              ),
+              const SizedBox(width: 14),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'TOWER RANK',
+                      style: TextStyle(
+                        color: AppColors.textMuted,
+                        fontSize: 9,
+                        fontWeight: FontWeight.w700,
+                        letterSpacing: 1.4,
+                      ),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      tier.label,
+                      style: TextStyle(
+                        color: tierClr,
+                        fontSize: 17,
+                        fontWeight: FontWeight.w800,
+                      ),
+                    ),
+                    Text(
+                      score.reputationTitle,
+                      style: const TextStyle(
+                        color: AppColors.textSecondary,
+                        fontSize: 12,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              // 점수
               Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
                   Text(
-                    tier.label,
-                    style: const TextStyle(
-                      color: AppColors.gold,
-                      fontSize: 15,
-                      fontWeight: FontWeight.w700,
+                    score.towerHeight.toStringAsFixed(0),
+                    style: TextStyle(
+                      color: tierClr,
+                      fontSize: 22,
+                      fontWeight: FontWeight.w900,
                     ),
                   ),
-                  Text(
-                    tier.nextGoal,
-                    style: const TextStyle(
-                      color: AppColors.textMuted,
-                      fontSize: 11,
-                    ),
+                  const Text(
+                    'pts',
+                    style: TextStyle(color: AppColors.textMuted, fontSize: 11),
                   ),
                 ],
               ),
             ],
           ),
           const SizedBox(height: 14),
-          // 4가지 통계
+          // 프로그레스바
+          ClipRRect(
+            borderRadius: BorderRadius.circular(6),
+            child: LinearProgressIndicator(
+              value: progress,
+              minHeight: 8,
+              backgroundColor: AppColors.bgSurface,
+              valueColor: AlwaysStoppedAnimation<Color>(tierClr),
+            ),
+          ),
+          const SizedBox(height: 6),
           Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              _statCell('보낸 편지', '${score.sentCount}', Icons.send_rounded),
-              _statDivider(),
-              _statCell('받은 편지', '${score.receivedCount}', Icons.mail_rounded),
-              _statDivider(),
-              _statCell('답장', '${score.replyCount}', Icons.reply_rounded),
-              _statDivider(),
-              _statCell('받은 좋아요', '${score.likeCount}', Icons.favorite_rounded),
+              Text(
+                isMax ? '🏆 최고 등급 달성!' : tier.nextGoal,
+                style: const TextStyle(
+                  color: AppColors.textMuted,
+                  fontSize: 11,
+                ),
+              ),
+              if (!isMax)
+                Text(
+                  '${ptsLeft.toStringAsFixed(0)}pts 남음',
+                  style: TextStyle(
+                    color: tierClr,
+                    fontSize: 11,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
             ],
           ),
         ],
@@ -1094,6 +1618,183 @@ class _ProfileScreenState extends State<ProfileScreen> {
         inactiveThumbColor: AppColors.textMuted,
         inactiveTrackColor: AppColors.bgCard,
       ),
+    );
+  }
+
+  // ── 카드형 설정 그룹 ─────────────────────────────────────────────────────
+  Widget _settingsGroup(String title, List<Widget> children) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.only(left: 4, bottom: 8),
+            child: Text(
+              title,
+              style: const TextStyle(
+                color: AppColors.teal,
+                fontSize: 12,
+                fontWeight: FontWeight.w700,
+                letterSpacing: 1.2,
+              ),
+            ),
+          ),
+          Container(
+            decoration: BoxDecoration(
+              color: AppColors.bgCard,
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(
+                color: AppColors.textMuted.withValues(alpha: 0.1),
+              ),
+            ),
+            child: Column(children: children),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // ── 그룹 내 일반 타일 ────────────────────────────────────────────────────
+  Widget _groupTile({
+    required IconData icon,
+    required String label,
+    Widget? trailing,
+    VoidCallback? onTap,
+    Color? iconColor,
+    Color? labelColor,
+    bool isLast = false,
+  }) {
+    return Column(
+      children: [
+        InkWell(
+          onTap: onTap,
+          borderRadius: isLast
+              ? const BorderRadius.vertical(bottom: Radius.circular(16))
+              : BorderRadius.zero,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+            child: Row(
+              children: [
+                Container(
+                  width: 34,
+                  height: 34,
+                  decoration: BoxDecoration(
+                    color: (iconColor ?? AppColors.textSecondary).withValues(
+                      alpha: 0.1,
+                    ),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Icon(
+                    icon,
+                    color: iconColor ?? AppColors.textSecondary,
+                    size: 18,
+                  ),
+                ),
+                const SizedBox(width: 14),
+                Expanded(
+                  child: Text(
+                    label,
+                    style: TextStyle(
+                      color: labelColor ?? AppColors.textPrimary,
+                      fontSize: 15,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ),
+                if (trailing != null) ...[trailing, const SizedBox(width: 4)],
+                if (onTap != null)
+                  Icon(
+                    Icons.chevron_right_rounded,
+                    color: AppColors.textMuted.withValues(alpha: 0.5),
+                    size: 18,
+                  ),
+              ],
+            ),
+          ),
+        ),
+        if (!isLast)
+          Padding(
+            padding: const EdgeInsets.only(left: 64),
+            child: Divider(
+              height: 1,
+              color: AppColors.textMuted.withValues(alpha: 0.08),
+            ),
+          ),
+      ],
+    );
+  }
+
+  // ── 그룹 내 스위치 타일 ──────────────────────────────────────────────────
+  Widget _groupSwitchTile({
+    required IconData icon,
+    required String label,
+    String? subtitle,
+    required bool value,
+    required ValueChanged<bool> onChanged,
+    bool isLast = false,
+  }) {
+    return Column(
+      children: [
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+          child: Row(
+            children: [
+              Container(
+                width: 34,
+                height: 34,
+                decoration: BoxDecoration(
+                  color: AppColors.textSecondary.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Icon(icon, color: AppColors.textSecondary, size: 18),
+              ),
+              const SizedBox(width: 14),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      label,
+                      style: const TextStyle(
+                        color: AppColors.textPrimary,
+                        fontSize: 15,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                    if (subtitle != null)
+                      Padding(
+                        padding: const EdgeInsets.only(top: 2),
+                        child: Text(
+                          subtitle,
+                          style: const TextStyle(
+                            color: AppColors.textMuted,
+                            fontSize: 12,
+                          ),
+                        ),
+                      ),
+                  ],
+                ),
+              ),
+              Switch(
+                value: value,
+                onChanged: onChanged,
+                activeColor: AppColors.teal,
+                inactiveThumbColor: AppColors.textMuted,
+                inactiveTrackColor: AppColors.bgCard,
+              ),
+            ],
+          ),
+        ),
+        if (!isLast)
+          Padding(
+            padding: const EdgeInsets.only(left: 64),
+            child: Divider(
+              height: 1,
+              color: AppColors.textMuted.withValues(alpha: 0.08),
+            ),
+          ),
+      ],
     );
   }
 }

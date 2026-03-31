@@ -8,7 +8,7 @@ import '../widgets/letter_read_screen.dart';
 import '../../map/screens/letter_detail_map_screen.dart';
 import '../../dm/dm_conversation_screen.dart';
 
-enum LetterFilterType { all, read, inTransit, waitingPickup }
+enum LetterFilterType { all, read, inTransit, waitingPickup, brand }
 
 class InboxScreen extends StatefulWidget {
   const InboxScreen({super.key});
@@ -20,8 +20,83 @@ class InboxScreen extends StatefulWidget {
 class _InboxScreenState extends State<InboxScreen>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
+  final ScrollController _inboxScrollController = ScrollController();
   LetterFilterType _inboxFilter = LetterFilterType.all;
   LetterFilterType _sentFilter = LetterFilterType.all;
+  String _searchQuery = '';
+  bool _searchMode = false;
+  final TextEditingController _searchController = TextEditingController();
+
+  // 국가명 검색 별칭 (한국어, 영어, 현지어 모두 매칭)
+  static const Map<String, List<String>> _countryAliases = {
+    '대한민국': ['korea', 'south korea', 'kr', '한국'],
+    '일본': ['japan', 'jp', '日本', 'nihon'],
+    '미국': ['usa', 'united states', 'america', 'us'],
+    '프랑스': ['france', 'fr', 'français'],
+    '영국': ['uk', 'united kingdom', 'england', 'britain'],
+    '독일': ['germany', 'de', 'deutschland'],
+    '이탈리아': ['italy', 'it', 'italia'],
+    '스페인': ['spain', 'es', 'españa'],
+    '브라질': ['brazil', 'br', 'brasil'],
+    '인도': ['india', 'in'],
+    '중국': ['china', 'cn', '中国', 'zhongguo'],
+    '호주': ['australia', 'au'],
+    '캐나다': ['canada', 'ca'],
+    '멕시코': ['mexico', 'mx', 'méxico'],
+    '아르헨티나': ['argentina', 'ar'],
+    '러시아': ['russia', 'ru', 'россия'],
+    '터키': ['turkey', 'tr', 'türkiye'],
+    '이집트': ['egypt', 'eg', 'مصر'],
+    '남아프리카': ['south africa', 'za'],
+    '태국': ['thailand', 'th', 'ประเทศไทย'],
+    '네덜란드': ['netherlands', 'nl', 'holland'],
+    '스웨덴': ['sweden', 'se', 'sverige'],
+    '노르웨이': ['norway', 'no', 'norge'],
+    '포르투갈': ['portugal', 'pt'],
+    '인도네시아': ['indonesia', 'id'],
+    '말레이시아': ['malaysia', 'my'],
+    '싱가포르': ['singapore', 'sg'],
+    '뉴질랜드': ['new zealand', 'nz'],
+    '필리핀': ['philippines', 'ph'],
+    '베트남': ['vietnam', 'vn', 'việt nam'],
+    '그리스': ['greece', 'gr', 'hellas'],
+    '이스라엘': ['israel', 'il'],
+    '사우디아라비아': ['saudi arabia', 'sa', 'saudi'],
+    'UAE': ['uae', 'united arab emirates', 'dubai', '아랍에미리트'],
+    '파키스탄': ['pakistan', 'pk'],
+    '방글라데시': ['bangladesh', 'bd'],
+    '나이지리아': ['nigeria', 'ng'],
+    '케냐': ['kenya', 'ke'],
+    '에티오피아': ['ethiopia', 'et'],
+    '모로코': ['morocco', 'ma', 'maroc'],
+    '콜롬비아': ['colombia', 'co'],
+    '페루': ['peru', 'pe'],
+    '칠레': ['chile', 'cl'],
+    '덴마크': ['denmark', 'dk', 'danmark'],
+    '핀란드': ['finland', 'fi', 'suomi'],
+    '오스트리아': ['austria', 'at', 'österreich'],
+    '폴란드': ['poland', 'pl', 'polska'],
+    '체코': ['czech', 'cz', 'czechia', 'česká'],
+    '헝가리': ['hungary', 'hu', 'magyarország'],
+    '우크라이나': ['ukraine', 'ua', 'україна'],
+  };
+
+  List<Letter> _applySearch(List<Letter> letters) {
+    final q = _searchQuery.trim().toLowerCase();
+    if (q.isEmpty) return letters;
+    return letters.where((l) {
+      if (l.content.toLowerCase().contains(q)) return true;
+      if (l.senderCountry.toLowerCase().contains(q)) return true;
+      if (l.senderCountryFlag.contains(q)) return true;
+      // 별칭 검색
+      final aliases = _countryAliases[l.senderCountry] ?? [];
+      if (aliases.any(
+        (a) => a.toLowerCase().contains(q) || q.contains(a.toLowerCase()),
+      ))
+        return true;
+      return false;
+    }).toList();
+  }
 
   @override
   void initState() {
@@ -32,7 +107,27 @@ class _InboxScreenState extends State<InboxScreen>
   @override
   void dispose() {
     _tabController.dispose();
+    _inboxScrollController.dispose();
+    _searchController.dispose();
     super.dispose();
+  }
+
+  void _scrollToFirstUnread(List<Letter> letters) {
+    final idx = letters.indexWhere((l) => l.status == DeliveryStatus.delivered);
+    if (idx < 0) return;
+    // 필터바 높이(56) + 체인배너(0 or 80) + 카드 높이 추정(110px)
+    const double filterBarH = 56.0;
+    const double itemH = 110.0;
+    final double target = filterBarH + idx * itemH;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (_inboxScrollController.hasClients) {
+        _inboxScrollController.animateTo(
+          target.clamp(0.0, _inboxScrollController.position.maxScrollExtent),
+          duration: const Duration(milliseconds: 450),
+          curve: Curves.easeInOut,
+        );
+      }
+    });
   }
 
   List<Letter> _applyFilter(
@@ -40,8 +135,10 @@ class _InboxScreenState extends State<InboxScreen>
     required LetterFilterType filter,
     required bool isInbox,
   }) {
-    if (filter == LetterFilterType.all) return letters;
-    return letters.where((letter) {
+    // 검색어가 있으면 먼저 검색 필터 적용
+    final searched = _applySearch(letters);
+    if (filter == LetterFilterType.all) return searched;
+    return searched.where((letter) {
       switch (filter) {
         case LetterFilterType.read:
           return isInbox
@@ -53,10 +150,23 @@ class _InboxScreenState extends State<InboxScreen>
               letter.status == DeliveryStatus.nearYou;
         case LetterFilterType.waitingPickup:
           return letter.status == DeliveryStatus.deliveredFar;
+        case LetterFilterType.brand:
+          return letter.senderIsBrand ||
+              letter.letterType == LetterType.brandExpress;
         case LetterFilterType.all:
           return true;
       }
     }).toList();
+  }
+
+  void _toggleSearch() {
+    setState(() {
+      _searchMode = !_searchMode;
+      if (!_searchMode) {
+        _searchController.clear();
+        _searchQuery = '';
+      }
+    });
   }
 
   @override
@@ -87,6 +197,7 @@ class _InboxScreenState extends State<InboxScreen>
                         onTap: (letter) => _openLetter(context, letter, state),
                         sentSinceLastUnlock: state.sentSinceLastUnlock,
                         canViewNext: state.canViewNextLetter,
+                        scrollController: _inboxScrollController,
                       ),
                       _SentTab(
                         letters: _applyFilter(
@@ -113,59 +224,171 @@ class _InboxScreenState extends State<InboxScreen>
 
   Widget _buildHeader(BuildContext ctx, AppState state) {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(20, 16, 20, 8),
-      child: Row(
+      padding: const EdgeInsets.fromLTRB(20, 16, 20, 4),
+      child: Column(
         children: [
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+          Row(
             children: [
-              ShaderMask(
-                shaderCallback: (b) => const LinearGradient(
-                  colors: [AppColors.goldLight, AppColors.gold],
-                ).createShader(b),
-                child: const Text(
-                  '편지함',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 26,
-                    fontWeight: FontWeight.w800,
-                    letterSpacing: -0.5,
-                  ),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    ShaderMask(
+                      shaderCallback: (b) => const LinearGradient(
+                        colors: [AppColors.goldLight, AppColors.gold],
+                      ).createShader(b),
+                      child: const Text(
+                        '편지함',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 26,
+                          fontWeight: FontWeight.w800,
+                          letterSpacing: -0.5,
+                        ),
+                      ),
+                    ),
+                    const Text(
+                      'WHISPERS FROM ACROSS THE TIDES',
+                      style: TextStyle(
+                        color: AppColors.textMuted,
+                        fontSize: 8,
+                        fontWeight: FontWeight.w700,
+                        letterSpacing: 1.8,
+                      ),
+                    ),
+                    const SizedBox(height: 1),
+                    Text(
+                      '총 ${state.inbox.length}통 받음',
+                      style: const TextStyle(
+                        color: AppColors.textMuted,
+                        fontSize: 13,
+                      ),
+                    ),
+                  ],
                 ),
               ),
-              Text(
-                '총 ${state.inbox.length}통 받음',
-                style: const TextStyle(
-                  color: AppColors.textMuted,
-                  fontSize: 13,
+              // 검색 버튼
+              IconButton(
+                onPressed: _toggleSearch,
+                icon: Icon(
+                  _searchMode ? Icons.search_off_rounded : Icons.search_rounded,
+                  color: _searchMode ? AppColors.gold : AppColors.textSecondary,
+                  size: 22,
                 ),
               ),
-            ],
-          ),
-          const Spacer(),
-          if (state.unreadCount > 0)
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-              decoration: BoxDecoration(
-                color: AppColors.gold.withOpacity(0.15),
-                borderRadius: BorderRadius.circular(20),
-                border: Border.all(color: AppColors.gold.withOpacity(0.4)),
-              ),
-              child: Row(
-                children: [
-                  const Text('📩', style: TextStyle(fontSize: 14)),
-                  const SizedBox(width: 4),
-                  Text(
-                    '${state.unreadCount} 읽지 않음',
-                    style: const TextStyle(
-                      color: AppColors.gold,
-                      fontSize: 12,
-                      fontWeight: FontWeight.w700,
+              if (!_searchMode && state.unreadCount > 0)
+                GestureDetector(
+                  onTap: () {
+                    _tabController.animateTo(0);
+                    final letters = _applyFilter(
+                      state.inbox.reversed.toList(),
+                      filter: _inboxFilter,
+                      isInbox: true,
+                    );
+                    _scrollToFirstUnread(letters);
+                  },
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 6,
+                    ),
+                    decoration: BoxDecoration(
+                      color: AppColors.gold.withValues(alpha: 0.15),
+                      borderRadius: BorderRadius.circular(20),
+                      border: Border.all(
+                        color: AppColors.gold.withValues(alpha: 0.4),
+                      ),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const Text('📩', style: TextStyle(fontSize: 13)),
+                        const SizedBox(width: 4),
+                        Text(
+                          '${state.unreadCount}',
+                          style: const TextStyle(
+                            color: AppColors.gold,
+                            fontSize: 13,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                        const SizedBox(width: 2),
+                        const Icon(
+                          Icons.arrow_downward_rounded,
+                          color: AppColors.gold,
+                          size: 12,
+                        ),
+                      ],
                     ),
                   ),
-                ],
-              ),
+                ),
+            ],
+          ),
+          // 검색 바 (검색 모드일 때만 표시)
+          AnimatedSwitcher(
+            duration: const Duration(milliseconds: 200),
+            transitionBuilder: (child, anim) => SizeTransition(
+              sizeFactor: anim,
+              axisAlignment: -1,
+              child: child,
             ),
+            child: _searchMode
+                ? Padding(
+                    key: const ValueKey('searchbar'),
+                    padding: const EdgeInsets.only(top: 8, bottom: 4),
+                    child: TextField(
+                      controller: _searchController,
+                      autofocus: true,
+                      style: const TextStyle(
+                        color: AppColors.textPrimary,
+                        fontSize: 14,
+                      ),
+                      onChanged: (v) => setState(() => _searchQuery = v),
+                      decoration: InputDecoration(
+                        hintText: '내용, 나라, 이모지 검색...',
+                        hintStyle: const TextStyle(
+                          color: AppColors.textMuted,
+                          fontSize: 13,
+                        ),
+                        prefixIcon: const Icon(
+                          Icons.search_rounded,
+                          color: AppColors.textMuted,
+                          size: 20,
+                        ),
+                        suffixIcon: _searchQuery.isNotEmpty
+                            ? IconButton(
+                                icon: const Icon(
+                                  Icons.clear_rounded,
+                                  color: AppColors.textMuted,
+                                  size: 18,
+                                ),
+                                onPressed: () => setState(() {
+                                  _searchController.clear();
+                                  _searchQuery = '';
+                                }),
+                              )
+                            : null,
+                        filled: true,
+                        fillColor: AppColors.bgCard,
+                        contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 10,
+                        ),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide.none,
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide(
+                            color: AppColors.gold.withValues(alpha: 0.5),
+                          ),
+                        ),
+                      ),
+                    ),
+                  )
+                : const SizedBox.shrink(key: ValueKey('nosearch')),
+          ),
         ],
       ),
     );
@@ -182,9 +405,9 @@ class _InboxScreenState extends State<InboxScreen>
       child: TabBar(
         controller: _tabController,
         indicator: BoxDecoration(
-          color: AppColors.gold.withOpacity(0.15),
+          color: AppColors.gold.withValues(alpha: 0.15),
           borderRadius: BorderRadius.circular(10),
-          border: Border.all(color: AppColors.gold.withOpacity(0.4)),
+          border: Border.all(color: AppColors.gold.withValues(alpha: 0.4)),
         ),
         indicatorSize: TabBarIndicatorSize.tab,
         labelColor: AppColors.gold,
@@ -360,6 +583,7 @@ class _InboxTab extends StatelessWidget {
   final void Function(Letter) onTap;
   final int sentSinceLastUnlock;
   final bool canViewNext;
+  final ScrollController? scrollController;
 
   const _InboxTab({
     required this.letters,
@@ -368,6 +592,7 @@ class _InboxTab extends StatelessWidget {
     required this.onTap,
     required this.sentSinceLastUnlock,
     required this.canViewNext,
+    this.scrollController,
   });
 
   @override
@@ -396,9 +621,11 @@ class _InboxTab extends StatelessWidget {
               margin: const EdgeInsets.fromLTRB(16, 8, 16, 0),
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: AppColors.gold.withOpacity(0.08),
+                color: AppColors.gold.withValues(alpha: 0.08),
                 borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: AppColors.gold.withOpacity(0.3)),
+                border: Border.all(
+                  color: AppColors.gold.withValues(alpha: 0.3),
+                ),
               ),
               child: Row(
                 children: [
@@ -445,6 +672,7 @@ class _InboxTab extends StatelessWidget {
             ),
           Expanded(
             child: ListView.builder(
+              controller: scrollController,
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
               itemCount: letters.length,
               itemBuilder: (ctx, i) {
@@ -539,7 +767,12 @@ class _InboxTab extends StatelessWidget {
                     isInbox: true,
                     isLocked: isLocked,
                     onTap: () => onTap(letter),
-                    onDelete: () => _confirmDelete(ctx, ctx.read<AppState>(), letter.id, isInbox: true),
+                    onDelete: () => _confirmDelete(
+                      ctx,
+                      ctx.read<AppState>(),
+                      letter.id,
+                      isInbox: true,
+                    ),
                   ),
                 );
               },
@@ -670,7 +903,12 @@ class _SentTab extends StatelessWidget {
                     letter: letter,
                     isInbox: false,
                     onTap: () => _showSentDetail(ctx, letter),
-                    onDelete: () => _confirmDelete(ctx, ctx.read<AppState>(), letter.id, isInbox: false),
+                    onDelete: () => _confirmDelete(
+                      ctx,
+                      ctx.read<AppState>(),
+                      letter.id,
+                      isInbox: false,
+                    ),
                   ),
                 );
               },
@@ -687,7 +925,8 @@ class _SentTab extends StatelessWidget {
       isScrollControlled: true,
       builder: (_) => _SentDetailSheet(
         letter: letter,
-        onTrackTap: (letter.status == DeliveryStatus.inTransit ||
+        onTrackTap:
+            (letter.status == DeliveryStatus.inTransit ||
                 letter.status == DeliveryStatus.nearYou)
             ? () => Navigator.push(
                 ctx,
@@ -731,23 +970,23 @@ class _LetterCard extends StatelessWidget {
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
               color: isLocked
-                  ? AppColors.bgCard.withOpacity(0.4)
+                  ? AppColors.bgCard.withValues(alpha: 0.4)
                   : _isUnread
                   ? AppColors.bgCard
-                  : AppColors.bgCard.withOpacity(0.6),
+                  : AppColors.bgCard.withValues(alpha: 0.6),
               borderRadius: BorderRadius.circular(16),
               border: Border.all(
                 color: isLocked
-                    ? AppColors.textMuted.withOpacity(0.3)
+                    ? AppColors.textMuted.withValues(alpha: 0.3)
                     : _isUnread
-                    ? AppColors.gold.withOpacity(0.5)
+                    ? AppColors.gold.withValues(alpha: 0.5)
                     : const Color(0xFF1F2D44),
                 width: _isUnread ? 1.5 : 1.0,
               ),
               boxShadow: _isUnread && !isLocked
                   ? [
                       BoxShadow(
-                        color: AppColors.gold.withOpacity(0.1),
+                        color: AppColors.gold.withValues(alpha: 0.1),
                         blurRadius: 12,
                         spreadRadius: 1,
                       ),
@@ -800,10 +1039,58 @@ class _LetterCard extends StatelessWidget {
                               overflow: TextOverflow.ellipsis,
                             ),
                           ),
+                          // 브랜드 뱃지
+                          if (letter.senderIsBrand ||
+                              letter.letterType == LetterType.brandExpress) ...[
+                            const SizedBox(width: 4),
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 5,
+                                vertical: 2,
+                              ),
+                              decoration: BoxDecoration(
+                                gradient: const LinearGradient(
+                                  colors: [
+                                    Color(0xFFFF8C00),
+                                    Color(0xFFFFB347),
+                                  ],
+                                ),
+                                borderRadius: BorderRadius.circular(4),
+                              ),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  const Text(
+                                    '🏢',
+                                    style: TextStyle(fontSize: 9),
+                                  ),
+                                  const SizedBox(width: 2),
+                                  const Text(
+                                    'BRAND',
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 8,
+                                      fontWeight: FontWeight.w800,
+                                      letterSpacing: 0.5,
+                                    ),
+                                  ),
+                                  if (letter.letterType ==
+                                      LetterType.brandExpress) ...[
+                                    const SizedBox(width: 2),
+                                    const Text(
+                                      '⚡',
+                                      style: TextStyle(fontSize: 9),
+                                    ),
+                                  ],
+                                ],
+                              ),
+                            ),
+                          ],
                           if (_isUnread)
                             Container(
                               width: 8,
                               height: 8,
+                              margin: const EdgeInsets.only(left: 4),
                               decoration: const BoxDecoration(
                                 shape: BoxShape.circle,
                                 color: AppColors.gold,
@@ -847,7 +1134,7 @@ class _LetterCard extends StatelessWidget {
                                 vertical: 2,
                               ),
                               decoration: BoxDecoration(
-                                color: AppColors.teal.withOpacity(0.15),
+                                color: AppColors.teal.withValues(alpha: 0.15),
                                 borderRadius: BorderRadius.circular(6),
                               ),
                               child: const Text(
@@ -899,7 +1186,7 @@ class _LetterCard extends StatelessWidget {
               child: Container(
                 margin: const EdgeInsets.only(bottom: 12),
                 decoration: BoxDecoration(
-                  color: AppColors.bgDeep.withOpacity(0.6),
+                  color: AppColors.bgDeep.withValues(alpha: 0.6),
                   borderRadius: BorderRadius.circular(16),
                 ),
                 child: const Center(
@@ -932,10 +1219,10 @@ class _LetterCard extends StatelessWidget {
                   width: 28,
                   height: 28,
                   decoration: BoxDecoration(
-                    color: AppColors.bgDeep.withOpacity(0.8),
+                    color: AppColors.bgDeep.withValues(alpha: 0.8),
                     shape: BoxShape.circle,
                     border: Border.all(
-                      color: AppColors.error.withOpacity(0.3),
+                      color: AppColors.error.withValues(alpha: 0.3),
                       width: 1,
                     ),
                   ),
@@ -953,7 +1240,7 @@ class _LetterCard extends StatelessWidget {
               child: Container(
                 margin: const EdgeInsets.only(bottom: 12),
                 decoration: BoxDecoration(
-                  color: AppColors.bgDeep.withOpacity(0.7),
+                  color: AppColors.bgDeep.withValues(alpha: 0.7),
                   borderRadius: BorderRadius.circular(16),
                 ),
                 child: const Center(
@@ -997,6 +1284,8 @@ class _LetterFilterBar extends StatelessWidget {
         return '배송중';
       case LetterFilterType.waitingPickup:
         return '수령대기';
+      case LetterFilterType.brand:
+        return '🏢 브랜드';
     }
   }
 
@@ -1026,7 +1315,7 @@ class _LetterFilterBar extends StatelessWidget {
               backgroundColor: AppColors.bgCard,
               side: BorderSide(
                 color: selected
-                    ? AppColors.gold.withOpacity(0.75)
+                    ? AppColors.gold.withValues(alpha: 0.75)
                     : const Color(0xFF304256),
               ),
               shape: RoundedRectangleBorder(
@@ -1098,7 +1387,7 @@ class _StatusBadge extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.12),
+        color: color.withValues(alpha: 0.12),
         borderRadius: BorderRadius.circular(8),
       ),
       child: Text(
@@ -1191,16 +1480,21 @@ class _SentDetailSheet extends StatelessWidget {
                   builder: (_) {
                     final raw = letter.deliveryEmoji;
                     if (raw == null || raw.isEmpty) {
-                      return const Icon(Icons.flight_rounded,
-                          color: AppColors.teal, size: 18);
+                      return const Icon(
+                        Icons.flight_rounded,
+                        color: AppColors.teal,
+                        size: 18,
+                      );
                     }
                     // "|" 구분 포맷 → 선택된 이모티콘만 모아 표시
                     final parts = raw.split('|');
-                    final selected =
-                        parts.where((e) => e.isNotEmpty).toList();
+                    final selected = parts.where((e) => e.isNotEmpty).toList();
                     if (selected.isEmpty) {
-                      return const Icon(Icons.flight_rounded,
-                          color: AppColors.teal, size: 18);
+                      return const Icon(
+                        Icons.flight_rounded,
+                        color: AppColors.teal,
+                        size: 18,
+                      );
                     }
                     return Text(
                       selected.join(' '),
@@ -1222,14 +1516,23 @@ class _SentDetailSheet extends StatelessWidget {
                       '→ ${letter.destinationCountry}',
                       style: Theme.of(context).textTheme.titleMedium,
                     ),
-                    if (letter.destinationCity != null && letter.destinationCity!.isNotEmpty)
+                    if (letter.destinationCity != null &&
+                        letter.destinationCity!.isNotEmpty)
                       Row(
                         children: [
-                          const Icon(Icons.location_on_rounded, size: 12, color: AppColors.teal),
+                          const Icon(
+                            Icons.location_on_rounded,
+                            size: 12,
+                            color: AppColors.teal,
+                          ),
                           const SizedBox(width: 3),
                           Text(
                             letter.destinationCity!,
-                            style: const TextStyle(color: AppColors.teal, fontSize: 12, fontWeight: FontWeight.w600),
+                            style: const TextStyle(
+                              color: AppColors.teal,
+                              fontSize: 12,
+                              fontWeight: FontWeight.w600,
+                            ),
                           ),
                         ],
                       ),
@@ -1281,6 +1584,8 @@ class _SentDetailSheet extends StatelessWidget {
               segment: e.value,
               isActive: e.key <= letter.currentSegmentIndex,
               isCurrent: e.key == letter.currentSegmentIndex,
+              isLastSegment: e.key == letter.segments.length - 1,
+              destinationDisplayAddress: letter.destinationDisplayAddress,
             ),
           ),
           // 지도에서 배송 추적 버튼 (배송 중일 때만)
@@ -1295,9 +1600,11 @@ class _SentDetailSheet extends StatelessWidget {
                 width: double.infinity,
                 padding: const EdgeInsets.symmetric(vertical: 12),
                 decoration: BoxDecoration(
-                  color: AppColors.teal.withOpacity(0.1),
+                  color: AppColors.teal.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: AppColors.teal.withOpacity(0.4)),
+                  border: Border.all(
+                    color: AppColors.teal.withValues(alpha: 0.4),
+                  ),
                 ),
                 child: const Row(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -1328,11 +1635,15 @@ class _RouteStep extends StatelessWidget {
   final RouteSegment segment;
   final bool isActive;
   final bool isCurrent;
+  final bool isLastSegment;
+  final String? destinationDisplayAddress;
 
   const _RouteStep({
     required this.segment,
     required this.isActive,
     required this.isCurrent,
+    this.isLastSegment = false,
+    this.destinationDisplayAddress,
   });
 
   @override
@@ -1370,7 +1681,7 @@ class _RouteStep extends StatelessWidget {
           const SizedBox(width: 10),
           Expanded(
             child: Text(
-              '${segment.fromName} → ${segment.toName}',
+              '${segment.fromName} → ${(isLastSegment && destinationDisplayAddress != null) ? destinationDisplayAddress! : segment.toName}',
               style: TextStyle(
                 color: isCurrent
                     ? AppColors.gold
@@ -1537,7 +1848,7 @@ class _DMTab extends StatelessWidget {
                   borderRadius: BorderRadius.circular(14),
                   border: Border.all(
                     color: session.unreadCount > 0
-                        ? AppColors.teal.withOpacity(0.4)
+                        ? AppColors.teal.withValues(alpha: 0.4)
                         : const Color(0xFF1F2D44),
                   ),
                 ),
@@ -1580,7 +1891,9 @@ class _DMTab extends StatelessWidget {
                                     vertical: 2,
                                   ),
                                   decoration: BoxDecoration(
-                                    color: AppColors.gold.withOpacity(0.15),
+                                    color: AppColors.gold.withValues(
+                                      alpha: 0.15,
+                                    ),
                                     borderRadius: BorderRadius.circular(4),
                                   ),
                                   child: const Text(
@@ -1640,7 +1953,8 @@ class _DMTab extends StatelessWidget {
   }
 }
 
-// ── 팔로잉/팔로워 탭 ──────────────────────────────────────────────────────────
+// ── 팔로잉/팔로워 탭 (향후 소셜 기능 확장 시 사용) ─────────────────────────
+// ignore: unused_element
 class _FollowListTab extends StatelessWidget {
   final String title;
   final List<String> userIds;

@@ -25,11 +25,11 @@ class AppTimeColors extends ThemeExtension<AppTimeColors> {
   });
 
   LinearGradient get backgroundGradient => LinearGradient(
-        begin: Alignment.topCenter,
-        end: Alignment.bottomCenter,
-        stops: const [0.0, 0.45, 1.0],
-        colors: [gradientTop, gradientMid, gradientBottom],
-      );
+    begin: Alignment.topCenter,
+    end: Alignment.bottomCenter,
+    stops: const [0.0, 0.45, 1.0],
+    colors: [gradientTop, gradientMid, gradientBottom],
+  );
 
   static AppTimeColors of(BuildContext context) {
     return Theme.of(context).extension<AppTimeColors>() ??

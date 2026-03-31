@@ -1,17 +1,75 @@
-# message_in_a_bottle
+# Message in a Bottle
 
-A new Flutter project.
+Flutter mobile app for global letter exchange, map-based delivery tracking, and profile/tower progression.
 
-## Getting Started
+## Local setup
 
-This project is a starting point for a Flutter application.
+1. Copy `.env.example` to `.env.local`.
+2. Fill required keys:
+   - `FIREBASE_PROJECT_ID`
+   - `FIREBASE_API_KEY`
+   - `FIREBASE_STORAGE_BUCKET`
+3. Optional:
+   - `STADIA_MAPS_API_KEY` (enables unified map labels in selected app language)
 
-A few resources to get you started if this is your first Flutter project:
+## Run / build scripts
 
-- [Learn Flutter](https://docs.flutter.dev/get-started/learn-flutter)
-- [Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Flutter learning resources](https://docs.flutter.dev/reference/learning-resources)
+- Android debug run:
+  - `./scripts/run_android_debug.sh`
+  - or `./scripts/run_android_debug.sh <device_id>`
+- Android release build:
+  - `./scripts/build_android_release.sh`
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+Both scripts load `.env.local` and inject `--dart-define` values automatically.
+
+## Branch safety
+
+- Check current branch before staging/commit:
+  - `./scripts/ensure_feature_branch.sh`
+- Recommended: work on `codex/*` or `feature/*` branches, not `main`.
+
+## Security check
+
+- Run: `./scripts/security_audit.sh`
+- This checks:
+  - secret-like files tracked by git (fails CI)
+  - local sensitive files left inside repo directory (warning)
+
+### Firebase secret files (outside repo)
+
+- Store secrets to external vault path:
+  - `./scripts/manage_firebase_secrets.sh store`
+- Restore secrets back to project when needed:
+  - `./scripts/manage_firebase_secrets.sh restore`
+- Check current status:
+  - `./scripts/manage_firebase_secrets.sh status`
+
+Default vault path:
+- `../.secrets/message_in_a_bottle`
+
+Sensitive files managed:
+- `android/app/google-services.json`
+- `ios/Runner/GoogleService-Info.plist`
+
+## Local cleanup
+
+- Clean build artifacts/caches:
+  - `./scripts/clean_local_artifacts.sh`
+
+## CI
+
+GitHub Actions workflow: `.github/workflows/flutter_ci.yml`
+
+Pipeline steps:
+1. `flutter pub get`
+2. `./scripts/security_audit.sh`
+3. `flutter test`
+4. `flutter analyze --no-fatal-infos --no-fatal-warnings`
+5. `flutter build apk --debug`
+
+## Marketing Docs
+
+- `docs/marketing/positioning.md`
+- `docs/marketing/value-props.md`
+- `docs/marketing/campaign-calendar.md`
+- `docs/marketing/aso-copy-ko-en.md`

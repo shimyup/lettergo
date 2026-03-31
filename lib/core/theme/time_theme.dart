@@ -30,11 +30,11 @@ class TimeTheme {
   });
 
   LinearGradient get backgroundGradient => LinearGradient(
-        begin: Alignment.topCenter,
-        end: Alignment.bottomCenter,
-        stops: const [0.0, 0.45, 1.0],
-        colors: [gradientTop, gradientMid, gradientBottom],
-      );
+    begin: Alignment.topCenter,
+    end: Alignment.bottomCenter,
+    stops: const [0.0, 0.45, 1.0],
+    colors: [gradientTop, gradientMid, gradientBottom],
+  );
 
   static TimeOfDayPeriod getPeriodForCountry(String country) {
     final offset = LanguageConfig.getTimezoneOffset(country);
@@ -55,12 +55,12 @@ class TimeTheme {
       case TimeOfDayPeriod.morning:
         return const TimeTheme(
           period: TimeOfDayPeriod.morning,
-          bgDeep:    Color(0xFF16093A),
-          bgCard:    Color(0xFF211550),
+          bgDeep: Color(0xFF16093A),
+          bgCard: Color(0xFF211550),
           bgSurface: Color(0xFF2C2068),
-          accent:    Color(0xFFFFB347),
-          gradientTop:    Color(0xFF3D1060), // 짙은 보라
-          gradientMid:    Color(0xFF6B2E52), // 로즈 핑크
+          accent: Color(0xFFFFB347),
+          gradientTop: Color(0xFF3D1060), // 짙은 보라
+          gradientMid: Color(0xFF6B2E52), // 로즈 핑크
           gradientBottom: Color(0xFF0D0E28), // 어두운 남색
           emoji: '🌅',
           label: '새벽',
@@ -70,12 +70,12 @@ class TimeTheme {
       case TimeOfDayPeriod.day:
         return const TimeTheme(
           period: TimeOfDayPeriod.day,
-          bgDeep:    Color(0xFF04213E),
-          bgCard:    Color(0xFF072E58),
+          bgDeep: Color(0xFF04213E),
+          bgCard: Color(0xFF072E58),
           bgSurface: Color(0xFF0B3C72),
-          accent:    Color(0xFF38BEFF),
-          gradientTop:    Color(0xFF1565C0), // 파란 하늘
-          gradientMid:    Color(0xFF0A3D7A), // 깊은 파랑
+          accent: Color(0xFF38BEFF),
+          gradientTop: Color(0xFF1565C0), // 파란 하늘
+          gradientMid: Color(0xFF0A3D7A), // 깊은 파랑
           gradientBottom: Color(0xFF021526), // 심해
           emoji: '☀️',
           label: '낮',
@@ -85,12 +85,12 @@ class TimeTheme {
       case TimeOfDayPeriod.evening:
         return const TimeTheme(
           period: TimeOfDayPeriod.evening,
-          bgDeep:    Color(0xFF1E0608),
-          bgCard:    Color(0xFF2E0E14),
+          bgDeep: Color(0xFF1E0608),
+          bgCard: Color(0xFF2E0E14),
           bgSurface: Color(0xFF3E1620),
-          accent:    Color(0xFFFF6B35),
-          gradientTop:    Color(0xFF7B1E18), // 선셋 레드
-          gradientMid:    Color(0xFF4A1020), // 어두운 로즈
+          accent: Color(0xFFFF6B35),
+          gradientTop: Color(0xFF7B1E18), // 선셋 레드
+          gradientMid: Color(0xFF4A1020), // 어두운 로즈
           gradientBottom: Color(0xFF0A0408), // 거의 블랙
           emoji: '🌆',
           label: '저녁',
@@ -100,12 +100,12 @@ class TimeTheme {
       case TimeOfDayPeriod.night:
         return const TimeTheme(
           period: TimeOfDayPeriod.night,
-          bgDeep:    Color(0xFF0A0A0A),
-          bgCard:    Color(0xFF141414),
+          bgDeep: Color(0xFF0A0A0A),
+          bgCard: Color(0xFF141414),
           bgSurface: Color(0xFF1E1E1E),
-          accent:    Color(0xFFB8B8B8),
-          gradientTop:    Color(0xFF111111),
-          gradientMid:    Color(0xFF0A0A0A),
+          accent: Color(0xFFB8B8B8),
+          gradientTop: Color(0xFF111111),
+          gradientMid: Color(0xFF0A0A0A),
           gradientBottom: Color(0xFF050505),
           emoji: '🌙',
           label: '밤',

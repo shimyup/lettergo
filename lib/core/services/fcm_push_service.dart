@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import '../config/firebase_config.dart';
 
@@ -15,25 +16,29 @@ class FcmPushService {
   }) async {
     if (!FirebaseConfig.kFirebaseEnabled) return false;
     try {
-      final res = await http.post(
-        Uri.parse('https://fcm.googleapis.com/fcm/send'),
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'key=$serverKey',
-        },
-        body: jsonEncode({
-          'to': deviceToken,
-          'notification': {
-            'title': title,
-            'body': body,
-            'sound': 'default',
-          },
-          'data': data ?? {},
-          'priority': 'high',
-        }),
-      ).timeout(const Duration(seconds: 10));
+      final res = await http
+          .post(
+            Uri.parse('https://fcm.googleapis.com/fcm/send'),
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': 'key=$serverKey',
+            },
+            body: jsonEncode({
+              'to': deviceToken,
+              'notification': {
+                'title': title,
+                'body': body,
+                'sound': 'default',
+              },
+              'data': data ?? {},
+              'priority': 'high',
+            }),
+          )
+          .timeout(const Duration(seconds: 10));
       return res.statusCode == 200;
-    } catch (_) {}
+    } catch (e, st) {
+      debugPrint('[FCMPush] 에러: $e\n$st');
+    }
     return false;
   }
 

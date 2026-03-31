@@ -1,6 +1,10 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:gal/gal.dart';
+import 'package:http/http.dart' as http;
+import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../../core/theme/app_theme.dart';
@@ -101,15 +105,15 @@ class _LetterReadScreenState extends State<LetterReadScreen>
         'https://api.mymemory.translated.net/get'
         '?q=${Uri.encodeComponent(text)}&langpair=$fromLang|$toLang',
       );
-      final client = HttpClient();
-      client.connectionTimeout = const Duration(seconds: 8);
-      final req = await client.getUrl(uri);
-      final res = await req.close();
-      final body = await res.transform(utf8.decoder).join();
-      final json = jsonDecode(body) as Map<String, dynamic>;
+      // http 패키지 사용 — HttpClient 직접 사용 시 소켓 누수 위험 방지
+      final response = await http
+          .get(uri)
+          .timeout(const Duration(seconds: 6));
+      final json = jsonDecode(response.body) as Map<String, dynamic>;
       final translated =
           (json['responseData'] as Map<String, dynamic>?)?['translatedText']
               as String?;
+      if (!mounted) return;
       if (translated != null && translated.isNotEmpty) {
         setState(() {
           _translatedText = translated;
@@ -123,7 +127,6 @@ class _LetterReadScreenState extends State<LetterReadScreen>
           _isTranslating = false;
         });
       }
-      client.close();
     } catch (_) {
       if (mounted) {
         setState(() {
@@ -215,57 +218,224 @@ class _LetterReadScreenState extends State<LetterReadScreen>
   }
 
   void _showReportDialog(BuildContext ctx, Letter letter, AppState state) {
+    const _reasons = ['욕설 / 혐오 표현', '스팸 / 광고성 내용', '개인정보 침해'];
+    String? selectedReason;
+    final customCtrl = TextEditingController();
+
     showDialog(
       context: ctx,
-      builder: (_) => AlertDialog(
-        backgroundColor: AppColors.bgCard,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: const Text(
-          '편지 신고',
-          style: TextStyle(
-            color: AppColors.textPrimary,
-            fontSize: 16,
-            fontWeight: FontWeight.w700,
+      builder: (dialogCtx) => StatefulBuilder(
+        builder: (sCtx, setS) => AlertDialog(
+          backgroundColor: AppColors.bgCard,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
           ),
-        ),
-        content: const Text(
-          '이 편지를 신고하시겠어요?\n3회 이상 신고된 발신자는 자동으로 차단됩니다.',
-          style: TextStyle(
-            color: AppColors.textSecondary,
-            fontSize: 13,
-            height: 1.6,
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx),
-            child: const Text(
-              '취소',
-              style: TextStyle(color: AppColors.textMuted),
+          title: const Text(
+            '편지 신고',
+            style: TextStyle(
+              color: AppColors.textPrimary,
+              fontSize: 16,
+              fontWeight: FontWeight.w700,
             ),
           ),
-          TextButton(
-            onPressed: () {
-              state.reportLetter(letter.id, state.currentUser.id);
-              Navigator.pop(ctx);
-              Navigator.pop(ctx); // 편지 화면 닫기
-              ScaffoldMessenger.of(ctx).showSnackBar(
-                const SnackBar(
-                  content: Text('신고가 접수되었습니다. 검토 후 조치됩니다.'),
-                  backgroundColor: Color(0xFF1F2D44),
-                  behavior: SnackBarBehavior.floating,
+          content: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  '신고 이유를 선택해주세요.\n3회 이상 신고 시 발신자가 자동 차단됩니다.',
+                  style: TextStyle(
+                    color: AppColors.textSecondary,
+                    fontSize: 12,
+                    height: 1.6,
+                  ),
                 ),
-              );
-            },
-            child: const Text(
-              '신고',
-              style: TextStyle(
-                color: AppColors.error,
-                fontWeight: FontWeight.w700,
+                const SizedBox(height: 12),
+                // 이유 3가지
+                ..._reasons.map(
+                  (r) => GestureDetector(
+                    onTap: () => setS(() => selectedReason = r),
+                    child: Container(
+                      margin: const EdgeInsets.only(bottom: 8),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 14,
+                        vertical: 10,
+                      ),
+                      decoration: BoxDecoration(
+                        color: selectedReason == r
+                            ? AppColors.error.withValues(alpha: 0.12)
+                            : AppColors.bgSurface,
+                        borderRadius: BorderRadius.circular(10),
+                        border: Border.all(
+                          color: selectedReason == r
+                              ? AppColors.error.withValues(alpha: 0.6)
+                              : const Color(0xFF1F2D44),
+                        ),
+                      ),
+                      child: Row(
+                        children: [
+                          Icon(
+                            selectedReason == r
+                                ? Icons.radio_button_checked
+                                : Icons.radio_button_off,
+                            size: 16,
+                            color: selectedReason == r
+                                ? AppColors.error
+                                : AppColors.textMuted,
+                          ),
+                          const SizedBox(width: 10),
+                          Text(
+                            r,
+                            style: TextStyle(
+                              color: selectedReason == r
+                                  ? AppColors.textPrimary
+                                  : AppColors.textSecondary,
+                              fontSize: 13,
+                              fontWeight: selectedReason == r
+                                  ? FontWeight.w600
+                                  : FontWeight.normal,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+                // 직접 입력
+                GestureDetector(
+                  onTap: () => setS(() => selectedReason = 'direct'),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 14,
+                      vertical: 10,
+                    ),
+                    decoration: BoxDecoration(
+                      color: selectedReason == 'direct'
+                          ? AppColors.error.withValues(alpha: 0.12)
+                          : AppColors.bgSurface,
+                      borderRadius: BorderRadius.circular(10),
+                      border: Border.all(
+                        color: selectedReason == 'direct'
+                            ? AppColors.error.withValues(alpha: 0.6)
+                            : const Color(0xFF1F2D44),
+                      ),
+                    ),
+                    child: Row(
+                      children: [
+                        Icon(
+                          selectedReason == 'direct'
+                              ? Icons.radio_button_checked
+                              : Icons.radio_button_off,
+                          size: 16,
+                          color: selectedReason == 'direct'
+                              ? AppColors.error
+                              : AppColors.textMuted,
+                        ),
+                        const SizedBox(width: 10),
+                        Text(
+                          '직접 입력',
+                          style: TextStyle(
+                            color: selectedReason == 'direct'
+                                ? AppColors.textPrimary
+                                : AppColors.textSecondary,
+                            fontSize: 13,
+                            fontWeight: selectedReason == 'direct'
+                                ? FontWeight.w600
+                                : FontWeight.normal,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                if (selectedReason == 'direct')
+                  Padding(
+                    padding: const EdgeInsets.only(top: 10),
+                    child: TextField(
+                      controller: customCtrl,
+                      style: const TextStyle(
+                        color: AppColors.textPrimary,
+                        fontSize: 13,
+                      ),
+                      maxLines: 3,
+                      maxLength: 200,
+                      decoration: InputDecoration(
+                        hintText: '신고 이유를 입력해주세요...',
+                        hintStyle: const TextStyle(
+                          color: AppColors.textMuted,
+                          fontSize: 12,
+                        ),
+                        filled: true,
+                        fillColor: AppColors.bgSurface,
+                        counterStyle: const TextStyle(
+                          color: AppColors.textMuted,
+                          fontSize: 10,
+                        ),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                          borderSide: const BorderSide(
+                            color: Color(0xFF1F2D44),
+                          ),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                          borderSide: const BorderSide(
+                            color: Color(0xFF1F2D44),
+                          ),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                          borderSide: BorderSide(
+                            color: AppColors.error.withValues(alpha: 0.6),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(dialogCtx),
+              child: const Text(
+                '취소',
+                style: TextStyle(color: AppColors.textMuted),
               ),
             ),
-          ),
-        ],
+            TextButton(
+              onPressed: selectedReason == null
+                  ? null
+                  : () {
+                      final reason = selectedReason == 'direct'
+                          ? (customCtrl.text.trim().isEmpty
+                                ? '직접 입력'
+                                : customCtrl.text.trim())
+                          : selectedReason!;
+                      state.reportLetter(letter.id, state.currentUser.id);
+                      Navigator.pop(dialogCtx);
+                      Navigator.pop(ctx); // 편지 화면 닫기
+                      ScaffoldMessenger.of(ctx).showSnackBar(
+                        SnackBar(
+                          content: Text('신고 접수: $reason'),
+                          backgroundColor: const Color(0xFF1F2D44),
+                          behavior: SnackBarBehavior.floating,
+                        ),
+                      );
+                    },
+              child: Text(
+                '신고',
+                style: TextStyle(
+                  color: selectedReason == null
+                      ? AppColors.textMuted
+                      : AppColors.error,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -282,18 +452,60 @@ class _LetterReadScreenState extends State<LetterReadScreen>
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              '편지에 반응하기',
-              style: TextStyle(
-                color: AppColors.textSecondary,
-                fontSize: 12,
-                fontWeight: FontWeight.w600,
-                letterSpacing: 0.5,
-              ),
-            ),
-            const SizedBox(height: 12),
             Row(
               children: [
+                const Icon(Icons.star_rounded, color: AppColors.gold, size: 16),
+                const SizedBox(width: 6),
+                const Text(
+                  '이 편지를 평가해주세요',
+                  style: TextStyle(
+                    color: AppColors.gold,
+                    fontSize: 13,
+                    fontWeight: FontWeight.w700,
+                    letterSpacing: 0.3,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 14),
+            // 별점 (크게)
+            Row(
+              children: [
+                ...List.generate(5, (i) {
+                  final star = i + 1;
+                  final selected = star <= _userRating;
+                  return GestureDetector(
+                    onTap: () {
+                      final prev = _userRating;
+                      setState(() => _userRating = star);
+                      if (prev == 0) {
+                        state.rateLetter(letter.id, star);
+                      } else {
+                        state.updateRating(letter.id, prev, star);
+                      }
+                    },
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 4,
+                        vertical: 4,
+                      ),
+                      child: AnimatedSwitcher(
+                        duration: const Duration(milliseconds: 150),
+                        child: Text(
+                          selected ? '⭐' : '☆',
+                          key: ValueKey('star_${i}_$selected'),
+                          style: TextStyle(
+                            fontSize: 28,
+                            color: selected
+                                ? AppColors.gold
+                                : AppColors.textMuted,
+                          ),
+                        ),
+                      ),
+                    ),
+                  );
+                }),
+                const Spacer(),
                 // 좋아요 버튼
                 GestureDetector(
                   onTap: () {
@@ -310,20 +522,21 @@ class _LetterReadScreenState extends State<LetterReadScreen>
                     ),
                     decoration: BoxDecoration(
                       color: _hasLiked
-                          ? AppColors.gold.withOpacity(0.15)
+                          ? AppColors.gold.withValues(alpha: 0.15)
                           : AppColors.bgSurface,
                       borderRadius: BorderRadius.circular(10),
                       border: Border.all(
                         color: _hasLiked
-                            ? AppColors.gold.withOpacity(0.5)
+                            ? AppColors.gold.withValues(alpha: 0.5)
                             : const Color(0xFF1F2D44),
                       ),
                     ),
                     child: Row(
+                      mainAxisSize: MainAxisSize.min,
                       children: [
                         Text(
                           _hasLiked ? '❤️' : '🤍',
-                          style: const TextStyle(fontSize: 16),
+                          style: const TextStyle(fontSize: 18),
                         ),
                         const SizedBox(width: 6),
                         Text(
@@ -332,57 +545,83 @@ class _LetterReadScreenState extends State<LetterReadScreen>
                             color: _hasLiked
                                 ? AppColors.gold
                                 : AppColors.textMuted,
-                            fontSize: 13,
-                            fontWeight: FontWeight.w600,
+                            fontSize: 14,
+                            fontWeight: FontWeight.w700,
                           ),
                         ),
                       ],
                     ),
                   ),
                 ),
-                const SizedBox(width: 12),
-                // 별점
-                Expanded(
-                  child: Row(
-                    children: List.generate(5, (i) {
-                      final star = i + 1;
-                      return GestureDetector(
-                        onTap: () {
-                          final prev = _userRating;
-                          setState(() => _userRating = star);
-                          if (prev == 0) {
-                            state.rateLetter(letter.id, star);
-                          } else {
-                            // 별점 변경: 이전 별점 취소 후 새 별점 적용
-                            state.updateRating(letter.id, prev, star);
-                          }
-                        },
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 3),
-                          child: Text(
-                            star <= _userRating ? '⭐' : '☆',
-                            style: TextStyle(
-                              fontSize: 20,
-                              color: star <= _userRating
-                                  ? AppColors.gold
-                                  : AppColors.textMuted,
-                            ),
+                const SizedBox(width: 8),
+                // 신고 버튼 — 브랜드 계정은 미표시, 인증 배지로 대체
+                if (letter.senderIsBrand)
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 6,
+                    ),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFFF8A5C).withValues(alpha: 0.1),
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(
+                        color: const Color(0xFFFF8A5C).withValues(alpha: 0.3),
+                      ),
+                    ),
+                    child: const Text(
+                      '✓ 인증 계정',
+                      style: TextStyle(
+                        color: Color(0xFFFF8A5C),
+                        fontSize: 11,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  )
+                else
+                  GestureDetector(
+                    onTap: () => _showReportDialog(ctx2, letter, state),
+                    child: Tooltip(
+                      message: '신고하기',
+                      child: Container(
+                        padding: const EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          color: AppColors.error.withValues(alpha: 0.10),
+                          borderRadius: BorderRadius.circular(8),
+                          border: Border.all(
+                            color: AppColors.error.withValues(alpha: 0.25),
                           ),
                         ),
-                      );
-                    }),
+                        child: const Icon(
+                          Icons.flag_outlined,
+                          color: AppColors.error,
+                          size: 18,
+                        ),
+                      ),
+                    ),
                   ),
-                ),
               ],
             ),
-            if (_userRating > 0)
-              Padding(
-                padding: const EdgeInsets.only(top: 8),
+            if (_userRating > 0) ...[
+              const SizedBox(height: 8),
+              Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 6,
+                ),
+                decoration: BoxDecoration(
+                  color: AppColors.gold.withValues(alpha: 0.08),
+                  borderRadius: BorderRadius.circular(8),
+                ),
                 child: Text(
-                  '별점 ${_userRating}점 (편지함 나가기 전까지 변경 가능)',
-                  style: const TextStyle(color: AppColors.gold, fontSize: 11),
+                  '⭐ ${_userRating}점 남겨주셨어요! (편지함 나가기 전까지 변경 가능)',
+                  style: const TextStyle(
+                    color: AppColors.gold,
+                    fontSize: 11,
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
               ),
+            ],
           ],
         ),
       ),
@@ -411,17 +650,6 @@ class _LetterReadScreenState extends State<LetterReadScreen>
               ).textTheme.titleMedium?.copyWith(color: AppColors.textSecondary),
             ),
           ),
-          Consumer<AppState>(
-            builder: (ctx2, state, _) => IconButton(
-              onPressed: () => _showReportDialog(ctx, letter, state),
-              icon: const Icon(
-                Icons.flag_outlined,
-                color: AppColors.error,
-                size: 20,
-              ),
-              tooltip: '신고하기',
-            ),
-          ),
         ],
       ),
     );
@@ -433,7 +661,10 @@ class _LetterReadScreenState extends State<LetterReadScreen>
       decoration: BoxDecoration(
         color: AppColors.bgCard,
         borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: AppColors.gold.withOpacity(0.25), width: 1),
+        border: Border.all(
+          color: AppColors.gold.withValues(alpha: 0.25),
+          width: 1,
+        ),
       ),
       child: Row(
         children: [
@@ -457,13 +688,48 @@ class _LetterReadScreenState extends State<LetterReadScreen>
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  letter.isAnonymous ? '🎭 익명의 발신자' : letter.senderName,
-                  style: const TextStyle(
-                    color: AppColors.textPrimary,
-                    fontSize: 16,
-                    fontWeight: FontWeight.w700,
-                  ),
+                Row(
+                  children: [
+                    Flexible(
+                      child: Text(
+                        letter.isAnonymous ? '🎭 익명의 발신자' : letter.senderName,
+                        style: const TextStyle(
+                          color: AppColors.textPrimary,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                    ),
+                    // 브랜드 인증 배지
+                    if (letter.senderIsBrand) ...[
+                      const SizedBox(width: 6),
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 7,
+                          vertical: 3,
+                        ),
+                        decoration: BoxDecoration(
+                          color: const Color(
+                            0xFFFF8A5C,
+                          ).withValues(alpha: 0.15),
+                          borderRadius: BorderRadius.circular(6),
+                          border: Border.all(
+                            color: const Color(
+                              0xFFFF8A5C,
+                            ).withValues(alpha: 0.4),
+                          ),
+                        ),
+                        child: const Text(
+                          '✓ 인증',
+                          style: TextStyle(
+                            color: Color(0xFFFF8A5C),
+                            fontSize: 10,
+                            fontWeight: FontWeight.w800,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ],
                 ),
                 const SizedBox(height: 3),
                 Row(
@@ -483,7 +749,7 @@ class _LetterReadScreenState extends State<LetterReadScreen>
                     ),
                   ],
                 ),
-                const SizedBox(height: 3),
+                const SizedBox(height: 2),
                 Text(
                   _formatDate(letter.sentAt),
                   style: const TextStyle(
@@ -491,87 +757,126 @@ class _LetterReadScreenState extends State<LetterReadScreen>
                     fontSize: 11,
                   ),
                 ),
+                // SNS 링크 + 팔로우 버튼 (하단 행)
+                if (letter.socialLink != null || !letter.isAnonymous) ...[
+                  const SizedBox(height: 8),
+                  Row(
+                    children: [
+                      // SNS 링크
+                      if (letter.socialLink != null)
+                        GestureDetector(
+                          onTap: () => _launchSnsLink(letter.socialLink!),
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 10,
+                              vertical: 8,
+                            ),
+                            decoration: BoxDecoration(
+                              color: AppColors.teal.withValues(alpha: 0.1),
+                              borderRadius: BorderRadius.circular(10),
+                              border: Border.all(
+                                color: AppColors.teal.withValues(alpha: 0.3),
+                              ),
+                            ),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                const Icon(
+                                  Icons.link_rounded,
+                                  color: AppColors.teal,
+                                  size: 14,
+                                ),
+                                const SizedBox(width: 4),
+                                ConstrainedBox(
+                                  constraints: const BoxConstraints(
+                                    maxWidth: 90,
+                                  ),
+                                  child: Text(
+                                    _trimUrl(letter.socialLink!),
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: const TextStyle(
+                                      color: AppColors.teal,
+                                      fontSize: 11,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      if (letter.socialLink != null && !letter.isAnonymous)
+                        const SizedBox(width: 8),
+                      // Follow button (익명 편지에서는 팔로우 불가)
+                      if (!letter.isAnonymous)
+                        Consumer<AppState>(
+                          builder: (ctx, state, _) {
+                            final isFollowing = state.isFollowing(
+                              letter.senderId,
+                            );
+                            return GestureDetector(
+                              onTap: () {
+                                if (isFollowing) {
+                                  state.unfollowUser(letter.senderId);
+                                } else {
+                                  state.followUser(
+                                    letter.senderId,
+                                    letter.senderName,
+                                    country: letter.senderCountry,
+                                    flag: letter.senderCountryFlag,
+                                  );
+                                  ScaffoldMessenger.of(ctx).showSnackBar(
+                                    SnackBar(
+                                      content: Text(
+                                        '${letter.senderName}님을 팔로우했습니다 ⚡',
+                                      ),
+                                      backgroundColor: const Color(0xFF0D1421),
+                                      behavior: SnackBarBehavior.floating,
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(10),
+                                      ),
+                                      duration: const Duration(seconds: 2),
+                                    ),
+                                  );
+                                }
+                              },
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 10,
+                                  vertical: 6,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: isFollowing
+                                      ? AppColors.teal.withValues(alpha: 0.15)
+                                      : AppColors.bgSurface,
+                                  borderRadius: BorderRadius.circular(8),
+                                  border: Border.all(
+                                    color: isFollowing
+                                        ? AppColors.teal.withValues(alpha: 0.5)
+                                        : const Color(0xFF1F2D44),
+                                  ),
+                                ),
+                                child: Text(
+                                  isFollowing ? '⚡ 팔로잉' : '+ 팔로우',
+                                  style: TextStyle(
+                                    color: isFollowing
+                                        ? AppColors.teal
+                                        : AppColors.textMuted,
+                                    fontSize: 11,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                              ),
+                            );
+                          },
+                        ),
+                    ],
+                  ),
+                ],
               ],
             ),
           ),
-          // SNS 링크
-          if (letter.socialLink != null)
-            GestureDetector(
-              onTap: () => _launchSnsLink(letter.socialLink!),
-              child: Container(
-                padding: const EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  color: AppColors.teal.withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(10),
-                  border: Border.all(color: AppColors.teal.withOpacity(0.3)),
-                ),
-                child: const Icon(
-                  Icons.link_rounded,
-                  color: AppColors.teal,
-                  size: 18,
-                ),
-              ),
-            ),
-          if (letter.socialLink != null) const SizedBox(width: 8),
-          // Follow button (익명 편지에서는 팔로우 불가)
-          if (!letter.isAnonymous)
-            Consumer<AppState>(
-              builder: (ctx, state, _) {
-                final isFollowing = state.isFollowing(letter.senderId);
-                return GestureDetector(
-                  onTap: () {
-                    if (isFollowing) {
-                      state.unfollowUser(letter.senderId);
-                    } else {
-                      state.followUser(
-                        letter.senderId,
-                        letter.senderName,
-                        country: letter.senderCountry,
-                        flag: letter.senderCountryFlag,
-                      );
-                      ScaffoldMessenger.of(ctx).showSnackBar(
-                        SnackBar(
-                          content: Text('${letter.senderName}님을 팔로우했습니다 ⚡'),
-                          backgroundColor: const Color(0xFF0D1421),
-                          behavior: SnackBarBehavior.floating,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          duration: const Duration(seconds: 2),
-                        ),
-                      );
-                    }
-                  },
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 10,
-                      vertical: 6,
-                    ),
-                    decoration: BoxDecoration(
-                      color: isFollowing
-                          ? AppColors.teal.withOpacity(0.15)
-                          : AppColors.bgSurface,
-                      borderRadius: BorderRadius.circular(8),
-                      border: Border.all(
-                        color: isFollowing
-                            ? AppColors.teal.withOpacity(0.5)
-                            : const Color(0xFF1F2D44),
-                      ),
-                    ),
-                    child: Text(
-                      isFollowing ? '⚡ 팔로잉' : '+ 팔로우',
-                      style: TextStyle(
-                        color: isFollowing
-                            ? AppColors.teal
-                            : AppColors.textMuted,
-                        fontSize: 11,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ),
-                );
-              },
-            ),
         ],
       ),
     );
@@ -583,7 +888,7 @@ class _LetterReadScreenState extends State<LetterReadScreen>
       decoration: BoxDecoration(
         color: const Color(0xFF0D1F35),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.teal.withOpacity(0.4)),
+        border: Border.all(color: AppColors.teal.withValues(alpha: 0.4)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -630,10 +935,10 @@ class _LetterReadScreenState extends State<LetterReadScreen>
                   child: Container(
                     padding: const EdgeInsets.symmetric(vertical: 10),
                     decoration: BoxDecoration(
-                      color: AppColors.teal.withOpacity(0.15),
+                      color: AppColors.teal.withValues(alpha: 0.15),
                       borderRadius: BorderRadius.circular(10),
                       border: Border.all(
-                        color: AppColors.teal.withOpacity(0.5),
+                        color: AppColors.teal.withValues(alpha: 0.5),
                       ),
                     ),
                     child: const Center(
@@ -697,7 +1002,7 @@ class _LetterReadScreenState extends State<LetterReadScreen>
         ),
         style: OutlinedButton.styleFrom(
           foregroundColor: AppColors.teal,
-          side: BorderSide(color: AppColors.teal.withOpacity(0.5)),
+          side: BorderSide(color: AppColors.teal.withValues(alpha: 0.5)),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(14),
           ),
@@ -722,12 +1027,12 @@ class _LetterReadScreenState extends State<LetterReadScreen>
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(20),
             border: Border.all(
-              color: AppColors.gold.withOpacity(0.15),
+              color: AppColors.gold.withValues(alpha: 0.15),
               width: 1,
             ),
             boxShadow: [
               BoxShadow(
-                color: AppColors.gold.withOpacity(0.05),
+                color: AppColors.gold.withValues(alpha: 0.05),
                 blurRadius: 20,
                 spreadRadius: 5,
               ),
@@ -742,13 +1047,13 @@ class _LetterReadScreenState extends State<LetterReadScreen>
                   Container(
                     width: 3,
                     height: 20,
-                    color: AppColors.gold.withOpacity(0.5),
+                    color: AppColors.gold.withValues(alpha: 0.5),
                   ),
                   const SizedBox(width: 10),
                   Text(
                     '당신에게',
                     style: TextStyle(
-                      color: AppColors.gold.withOpacity(0.7),
+                      color: AppColors.gold.withValues(alpha: 0.7),
                       fontSize: 13,
                       fontStyle: FontStyle.italic,
                       letterSpacing: 1.0,
@@ -756,6 +1061,66 @@ class _LetterReadScreenState extends State<LetterReadScreen>
                   ),
                 ],
               ),
+              // 브랜드 편지 스탬프
+              if (letter.senderIsBrand ||
+                  letter.letterType == LetterType.brandExpress) ...[
+                const SizedBox(height: 12),
+                Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 10,
+                        vertical: 5,
+                      ),
+                      decoration: BoxDecoration(
+                        gradient: const LinearGradient(
+                          colors: [Color(0xFFFF8C00), Color(0xFFFFD700)],
+                        ),
+                        borderRadius: BorderRadius.circular(6),
+                        boxShadow: [
+                          BoxShadow(
+                            color: const Color(0xFFFF8C00).withValues(alpha: 0.35),
+                            blurRadius: 8,
+                            offset: const Offset(0, 2),
+                          ),
+                        ],
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const Text('🏢', style: TextStyle(fontSize: 12)),
+                          const SizedBox(width: 5),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              const Text(
+                                'BRAND LETTER',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 9,
+                                  fontWeight: FontWeight.w800,
+                                  letterSpacing: 1.2,
+                                ),
+                              ),
+                              if (letter.letterType == LetterType.brandExpress)
+                                const Text(
+                                  '⚡ EXPRESS DELIVERY',
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 8,
+                                    fontWeight: FontWeight.w600,
+                                    letterSpacing: 0.8,
+                                  ),
+                                ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ],
               const SizedBox(height: 20),
               // 편지 내용 (원문 또는 번역)
               Text(
@@ -812,10 +1177,10 @@ class _LetterReadScreenState extends State<LetterReadScreen>
                       vertical: 7,
                     ),
                     decoration: BoxDecoration(
-                      color: AppColors.teal.withOpacity(0.1),
+                      color: AppColors.teal.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(8),
                       border: Border.all(
-                        color: AppColors.teal.withOpacity(0.3),
+                        color: AppColors.teal.withValues(alpha: 0.3),
                       ),
                     ),
                     child: _isTranslating
@@ -844,12 +1209,116 @@ class _LetterReadScreenState extends State<LetterReadScreen>
                 child: Text(
                   '— ${letter.isAnonymous ? "어딘가의 낯선 이" : letter.senderName}',
                   style: TextStyle(
-                    color: AppColors.gold.withOpacity(0.6),
+                    color: AppColors.gold.withValues(alpha: 0.6),
                     fontSize: 13,
                     fontStyle: FontStyle.italic,
                   ),
                 ),
               ),
+              // 📸 첨부 이미지 표시 (로컬 파일 또는 네트워크 URL 모두 지원)
+              if (letter.imageUrl != null) ...[
+                const SizedBox(height: 16),
+                GestureDetector(
+                  onTap: () => _openFullscreenImage(context, letter.imageUrl!),
+                  child: Hero(
+                    tag: 'letter_image_${letter.id}',
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(12),
+                      child: _buildLetterImage(letter.imageUrl!),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 6),
+                Row(
+                  children: [
+                    const Icon(
+                      Icons.touch_app_rounded,
+                      size: 11,
+                      color: AppColors.textMuted,
+                    ),
+                    const SizedBox(width: 4),
+                    const Text(
+                      '탭하면 크게 보기 · 저장 가능',
+                      style: TextStyle(
+                        color: AppColors.textMuted,
+                        fontSize: 11,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+              // 🔗 소셜 링크 카드
+              if (letter.socialLink != null) ...[
+                const SizedBox(height: 16),
+                GestureDetector(
+                  onTap: () => _launchSnsLink(letter.socialLink!),
+                  child: Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 14,
+                      vertical: 12,
+                    ),
+                    decoration: BoxDecoration(
+                      color: AppColors.teal.withValues(alpha: 0.07),
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(
+                        color: AppColors.teal.withValues(alpha: 0.35),
+                      ),
+                    ),
+                    child: Row(
+                      children: [
+                        Container(
+                          width: 36,
+                          height: 36,
+                          decoration: BoxDecoration(
+                            color: AppColors.teal.withValues(alpha: 0.15),
+                            borderRadius: BorderRadius.circular(9),
+                          ),
+                          child: const Icon(
+                            Icons.link_rounded,
+                            color: AppColors.teal,
+                            size: 20,
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Text(
+                                '발신자 링크',
+                                style: TextStyle(
+                                  color: AppColors.textSecondary,
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                              const SizedBox(height: 2),
+                              Text(
+                                letter.socialLink!,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: const TextStyle(
+                                  color: AppColors.teal,
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w600,
+                                  decoration: TextDecoration.underline,
+                                  decorationColor: AppColors.teal,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        const Icon(
+                          Icons.open_in_new_rounded,
+                          color: AppColors.teal,
+                          size: 14,
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
             ],
           ),
         ),
@@ -896,7 +1365,7 @@ class _LetterReadScreenState extends State<LetterReadScreen>
                   children: [
                     Container(
                       height: 1,
-                      color: AppColors.gold.withOpacity(0.3),
+                      color: AppColors.gold.withValues(alpha: 0.3),
                     ),
                     const Icon(
                       Icons.flight_rounded,
@@ -942,39 +1411,144 @@ class _LetterReadScreenState extends State<LetterReadScreen>
   }
 
   Widget _buildReplyButton(BuildContext ctx, Letter letter) {
+    final alreadyReplied = letter.hasReplied;
     return SizedBox(
       width: double.infinity,
       height: 54,
       child: ElevatedButton(
-        onPressed: () => Navigator.push(
-          ctx,
-          MaterialPageRoute(
-            builder: (_) => ComposeScreen(
-              replyToId: letter.id,
-              replyToName: letter.isAnonymous ? '익명' : letter.senderName,
-            ),
-          ),
-        ),
+        onPressed: alreadyReplied
+            ? null
+            : () => Navigator.push(
+                ctx,
+                MaterialPageRoute(
+                  builder: (_) => ComposeScreen(
+                    replyToId: letter.id,
+                    replyToName: letter.isAnonymous ? '익명' : letter.senderName,
+                  ),
+                ),
+              ),
         style: ElevatedButton.styleFrom(
-          backgroundColor: AppColors.bgCard,
-          foregroundColor: AppColors.gold,
-          side: const BorderSide(color: AppColors.gold, width: 1.5),
+          backgroundColor: alreadyReplied
+              ? AppColors.bgSurface
+              : AppColors.bgCard,
+          foregroundColor: alreadyReplied
+              ? AppColors.textMuted
+              : AppColors.gold,
+          side: BorderSide(
+            color: alreadyReplied ? const Color(0xFF1F2D44) : AppColors.gold,
+            width: 1.5,
+          ),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(14),
           ),
         ),
-        child: const Row(
+        child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text('💌', style: TextStyle(fontSize: 18)),
-            SizedBox(width: 8),
             Text(
-              '답장 쓰기',
-              style: TextStyle(
+              alreadyReplied ? '✅' : '💌',
+              style: const TextStyle(fontSize: 18),
+            ),
+            const SizedBox(width: 8),
+            Text(
+              alreadyReplied ? '답장 완료 (1회만 가능)' : '답장 쓰기',
+              style: const TextStyle(
                 fontSize: 15,
                 fontWeight: FontWeight.w700,
                 letterSpacing: 0.5,
               ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  /// URL에서 표시용 짧은 텍스트 추출 (https://www. 제거, 경로 축약)
+  String _trimUrl(String url) {
+    var display = url
+        .replaceFirst(RegExp(r'^https?://(www\.)?'), '')
+        .replaceFirst(RegExp(r'/$'), '');
+    if (display.length > 24) display = '${display.substring(0, 22)}…';
+    return display;
+  }
+
+  /// 이미지 URL이 로컬 파일 경로인지 네트워크 URL인지 판별하여 적절한 위젯 반환
+  // ── 풀스크린 이미지 뷰어 ──────────────────────────────────────────────────
+  void _openFullscreenImage(BuildContext context, String imageUrl) {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        fullscreenDialog: true,
+        builder: (_) => _FullscreenImageViewer(
+          imageUrl: imageUrl,
+          heroTag: 'letter_image_${widget.letter.id}',
+        ),
+      ),
+    );
+  }
+
+  Widget _buildLetterImage(String imageUrl) {
+    final isNetwork =
+        imageUrl.startsWith('http://') || imageUrl.startsWith('https://');
+    if (isNetwork) {
+      return Image.network(
+        imageUrl,
+        width: double.infinity,
+        fit: BoxFit.cover,
+        loadingBuilder: (_, child, progress) {
+          if (progress == null) return child;
+          return Container(
+            height: 180,
+            color: AppColors.bgCard,
+            child: Center(
+              child: CircularProgressIndicator(
+                value: progress.expectedTotalBytes != null
+                    ? progress.cumulativeBytesLoaded /
+                          progress.expectedTotalBytes!
+                    : null,
+                color: AppColors.teal,
+                strokeWidth: 2,
+              ),
+            ),
+          );
+        },
+        errorBuilder: (_, __, ___) => _imagePlaceholder(),
+      );
+    } else {
+      final file = File(imageUrl);
+      if (file.existsSync()) {
+        return Image.file(
+          file,
+          width: double.infinity,
+          fit: BoxFit.cover,
+          errorBuilder: (_, __, ___) => _imagePlaceholder(),
+        );
+      }
+      return _imagePlaceholder();
+    }
+  }
+
+  Widget _imagePlaceholder() {
+    return Container(
+      height: 120,
+      decoration: BoxDecoration(
+        color: AppColors.bgCard,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: AppColors.textMuted.withValues(alpha: 0.2)),
+      ),
+      child: const Center(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              Icons.image_not_supported_outlined,
+              color: AppColors.textMuted,
+              size: 28,
+            ),
+            SizedBox(height: 6),
+            Text(
+              '이미지를 불러올 수 없어요',
+              style: TextStyle(color: AppColors.textMuted, fontSize: 11),
             ),
           ],
         ),
@@ -1013,7 +1587,7 @@ String _langLabel(String code) {
 class _LetterBgPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
-    final paint = Paint()..color = AppColors.gold.withOpacity(0.03);
+    final paint = Paint()..color = AppColors.gold.withValues(alpha: 0.03);
     for (double y = 0; y < size.height; y += 32) {
       canvas.drawLine(Offset(0, y), Offset(size.width, y), paint);
     }
@@ -1021,4 +1595,210 @@ class _LetterBgPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(_) => false;
+}
+
+// ── 풀스크린 이미지 뷰어 위젯 ─────────────────────────────────────────────────
+class _FullscreenImageViewer extends StatefulWidget {
+  final String imageUrl;
+  final String heroTag;
+
+  const _FullscreenImageViewer({required this.imageUrl, required this.heroTag});
+
+  @override
+  State<_FullscreenImageViewer> createState() => _FullscreenImageViewerState();
+}
+
+class _FullscreenImageViewerState extends State<_FullscreenImageViewer> {
+  bool _isSaving = false;
+  bool _savedOk = false;
+
+  Future<void> _saveImage() async {
+    if (_isSaving) return;
+    setState(() => _isSaving = true);
+    try {
+      final isNetwork =
+          widget.imageUrl.startsWith('http://') ||
+          widget.imageUrl.startsWith('https://');
+
+      if (isNetwork) {
+        // 네트워크 이미지: 다운로드 후 임시 파일로 저장
+        final response = await http.get(Uri.parse(widget.imageUrl));
+        if (response.statusCode != 200) throw Exception('download failed');
+        final tmpDir = await getTemporaryDirectory();
+        final ext = widget.imageUrl.contains('.png') ? 'png' : 'jpg';
+        final tmpFile = File(
+          '${tmpDir.path}/lettergo_photo_${DateTime.now().millisecondsSinceEpoch}.$ext',
+        );
+        await tmpFile.writeAsBytes(response.bodyBytes);
+        await Gal.putImage(tmpFile.path);
+      } else {
+        // 로컬 파일
+        await Gal.putImage(widget.imageUrl);
+      }
+      if (mounted)
+        setState(() {
+          _isSaving = false;
+          _savedOk = true;
+        });
+      await Future.delayed(const Duration(seconds: 2));
+      if (mounted) setState(() => _savedOk = false);
+    } catch (e) {
+      if (mounted) {
+        setState(() => _isSaving = false);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: const Text('저장 실패: 사진 접근 권한을 확인해주세요'),
+            backgroundColor: Colors.red.shade800,
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+      }
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final isNetwork =
+        widget.imageUrl.startsWith('http://') ||
+        widget.imageUrl.startsWith('https://');
+
+    return Scaffold(
+      backgroundColor: Colors.black,
+      body: Stack(
+        children: [
+          // 배경 탭으로 닫기
+          GestureDetector(
+            onTap: () => Navigator.pop(context),
+            child: const SizedBox.expand(
+              child: ColoredBox(color: Colors.black),
+            ),
+          ),
+          // 중앙 이미지 (확대/축소)
+          Center(
+            child: InteractiveViewer(
+              minScale: 0.8,
+              maxScale: 5.0,
+              child: Hero(
+                tag: widget.heroTag,
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(4),
+                  child: isNetwork
+                      ? Image.network(
+                          widget.imageUrl,
+                          fit: BoxFit.contain,
+                          errorBuilder: (_, __, ___) => const Icon(
+                            Icons.broken_image_rounded,
+                            color: Colors.white54,
+                            size: 64,
+                          ),
+                        )
+                      : Image.file(
+                          File(widget.imageUrl),
+                          fit: BoxFit.contain,
+                          errorBuilder: (_, __, ___) => const Icon(
+                            Icons.broken_image_rounded,
+                            color: Colors.white54,
+                            size: 64,
+                          ),
+                        ),
+                ),
+              ),
+            ),
+          ),
+          // 상단 닫기 버튼
+          SafeArea(
+            child: Align(
+              alignment: Alignment.topRight,
+              child: Padding(
+                padding: const EdgeInsets.all(12),
+                child: GestureDetector(
+                  onTap: () => Navigator.pop(context),
+                  child: Container(
+                    width: 36,
+                    height: 36,
+                    decoration: BoxDecoration(
+                      color: Colors.black.withValues(alpha: 0.55),
+                      shape: BoxShape.circle,
+                    ),
+                    child: const Icon(
+                      Icons.close_rounded,
+                      color: Colors.white,
+                      size: 20,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+          // 하단 저장 버튼
+          SafeArea(
+            child: Align(
+              alignment: Alignment.bottomCenter,
+              child: Padding(
+                padding: const EdgeInsets.only(bottom: 32),
+                child: GestureDetector(
+                  onTap: _saveImage,
+                  child: AnimatedContainer(
+                    duration: const Duration(milliseconds: 250),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 24,
+                      vertical: 12,
+                    ),
+                    decoration: BoxDecoration(
+                      color: _savedOk
+                          ? Colors.green.shade700
+                          : Colors.white.withValues(alpha: 0.92),
+                      borderRadius: BorderRadius.circular(24),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withValues(alpha: 0.25),
+                          blurRadius: 12,
+                          offset: const Offset(0, 4),
+                        ),
+                      ],
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        if (_isSaving)
+                          const SizedBox(
+                            width: 18,
+                            height: 18,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              color: Colors.black54,
+                            ),
+                          )
+                        else
+                          Icon(
+                            _savedOk
+                                ? Icons.check_rounded
+                                : Icons.download_rounded,
+                            size: 20,
+                            color: _savedOk ? Colors.white : Colors.black87,
+                          ),
+                        const SizedBox(width: 8),
+                        Text(
+                          _isSaving
+                              ? '저장 중...'
+                              : _savedOk
+                              ? '저장됐어요 ✓'
+                              : '사진 저장',
+                          style: TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.w600,
+                            color: _savedOk ? Colors.white : Colors.black87,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 }

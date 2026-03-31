@@ -4,20 +4,33 @@
 /// 1. Firebase 콘솔 (https://console.firebase.google.com) 에서 새 프로젝트 생성
 /// 2. iOS 앱 등록 (Bundle ID: com.globaldrift.messageInABottle)
 /// 3. GoogleService-Info.plist 다운로드 → ios/Runner/ 에 추가
-/// 4. 아래 값들을 Firebase 프로젝트 설정에서 복사 붙여넣기
-/// 5. kFirebaseEnabled = true 로 변경
+/// 4. 빌드 시 아래 dart-define 값 주입
+///    --dart-define=FIREBASE_PROJECT_ID=...
+///    --dart-define=FIREBASE_API_KEY=...
+///    --dart-define=FIREBASE_STORAGE_BUCKET=...
 class FirebaseConfig {
-  /// Firebase 사용 여부 (설정 완료 후 true로 변경)
-  static const bool kFirebaseEnabled = false;
+  /// Firebase 사용 여부
+  /// 빌드 시 아래 값들이 모두 주입되면 true
+  static bool get kFirebaseEnabled =>
+      projectId.isNotEmpty && apiKey.isNotEmpty && storageBucket.isNotEmpty;
 
-  /// Firebase 프로젝트 ID (예: letter-go-12345)
-  static const String projectId = 'YOUR_PROJECT_ID';
+  /// Firebase 프로젝트 ID
+  static const String projectId = String.fromEnvironment(
+    'FIREBASE_PROJECT_ID',
+    defaultValue: '',
+  );
 
   /// Firebase Web API Key (프로젝트 설정 → 일반 탭에서 확인)
-  static const String apiKey = 'YOUR_WEB_API_KEY';
+  static const String apiKey = String.fromEnvironment(
+    'FIREBASE_API_KEY',
+    defaultValue: '',
+  );
 
   /// Firebase Storage Bucket
-  static const String storageBucket = 'YOUR_PROJECT_ID.appspot.com';
+  static const String storageBucket = String.fromEnvironment(
+    'FIREBASE_STORAGE_BUCKET',
+    defaultValue: '',
+  );
 
   // Firestore REST API 기본 URL
   static String get firestoreBase =>

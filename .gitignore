@@ -43,3 +43,21 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+
+# Sensitive keys and local service config
+*.p8
+AuthKey_*.p8
+SubscriptionKey_*.p8
+android/app/google-services.json
+ios/Runner/GoogleService-Info.plist
+
+# Local environment files
+.env.local
+.env.*.local
+.secrets/
+
+# Large local data artifacts under scripts/
+scripts/*.txt
+scripts/*.zip
+!scripts/*.py
+!scripts/*.sh

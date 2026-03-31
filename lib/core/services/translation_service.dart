@@ -22,8 +22,11 @@ class TranslationService {
       final res = await http.get(uri).timeout(const Duration(seconds: 8));
       if (res.statusCode == 200) {
         final json = jsonDecode(res.body) as Map<String, dynamic>;
-        final translated = (json['responseData'] as Map?)?['translatedText'] as String?;
-        if (translated != null && translated.isNotEmpty && translated != 'INVALID LANGUAGE PAIR') {
+        final translated =
+            (json['responseData'] as Map?)?['translatedText'] as String?;
+        if (translated != null &&
+            translated.isNotEmpty &&
+            translated != 'INVALID LANGUAGE PAIR') {
           return translated;
         }
       }
@@ -39,9 +42,9 @@ class TranslationService {
         '&dt=t'
         '&q=${Uri.encodeComponent(text)}',
       );
-      final res = await http.get(uri, headers: {
-        'User-Agent': 'Mozilla/5.0',
-      }).timeout(const Duration(seconds: 8));
+      final res = await http
+          .get(uri, headers: {'User-Agent': 'Mozilla/5.0'})
+          .timeout(const Duration(seconds: 8));
       if (res.statusCode == 200) {
         final data = jsonDecode(res.body) as List<dynamic>;
         final sentences = data[0] as List<dynamic>?;

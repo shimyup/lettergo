@@ -25,7 +25,11 @@ class FontStyleConfig {
   final String name;
   final TextStyle textStyle;
   final String emoji;
-  const FontStyleConfig({required this.name, required this.textStyle, required this.emoji});
+  const FontStyleConfig({
+    required this.name,
+    required this.textStyle,
+    required this.emoji,
+  });
 }
 
 class LetterStyles {
@@ -124,8 +128,10 @@ class LetterStyles {
     ),
   ];
 
-  static PaperStyle paper(int index) => papers[index.clamp(0, papers.length - 1)];
-  static FontStyleConfig font(int index) => fonts[index.clamp(0, fonts.length - 1)];
+  static PaperStyle paper(int index) =>
+      papers[index.clamp(0, papers.length - 1)];
+  static FontStyleConfig font(int index) =>
+      fonts[index.clamp(0, fonts.length - 1)];
 }
 
 /// 편지지 배경 커스텀 페인터

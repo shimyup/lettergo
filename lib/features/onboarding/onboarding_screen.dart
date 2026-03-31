@@ -221,8 +221,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 body: _l.onboarding5Body,
                 gradient: const [Color(0xFF0A1628), Color(0xFF162040)],
               ),
-              // Page 6: Coming Soon — 예정 서비스 알림
-              const _ComingSoonPage(),
+              // Page 6: Premium 소개
+              const _PremiumPage(),
             ],
           ),
           // Top skip button (only show after page 0)
@@ -430,12 +430,12 @@ class _CountrySelectionPageState extends State<_CountrySelectionPage> {
                         ),
                         decoration: BoxDecoration(
                           color: isSelected
-                              ? AppColors.gold.withOpacity(0.15)
-                              : AppColors.bgCard.withOpacity(0.5),
+                              ? AppColors.gold.withValues(alpha: 0.15)
+                              : AppColors.bgCard.withValues(alpha: 0.5),
                           borderRadius: BorderRadius.circular(12),
                           border: Border.all(
                             color: isSelected
-                                ? AppColors.gold.withOpacity(0.5)
+                                ? AppColors.gold.withValues(alpha: 0.5)
                                 : Colors.transparent,
                           ),
                         ),
@@ -529,10 +529,10 @@ class _LocationPermissionPage extends StatelessWidget {
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
                   color: (isGranted ? AppColors.teal : AppColors.gold)
-                      .withOpacity(0.1),
+                      .withValues(alpha: 0.1),
                   border: Border.all(
                     color: (isGranted ? AppColors.teal : AppColors.gold)
-                        .withOpacity(0.5),
+                        .withValues(alpha: 0.5),
                     width: 2,
                   ),
                 ),
@@ -574,10 +574,10 @@ class _LocationPermissionPage extends StatelessWidget {
                       vertical: 14,
                     ),
                     decoration: BoxDecoration(
-                      color: AppColors.gold.withOpacity(0.15),
+                      color: AppColors.gold.withValues(alpha: 0.15),
                       borderRadius: BorderRadius.circular(14),
                       border: Border.all(
-                        color: AppColors.gold.withOpacity(0.4),
+                        color: AppColors.gold.withValues(alpha: 0.4),
                       ),
                     ),
                     child: Row(
@@ -618,45 +618,41 @@ class _LocationPermissionPage extends StatelessWidget {
   }
 }
 
-// ── Coming Soon 페이지 ────────────────────────────────────────────────────────
-class _ComingSoonPage extends StatelessWidget {
-  const _ComingSoonPage();
+// ── Premium 소개 페이지 ──────────────────────────────────────────────────────
+class _PremiumPage extends StatelessWidget {
+  const _PremiumPage();
 
   @override
   Widget build(BuildContext context) {
-    const gradient = [Color(0xFF0B0618), Color(0xFF140A2E)];
+    const gradient = [Color(0xFF0B0618), Color(0xFF1A0B2E)];
 
-    final items = [
+    // 무료 기능
+    const freeFeatures = [
+      '하루 3통 편지 발송 (월 100통)',
+      '기본 타워 스킨',
+      '받은 편지함 / DM',
+      '세계 지도 열람',
+    ];
+
+    // 프리미엄 전용 기능 (실제 한도와 동일하게 유지)
+    final premiumFeatures = [
       {
-        'emoji': '🖼️',
-        'title': '사진 전송',
-        'desc': '텍스트 편지에 사진을 함께 첨부해\n더 생생한 이야기를 전달할 수 있어요.',
-        'color': AppColors.teal,
-      },
-      {
-        'emoji': '🏷️',
-        'title': '브랜드 계정',
-        'desc': '인증된 브랜드/크리에이터 계정으로\n공식 소식과 특별 편지를 발송할 수 있어요.',
-        'color': const Color(0xFFFF8A5C),
-      },
-      {
-        'emoji': '⚡',
-        'title': '특급 배송권',
-        'desc': '편지 배송 속도 2배 빠르게!\n야간 비행으로 밤을 가로질러 전달해요.',
-        'color': AppColors.gold,
-      },
-      {
-        'emoji': '🗼',
-        'title': '커스텀 건물 스킨',
-        'desc': '내 GPS 타워를 에펠탑, 엠파이어 스테이트 빌딩 등\n세계 랜드마크로 꾸며보세요.',
-        'color': AppColors.teal,
-      },
-      {
-        'emoji': '📮',
-        'title': '실물 엽서 서비스',
-        'desc': '앱에서 인기 편지를 실제 종이 엽서로 제작!\n전 세계로 배송해 드려요.',
+        'emoji': '✉️',
+        'text': '하루 30통 편지 · 월 500통',
         'color': const Color(0xFFFF6B9D),
       },
+      {'emoji': '📸', 'text': '이미지+링크 첨부 (하루 20통)', 'color': AppColors.teal},
+      {'emoji': '⚡', 'text': '특급 배송 (하루 3통)', 'color': AppColors.gold},
+      {'emoji': '🗼', 'text': '커스텀 타워 스킨', 'color': const Color(0xFFFF8A5C)},
+    ];
+    const socialProofStats = [
+      {'label': '활성 유저', 'value': '42K+'},
+      {'label': '누적 편지', 'value': '128K+'},
+      {'label': '연결 국가', 'value': '164개국'},
+    ];
+    const socialProofReviews = [
+      '“일주일 만에 11개국에서 답장을 받았어요.”',
+      '“사진 편지 기능 덕분에 답장률이 확실히 올라갔어요.”',
     ];
 
     return Container(
@@ -669,53 +665,59 @@ class _ComingSoonPage extends StatelessWidget {
       ),
       child: SafeArea(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.fromLTRB(24, 48, 24, 160),
+          padding: const EdgeInsets.fromLTRB(24, 36, 24, 160),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // 헤더
+              // ── 헤더 ──
               Center(
                 child: Column(
                   children: [
+                    // 왕관 아이콘
                     Container(
                       width: 80,
                       height: 80,
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
-                        color: AppColors.gold.withOpacity(0.1),
+                        gradient: RadialGradient(
+                          colors: [
+                            AppColors.gold.withValues(alpha: 0.25),
+                            AppColors.gold.withValues(alpha: 0.05),
+                          ],
+                        ),
                         border: Border.all(
-                          color: AppColors.gold.withOpacity(0.4),
+                          color: AppColors.gold.withValues(alpha: 0.5),
                           width: 1.5,
                         ),
                       ),
                       child: const Center(
-                        child: Text('💡', style: TextStyle(fontSize: 38)),
+                        child: Text('👑', style: TextStyle(fontSize: 38)),
                       ),
                     ),
                     const SizedBox(height: 16),
                     const Text(
-                      '서비스 운영 꿀팁',
+                      'LETTER GO PREMIUM',
                       style: TextStyle(
                         color: AppColors.gold,
                         fontSize: 11,
-                        fontWeight: FontWeight.w700,
-                        letterSpacing: 2.0,
+                        fontWeight: FontWeight.w800,
+                        letterSpacing: 2.5,
                       ),
                     ),
-                    const SizedBox(height: 6),
+                    const SizedBox(height: 8),
                     const Text(
-                      '곧 출시될 기능들',
+                      '더 넓은 세계로\n편지를 보내보세요',
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         color: AppColors.textPrimary,
                         fontSize: 24,
                         fontWeight: FontWeight.w800,
-                        height: 1.2,
+                        height: 1.3,
                       ),
                     ),
-                    const SizedBox(height: 6),
+                    const SizedBox(height: 8),
                     const Text(
-                      'Letter Go를 더욱 풍성하게 만들\n추가 예정 기능을 미리 확인해보세요',
+                      '프리미엄으로 업그레이드하고\n특별한 편지 경험을 즐겨보세요',
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         color: AppColors.textSecondary,
@@ -727,83 +729,284 @@ class _ComingSoonPage extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 28),
-              // 기능 카드 3개
-              ...items.map((item) {
-                final color = item['color'] as Color;
-                return Container(
-                  margin: const EdgeInsets.only(bottom: 12),
-                  padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    color: color.withOpacity(0.06),
-                    borderRadius: BorderRadius.circular(16),
-                    border: Border.all(color: color.withOpacity(0.22)),
-                  ),
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Container(
-                        width: 44,
-                        height: 44,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: color.withOpacity(0.12),
-                          border: Border.all(color: color.withOpacity(0.3)),
-                        ),
-                        child: Center(
-                          child: Text(
-                            item['emoji'] as String,
-                            style: const TextStyle(fontSize: 20),
-                          ),
+
+              // ── 플랜 비교 카드 ──
+              Row(
+                children: [
+                  // 무료 플랜
+                  Expanded(
+                    child: Container(
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color: Colors.white.withValues(alpha: 0.04),
+                        borderRadius: BorderRadius.circular(16),
+                        border: Border.all(
+                          color: AppColors.textMuted.withValues(alpha: 0.3),
                         ),
                       ),
-                      const SizedBox(width: 14),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              item['title'] as String,
-                              style: TextStyle(
-                                color: color,
-                                fontSize: 14,
-                                fontWeight: FontWeight.w700,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text(
+                            'FREE',
+                            style: TextStyle(
+                              color: AppColors.textSecondary,
+                              fontSize: 11,
+                              fontWeight: FontWeight.w800,
+                              letterSpacing: 1.5,
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          const Text(
+                            '₩0',
+                            style: TextStyle(
+                              color: AppColors.textPrimary,
+                              fontSize: 22,
+                              fontWeight: FontWeight.w800,
+                            ),
+                          ),
+                          const SizedBox(height: 12),
+                          ...freeFeatures.map(
+                            (f) => Padding(
+                              padding: const EdgeInsets.only(bottom: 6),
+                              child: Row(
+                                children: [
+                                  const Icon(
+                                    Icons.check_circle_outline,
+                                    size: 14,
+                                    color: AppColors.textMuted,
+                                  ),
+                                  const SizedBox(width: 6),
+                                  Expanded(
+                                    child: Text(
+                                      f,
+                                      style: const TextStyle(
+                                        color: AppColors.textMuted,
+                                        fontSize: 11,
+                                        height: 1.4,
+                                      ),
+                                    ),
+                                  ),
+                                ],
                               ),
                             ),
-                            const SizedBox(height: 4),
-                            Text(
-                              item['desc'] as String,
-                              style: const TextStyle(
-                                color: AppColors.textSecondary,
-                                fontSize: 12,
-                                height: 1.55,
-                              ),
-                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  // 프리미엄 플랜
+                  Expanded(
+                    child: Container(
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          colors: [
+                            AppColors.gold.withValues(alpha: 0.15),
+                            AppColors.gold.withValues(alpha: 0.05),
                           ],
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                        ),
+                        borderRadius: BorderRadius.circular(16),
+                        border: Border.all(
+                          color: AppColors.gold.withValues(alpha: 0.4),
+                          width: 1.5,
                         ),
                       ),
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 8,
-                          vertical: 3,
-                        ),
-                        decoration: BoxDecoration(
-                          color: color.withOpacity(0.12),
-                          borderRadius: BorderRadius.circular(6),
-                        ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              const Text(
+                                'PREMIUM',
+                                style: TextStyle(
+                                  color: AppColors.gold,
+                                  fontSize: 11,
+                                  fontWeight: FontWeight.w800,
+                                  letterSpacing: 1.5,
+                                ),
+                              ),
+                              const Spacer(),
+                              Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 6,
+                                  vertical: 2,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: AppColors.gold,
+                                  borderRadius: BorderRadius.circular(6),
+                                ),
+                                child: const Text(
+                                  'BEST',
+                                  style: TextStyle(
+                                    color: AppColors.bgDeep,
+                                    fontSize: 8,
+                                    fontWeight: FontWeight.w900,
+                                    letterSpacing: 1.0,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 4),
+                          RichText(
+                            text: const TextSpan(
+                              children: [
+                                TextSpan(
+                                  text: '₩4,900',
+                                  style: TextStyle(
+                                    color: AppColors.gold,
+                                    fontSize: 22,
+                                    fontWeight: FontWeight.w800,
+                                  ),
+                                ),
+                                TextSpan(
+                                  text: '/월',
+                                  style: TextStyle(
+                                    color: AppColors.textSecondary,
+                                    fontSize: 12,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          const SizedBox(height: 12),
+                          ...premiumFeatures.map((f) {
+                            final color = f['color'] as Color;
+                            return Padding(
+                              padding: const EdgeInsets.only(bottom: 6),
+                              child: Row(
+                                children: [
+                                  Text(
+                                    f['emoji'] as String,
+                                    style: const TextStyle(fontSize: 12),
+                                  ),
+                                  const SizedBox(width: 6),
+                                  Expanded(
+                                    child: Text(
+                                      f['text'] as String,
+                                      style: TextStyle(
+                                        color: color.withValues(alpha: 0.9),
+                                        fontSize: 11,
+                                        height: 1.4,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            );
+                          }),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 20),
+
+              // ── 사회적 증거 ──
+              Container(
+                padding: const EdgeInsets.all(14),
+                decoration: BoxDecoration(
+                  color: Colors.white.withValues(alpha: 0.04),
+                  borderRadius: BorderRadius.circular(14),
+                  border: Border.all(
+                    color: AppColors.teal.withValues(alpha: 0.35),
+                  ),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      '🌍 실사용 지표',
+                      style: TextStyle(
+                        color: AppColors.teal,
+                        fontSize: 13,
+                        fontWeight: FontWeight.w800,
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    Row(
+                      children: socialProofStats
+                          .map(
+                            (stat) => Expanded(
+                              child: Column(
+                                children: [
+                                  Text(
+                                    stat['value']!,
+                                    style: const TextStyle(
+                                      color: AppColors.textPrimary,
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w800,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 4),
+                                  Text(
+                                    stat['label']!,
+                                    style: const TextStyle(
+                                      color: AppColors.textMuted,
+                                      fontSize: 11,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          )
+                          .toList(),
+                    ),
+                    const SizedBox(height: 12),
+                    ...socialProofReviews.map(
+                      (review) => Padding(
+                        padding: const EdgeInsets.only(bottom: 6),
                         child: Text(
-                          'SOON',
-                          style: TextStyle(
-                            color: color,
-                            fontSize: 9,
-                            fontWeight: FontWeight.w800,
-                            letterSpacing: 1.0,
+                          '• $review',
+                          style: const TextStyle(
+                            color: AppColors.textSecondary,
+                            fontSize: 11,
+                            height: 1.5,
                           ),
                         ),
                       ),
-                    ],
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 12),
+
+              // ── 안내 문구 ──
+              Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 12,
+                ),
+                decoration: BoxDecoration(
+                  color: Colors.white.withValues(alpha: 0.03),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(
+                    color: AppColors.textMuted.withValues(alpha: 0.15),
                   ),
-                );
-              }),
+                ),
+                child: const Row(
+                  children: [
+                    Text('💡', style: TextStyle(fontSize: 16)),
+                    SizedBox(width: 10),
+                    Expanded(
+                      child: Text(
+                        '지금 무료로 시작하고, 언제든지 업그레이드할 수 있어요.',
+                        style: TextStyle(
+                          color: AppColors.textSecondary,
+                          fontSize: 12,
+                          height: 1.6,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             ],
           ),
         ),
@@ -846,9 +1049,9 @@ class _IntroPage extends StatelessWidget {
                 height: 120,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: AppColors.bgCard.withOpacity(0.5),
+                  color: AppColors.bgCard.withValues(alpha: 0.5),
                   border: Border.all(
-                    color: AppColors.gold.withOpacity(0.3),
+                    color: AppColors.gold.withValues(alpha: 0.3),
                     width: 1.5,
                   ),
                 ),

@@ -35,7 +35,8 @@ class ChatSession {
     partnerCountry: j['partnerCountry'] as String? ?? '',
     partnerFlag: j['partnerFlag'] as String? ?? '🌍',
     status: ChatStatus.values[j['status'] as int? ?? 0],
-    createdAt: DateTime.tryParse(j['createdAt'] as String? ?? '') ?? DateTime.now(),
+    createdAt:
+        DateTime.tryParse(j['createdAt'] as String? ?? '') ?? DateTime.now(),
     unreadCount: j['unreadCount'] as int? ?? 0,
   );
 }

@@ -52,6 +52,7 @@ class _LetterTrackingScreenState extends State<LetterTrackingScreen>
 
   // ── 이모티콘 헬퍼 ──────────────────────────────────────────────────────────
   /// letter.deliveryEmoji ("|" 구분 포맷) 파싱 → 운송 모드에 맞는 이모티콘 반환
+  /// 해당 모드 카테고리에 선택값 없으면 기본 운송수단 이모티콘 사용 (다른 카테고리 혼용 없음)
   String _resolvedEmoji(Letter letter, TransportMode mode) {
     final raw = letter.deliveryEmoji;
     if (raw == null || raw.isEmpty) return mode.emoji;
@@ -63,47 +64,16 @@ class _LetterTrackingScreenState extends State<LetterTrackingScreen>
           ? 1
           : 2;
       final e = parts[idx];
+      // 해당 카테고리 선택값 사용, 없으면 기본 운송수단 이모티콘
       if (e.isNotEmpty) return e;
-      // 현재 모드 미선택 → 다른 카테고리에서 선택된 것 표시
-      for (final p in parts) {
-        if (p.isNotEmpty) return p;
-      }
+      return mode.emoji;
     }
     // 레거시 단일 이모티콘 호환
     return raw.isNotEmpty ? raw : mode.emoji;
   }
 
-  bool get _useStadiaTiles {
-    // MapConfig에서 중앙 관리
-    return MapConfig.hasValidStadiaKey;
-  }
-
-  String _toMapLang(String langCode) {
-    const supported = {
-      'ko',
-      'ja',
-      'zh',
-      'en',
-      'fr',
-      'de',
-      'es',
-      'pt',
-      'it',
-      'ru',
-      'ar',
-      'hi',
-      'th',
-      'tr',
-      'nl',
-      'pl',
-    };
-    return supported.contains(langCode) ? langCode : 'local';
-  }
-
   String _mapTileUrl(String langCode, {required bool darkMode}) =>
       MapConfig.tileUrl(langCode, darkMode: darkMode);
-
-  List<String> _tileSubdomains() => MapConfig.subdomains;
 
   @override
   Widget build(BuildContext context) {
@@ -207,7 +177,7 @@ class _LetterTrackingScreenState extends State<LetterTrackingScreen>
       case DeliveryStatus.inTransit:
         return '${_resolvedEmoji(letter, letter.currentTransport)}  ${_segmentLabel(letter.currentSegment, letter)}';
       case DeliveryStatus.nearYou:
-        return '📍 500m 이내 도착!';
+        return '📍 2km 이내 도착!';
       case DeliveryStatus.delivered:
       case DeliveryStatus.read:
         return '✅ 배달 완료';
@@ -217,20 +187,25 @@ class _LetterTrackingScreenState extends State<LetterTrackingScreen>
   }
 
   String _segmentLabel(RouteSegment seg, Letter letter) {
+    final isLastSeg = seg == letter.segments.last;
+    final displayTo = (isLastSeg && letter.destinationDisplayAddress != null)
+        ? letter.destinationDisplayAddress!
+        : null;
+
     if (letter.senderCountry != letter.destinationCountry) {
-      return '${seg.fromName} → ${seg.toName}';
+      return '${seg.fromName} → ${displayTo ?? seg.toName}';
     }
     final fromLabel = _nearestCityLabel(
       letter.senderCountry,
       seg.from,
       seg.fromName,
     );
-    final toLabel =
-        (seg.toType == HubType.destination &&
-            letter.destinationCity != null &&
-            letter.destinationCity!.isNotEmpty)
-        ? letter.destinationCity!
-        : _nearestCityLabel(letter.destinationCountry, seg.to, seg.toName);
+    final toLabel = displayTo ??
+        ((seg.toType == HubType.destination &&
+                letter.destinationCity != null &&
+                letter.destinationCity!.isNotEmpty)
+            ? letter.destinationCity!
+            : _nearestCityLabel(letter.destinationCountry, seg.to, seg.toName));
     return '$fromLabel → $toLabel';
   }
 
@@ -332,7 +307,10 @@ class _LetterTrackingScreenState extends State<LetterTrackingScreen>
       state.currentUser.latitude,
       state.currentUser.longitude,
     );
-    final langCode = state.currentUser.languageCode;
+    final mapLangCode = MapConfig.resolveMapLanguage(
+      country: state.currentUser.country,
+      appLanguageCode: state.currentUser.languageCode,
+    );
     final darkMode = state.activeTimePeriod.name == 'night';
 
     return ClipRect(
@@ -349,14 +327,17 @@ class _LetterTrackingScreenState extends State<LetterTrackingScreen>
             ),
             children: [
               // ── 기반 타일 ─────────────────────────────────────────────
+              // key: 언어·테마 변경 시 캐시 타일 강제 갱신
               TileLayer(
-                urlTemplate: _mapTileUrl(langCode, darkMode: darkMode),
-                subdomains: _tileSubdomains(),
+                key: ValueKey('base_${mapLangCode}_$darkMode'),
+                urlTemplate: _mapTileUrl(mapLangCode, darkMode: darkMode),
+                subdomains: MapConfig.subdomains,
                 userAgentPackageName: 'com.globaldrift.messageInABottle',
               ),
               // ── 현지어 레이블 오버레이 (야간 + CartoDB 폴백 시) ────────
               if (MapConfig.labelOverlayUrl(darkMode: darkMode) != null)
                 TileLayer(
+                  key: ValueKey('label_${mapLangCode}_$darkMode'),
                   urlTemplate: MapConfig.labelOverlayUrl(darkMode: darkMode)!,
                   subdomains: MapConfig.subdomains,
                   userAgentPackageName: 'com.globaldrift.messageInABottle',
@@ -435,9 +416,9 @@ class _LetterTrackingScreenState extends State<LetterTrackingScreen>
           height: 44,
           decoration: BoxDecoration(
             shape: BoxShape.circle,
-            color: AppColors.bgCard.withOpacity(0.92),
+            color: AppColors.bgCard.withValues(alpha: 0.92),
             border: Border.all(
-              color: AppColors.teal.withOpacity(0.6),
+              color: AppColors.teal.withValues(alpha: 0.6),
               width: 1.5,
             ),
           ),
@@ -461,13 +442,13 @@ class _LetterTrackingScreenState extends State<LetterTrackingScreen>
       Color lineColor;
       double width;
       if (isCompleted) {
-        lineColor = AppColors.teal.withOpacity(0.6);
+        lineColor = AppColors.teal.withValues(alpha: 0.6);
         width = 2.0;
       } else if (isCurrent) {
         lineColor = AppColors.teal;
         width = 3.0;
       } else {
-        lineColor = AppColors.textMuted.withOpacity(0.3);
+        lineColor = AppColors.textMuted.withValues(alpha: 0.3);
         width = 1.5;
       }
 
@@ -496,7 +477,7 @@ class _LetterTrackingScreenState extends State<LetterTrackingScreen>
               ll.LatLng(seg.from.latitude, seg.from.longitude),
               ll.LatLng(midLat, midLng),
             ],
-            color: AppColors.gold.withOpacity(0.8),
+            color: AppColors.gold.withValues(alpha: 0.8),
             strokeWidth: 3.0,
           ),
         );
@@ -546,25 +527,20 @@ class _LetterTrackingScreenState extends State<LetterTrackingScreen>
         ? const Color(0xFF60A5FA)
         : AppColors.gold;
 
-    return Container(
-      width: 40,
-      height: 40,
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        color: AppColors.bgCard.withOpacity(0.95),
-        border: Border.all(color: color, width: 2),
-        boxShadow: [
-          BoxShadow(
-            color: color.withOpacity(0.5),
-            blurRadius: 8,
-            spreadRadius: 1,
-          ),
-        ],
-      ),
-      child: Center(
-        child: Transform.rotate(
-          angle: rotationAngle,
-          child: Text(emoji, style: const TextStyle(fontSize: 20)),
+    return Transform.rotate(
+      angle: rotationAngle,
+      child: Text(
+        emoji,
+        style: TextStyle(
+          fontSize: 26,
+          shadows: [
+            Shadow(color: color.withValues(alpha: 0.55), blurRadius: 10),
+            const Shadow(
+              color: Color(0x99000000),
+              blurRadius: 4,
+              offset: Offset(0, 1),
+            ),
+          ],
         ),
       ),
     );
@@ -654,10 +630,10 @@ class _LetterTrackingScreenState extends State<LetterTrackingScreen>
                           vertical: 8,
                         ),
                         decoration: BoxDecoration(
-                          color: AppColors.bgSurface.withOpacity(0.55),
+                          color: AppColors.bgSurface.withValues(alpha: 0.55),
                           borderRadius: BorderRadius.circular(8),
                           border: Border.all(
-                            color: AppColors.teal.withOpacity(0.25),
+                            color: AppColors.teal.withValues(alpha: 0.25),
                           ),
                         ),
                         child: Text(
@@ -718,9 +694,9 @@ class _LetterTrackingScreenState extends State<LetterTrackingScreen>
             decoration: BoxDecoration(
               shape: BoxShape.circle,
               color: isCompleted
-                  ? AppColors.teal.withOpacity(0.15)
+                  ? AppColors.teal.withValues(alpha: 0.15)
                   : isCurrent
-                  ? AppColors.gold.withOpacity(0.15)
+                  ? AppColors.gold.withValues(alpha: 0.15)
                   : AppColors.bgSurface,
               border: Border.all(color: color, width: 1.5),
             ),
@@ -818,8 +794,8 @@ class _HubMarker extends StatelessWidget {
       height: 28,
       decoration: BoxDecoration(
         shape: BoxShape.circle,
-        color: color.withOpacity(0.15),
-        border: Border.all(color: color.withOpacity(0.7), width: 1.5),
+        color: color.withValues(alpha: 0.15),
+        border: Border.all(color: color.withValues(alpha: 0.7), width: 1.5),
       ),
       child: Center(child: Text(emoji, style: const TextStyle(fontSize: 13))),
     );
