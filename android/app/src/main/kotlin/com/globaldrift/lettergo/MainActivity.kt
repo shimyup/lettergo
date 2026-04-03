@@ -1,4 +1,4 @@
-package com.globaldrift.message_in_a_bottle
+package com.globaldrift.lettergo
 
 import io.flutter.embedding.android.FlutterActivity
 
