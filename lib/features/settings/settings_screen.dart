@@ -352,56 +352,60 @@ class _SettingsScreenState extends State<SettingsScreen> {
     showModalBottomSheet(
       context: ctx,
       backgroundColor: AppColors.bgCard,
+      isScrollControlled: true,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
       builder: (_) => SafeArea(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Padding(
-              padding: const EdgeInsets.all(16),
-              child: Text(
-                l.settingsLanguage,
-                style: const TextStyle(
-                  color: AppColors.textPrimary,
-                  fontSize: 16,
-                  fontWeight: FontWeight.w700,
+        child: Padding(
+          padding: EdgeInsets.only(
+            bottom: MediaQuery.of(ctx).viewInsets.bottom,
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(16),
+                child: Text(
+                  l.settingsLanguage,
+                  style: const TextStyle(
+                    color: AppColors.textPrimary,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w700,
+                  ),
                 ),
               ),
-            ),
-            Divider(height: 1, color: AppColors.textMuted.withValues(alpha: 0.2)),
-            ConstrainedBox(
-              constraints: BoxConstraints(
-                maxHeight: MediaQuery.of(ctx).size.height * 0.5,
-              ),
-              child: ListView.builder(
-                shrinkWrap: true,
-                itemCount: languages.length,
-                itemBuilder: (_, i) {
-                  final code = languages[i].key;
-                  final name = languages[i].value;
-                  final isSelected = code == currentCode;
-                  return ListTile(
-                    leading: isSelected
-                        ? const Icon(Icons.check_circle, color: AppColors.teal, size: 20)
-                        : const Icon(Icons.circle_outlined, color: AppColors.textMuted, size: 20),
-                    title: Text(
-                      name,
-                      style: TextStyle(
-                        color: isSelected ? AppColors.teal : AppColors.textPrimary,
-                        fontWeight: isSelected ? FontWeight.w700 : FontWeight.w400,
+              Divider(height: 1, color: AppColors.textMuted.withValues(alpha: 0.2)),
+              SizedBox(
+                height: MediaQuery.of(ctx).size.height * 0.45,
+                child: ListView.builder(
+                  itemCount: languages.length,
+                  itemBuilder: (_, i) {
+                    final code = languages[i].key;
+                    final name = languages[i].value;
+                    final isSelected = code == currentCode;
+                    return ListTile(
+                      dense: true,
+                      leading: isSelected
+                          ? const Icon(Icons.check_circle, color: AppColors.teal, size: 20)
+                          : const Icon(Icons.circle_outlined, color: AppColors.textMuted, size: 20),
+                      title: Text(
+                        name,
+                        style: TextStyle(
+                          color: isSelected ? AppColors.teal : AppColors.textPrimary,
+                          fontWeight: isSelected ? FontWeight.w700 : FontWeight.w400,
+                        ),
                       ),
-                    ),
-                    onTap: () {
-                      state.updateProfile(languageCode: code);
-                      Navigator.pop(ctx);
-                    },
-                  );
-                },
+                      onTap: () {
+                        state.updateProfile(languageCode: code);
+                        Navigator.pop(ctx);
+                      },
+                    );
+                  },
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

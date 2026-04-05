@@ -6,6 +6,7 @@ import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../../core/localization/app_localizations.dart';
 import '../../../core/localization/country_names.dart';
+import '../../../core/localization/language_config.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/services/auth_service.dart';
 import '../../../core/services/purchase_service.dart';
@@ -401,6 +402,74 @@ class _ProfileScreenState extends State<ProfileScreen> {
           fontSize: 26,
           fontWeight: FontWeight.w800,
           color: AppColors.bgDeep,
+        ),
+      ),
+    );
+  }
+
+  // ── 언어 변경 ──────────────────────────────────────────────────────────────
+  void _showLanguagePicker(BuildContext ctx, AppState state) {
+    final currentCode = state.currentUser.languageCode;
+    final l = AppL10n.of(currentCode);
+    final languages = LanguageConfig.languageNames.entries.toList();
+
+    showModalBottomSheet(
+      context: ctx,
+      backgroundColor: AppColors.bgCard,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (_) => SafeArea(
+        child: Padding(
+          padding: EdgeInsets.only(
+            bottom: MediaQuery.of(ctx).viewInsets.bottom,
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(16),
+                child: Text(
+                  l.settingsLanguage,
+                  style: const TextStyle(
+                    color: AppColors.textPrimary,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ),
+              Divider(height: 1, color: AppColors.textMuted.withValues(alpha: 0.2)),
+              SizedBox(
+                height: MediaQuery.of(ctx).size.height * 0.45,
+                child: ListView.builder(
+                  itemCount: languages.length,
+                  itemBuilder: (_, i) {
+                    final code = languages[i].key;
+                    final name = languages[i].value;
+                    final isSelected = code == currentCode;
+                    return ListTile(
+                      dense: true,
+                      leading: isSelected
+                          ? const Icon(Icons.check_circle, color: AppColors.teal, size: 20)
+                          : const Icon(Icons.circle_outlined, color: AppColors.textMuted, size: 20),
+                      title: Text(
+                        name,
+                        style: TextStyle(
+                          color: isSelected ? AppColors.teal : AppColors.textPrimary,
+                          fontWeight: isSelected ? FontWeight.w700 : FontWeight.w400,
+                        ),
+                      ),
+                      onTap: () {
+                        state.updateProfile(languageCode: code);
+                        Navigator.pop(ctx);
+                      },
+                    );
+                  },
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -890,6 +959,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                   fontSize: 14,
                                 ),
                               ),
+                            ),
+                            _groupTile(
+                              icon: Icons.language_rounded,
+                              label: _l.settingsLanguage,
+                              trailing: Text(
+                                LanguageConfig.getLanguageName(_lc),
+                                style: const TextStyle(
+                                  color: AppColors.textMuted,
+                                  fontSize: 14,
+                                ),
+                              ),
+                              onTap: () => _showLanguagePicker(ctx, state),
                               isLast: true,
                             ),
                           ]),
