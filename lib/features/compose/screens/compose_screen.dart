@@ -2381,7 +2381,8 @@ class _ComposeScreenState extends State<ComposeScreen>
   }
 
   Widget _buildStyleBar() {
-    final l10n = AppL10n.of(context.read<AppState>().currentUser.languageCode);
+    final _lc = context.read<AppState>().currentUser.languageCode;
+    final l10n = AppL10n.of(_lc);
     final paper = LetterStyles.paper(_paperStyle);
     final font = LetterStyles.font(_fontStyle);
     return Row(
@@ -2405,7 +2406,7 @@ class _ComposeScreenState extends State<ComposeScreen>
                   const SizedBox(width: 8),
                   Expanded(
                     child: Text(
-                      paper.name,
+                      paper.localizedName(_lc),
                       style: const TextStyle(
                         color: AppColors.textPrimary,
                         fontSize: 12,
@@ -2444,7 +2445,7 @@ class _ComposeScreenState extends State<ComposeScreen>
                   const SizedBox(width: 8),
                   Expanded(
                     child: Text(
-                      font.name,
+                      font.localizedName(_lc),
                       style: const TextStyle(
                         color: AppColors.textPrimary,
                         fontSize: 12,
@@ -3005,7 +3006,8 @@ class _ComposeScreenState extends State<ComposeScreen>
   }
 
   void _showPaperPicker() {
-    final l10n = AppL10n.of(context.read<AppState>().currentUser.languageCode);
+    final _plc = context.read<AppState>().currentUser.languageCode;
+    final l10n = AppL10n.of(_plc);
     showModalBottomSheet(
       context: context,
       backgroundColor: Colors.transparent,
@@ -3067,7 +3069,7 @@ class _ComposeScreenState extends State<ComposeScreen>
                         const SizedBox(width: 12),
                         Expanded(
                           child: Text(
-                            p.name,
+                            p.localizedName(_plc),
                             style: TextStyle(
                               color: p.inkColor,
                               fontSize: 14,
@@ -3137,7 +3139,8 @@ class _ComposeScreenState extends State<ComposeScreen>
   }
 
   void _showFontPicker() {
-    final l10n = AppL10n.of(context.read<AppState>().currentUser.languageCode);
+    final _flc = context.read<AppState>().currentUser.languageCode;
+    final l10n = AppL10n.of(_flc);
     showModalBottomSheet(
       context: context,
       backgroundColor: Colors.transparent,
@@ -3199,7 +3202,7 @@ class _ComposeScreenState extends State<ComposeScreen>
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              f.name,
+                              f.localizedName(_flc),
                               style: const TextStyle(
                                 color: AppColors.textPrimary,
                                 fontSize: 13,
