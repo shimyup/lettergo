@@ -12,7 +12,8 @@ import '../features/profile/profile_screen.dart';
 import 'offline_banner.dart';
 
 class MainScaffold extends StatefulWidget {
-  const MainScaffold({super.key});
+  final int initialIndex;
+  const MainScaffold({super.key, this.initialIndex = 0});
 
   @override
   State<MainScaffold> createState() => _MainScaffoldState();
@@ -20,7 +21,7 @@ class MainScaffold extends StatefulWidget {
 
 class _MainScaffoldState extends State<MainScaffold>
     with TickerProviderStateMixin {
-  int _currentIndex = 0;
+  late int _currentIndex = widget.initialIndex;
 
   late final List<Widget> _pages = [
     WorldMapScreen(onGoToInbox: () => setState(() => _currentIndex = 1)),
