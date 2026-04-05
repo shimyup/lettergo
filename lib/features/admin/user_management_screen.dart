@@ -26,6 +26,8 @@ class AdminUser {
   final int inviteRewardCredits;
   final String updatedAt;
   final bool isBanned;
+  final bool isPremium;
+  final bool isBrand;
   final String? customTowerName;
 
   const AdminUser({
@@ -45,6 +47,8 @@ class AdminUser {
     this.inviteRewardCredits = 0,
     this.updatedAt = '',
     this.isBanned = false,
+    this.isPremium = false,
+    this.isBrand = false,
     this.customTowerName,
   });
 
@@ -125,6 +129,8 @@ class AdminUser {
       inviteRewardCredits: intVal('inviteRewardCredits'),
       updatedAt: str('updatedAt'),
       isBanned: boolVal('banned'),
+      isPremium: boolVal('isPremium'),
+      isBrand: boolVal('isBrand'),
       customTowerName: str('customTowerName').isEmpty
           ? null
           : str('customTowerName'),
@@ -210,6 +216,8 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
           'mask.fieldPaths=inviteRewardCredits',
           'mask.fieldPaths=updatedAt',
           'mask.fieldPaths=banned',
+          'mask.fieldPaths=isPremium',
+          'mask.fieldPaths=isBrand',
           'mask.fieldPaths=customTowerName',
         ];
         if (nextPageToken != null) {
@@ -309,6 +317,8 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
           inviteRewardCredits: user.inviteRewardCredits,
           updatedAt: user.updatedAt,
           isBanned: newBanned,
+          isPremium: user.isPremium,
+          isBrand: user.isBrand,
           customTowerName: user.customTowerName,
         );
       }
@@ -326,6 +336,62 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
         l.koEn(
           '업데이트 실패. Firebase 권한을 확인하세요',
           'Update failed. Check Firebase permissions.',
+        ),
+        isError: true,
+      );
+    }
+  }
+
+  // ── 등급 승급/강등 ──────────────────────────────────────────────────────────
+  Future<void> _setTier(AdminUser user, {required bool isPremium, required bool isBrand}) async {
+    final l = _l10n(context);
+    final ok = await FirestoreService.setDocument('users/${user.id}', {
+      'isPremium': isPremium,
+      'isBrand': isBrand,
+    });
+    if (!mounted) return;
+    if (ok) {
+      final idx = _users.indexWhere((u) => u.id == user.id);
+      if (idx != -1) {
+        _users[idx] = AdminUser(
+          id: user.id,
+          username: user.username,
+          country: user.country,
+          countryFlag: user.countryFlag,
+          latitude: user.latitude,
+          longitude: user.longitude,
+          receivedCount: user.receivedCount,
+          replyCount: user.replyCount,
+          sentCount: user.sentCount,
+          likeCount: user.likeCount,
+          ratingTotal: user.ratingTotal,
+          ratingCount: user.ratingCount,
+          inviteCode: user.inviteCode,
+          inviteRewardCredits: user.inviteRewardCredits,
+          updatedAt: user.updatedAt,
+          isBanned: user.isBanned,
+          isPremium: isPremium,
+          isBrand: isBrand,
+          customTowerName: user.customTowerName,
+        );
+      }
+      _applyFilter();
+      final tierName = isBrand
+          ? 'Brand'
+          : isPremium
+              ? 'Premium'
+              : 'Free';
+      _showSnack(
+        l.koEn(
+          '✅ ${user.username} → $tierName 변경 완료',
+          '✅ ${user.username} → $tierName updated',
+        ),
+      );
+    } else {
+      _showSnack(
+        l.koEn(
+          '등급 변경 실패. Firebase 권한을 확인하세요',
+          'Tier update failed. Check Firebase permissions.',
         ),
         isError: true,
       );
@@ -389,16 +455,26 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
                       children: [
                         Row(
                           children: [
-                            Text(
-                              user.username,
-                              style: const TextStyle(
-                                color: AppColors.textPrimary,
-                                fontSize: 20,
-                                fontWeight: FontWeight.w700,
+                            Flexible(
+                              child: Text(
+                                user.username,
+                                style: const TextStyle(
+                                  color: AppColors.textPrimary,
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.w700,
+                                ),
+                                overflow: TextOverflow.ellipsis,
                               ),
                             ),
+                            if (user.isBrand) ...[
+                              const SizedBox(width: 6),
+                              _chip('Brand', const Color(0xFFFF8A5C)),
+                            ] else if (user.isPremium) ...[
+                              const SizedBox(width: 6),
+                              _chip('Premium', AppColors.gold),
+                            ],
                             if (user.isBanned) ...[
-                              const SizedBox(width: 8),
+                              const SizedBox(width: 6),
                               _chip(l.koEn('차단됨', 'Banned'), AppColors.error),
                             ],
                           ],
@@ -471,6 +547,52 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
               _detailRow(
                 l.koEn('좌표', 'Coordinates'),
                 '${user.latitude.toStringAsFixed(4)}, ${user.longitude.toStringAsFixed(4)}',
+              ),
+              const SizedBox(height: 20),
+              // ── 등급 변경 ──────────────────────────────────────────────
+              _sectionLabel(l.koEn('등급 관리', 'Tier Management')),
+              const SizedBox(height: 8),
+              Row(
+                children: [
+                  Expanded(
+                    child: _tierButton(
+                      label: 'Free',
+                      emoji: '👤',
+                      color: AppColors.textMuted,
+                      isActive: !user.isPremium && !user.isBrand,
+                      onTap: () {
+                        Navigator.pop(ctx);
+                        _setTier(user, isPremium: false, isBrand: false);
+                      },
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: _tierButton(
+                      label: 'Premium',
+                      emoji: '⭐',
+                      color: AppColors.gold,
+                      isActive: user.isPremium && !user.isBrand,
+                      onTap: () {
+                        Navigator.pop(ctx);
+                        _setTier(user, isPremium: true, isBrand: false);
+                      },
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: _tierButton(
+                      label: 'Brand',
+                      emoji: '🏷️',
+                      color: const Color(0xFFFF8A5C),
+                      isActive: user.isBrand,
+                      onTap: () {
+                        Navigator.pop(ctx);
+                        _setTier(user, isPremium: true, isBrand: true);
+                      },
+                    ),
+                  ),
+                ],
               ),
               const SizedBox(height: 24),
               // 차단/해제 버튼
@@ -833,8 +955,15 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
                           overflow: TextOverflow.ellipsis,
                         ),
                       ),
+                      if (user.isBrand) ...[
+                        const SizedBox(width: 4),
+                        _chip('B', const Color(0xFFFF8A5C), small: true),
+                      ] else if (user.isPremium) ...[
+                        const SizedBox(width: 4),
+                        _chip('P', AppColors.gold, small: true),
+                      ],
                       if (user.isBanned) ...[
-                        const SizedBox(width: 6),
+                        const SizedBox(width: 4),
                         _chip(
                           _l10n(context).koEn('차단', 'Banned'),
                           AppColors.error,
@@ -934,6 +1063,55 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
           color: color,
           fontSize: small ? 10 : 11,
           fontWeight: FontWeight.w700,
+        ),
+      ),
+    );
+  }
+
+  Widget _tierButton({
+    required String label,
+    required String emoji,
+    required Color color,
+    required bool isActive,
+    required VoidCallback onTap,
+  }) {
+    return GestureDetector(
+      onTap: isActive ? null : onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 10),
+        decoration: BoxDecoration(
+          color: isActive
+              ? color.withValues(alpha: 0.15)
+              : AppColors.bgDeep,
+          borderRadius: BorderRadius.circular(10),
+          border: Border.all(
+            color: isActive
+                ? color.withValues(alpha: 0.6)
+                : AppColors.textMuted.withValues(alpha: 0.25),
+            width: isActive ? 1.5 : 1,
+          ),
+        ),
+        child: Column(
+          children: [
+            Text(emoji, style: const TextStyle(fontSize: 18)),
+            const SizedBox(height: 2),
+            Text(
+              label,
+              style: TextStyle(
+                color: isActive ? color : AppColors.textSecondary,
+                fontSize: 12,
+                fontWeight: isActive ? FontWeight.w700 : FontWeight.w500,
+              ),
+            ),
+            if (isActive)
+              Padding(
+                padding: const EdgeInsets.only(top: 2),
+                child: Text(
+                  '✓',
+                  style: TextStyle(color: color, fontSize: 11),
+                ),
+              ),
+          ],
         ),
       ),
     );

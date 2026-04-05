@@ -652,6 +652,16 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
     _saveToPrefs();
   }
 
+  /// 모든 편지 전체 삭제 (받은 편지 + 보낸 편지 + 지도)
+  void adminClearAllLetters() {
+    _inbox.clear();
+    _sent.clear();
+    _worldLetters.clear();
+    _hasNearbyAlert = false;
+    notifyListeners();
+    _saveToPrefs();
+  }
+
   /// 활동 점수 리셋
   void adminResetActivityScore() {
     _currentUser.activityScore.receivedCount = 0;
@@ -3209,16 +3219,27 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
   }
 
   // ── 근처 도착 알림 트리거 ────────────────────────────────────────────────────
+  static final Random _notifRng = Random();
+
   Future<void> _triggerNearbyNotification(Letter letter) async {
     // 편지 도착 햅틱 (medium vibration)
     HapticFeedback.mediumImpact();
     final prefs = await SharedPreferences.getInstance();
     final notifyEnabled = prefs.getBool('notify_nearby') ?? true;
     if (!notifyEnabled) return;
+
+    // 다양한 알림 문구 중 랜덤 선택
+    final titles = _l10n.stateNearbyNotifTitles;
+    final bodies = _l10n.stateNearbyNotifBodies(
+      letter.senderCountryFlag,
+      letter.senderCountry,
+    );
+    final title = titles[_notifRng.nextInt(titles.length)];
+    final body = bodies[_notifRng.nextInt(bodies.length)];
+
     NotificationService.showNearbyLetterNotification(
-      title: _l10n.stateNearbyNotificationTitle,
-      body:
-          _l10n.stateNearbyNotificationBody(letter.senderCountryFlag, letter.senderCountry),
+      title: title,
+      body: body,
     );
   }
 

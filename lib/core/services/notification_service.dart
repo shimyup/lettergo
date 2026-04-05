@@ -1,3 +1,4 @@
+import 'dart:math';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter/foundation.dart';
 
@@ -72,6 +73,28 @@ class NotificationService {
     }
   }
 
+  static final Random _rng = Random();
+
+  static const _arrivedTitles = [
+    '💌 새 편지가 도착했어요!',
+    '🌏 먼 곳에서 편지가 왔어요!',
+    '📬 편지함에 새 편지!',
+    '🎉 편지가 여행을 마쳤어요!',
+    '🕊️ 편지가 무사히 도착했어요!',
+    '🌊 바다를 건너 편지가 왔어요!',
+    '✉️ 새로운 편지 소식!',
+    '🗺️ 세계 어딘가에서 편지 도착!',
+  ];
+
+  static List<String> _arrivedBodies(String flag, String country) => [
+    '$flag $country에서 보낸 편지가 도착했습니다',
+    '$flag $country 누군가의 이야기가 당신을 향해 왔어요',
+    '$flag $country에서 출발한 편지가 목적지에 도착!',
+    '$flag $country의 마음이 담긴 편지가 왔어요',
+    '먼 $flag $country에서 편지병이 떠내려왔어요',
+    '$flag $country 편지가 긴 여행을 마치고 도착했어요',
+  ];
+
   static Future<void> showLetterArrivedNotification({
     required String senderCountry,
     required String senderFlag,
@@ -94,12 +117,12 @@ class NotificationService {
         android: androidDetails,
         iOS: iosDetails,
       );
-      await _plugin.show(
-        1,
-        '💌 새 편지가 도착했어요!',
-        '$senderFlag $senderCountry에서 보낸 편지가 도착했습니다',
-        details,
-      );
+
+      final title = _arrivedTitles[_rng.nextInt(_arrivedTitles.length)];
+      final bodies = _arrivedBodies(senderFlag, senderCountry);
+      final body = bodies[_rng.nextInt(bodies.length)];
+
+      await _plugin.show(1, title, body, details);
     } catch (e) {
       debugPrint('Letter notification error: $e');
     }

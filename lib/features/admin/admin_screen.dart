@@ -513,6 +513,32 @@ class _AdminScreenState extends State<AdminScreen> {
           ),
           const SizedBox(height: 4),
           _actionTile(
+            icon: Icons.delete_sweep_rounded,
+            iconColor: AppColors.error,
+            label: l.koEn('모든 편지 전체 삭제', 'Clear All Letters'),
+            subtitle: l.koEn(
+              '받은 편지 + 보낸 편지 + 지도 위 편지 전부 삭제',
+              'Delete inbox + sent + map letters',
+            ),
+            onTap: (state.adminInboxCount == 0 &&
+                    state.adminTotalSent == 0 &&
+                    state.worldLetters.isEmpty)
+                ? null
+                : () => _confirmAction(
+                    title: l.koEn('모든 편지 삭제', 'Clear All Letters'),
+                    content: l.koEn(
+                      '받은 편지 ${state.adminInboxCount}개, 보낸 편지 ${state.adminTotalSent}개, 지도 편지 ${state.worldLetters.length}개가 모두 삭제됩니다.',
+                      'Delete ${state.adminInboxCount} inbox, ${state.adminTotalSent} sent, ${state.worldLetters.length} map letters.',
+                    ),
+                    isDanger: true,
+                    onConfirm: () {
+                      state.adminClearAllLetters();
+                      _showSnack(l.koEn('🗑️ 모든 편지 삭제 완료', '🗑️ All letters cleared'));
+                    },
+                  ),
+          ),
+          const SizedBox(height: 4),
+          _actionTile(
             icon: Icons.emoji_events_outlined,
             iconColor: AppColors.textMuted,
             label: l.koEn('활동 점수 초기화', 'Reset Activity Score'),

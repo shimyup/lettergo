@@ -253,7 +253,7 @@ class _WorldMapScreenState extends State<WorldMapScreen>
             // ── 근처 도착 배너 ─────────────────────────────────────────────
             if (state.hasNearbyAlert)
               Positioned(
-                top: 130,
+                top: 220,
                 left: 16,
                 right: 16,
                 child: _NearbyAlertBanner(
@@ -2224,43 +2224,85 @@ class _StatChip extends StatelessWidget {
 }
 
 // ── 근처 알림 배너 ─────────────────────────────────────────────────────────────
-class _NearbyAlertBanner extends StatelessWidget {
+class _NearbyAlertBanner extends StatefulWidget {
   final AppL10n l10n;
   final int count;
   final VoidCallback onTap;
   const _NearbyAlertBanner({required this.l10n, required this.count, required this.onTap});
 
   @override
+  State<_NearbyAlertBanner> createState() => _NearbyAlertBannerState();
+}
+
+class _NearbyAlertBannerState extends State<_NearbyAlertBanner>
+    with SingleTickerProviderStateMixin {
+  late final int _variantIndex;
+  late final AnimationController _pulseCtrl;
+  late final Animation<double> _pulse;
+
+  @override
+  void initState() {
+    super.initState();
+    final variants = widget.l10n.mapNearbyBannerVariants(widget.count);
+    _variantIndex = DateTime.now().millisecondsSinceEpoch % variants.length;
+    _pulseCtrl = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1800),
+    )..repeat(reverse: true);
+    _pulse = Tween<double>(begin: 0.85, end: 1.0).animate(
+      CurvedAnimation(parent: _pulseCtrl, curve: Curves.easeInOut),
+    );
+  }
+
+  @override
+  void dispose() {
+    _pulseCtrl.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-        decoration: BoxDecoration(
-          color: AppColors.gold.withValues(alpha: 0.15),
-          borderRadius: BorderRadius.circular(14),
-          border: Border.all(color: AppColors.gold.withValues(alpha: 0.4)),
-        ),
-        child: Row(
-          children: [
-            const Text('📩', style: TextStyle(fontSize: 18)),
-            const SizedBox(width: 10),
-            Expanded(
-              child: Text(
-                l10n.mapNearbyLettersArrived(count),
-                style: const TextStyle(
-                  color: AppColors.gold,
-                  fontSize: 13,
-                  fontWeight: FontWeight.w600,
+    final variants = widget.l10n.mapNearbyBannerVariants(widget.count);
+    final variant = variants[_variantIndex];
+    return FadeTransition(
+      opacity: _pulse,
+      child: GestureDetector(
+        onTap: widget.onTap,
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          decoration: BoxDecoration(
+            color: AppColors.gold.withValues(alpha: 0.15),
+            borderRadius: BorderRadius.circular(14),
+            border: Border.all(color: AppColors.gold.withValues(alpha: 0.4)),
+            boxShadow: [
+              BoxShadow(
+                color: AppColors.gold.withValues(alpha: 0.12),
+                blurRadius: 12,
+                offset: const Offset(0, 2),
+              ),
+            ],
+          ),
+          child: Row(
+            children: [
+              Text(variant.emoji, style: const TextStyle(fontSize: 20)),
+              const SizedBox(width: 10),
+              Expanded(
+                child: Text(
+                  variant.text,
+                  style: const TextStyle(
+                    color: AppColors.gold,
+                    fontSize: 13,
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
               ),
-            ),
-            const Icon(
-              Icons.chevron_right_rounded,
-              color: AppColors.gold,
-              size: 18,
-            ),
-          ],
+              const Icon(
+                Icons.chevron_right_rounded,
+                color: AppColors.gold,
+                size: 18,
+              ),
+            ],
+          ),
         ),
       ),
     );
