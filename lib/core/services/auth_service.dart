@@ -7,6 +7,7 @@ import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uuid/uuid.dart';
 import '../config/firebase_config.dart';
+import '../localization/language_config.dart';
 import 'firebase_auth_service.dart';
 import 'purchase_service.dart';
 
@@ -237,13 +238,21 @@ class AuthService {
     await _migrateLegacyAuthDataIfNeeded(prefs);
 
     if ((await _readSecure(_keyIsLoggedIn)) != 'true') return null;
+    final country = (await _readSecure(_keyCountry)) ?? '대한민국';
+    final languageCodeRaw = (await _readSecure(_keyLanguageCode)) ?? '';
+    final languageCode = languageCodeRaw.isNotEmpty
+        ? languageCodeRaw
+        : LanguageConfig.getLanguageCode(country);
+    if (languageCodeRaw.isEmpty) {
+      await _writeSecure(_keyLanguageCode, languageCode);
+    }
     return {
       'id': (await _readSecure(_keyUserId)) ?? '',
       'username': (await _readSecure(_keyUsername)) ?? '',
       'email': (await _readSecure(_keyEmail)) ?? '',
-      'country': (await _readSecure(_keyCountry)) ?? '대한민국',
+      'country': country,
       'countryFlag': (await _readSecure(_keyCountryFlag)) ?? '🇰🇷',
-      'languageCode': (await _readSecure(_keyLanguageCode)) ?? '',
+      'languageCode': languageCode,
       'socialLink': (await _readSecure(_keySocialLink)) ?? '',
     };
   }
@@ -428,6 +437,7 @@ class AuthService {
     String? username,
     String? country,
     String? countryFlag,
+    String? languageCode,
     String? socialLink,
   }) async {
     if (username != null && username.isNotEmpty) {
@@ -435,6 +445,9 @@ class AuthService {
     }
     if (country != null) await _writeSecure(_keyCountry, country);
     if (countryFlag != null) await _writeSecure(_keyCountryFlag, countryFlag);
+    if (languageCode != null && languageCode.isNotEmpty) {
+      await _writeSecure(_keyLanguageCode, languageCode);
+    }
     if (socialLink != null) {
       await _writeSecure(_keySocialLink, socialLink.trim());
     }
@@ -538,15 +551,25 @@ class AuthService {
   static Future<void> saveOnboardingCountry({
     required String country,
     required String countryFlag,
+    String? languageCode,
   }) async {
     await _writeSecure(_keyCountry, country);
     await _writeSecure(_keyCountryFlag, countryFlag);
+    if (languageCode != null && languageCode.isNotEmpty) {
+      await _writeSecure(_keyLanguageCode, languageCode);
+    }
   }
 
   static Future<Map<String, String>> getOnboardingCountry() async {
+    final country = (await _readSecure(_keyCountry)) ?? '대한민국';
+    final languageCodeRaw = (await _readSecure(_keyLanguageCode)) ?? '';
+    final languageCode = languageCodeRaw.isNotEmpty
+        ? languageCodeRaw
+        : LanguageConfig.getLanguageCode(country);
     return {
-      'country': (await _readSecure(_keyCountry)) ?? '대한민국',
+      'country': country,
       'countryFlag': (await _readSecure(_keyCountryFlag)) ?? '🇰🇷',
+      'languageCode': languageCode,
     };
   }
 }

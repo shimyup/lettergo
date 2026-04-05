@@ -1,0 +1,5 @@
+"NSLocationWhenInUseUsageDescription" = "需要您的位置信息来发现附近的信件。";
+"NSLocationAlwaysAndWhenInUseUsageDescription" = "需要您的位置信息来发现附近的信件。";
+"NSPhotoLibraryUsageDescription" = "需要访问照片库以更改您的头像。";
+"NSPhotoLibraryAddUsageDescription" = "需要权限以保存您选择的头像。";
+"NSCameraUsageDescription" = "需要相机权限以拍摄信件照片。";

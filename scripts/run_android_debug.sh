@@ -48,6 +48,10 @@ if [[ -n "${REVENUECAT_IOS_KEY:-}" ]]; then
   DART_DEFINES+=("--dart-define=REVENUECAT_IOS_KEY=${REVENUECAT_IOS_KEY}")
 fi
 
+if [[ -n "${RC_REAL_PURCHASES_IN_DEBUG:-}" ]]; then
+  DART_DEFINES+=("--dart-define=RC_REAL_PURCHASES_IN_DEBUG=${RC_REAL_PURCHASES_IN_DEBUG}")
+fi
+
 cd "$ROOT_DIR"
 
 DEVICE_ID="${1:-}"

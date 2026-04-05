@@ -1,9 +1,12 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:provider/provider.dart';
+import '../../core/localization/app_localizations.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/config/firebase_config.dart';
 import '../../core/services/firestore_service.dart';
+import '../../state/app_state.dart';
 
 // ── 회원 데이터 모델 ────────────────────────────────────────────────────────────
 class AdminUser {
@@ -51,8 +54,7 @@ class AdminUser {
       (replyCount * 1.5) +
       (sentCount * 0.8);
 
-  double get avgRating =>
-      ratingCount > 0 ? ratingTotal / ratingCount : 0.0;
+  double get avgRating => ratingCount > 0 ? ratingTotal / ratingCount : 0.0;
 
   String get tierEmoji {
     final h = towerHeight;
@@ -69,7 +71,9 @@ class AdminUser {
   }
 
   factory AdminUser.fromFirestoreFields(
-      String docId, Map<String, dynamic> fields) {
+    String docId,
+    Map<String, dynamic> fields,
+  ) {
     String str(String key, [String fallback = '']) {
       final f = fields[key];
       if (f == null) return fallback;
@@ -106,8 +110,8 @@ class AdminUser {
 
     return AdminUser(
       id: id,
-      username: str('username', '(이름 없음)'),
-      country: str('country', '알 수 없음'),
+      username: str('username', '(No Name)'),
+      country: str('country', 'Unknown'),
       countryFlag: str('countryFlag', '🌐'),
       latitude: dblVal('latitude'),
       longitude: dblVal('longitude'),
@@ -144,6 +148,9 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
   final _searchCtrl = TextEditingController();
   String _sortBy = 'tower'; // tower | recent | sent
 
+  AppL10n _l10n(BuildContext context) =>
+      AppL10n.of(context.read<AppState>().currentUser.languageCode);
+
   @override
   void initState() {
     super.initState();
@@ -160,6 +167,7 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
 
   // ── Firestore에서 전체 회원 불러오기 ────────────────────────────────────────
   Future<void> _fetchUsers() async {
+    final l = _l10n(context);
     setState(() {
       _loading = true;
       _error = null;
@@ -168,7 +176,10 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
     if (!FirebaseConfig.kFirebaseEnabled) {
       setState(() {
         _loading = false;
-        _error = 'Firebase가 비활성화된 빌드입니다.\n--dart-define으로 Firebase 설정을 주입해주세요.';
+        _error = l.koEn(
+          'Firebase가 비활성화된 빌드입니다.\n--dart-define으로 Firebase 설정을 주입해주세요.',
+          'Firebase is disabled in this build.\nInject Firebase config via --dart-define.',
+        );
       });
       return;
     }
@@ -230,7 +241,12 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
       _users = allUsers;
       _applySort();
     } catch (e) {
-      setState(() => _error = '회원 정보를 불러오는 데 실패했어요.\n$e');
+      setState(
+        () => _error = l.koEn(
+          '회원 정보를 불러오는 데 실패했어요.\n$e',
+          'Failed to load user data.\n$e',
+        ),
+      );
     } finally {
       setState(() => _loading = false);
     }
@@ -267,6 +283,7 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
 
   // ── 차단/해제 ───────────────────────────────────────────────────────────────
   Future<void> _toggleBan(AdminUser user) async {
+    final l = _l10n(context);
     final newBanned = !user.isBanned;
     final ok = await FirestoreService.setDocument('users/${user.id}', {
       'banned': newBanned,
@@ -296,9 +313,22 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
         );
       }
       _applyFilter();
-      _showSnack(newBanned ? '🚫 차단됨: ${user.username}' : '✅ 차단 해제: ${user.username}');
+      _showSnack(
+        newBanned
+            ? l.koEn('🚫 차단됨: ${user.username}', '🚫 Banned: ${user.username}')
+            : l.koEn(
+                '✅ 차단 해제: ${user.username}',
+                '✅ Unbanned: ${user.username}',
+              ),
+      );
     } else {
-      _showSnack('업데이트 실패. Firebase 권한을 확인하세요', isError: true);
+      _showSnack(
+        l.koEn(
+          '업데이트 실패. Firebase 권한을 확인하세요',
+          'Update failed. Check Firebase permissions.',
+        ),
+        isError: true,
+      );
     }
   }
 
@@ -318,6 +348,7 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
 
   // ── 회원 상세 BottomSheet ───────────────────────────────────────────────────
   void _showUserDetail(AdminUser user) {
+    final l = _l10n(context);
     showModalBottomSheet(
       context: context,
       backgroundColor: AppColors.bgCard,
@@ -350,8 +381,7 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
               // 헤더
               Row(
                 children: [
-                  Text(user.countryFlag,
-                      style: const TextStyle(fontSize: 32)),
+                  Text(user.countryFlag, style: const TextStyle(fontSize: 32)),
                   const SizedBox(width: 12),
                   Expanded(
                     child: Column(
@@ -369,7 +399,7 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
                             ),
                             if (user.isBanned) ...[
                               const SizedBox(width: 8),
-                              _chip('차단됨', AppColors.error),
+                              _chip(l.koEn('차단됨', 'Banned'), AppColors.error),
                             ],
                           ],
                         ),
@@ -389,18 +419,22 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
               // ID
               _detailRow('ID', user.id, mono: true),
               if (user.customTowerName != null)
-                _detailRow('타워 이름', user.customTowerName!),
+                _detailRow(
+                  l.koEn('타워 이름', 'Tower Name'),
+                  user.customTowerName!,
+                ),
               if (user.inviteCode.isNotEmpty)
-                _detailRow('초대 코드', user.inviteCode),
+                _detailRow(l.koEn('초대 코드', 'Invite Code'), user.inviteCode),
               if (user.updatedAt.isNotEmpty)
                 _detailRow(
-                    '마지막 활동',
-                    user.updatedAt.length > 10
-                        ? user.updatedAt.substring(0, 10)
-                        : user.updatedAt),
+                  l.koEn('마지막 활동', 'Last Active'),
+                  user.updatedAt.length > 10
+                      ? user.updatedAt.substring(0, 10)
+                      : user.updatedAt,
+                ),
               const SizedBox(height: 16),
               // 활동 통계
-              _sectionLabel('활동 통계'),
+              _sectionLabel(l.koEn('활동 통계', 'Activity Stats')),
               GridView.count(
                 crossAxisCount: 3,
                 shrinkWrap: true,
@@ -409,22 +443,33 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
                 crossAxisSpacing: 8,
                 childAspectRatio: 1.8,
                 children: [
-                  _miniStat('📥 받음', '${user.receivedCount}'),
-                  _miniStat('📤 발송', '${user.sentCount}'),
-                  _miniStat('↩️ 답장', '${user.replyCount}'),
-                  _miniStat('❤️ 좋아요', '${user.likeCount}'),
-                  _miniStat('⭐ 별점',
-                      user.avgRating > 0
-                          ? user.avgRating.toStringAsFixed(1)
-                          : '-'),
-                  _miniStat('🎁 크레딧', '${user.inviteRewardCredits}'),
+                  _miniStat(
+                    l.koEn('📥 받음', '📥 Received'),
+                    '${user.receivedCount}',
+                  ),
+                  _miniStat(l.koEn('📤 발송', '📤 Sent'), '${user.sentCount}'),
+                  _miniStat(
+                    l.koEn('↩️ 답장', '↩️ Replies'),
+                    '${user.replyCount}',
+                  ),
+                  _miniStat(l.koEn('❤️ 좋아요', '❤️ Likes'), '${user.likeCount}'),
+                  _miniStat(
+                    l.koEn('⭐ 별점', '⭐ Rating'),
+                    user.avgRating > 0
+                        ? user.avgRating.toStringAsFixed(1)
+                        : '-',
+                  ),
+                  _miniStat(
+                    l.koEn('🎁 크레딧', '🎁 Credits'),
+                    '${user.inviteRewardCredits}',
+                  ),
                 ],
               ),
               const SizedBox(height: 20),
               // 위치
-              _sectionLabel('위치'),
+              _sectionLabel(l.koEn('위치', 'Location')),
               _detailRow(
-                '좌표',
+                l.koEn('좌표', 'Coordinates'),
                 '${user.latitude.toStringAsFixed(4)}, ${user.longitude.toStringAsFixed(4)}',
               ),
               const SizedBox(height: 24),
@@ -442,7 +487,11 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
                         : Icons.block_rounded,
                     size: 18,
                   ),
-                  label: Text(user.isBanned ? '차단 해제' : '차단'),
+                  label: Text(
+                    user.isBanned
+                        ? l.koEn('차단 해제', 'Unban')
+                        : l.koEn('차단', 'Ban'),
+                  ),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: user.isBanned
                         ? AppColors.teal
@@ -450,7 +499,8 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
                     foregroundColor: Colors.white,
                     padding: const EdgeInsets.symmetric(vertical: 14),
                     shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12)),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
                   ),
                 ),
               ),
@@ -462,14 +512,16 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
   }
 
   void _confirmToggleBan(AdminUser user) {
+    final l = _l10n(context);
     showDialog(
       context: context,
       builder: (_) => AlertDialog(
         backgroundColor: AppColors.bgCard,
-        shape:
-            RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         title: Text(
-          user.isBanned ? '차단 해제' : '${user.username} 차단',
+          user.isBanned
+              ? l.koEn('차단 해제', 'Unban')
+              : l.koEn('${user.username} 차단', 'Ban ${user.username}'),
           style: TextStyle(
             color: user.isBanned ? AppColors.teal : AppColors.error,
             fontWeight: FontWeight.w700,
@@ -477,15 +529,23 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
         ),
         content: Text(
           user.isBanned
-              ? '${user.username}의 차단을 해제합니다.'
-              : '${user.username}(${user.id})를 차단합니다.\n차단된 회원은 앱에서 제한됩니다.',
+              ? l.koEn(
+                  '${user.username}의 차단을 해제합니다.',
+                  'Unban ${user.username}.',
+                )
+              : l.koEn(
+                  '${user.username}(${user.id})를 차단합니다.\n차단된 회원은 앱에서 제한됩니다.',
+                  'Ban ${user.username} (${user.id}).\nBanned users will be restricted in the app.',
+                ),
           style: const TextStyle(color: AppColors.textSecondary),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('취소',
-                style: TextStyle(color: AppColors.textMuted)),
+            child: Text(
+              l.koEn('취소', 'Cancel'),
+              style: const TextStyle(color: AppColors.textMuted),
+            ),
           ),
           TextButton(
             onPressed: () {
@@ -493,7 +553,7 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
               _toggleBan(user);
             },
             child: Text(
-              '확인',
+              l.koEn('확인', 'Confirm'),
               style: TextStyle(
                 color: user.isBanned ? AppColors.teal : AppColors.error,
                 fontWeight: FontWeight.w700,
@@ -507,8 +567,8 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final displayList =
-        _searchCtrl.text.isEmpty ? _users : _filtered;
+    final l = _l10n(context);
+    final displayList = _searchCtrl.text.isEmpty ? _users : _filtered;
     final bannedCount = _users.where((u) => u.isBanned).length;
 
     return Scaffold(
@@ -517,15 +577,18 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
         backgroundColor: AppColors.bgDeep,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new_rounded,
-              color: AppColors.textPrimary, size: 20),
+          icon: const Icon(
+            Icons.arrow_back_ios_new_rounded,
+            color: AppColors.textPrimary,
+            size: 20,
+          ),
           onPressed: () => Navigator.pop(context),
         ),
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              '👥 회원 관리',
+            Text(
+              l.koEn('👥 회원 관리', '👥 User Management'),
               style: TextStyle(
                 color: AppColors.textPrimary,
                 fontSize: 17,
@@ -534,7 +597,10 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
             ),
             if (!_loading && _users.isNotEmpty)
               Text(
-                '총 ${_users.length}명  •  차단 ${bannedCount}명',
+                l.koEn(
+                  '총 ${_users.length}명  •  차단 ${bannedCount}명',
+                  'Total ${_users.length} • Banned ${bannedCount}',
+                ),
                 style: const TextStyle(
                   color: AppColors.textMuted,
                   fontSize: 11,
@@ -544,8 +610,11 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
         ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.refresh_rounded,
-                color: AppColors.textSecondary, size: 22),
+            icon: const Icon(
+              Icons.refresh_rounded,
+              color: AppColors.textSecondary,
+              size: 22,
+            ),
             onPressed: _loading ? null : _fetchUsers,
           ),
         ],
@@ -561,17 +630,30 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
                 TextField(
                   controller: _searchCtrl,
                   style: const TextStyle(
-                      color: AppColors.textPrimary, fontSize: 14),
+                    color: AppColors.textPrimary,
+                    fontSize: 14,
+                  ),
                   decoration: InputDecoration(
-                    hintText: '닉네임, 나라, ID 검색',
+                    hintText: l.koEn(
+                      '닉네임, 나라, ID 검색',
+                      'Search by nickname, country, ID',
+                    ),
                     hintStyle: const TextStyle(
-                        color: AppColors.textMuted, fontSize: 14),
-                    prefixIcon: const Icon(Icons.search_rounded,
-                        color: AppColors.textMuted, size: 20),
+                      color: AppColors.textMuted,
+                      fontSize: 14,
+                    ),
+                    prefixIcon: const Icon(
+                      Icons.search_rounded,
+                      color: AppColors.textMuted,
+                      size: 20,
+                    ),
                     suffixIcon: _searchCtrl.text.isNotEmpty
                         ? IconButton(
-                            icon: const Icon(Icons.clear_rounded,
-                                color: AppColors.textMuted, size: 18),
+                            icon: const Icon(
+                              Icons.clear_rounded,
+                              color: AppColors.textMuted,
+                              size: 18,
+                            ),
                             onPressed: () {
                               _searchCtrl.clear();
                             },
@@ -583,17 +665,23 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
                       borderSide: const BorderSide(
-                          color: Color(0xFF1F2D44), width: 1),
+                        color: Color(0xFF1F2D44),
+                        width: 1,
+                      ),
                     ),
                     enabledBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
                       borderSide: const BorderSide(
-                          color: Color(0xFF1F2D44), width: 1),
+                        color: Color(0xFF1F2D44),
+                        width: 1,
+                      ),
                     ),
                     focusedBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
                       borderSide: const BorderSide(
-                          color: AppColors.teal, width: 1.5),
+                        color: AppColors.teal,
+                        width: 1.5,
+                      ),
                     ),
                   ),
                 ),
@@ -601,11 +689,11 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
                 // 정렬 탭
                 Row(
                   children: [
-                    _sortChip('타워순', 'tower'),
+                    _sortChip(l.koEn('타워순', 'Tower'), 'tower'),
                     const SizedBox(width: 6),
-                    _sortChip('최근 활동', 'recent'),
+                    _sortChip(l.koEn('최근 활동', 'Recent'), 'recent'),
                     const SizedBox(width: 6),
-                    _sortChip('발송 많은순', 'sent'),
+                    _sortChip(l.koEn('발송 많은순', 'Most Sent'), 'sent'),
                   ],
                 ),
               ],
@@ -614,63 +702,72 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
           // ── 본문 ────────────────────────────────────────────────────────────
           Expanded(
             child: _loading
-                ? const Center(
+                ? Center(
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        CircularProgressIndicator(color: AppColors.teal),
-                        SizedBox(height: 12),
-                        Text('회원 목록 불러오는 중...',
-                            style: TextStyle(
-                                color: AppColors.textMuted, fontSize: 13)),
+                        const CircularProgressIndicator(color: AppColors.teal),
+                        const SizedBox(height: 12),
+                        Text(
+                          l.koEn('회원 목록 불러오는 중...', 'Loading user list...'),
+                          style: const TextStyle(
+                            color: AppColors.textMuted,
+                            fontSize: 13,
+                          ),
+                        ),
                       ],
                     ),
                   )
                 : _error != null
-                    ? Center(
-                        child: Padding(
-                          padding: const EdgeInsets.all(32),
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              const Icon(Icons.cloud_off_rounded,
-                                  color: AppColors.textMuted, size: 48),
-                              const SizedBox(height: 16),
-                              Text(
-                                _error!,
-                                textAlign: TextAlign.center,
-                                style: const TextStyle(
-                                    color: AppColors.textSecondary,
-                                    fontSize: 14),
-                              ),
-                              const SizedBox(height: 20),
-                              ElevatedButton(
-                                onPressed: _fetchUsers,
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: AppColors.teal,
-                                  foregroundColor: Colors.white,
-                                ),
-                                child: const Text('다시 시도'),
-                              ),
-                            ],
+                ? Center(
+                    child: Padding(
+                      padding: const EdgeInsets.all(32),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const Icon(
+                            Icons.cloud_off_rounded,
+                            color: AppColors.textMuted,
+                            size: 48,
                           ),
-                        ),
-                      )
-                    : displayList.isEmpty
-                        ? const Center(
-                            child: Text('회원이 없어요',
-                                style: TextStyle(
-                                    color: AppColors.textMuted,
-                                    fontSize: 14)),
-                          )
-                        : ListView.separated(
-                            padding: const EdgeInsets.fromLTRB(16, 0, 16, 32),
-                            itemCount: displayList.length,
-                            separatorBuilder: (_, __) =>
-                                const SizedBox(height: 6),
-                            itemBuilder: (_, i) =>
-                                _userTile(displayList[i]),
+                          const SizedBox(height: 16),
+                          Text(
+                            _error!,
+                            textAlign: TextAlign.center,
+                            style: const TextStyle(
+                              color: AppColors.textSecondary,
+                              fontSize: 14,
+                            ),
                           ),
+                          const SizedBox(height: 20),
+                          ElevatedButton(
+                            onPressed: _fetchUsers,
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: AppColors.teal,
+                              foregroundColor: Colors.white,
+                            ),
+                            child: Text(l.koEn('다시 시도', 'Retry')),
+                          ),
+                        ],
+                      ),
+                    ),
+                  )
+                : displayList.isEmpty
+                ? Center(
+                    child: Text(
+                      l.koEn('회원이 없어요', 'No users found'),
+                      style: const TextStyle(
+                        color: AppColors.textMuted,
+                        fontSize: 14,
+                      ),
+                    ),
+                  )
+                : ListView.separated(
+                    padding: const EdgeInsets.fromLTRB(16, 0, 16, 32),
+                    itemCount: displayList.length,
+                    separatorBuilder: (_, __) => const SizedBox(height: 6),
+                    itemBuilder: (_, i) => _userTile(displayList[i]),
+                  ),
           ),
         ],
       ),
@@ -701,13 +798,14 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
             Stack(
               clipBehavior: Clip.none,
               children: [
-                Text(user.countryFlag,
-                    style: const TextStyle(fontSize: 28)),
+                Text(user.countryFlag, style: const TextStyle(fontSize: 28)),
                 Positioned(
                   right: -4,
                   bottom: -2,
-                  child: Text(user.tierEmoji,
-                      style: const TextStyle(fontSize: 14)),
+                  child: Text(
+                    user.tierEmoji,
+                    style: const TextStyle(fontSize: 14),
+                  ),
                 ),
               ],
             ),
@@ -737,15 +835,24 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
                       ),
                       if (user.isBanned) ...[
                         const SizedBox(width: 6),
-                        _chip('차단', AppColors.error, small: true),
+                        _chip(
+                          _l10n(context).koEn('차단', 'Banned'),
+                          AppColors.error,
+                          small: true,
+                        ),
                       ],
                     ],
                   ),
                   const SizedBox(height: 2),
                   Text(
-                    '${user.country}  •  받음 ${user.receivedCount}  발송 ${user.sentCount}  ❤️ ${user.likeCount}',
+                    _l10n(context).koEn(
+                      '${user.country}  •  받음 ${user.receivedCount}  발송 ${user.sentCount}  ❤️ ${user.likeCount}',
+                      '${user.country}  •  Received ${user.receivedCount}  Sent ${user.sentCount}  ❤️ ${user.likeCount}',
+                    ),
                     style: const TextStyle(
-                        color: AppColors.textMuted, fontSize: 12),
+                      color: AppColors.textMuted,
+                      fontSize: 12,
+                    ),
                     overflow: TextOverflow.ellipsis,
                   ),
                 ],
@@ -764,8 +871,11 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
                     fontWeight: FontWeight.w700,
                   ),
                 ),
-                const Icon(Icons.chevron_right_rounded,
-                    color: AppColors.textMuted, size: 16),
+                const Icon(
+                  Icons.chevron_right_rounded,
+                  color: AppColors.textMuted,
+                  size: 16,
+                ),
               ],
             ),
           ],
@@ -810,12 +920,13 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
   Widget _chip(String text, Color color, {bool small = false}) {
     return Container(
       padding: EdgeInsets.symmetric(
-          horizontal: small ? 5 : 7, vertical: small ? 1 : 2),
+        horizontal: small ? 5 : 7,
+        vertical: small ? 1 : 2,
+      ),
       decoration: BoxDecoration(
         color: color.withValues(alpha: 0.12),
         borderRadius: BorderRadius.circular(5),
-        border:
-            Border.all(color: color.withValues(alpha: 0.3), width: 1),
+        border: Border.all(color: color.withValues(alpha: 0.3), width: 1),
       ),
       child: Text(
         text,
@@ -851,9 +962,10 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
         children: [
           SizedBox(
             width: 80,
-            child: Text(label,
-                style: const TextStyle(
-                    color: AppColors.textMuted, fontSize: 13)),
+            child: Text(
+              label,
+              style: const TextStyle(color: AppColors.textMuted, fontSize: 13),
+            ),
           ),
           Expanded(
             child: Text(
@@ -881,16 +993,19 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Text(label,
-              style: const TextStyle(
-                  color: AppColors.textMuted, fontSize: 11)),
+          Text(
+            label,
+            style: const TextStyle(color: AppColors.textMuted, fontSize: 11),
+          ),
           const SizedBox(height: 2),
-          Text(value,
-              style: const TextStyle(
-                color: AppColors.textPrimary,
-                fontSize: 15,
-                fontWeight: FontWeight.w700,
-              )),
+          Text(
+            value,
+            style: const TextStyle(
+              color: AppColors.textPrimary,
+              fontSize: 15,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
         ],
       ),
     );

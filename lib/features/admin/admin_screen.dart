@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
+import '../../core/localization/app_localizations.dart';
 import '../../core/config/app_keys.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/services/purchase_service.dart';
@@ -29,17 +30,15 @@ class _AdminScreenState extends State<AdminScreen> {
     500,
     1000,
   ];
-  static const List<String> _speedLabels = [
-    '×1 (기본)',
-    '×2',
-    '×5',
-    '×10',
-    '×30',
-    '×60',
-    '×100',
-    '×500',
-    '×1000',
-  ];
+  AppL10n _l10n(BuildContext context) =>
+      AppL10n.of(context.read<AppState>().currentUser.languageCode);
+
+  String _speedLabelAt(AppL10n l, int index) {
+    if (index == 0) {
+      return l.koEn('×1 (기본)', '×1 (Default)');
+    }
+    return '×${_speedOptions[index].toInt()}';
+  }
 
   int _speedIndex(double multiplier) {
     for (int i = 0; i < _speedOptions.length; i++) {
@@ -68,6 +67,7 @@ class _AdminScreenState extends State<AdminScreen> {
     required VoidCallback onConfirm,
     bool isDanger = false,
   }) {
+    final l = _l10n(context);
     showDialog(
       context: context,
       builder: (_) => AlertDialog(
@@ -87,8 +87,8 @@ class _AdminScreenState extends State<AdminScreen> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text(
-              '취소',
+            child: Text(
+              l.koEn('취소', 'Cancel'),
               style: TextStyle(color: AppColors.textMuted),
             ),
           ),
@@ -98,7 +98,7 @@ class _AdminScreenState extends State<AdminScreen> {
               onConfirm();
             },
             child: Text(
-              '확인',
+              l.koEn('확인', 'Confirm'),
               style: TextStyle(
                 color: isDanger ? AppColors.error : AppColors.teal,
                 fontWeight: FontWeight.w700,
@@ -112,6 +112,7 @@ class _AdminScreenState extends State<AdminScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l = _l10n(context);
     final state = context.watch<AppState>();
     final purchase = context.watch<PurchaseService>();
     final colors = AppTimeColors.of(context);
@@ -135,8 +136,8 @@ class _AdminScreenState extends State<AdminScreen> {
             ),
             onPressed: () => Navigator.pop(context),
           ),
-          title: const Text(
-            '관리자 패널',
+          title: Text(
+            l.koEn('관리자 패널', 'Admin Panel'),
             style: TextStyle(
               color: AppColors.textPrimary,
               fontWeight: FontWeight.w700,
@@ -144,9 +145,9 @@ class _AdminScreenState extends State<AdminScreen> {
             ),
           ),
         ),
-        body: const Center(
+        body: Center(
           child: Text(
-            '접근 권한이 없습니다.',
+            l.koEn('접근 권한이 없습니다.', 'Access denied.'),
             style: TextStyle(color: AppColors.textSecondary, fontSize: 14),
           ),
         ),
@@ -190,8 +191,8 @@ class _AdminScreenState extends State<AdminScreen> {
               ),
             ),
             const SizedBox(width: 10),
-            const Text(
-              '관리자 패널',
+            Text(
+              l.koEn('관리자 패널', 'Admin Panel'),
               style: TextStyle(
                 color: AppColors.textPrimary,
                 fontWeight: FontWeight.w700,
@@ -207,12 +208,15 @@ class _AdminScreenState extends State<AdminScreen> {
           // ──────────────────────────────────────────────────────────────────
           // 👥 회원 관리
           // ──────────────────────────────────────────────────────────────────
-          _sectionHeader('👥 회원 관리'),
+          _sectionHeader(l.koEn('👥 회원 관리', '👥 User Management')),
           _actionTile(
             icon: Icons.people_rounded,
             iconColor: const Color(0xFF60A5FA),
-            label: '전체 회원 목록',
-            subtitle: 'Firestore에서 회원 조회 · 검색 · 차단',
+            label: l.koEn('전체 회원 목록', 'All Users'),
+            subtitle: l.koEn(
+              'Firestore에서 회원 조회 · 검색 · 차단',
+              'Browse, search, and ban users in Firestore',
+            ),
             onTap: () => Navigator.push(
               context,
               MaterialPageRoute(builder: (_) => const UserManagementScreen()),
@@ -223,14 +227,14 @@ class _AdminScreenState extends State<AdminScreen> {
           // ──────────────────────────────────────────────────────────────────
           // 📊 통계
           // ──────────────────────────────────────────────────────────────────
-          _sectionHeader('📊 통계'),
-          _statsGrid(state),
+          _sectionHeader(l.koEn('📊 통계', '📊 Stats')),
+          _statsGrid(context, state),
           const SizedBox(height: 8),
 
           // ──────────────────────────────────────────────────────────────────
           // 🎛️ 운영 도구
           // ──────────────────────────────────────────────────────────────────
-          _sectionHeader('🎛️ 운영 도구'),
+          _sectionHeader(l.koEn('🎛️ Operations', '🎛️ Operations')),
           _card(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -239,12 +243,19 @@ class _AdminScreenState extends State<AdminScreen> {
                 _switchRow(
                   icon: Icons.celebration_rounded,
                   iconColor: AppColors.gold,
-                  label: '이벤트 모드',
-                  subtitle: '무료 유저 한도를 프리미엄 수준으로 임시 상향',
+                  label: l.koEn('이벤트 모드', 'Event Mode'),
+                  subtitle: l.koEn(
+                    '무료 유저 한도를 프리미엄 수준으로 임시 상향',
+                    'Temporarily raise free-user limits to premium level',
+                  ),
                   value: state.adminEventMode,
                   onChanged: (v) {
                     state.setAdminEventMode(v);
-                    _showSnack(v ? '🎉 이벤트 모드 ON' : '이벤트 모드 OFF');
+                    _showSnack(
+                      v
+                          ? l.koEn('🎉 이벤트 모드 ON', '🎉 Event Mode ON')
+                          : l.koEn('이벤트 모드 OFF', 'Event Mode OFF'),
+                    );
                   },
                 ),
                 _divider(),
@@ -265,8 +276,8 @@ class _AdminScreenState extends State<AdminScreen> {
                           children: [
                             Row(
                               children: [
-                                const Text(
-                                  '배송 속도 배율',
+                                Text(
+                                  l.koEn('배송 속도 배율', 'Delivery Speed'),
                                   style: TextStyle(
                                     color: AppColors.textPrimary,
                                     fontSize: 14,
@@ -286,7 +297,7 @@ class _AdminScreenState extends State<AdminScreen> {
                                     borderRadius: BorderRadius.circular(6),
                                   ),
                                   child: Text(
-                                    _speedLabels[curSpeedIdx],
+                                    _speedLabelAt(l, curSpeedIdx),
                                     style: const TextStyle(
                                       color: AppColors.teal,
                                       fontSize: 12,
@@ -297,8 +308,11 @@ class _AdminScreenState extends State<AdminScreen> {
                               ],
                             ),
                             const SizedBox(height: 4),
-                            const Text(
-                              '편지 이동 시뮬레이션 속도를 높임',
+                            Text(
+                              l.koEn(
+                                '편지 이동 시뮬레이션 속도를 높임',
+                                'Increase letter travel simulation speed',
+                              ),
                               style: TextStyle(
                                 color: AppColors.textMuted,
                                 fontSize: 12,
@@ -341,8 +355,11 @@ class _AdminScreenState extends State<AdminScreen> {
           _actionTile(
             icon: Icons.mark_email_unread_rounded,
             iconColor: const Color(0xFF818CF8),
-            label: '시스템 편지 발송',
-            subtitle: '현재 위치에서 내 받은 편지함으로 테스트 편지 생성',
+            label: l.koEn('시스템 편지 발송', 'Send System Letter'),
+            subtitle: l.koEn(
+              '현재 위치에서 내 받은 편지함으로 테스트 편지 생성',
+              'Create a test letter to your inbox from current location',
+            ),
             onTap: () => _sendSystemLetter(state),
           ),
           const SizedBox(height: 8),
@@ -350,12 +367,15 @@ class _AdminScreenState extends State<AdminScreen> {
           // ──────────────────────────────────────────────────────────────────
           // 🛡️ 콘텐츠 관리
           // ──────────────────────────────────────────────────────────────────
-          _sectionHeader('🛡️ 콘텐츠 관리'),
+          _sectionHeader(l.koEn('🛡️ 콘텐츠 관리', '🛡️ Content Moderation')),
           _actionTile(
             icon: Icons.flag_rounded,
             iconColor: AppColors.warning,
-            label: '신고된 편지 목록',
-            subtitle: '${state.adminReportedCount}건의 신고된 편지',
+            label: l.koEn('신고된 편지 목록', 'Reported Letters'),
+            subtitle: l.koEn(
+              '${state.adminReportedCount}건의 신고된 편지',
+              '${state.adminReportedCount} reported letters',
+            ),
             trailing: state.adminReportedCount > 0
                 ? _badge('${state.adminReportedCount}', AppColors.warning)
                 : null,
@@ -365,8 +385,11 @@ class _AdminScreenState extends State<AdminScreen> {
           _actionTile(
             icon: Icons.block_rounded,
             iconColor: AppColors.error,
-            label: '차단된 발신자 목록',
-            subtitle: '${state.adminBlockedCount}명 차단 중',
+            label: l.koEn('차단된 발신자 목록', 'Blocked Senders'),
+            subtitle: l.koEn(
+              '${state.adminBlockedCount}명 차단 중',
+              '${state.adminBlockedCount} currently blocked',
+            ),
             trailing: state.adminBlockedCount > 0
                 ? _badge('${state.adminBlockedCount}', AppColors.error)
                 : null,
@@ -377,15 +400,20 @@ class _AdminScreenState extends State<AdminScreen> {
             _actionTile(
               icon: Icons.clear_all_rounded,
               iconColor: AppColors.textMuted,
-              label: '차단 목록 전체 초기화',
-              subtitle: '모든 차단 해제',
+              label: l.koEn('차단 목록 전체 초기화', 'Clear All Blocks'),
+              subtitle: l.koEn('모든 차단 해제', 'Unblock everyone'),
               onTap: () => _confirmAction(
-                title: '차단 목록 초기화',
-                content: '모든 차단을 해제합니다. 계속할까요?',
+                title: l.koEn('차단 목록 초기화', 'Reset Block List'),
+                content: l.koEn(
+                  '모든 차단을 해제합니다. 계속할까요?',
+                  'This will unblock all users. Continue?',
+                ),
                 isDanger: true,
                 onConfirm: () {
                   state.adminClearBlockList();
-                  _showSnack('차단 목록이 초기화됐어요');
+                  _showSnack(
+                    l.koEn('차단 목록이 초기화됐어요', 'Block list has been reset'),
+                  );
                 },
               ),
             ),
@@ -395,21 +423,31 @@ class _AdminScreenState extends State<AdminScreen> {
           // ──────────────────────────────────────────────────────────────────
           // 🔧 디버그 도구
           // ──────────────────────────────────────────────────────────────────
-          _sectionHeader('🔧 디버그 도구'),
+          _sectionHeader(l.koEn('🔧 디버그 도구', '🔧 Debug Tools')),
           _actionTile(
             icon: Icons.local_shipping_rounded,
             iconColor: AppColors.success,
-            label: '모든 편지 즉시 도착',
-            subtitle: '이동 중인 ${state.adminInTransitCount}개 편지 강제 배송',
+            label: l.koEn('모든 편지 즉시 도착', 'Deliver All Letters Now'),
+            subtitle: l.koEn(
+              '이동 중인 ${state.adminInTransitCount}개 편지 강제 배송',
+              'Force-deliver ${state.adminInTransitCount} in-transit letters',
+            ),
             onTap: state.adminInTransitCount == 0
                 ? null
                 : () => _confirmAction(
-                    title: '모든 편지 즉시 도착',
-                    content:
-                        '이동 중인 ${state.adminInTransitCount}개 편지를 즉시 도착 처리합니다.',
+                    title: l.koEn('모든 편지 즉시 도착', 'Deliver All Letters Now'),
+                    content: l.koEn(
+                      '이동 중인 ${state.adminInTransitCount}개 편지를 즉시 도착 처리합니다.',
+                      'Deliver ${state.adminInTransitCount} in-transit letters immediately.',
+                    ),
                     onConfirm: () {
                       state.adminForceDeliverAll();
-                      _showSnack('✅ ${state.adminInTransitCount}개 편지 배송 완료');
+                      _showSnack(
+                        l.koEn(
+                          '✅ ${state.adminInTransitCount}개 편지 배송 완료',
+                          '✅ Delivered ${state.adminInTransitCount} letters',
+                        ),
+                      );
                     },
                   ),
           ),
@@ -417,14 +455,17 @@ class _AdminScreenState extends State<AdminScreen> {
           _actionTile(
             icon: Icons.refresh_rounded,
             iconColor: AppColors.gold,
-            label: '일일 발송 카운터 리셋',
-            subtitle: '오늘 발송 횟수를 0으로 초기화',
+            label: l.koEn('일일 발송 카운터 리셋', 'Reset Daily Send Counter'),
+            subtitle: l.koEn('오늘 발송 횟수를 0으로 초기화', 'Set today send count to 0'),
             onTap: () => _confirmAction(
-              title: '일일 카운터 리셋',
-              content: '오늘 발송 횟수를 0으로 초기화합니다.',
+              title: l.koEn('일일 카운터 리셋', 'Reset Daily Counter'),
+              content: l.koEn(
+                '오늘 발송 횟수를 0으로 초기화합니다.',
+                'Reset today send count to 0.',
+              ),
               onConfirm: () {
                 state.adminResetDailyCount();
-                _showSnack('✅ 일일 카운터 리셋 완료');
+                _showSnack(l.koEn('✅ 일일 카운터 리셋 완료', '✅ Daily counter reset'));
               },
             ),
           ),
@@ -432,14 +473,20 @@ class _AdminScreenState extends State<AdminScreen> {
           _actionTile(
             icon: Icons.calendar_today_rounded,
             iconColor: AppColors.gold,
-            label: '월간 발송 카운터 리셋',
-            subtitle: '이번 달 발송 횟수를 0으로 초기화',
+            label: l.koEn('월간 발송 카운터 리셋', 'Reset Monthly Send Counter'),
+            subtitle: l.koEn(
+              '이번 달 발송 횟수를 0으로 초기화',
+              'Set this month send count to 0',
+            ),
             onTap: () => _confirmAction(
-              title: '월간 카운터 리셋',
-              content: '이번 달 발송 횟수를 0으로 초기화합니다.',
+              title: l.koEn('월간 카운터 리셋', 'Reset Monthly Counter'),
+              content: l.koEn(
+                '이번 달 발송 횟수를 0으로 초기화합니다.',
+                'Reset this month send count to 0.',
+              ),
               onConfirm: () {
                 state.adminResetMonthlyCount();
-                _showSnack('✅ 월간 카운터 리셋 완료');
+                _showSnack(l.koEn('✅ 월간 카운터 리셋 완료', '✅ Monthly counter reset'));
               },
             ),
           ),
@@ -447,17 +494,20 @@ class _AdminScreenState extends State<AdminScreen> {
           _actionTile(
             icon: Icons.inbox_rounded,
             iconColor: AppColors.error,
-            label: '받은 편지함 비우기',
-            subtitle: '받은 편지함의 모든 편지 삭제',
+            label: l.koEn('받은 편지함 비우기', 'Clear Inbox'),
+            subtitle: l.koEn('받은 편지함의 모든 편지 삭제', 'Delete all inbox letters'),
             onTap: state.adminInboxCount == 0
                 ? null
                 : () => _confirmAction(
-                    title: '받은 편지함 비우기',
-                    content: '받은 편지함의 ${state.adminInboxCount}개 편지가 모두 삭제됩니다.',
+                    title: l.koEn('받은 편지함 비우기', 'Clear Inbox'),
+                    content: l.koEn(
+                      '받은 편지함의 ${state.adminInboxCount}개 편지가 모두 삭제됩니다.',
+                      'Delete all ${state.adminInboxCount} letters from inbox.',
+                    ),
                     isDanger: true,
                     onConfirm: () {
                       state.adminClearInbox();
-                      _showSnack('🗑️ 받은 편지함 비움');
+                      _showSnack(l.koEn('🗑️ 받은 편지함 비움', '🗑️ Inbox cleared'));
                     },
                   ),
           ),
@@ -465,15 +515,21 @@ class _AdminScreenState extends State<AdminScreen> {
           _actionTile(
             icon: Icons.emoji_events_outlined,
             iconColor: AppColors.textMuted,
-            label: '활동 점수 초기화',
-            subtitle: '타워 높이 및 점수를 0으로 초기화',
+            label: l.koEn('활동 점수 초기화', 'Reset Activity Score'),
+            subtitle: l.koEn(
+              '타워 높이 및 점수를 0으로 초기화',
+              'Reset tower height and score',
+            ),
             onTap: () => _confirmAction(
-              title: '활동 점수 초기화',
-              content: '모든 활동 점수(받은 편지, 답장, 좋아요 등)가 초기화됩니다.',
+              title: l.koEn('활동 점수 초기화', 'Reset Activity Score'),
+              content: l.koEn(
+                '모든 활동 점수(받은 편지, 답장, 좋아요 등)가 초기화됩니다.',
+                'All activity scores (received, replies, likes, etc.) will reset.',
+              ),
               isDanger: true,
               onConfirm: () {
                 state.adminResetActivityScore();
-                _showSnack('✅ 활동 점수 초기화 완료');
+                _showSnack(l.koEn('✅ 활동 점수 초기화 완료', '✅ Activity score reset'));
               },
             ),
           ),
@@ -482,15 +538,15 @@ class _AdminScreenState extends State<AdminScreen> {
           // ──────────────────────────────────────────────────────────────────
           // 👤 계정 도구
           // ──────────────────────────────────────────────────────────────────
-          _sectionHeader('👤 계정 도구'),
+          _sectionHeader(l.koEn('👤 계정 도구', '👤 Account Tools')),
           _card(
             child: Padding(
               padding: const EdgeInsets.all(16),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
-                    '현재 등급',
+                  Text(
+                    l.koEn('현재 등급', 'Current Tier'),
                     style: TextStyle(color: AppColors.textMuted, fontSize: 12),
                   ),
                   const SizedBox(height: 6),
@@ -519,8 +575,8 @@ class _AdminScreenState extends State<AdminScreen> {
                     ],
                   ),
                   const SizedBox(height: 14),
-                  const Text(
-                    '등급 변경',
+                  Text(
+                    l.koEn('등급 변경', 'Change Tier'),
                     style: TextStyle(color: AppColors.textMuted, fontSize: 12),
                   ),
                   const SizedBox(height: 8),
@@ -532,8 +588,11 @@ class _AdminScreenState extends State<AdminScreen> {
                           isActive: !user.isPremium && !user.isBrand,
                           color: AppColors.textSecondary,
                           onTap: () => _confirmAction(
-                            title: 'Free로 변경',
-                            content: '계정을 무료 등급으로 변경합니다.',
+                            title: l.koEn('Free로 변경', 'Switch to Free'),
+                            content: l.koEn(
+                              '계정을 무료 등급으로 변경합니다.',
+                              'Switch account to Free tier.',
+                            ),
                             isDanger: true,
                             onConfirm: () {
                               purchase.debugSetTier(
@@ -544,7 +603,12 @@ class _AdminScreenState extends State<AdminScreen> {
                                 isPremium: false,
                                 isBrand: false,
                               );
-                              _showSnack('⭐ Free 등급으로 변경됨');
+                              _showSnack(
+                                l.koEn(
+                                  '⭐ Free 등급으로 변경됨',
+                                  '⭐ Switched to Free tier',
+                                ),
+                              );
                             },
                           ),
                         ),
@@ -564,7 +628,12 @@ class _AdminScreenState extends State<AdminScreen> {
                               isPremium: true,
                               isBrand: false,
                             );
-                            _showSnack('👑 Premium 등급으로 변경됨');
+                            _showSnack(
+                              l.koEn(
+                                '👑 Premium 등급으로 변경됨',
+                                '👑 Switched to Premium tier',
+                              ),
+                            );
                           },
                         ),
                       ),
@@ -583,7 +652,12 @@ class _AdminScreenState extends State<AdminScreen> {
                               isPremium: true,
                               isBrand: true,
                             );
-                            _showSnack('🏷️ Brand 등급으로 변경됨');
+                            _showSnack(
+                              l.koEn(
+                                '🏷️ Brand 등급으로 변경됨',
+                                '🏷️ Switched to Brand tier',
+                              ),
+                            );
                           },
                         ),
                       ),
@@ -602,24 +676,30 @@ class _AdminScreenState extends State<AdminScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
-                    '발송 현황',
+                  Text(
+                    l.koEn('발송 현황', 'Sending Status'),
                     style: TextStyle(color: AppColors.textMuted, fontSize: 12),
                   ),
                   const SizedBox(height: 12),
                   _statRow(
-                    '오늘 발송',
+                    l.koEn('오늘 발송', 'Sent Today'),
                     '${state.todaySentCount} / ${state.dailySendLimit}',
                   ),
                   _statRow(
-                    '이번 달 발송',
+                    l.koEn('이번 달 발송', 'Sent This Month'),
                     '${state._monthlySentCountAdmin} / ${state.monthlySendLimit}',
                   ),
                   _statRow(
-                    '특송 (오늘)',
+                    l.koEn('특송 (오늘)', 'Express (Today)'),
                     '${state.todayPremiumExpressSentCount} / ${state.premiumExpressDailyLimit}',
                   ),
-                  _statRow('초대 보상 크레딧', '${state.inviteRewardCredits}통'),
+                  _statRow(
+                    l.koEn('초대 보상 크레딧', 'Invite Reward Credits'),
+                    l.koEn(
+                      '${state.inviteRewardCredits}통',
+                      '${state.inviteRewardCredits} letters',
+                    ),
+                  ),
                 ],
               ),
             ),
@@ -631,26 +711,32 @@ class _AdminScreenState extends State<AdminScreen> {
 
   // ── 시스템 편지 발송 ────────────────────────────────────────────────────────
   void _sendSystemLetter(AppState state) {
+    final l = _l10n(context);
     final ctrl = TextEditingController(
-      text:
-          '📮 Message in a Bottle 팀에서 드리는 특별 메시지입니다.\n\n세계 어딘가의 누군가가 당신에게 편지를 보냈어요. 오늘도 좋은 하루 되세요! 🌊',
+      text: l.koEn(
+        '📮 Message in a Bottle 팀에서 드리는 특별 메시지입니다.\n\n세계 어딘가의 누군가가 당신에게 편지를 보냈어요. 오늘도 좋은 하루 되세요! 🌊',
+        '📮 A special message from the Message in a Bottle team.\n\nSomeone, somewhere in the world sent you a letter. Have a wonderful day! 🌊',
+      ),
     );
     showDialog(
       context: context,
       builder: (_) => AlertDialog(
         backgroundColor: AppColors.bgCard,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: const Row(
+        title: Row(
           children: [
-            Icon(
+            const Icon(
               Icons.mark_email_unread_rounded,
               color: Color(0xFF818CF8),
               size: 20,
             ),
-            SizedBox(width: 8),
+            const SizedBox(width: 8),
             Text(
-              '시스템 편지 발송',
-              style: TextStyle(color: AppColors.textPrimary, fontSize: 16),
+              l.koEn('시스템 편지 발송', 'Send System Letter'),
+              style: const TextStyle(
+                color: AppColors.textPrimary,
+                fontSize: 16,
+              ),
             ),
           ],
         ),
@@ -658,13 +744,13 @@ class _AdminScreenState extends State<AdminScreen> {
           controller: ctrl,
           maxLines: 5,
           style: const TextStyle(color: AppColors.textPrimary, fontSize: 14),
-          decoration: const InputDecoration(
-            hintText: '내용을 입력하세요...',
-            hintStyle: TextStyle(color: AppColors.textMuted),
-            enabledBorder: OutlineInputBorder(
+          decoration: InputDecoration(
+            hintText: l.koEn('내용을 입력하세요...', 'Enter message...'),
+            hintStyle: const TextStyle(color: AppColors.textMuted),
+            enabledBorder: const OutlineInputBorder(
               borderSide: BorderSide(color: Color(0xFF1F2D44)),
             ),
-            focusedBorder: OutlineInputBorder(
+            focusedBorder: const OutlineInputBorder(
               borderSide: BorderSide(color: AppColors.teal),
             ),
             fillColor: AppColors.bgSurface,
@@ -674,8 +760,8 @@ class _AdminScreenState extends State<AdminScreen> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text(
-              '취소',
+            child: Text(
+              l.koEn('취소', 'Cancel'),
               style: TextStyle(color: AppColors.textMuted),
             ),
           ),
@@ -685,10 +771,15 @@ class _AdminScreenState extends State<AdminScreen> {
               if (content.isEmpty) return;
               state.adminAddSystemLetter(content);
               Navigator.pop(context);
-              _showSnack('📮 시스템 편지가 받은 편지함에 추가됐어요');
+              _showSnack(
+                l.koEn(
+                  '📮 시스템 편지가 받은 편지함에 추가됐어요',
+                  '📮 System letter added to inbox',
+                ),
+              );
             },
-            child: const Text(
-              '발송',
+            child: Text(
+              l.koEn('발송', 'Send'),
               style: TextStyle(
                 color: Color(0xFF818CF8),
                 fontWeight: FontWeight.w700,
@@ -702,9 +793,10 @@ class _AdminScreenState extends State<AdminScreen> {
 
   // ── 신고된 편지 목록 ────────────────────────────────────────────────────────
   void _showReportedLetters(AppState state) {
+    final l = _l10n(context);
     final letters = state.adminReportedLetters;
     if (letters.isEmpty) {
-      _showSnack('신고된 편지가 없어요');
+      _showSnack(l.koEn('신고된 편지가 없어요', 'No reported letters'));
       return;
     }
     showModalBottomSheet(
@@ -729,10 +821,10 @@ class _AdminScreenState extends State<AdminScreen> {
                 borderRadius: BorderRadius.circular(2),
               ),
             ),
-            const Padding(
+            Padding(
               padding: EdgeInsets.all(16),
               child: Text(
-                '🚩 신고된 편지',
+                l.koEn('🚩 신고된 편지', '🚩 Reported Letters'),
                 style: TextStyle(
                   color: AppColors.textPrimary,
                   fontSize: 16,
@@ -748,7 +840,7 @@ class _AdminScreenState extends State<AdminScreen> {
                 separatorBuilder: (_, __) => const SizedBox(height: 8),
                 itemBuilder: (_, i) {
                   final l = letters[i];
-                  return _reportedLetterCard(l, state, ctx);
+                  return _reportedLetterCard(l, state, ctx, _l10n(context));
                 },
               ),
             ),
@@ -758,7 +850,12 @@ class _AdminScreenState extends State<AdminScreen> {
     );
   }
 
-  Widget _reportedLetterCard(Letter l, AppState state, BuildContext sheetCtx) {
+  Widget _reportedLetterCard(
+    Letter l,
+    AppState state,
+    BuildContext sheetCtx,
+    AppL10n t,
+  ) {
     return Container(
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
@@ -778,7 +875,7 @@ class _AdminScreenState extends State<AdminScreen> {
               const SizedBox(width: 6),
               Expanded(
                 child: Text(
-                  l.isAnonymous ? '익명' : l.senderName,
+                  l.isAnonymous ? t.koEn('익명', 'Anonymous') : l.senderName,
                   style: const TextStyle(
                     color: AppColors.textPrimary,
                     fontSize: 14,
@@ -786,7 +883,10 @@ class _AdminScreenState extends State<AdminScreen> {
                   ),
                 ),
               ),
-              _badge('신고 ${l.reportCount}회', AppColors.warning),
+              _badge(
+                t.koEn('신고 ${l.reportCount}회', '${l.reportCount} reports'),
+                AppColors.warning,
+              ),
             ],
           ),
           const SizedBox(height: 8),
@@ -807,7 +907,7 @@ class _AdminScreenState extends State<AdminScreen> {
                   onPressed: () {
                     state.adminClearLetterReport(l.id);
                     Navigator.pop(sheetCtx);
-                    _showSnack('✅ 신고 해제됨');
+                    _showSnack(t.koEn('✅ 신고 해제됨', '✅ Report cleared'));
                   },
                   style: OutlinedButton.styleFrom(
                     foregroundColor: AppColors.teal,
@@ -817,21 +917,26 @@ class _AdminScreenState extends State<AdminScreen> {
                       borderRadius: BorderRadius.circular(8),
                     ),
                   ),
-                  child: const Text('신고 해제', style: TextStyle(fontSize: 13)),
+                  child: Text(
+                    t.koEn('신고 해제', 'Clear Report'),
+                    style: const TextStyle(fontSize: 13),
+                  ),
                 ),
               ),
               const SizedBox(width: 8),
               Expanded(
                 child: OutlinedButton(
                   onPressed: () => _confirmAction(
-                    title: '발신자 차단',
-                    content:
-                        '${l.isAnonymous ? '익명' : l.senderName}의 모든 편지를 차단합니다.',
+                    title: t.koEn('발신자 차단', 'Block Sender'),
+                    content: t.koEn(
+                      '${l.isAnonymous ? '익명' : l.senderName}의 모든 편지를 차단합니다.',
+                      'Block all letters from ${l.isAnonymous ? 'Anonymous' : l.senderName}.',
+                    ),
                     isDanger: true,
                     onConfirm: () {
                       state.adminBlockSender(l.senderId);
                       Navigator.pop(sheetCtx);
-                      _showSnack('🚫 발신자 차단됨');
+                      _showSnack(t.koEn('🚫 발신자 차단됨', '🚫 Sender blocked'));
                     },
                   ),
                   style: OutlinedButton.styleFrom(
@@ -842,7 +947,10 @@ class _AdminScreenState extends State<AdminScreen> {
                       borderRadius: BorderRadius.circular(8),
                     ),
                   ),
-                  child: const Text('차단', style: TextStyle(fontSize: 13)),
+                  child: Text(
+                    t.koEn('차단', 'Block'),
+                    style: const TextStyle(fontSize: 13),
+                  ),
                 ),
               ),
             ],
@@ -854,9 +962,10 @@ class _AdminScreenState extends State<AdminScreen> {
 
   // ── 차단된 발신자 목록 ──────────────────────────────────────────────────────
   void _showBlockedSenders(AppState state) {
+    final l = _l10n(context);
     final ids = state.blockedSenderIds.toList();
     if (ids.isEmpty) {
-      _showSnack('차단된 발신자가 없어요');
+      _showSnack(l.koEn('차단된 발신자가 없어요', 'No blocked senders'));
       return;
     }
     showModalBottomSheet(
@@ -881,10 +990,10 @@ class _AdminScreenState extends State<AdminScreen> {
                 borderRadius: BorderRadius.circular(2),
               ),
             ),
-            const Padding(
+            Padding(
               padding: EdgeInsets.all(16),
               child: Text(
-                '🚫 차단된 발신자',
+                l.koEn('🚫 차단된 발신자', '🚫 Blocked Senders'),
                 style: TextStyle(
                   color: AppColors.textPrimary,
                   fontSize: 16,
@@ -916,10 +1025,12 @@ class _AdminScreenState extends State<AdminScreen> {
                     onPressed: () {
                       state.adminUnblockSender(ids[i]);
                       Navigator.pop(ctx);
-                      _showSnack('차단 해제됨: ${ids[i]}');
+                      _showSnack(
+                        l.koEn('차단 해제됨: ${ids[i]}', 'Unblocked: ${ids[i]}'),
+                      );
                     },
-                    child: const Text(
-                      '해제',
+                    child: Text(
+                      l.koEn('해제', 'Unblock'),
                       style: TextStyle(
                         color: AppColors.teal,
                         fontSize: 13,
@@ -965,7 +1076,8 @@ class _AdminScreenState extends State<AdminScreen> {
     );
   }
 
-  Widget _statsGrid(AppState state) {
+  Widget _statsGrid(BuildContext context, AppState state) {
+    final l = _l10n(context);
     return GridView.count(
       crossAxisCount: 2,
       shrinkWrap: true,
@@ -974,18 +1086,46 @@ class _AdminScreenState extends State<AdminScreen> {
       crossAxisSpacing: 8,
       childAspectRatio: 2.2,
       children: [
-        _statCard('📤 총 발송', '${state.adminTotalSent}통', AppColors.gold),
-        _statCard('📥 받은 편지함', '${state.adminInboxCount}통', AppColors.teal),
         _statCard(
-          '✈️ 이동 중',
-          '${state.adminInTransitCount}통',
+          l.koEn('📤 총 발송', '📤 Total Sent'),
+          l.koEn('${state.adminTotalSent}통', '${state.adminTotalSent} letters'),
+          AppColors.gold,
+        ),
+        _statCard(
+          l.koEn('📥 받은 편지함', '📥 Inbox'),
+          l.koEn(
+            '${state.adminInboxCount}통',
+            '${state.adminInboxCount} letters',
+          ),
+          AppColors.teal,
+        ),
+        _statCard(
+          l.koEn('✈️ 이동 중', '✈️ In Transit'),
+          l.koEn(
+            '${state.adminInTransitCount}통',
+            '${state.adminInTransitCount} letters',
+          ),
           const Color(0xFF818CF8),
         ),
-        _statCard('🚩 신고', '${state.adminReportedCount}건', AppColors.warning),
-        _statCard('🚫 차단', '${state.adminBlockedCount}명', AppColors.error),
         _statCard(
-          '📊 발송 (오늘)',
-          '${state.todaySentCount}통',
+          l.koEn('🚩 신고', '🚩 Reports'),
+          l.koEn(
+            '${state.adminReportedCount}건',
+            '${state.adminReportedCount} cases',
+          ),
+          AppColors.warning,
+        ),
+        _statCard(
+          l.koEn('🚫 차단', '🚫 Blocked'),
+          l.koEn(
+            '${state.adminBlockedCount}명',
+            '${state.adminBlockedCount} users',
+          ),
+          AppColors.error,
+        ),
+        _statCard(
+          l.koEn('📊 발송 (오늘)', '📊 Sent (Today)'),
+          l.koEn('${state.todaySentCount}통', '${state.todaySentCount} letters'),
           AppColors.textSecondary,
         ),
       ],

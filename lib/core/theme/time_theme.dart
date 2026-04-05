@@ -63,7 +63,7 @@ class TimeTheme {
           gradientMid: Color(0xFF6B2E52), // 로즈 핑크
           gradientBottom: Color(0xFF0D0E28), // 어두운 남색
           emoji: '🌅',
-          label: '새벽',
+          label: 'Dawn',
         );
 
       // ── ☀️ 낮 (09:00-18:00) ─ 맑은 하늘, 깊은 바다 ──────────────────────────
@@ -78,7 +78,7 @@ class TimeTheme {
           gradientMid: Color(0xFF0A3D7A), // 깊은 파랑
           gradientBottom: Color(0xFF021526), // 심해
           emoji: '☀️',
-          label: '낮',
+          label: 'Day',
         );
 
       // ── 🌆 저녁 (18:00-21:00) ─ 선셋 오렌지-레드 ──────────────────────────────
@@ -93,7 +93,7 @@ class TimeTheme {
           gradientMid: Color(0xFF4A1020), // 어두운 로즈
           gradientBottom: Color(0xFF0A0408), // 거의 블랙
           emoji: '🌆',
-          label: '저녁',
+          label: 'Evening',
         );
 
       // ── 🌙 밤 (21:00-05:00) ─ 트루 다크모드 ──────────────────────────────────
@@ -108,7 +108,7 @@ class TimeTheme {
           gradientMid: Color(0xFF0A0A0A),
           gradientBottom: Color(0xFF050505),
           emoji: '🌙',
-          label: '밤',
+          label: 'Night',
         );
     }
   }

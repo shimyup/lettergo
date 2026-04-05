@@ -75,9 +75,18 @@ if ! rg -q "\"package_name\"[[:space:]]*:[[:space:]]*\"$EXPECTED_ANDROID_PACKAGE
   fail "android google-services.json does not include package_name=$EXPECTED_ANDROID_PACKAGE"
 fi
 
-if rg -q "\"package_name\"[[:space:]]*:[[:space:]]*\"com\\.globaldrift\\.message_in_a_bottle\"" \
-  "$ROOT_DIR/android/app/google-services.json"; then
-  warn "android google-services.json still contains legacy package com.globaldrift.message_in_a_bottle"
+other_android_packages=$(
+  rg -o "\"package_name\"[[:space:]]*:[[:space:]]*\"[^\"]+\"" "$ROOT_DIR/android/app/google-services.json" \
+    | sed -E 's/.*"package_name"[[:space:]]*:[[:space:]]*"([^"]+)".*/\1/' \
+    | sort -u \
+    | rg -v "^${EXPECTED_ANDROID_PACKAGE}$" || true
+)
+if [[ -n "$other_android_packages" ]]; then
+  warn "android google-services.json contains extra package_name values:"
+  while IFS= read -r package_name; do
+    [[ -z "$package_name" ]] && continue
+    warn " - $package_name"
+  done <<< "$other_android_packages"
 fi
 
 ios_bundle_id=$(/usr/libexec/PlistBuddy -c "Print :BUNDLE_ID" \

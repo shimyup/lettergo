@@ -132,6 +132,10 @@ class _ComposeScreenState extends State<ComposeScreen>
   bool _isExpressMode = false; // 특송 모드 여부
   int _expressCount = 5; // 발송할 주소 수 (3~10)
 
+  // ── 브랜드 고급 옵션 ──────────────────────────────────────────────────────
+  bool _brandUniquePerUser = false; // 1 아이디당 1 편지
+  int? _brandAutoExpireHours; // 자동 삭제 시간 (null=없음)
+
   static const List<String> _bannedWords = [
     // 영어
     'fuck', 'shit', 'bitch', 'asshole', 'bastard', 'dick', 'pussy', 'cunt',
@@ -463,6 +467,8 @@ class _ComposeScreenState extends State<ComposeScreen>
               : null,
           paperStyle: _paperStyle,
           fontStyle: _fontStyle,
+          brandUniquePerUser: _brandUniquePerUser,
+          brandAutoExpireHours: _brandAutoExpireHours,
           imageUrl: _imageFilePath,
         );
       }
@@ -511,6 +517,8 @@ class _ComposeScreenState extends State<ComposeScreen>
         imageUrl: _imageFilePath,
         paperStyle: _paperStyle,
         fontStyle: _fontStyle,
+        brandUniquePerUser: _brandUniquePerUser,
+        brandAutoExpireHours: _brandAutoExpireHours,
       );
 
       if (mounted) {
@@ -563,6 +571,8 @@ class _ComposeScreenState extends State<ComposeScreen>
         fontStyle: _fontStyle,
         imageUrl: _imageFilePath,
         isExpress: useExpressSingle,
+        brandUniquePerUser: _brandUniquePerUser,
+        brandAutoExpireHours: _brandAutoExpireHours,
       );
     }
 
@@ -789,6 +799,8 @@ class _ComposeScreenState extends State<ComposeScreen>
                             ],
                             if (!_isReply) const SizedBox(height: 10),
                             if (!_isReply) _buildAnonymousToggle(state),
+                            if (!_isReply && isBrand) const SizedBox(height: 10),
+                            if (!_isReply && isBrand) _buildBrandOptions(state),
                             const SizedBox(height: 10),
                             _buildStyleBar(),
                             const SizedBox(height: 10),
@@ -1562,6 +1574,137 @@ class _ComposeScreenState extends State<ComposeScreen>
             ],
           ),
         ),
+      ),
+    );
+  }
+
+  // ── 브랜드 고급 옵션 ──────────────────────────────────────────────────────
+  Widget _buildBrandOptions(AppState state) {
+    final l10n = AppL10n.of(state.currentUser.languageCode);
+    final expireOptions = <int?>[null, 12, 24, 48, 72];
+
+    String expireLabel(int? hours) {
+      if (hours == null) return l10n.composeBrandExpireOff;
+      if (hours == 12) return l10n.composeBrandExpire12h;
+      if (hours == 24) return l10n.composeBrandExpire24h;
+      if (hours == 48) return l10n.composeBrandExpire2d;
+      return l10n.composeBrandExpire3d;
+    }
+
+    return Container(
+      padding: const EdgeInsets.all(13),
+      decoration: BoxDecoration(
+        color: AppColors.bgCard,
+        borderRadius: BorderRadius.circular(13),
+        border: Border.all(color: const Color(0xFF1F2D44)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // 헤더
+          Row(
+            children: [
+              const Text('🏢', style: TextStyle(fontSize: 15)),
+              const SizedBox(width: 8),
+              Text(
+                l10n.composeBrandOptions,
+                style: const TextStyle(
+                  color: AppColors.textSecondary,
+                  fontSize: 12,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 10),
+          // ── 1 아이디당 1 편지 ──
+          GestureDetector(
+            onTap: () => setState(() => _brandUniquePerUser = !_brandUniquePerUser),
+            child: Row(
+              children: [
+                Icon(
+                  _brandUniquePerUser ? Icons.check_circle : Icons.circle_outlined,
+                  color: _brandUniquePerUser ? AppColors.teal : AppColors.textMuted,
+                  size: 18,
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        l10n.composeBrandUniquePerUser,
+                        style: TextStyle(
+                          color: _brandUniquePerUser ? AppColors.teal : AppColors.textPrimary,
+                          fontSize: 12,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      Text(
+                        l10n.composeBrandUniquePerUserDesc,
+                        style: const TextStyle(
+                          color: AppColors.textMuted,
+                          fontSize: 10,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 12),
+          // ── 자동 삭제 기간 ──
+          Text(
+            l10n.composeBrandAutoExpire,
+            style: const TextStyle(
+              color: AppColors.textPrimary,
+              fontSize: 12,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          const SizedBox(height: 2),
+          Text(
+            l10n.composeBrandAutoExpireDesc,
+            style: const TextStyle(
+              color: AppColors.textMuted,
+              fontSize: 10,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Wrap(
+            spacing: 6,
+            runSpacing: 6,
+            children: expireOptions.map((h) {
+              final isSelected = _brandAutoExpireHours == h;
+              return GestureDetector(
+                onTap: () => setState(() => _brandAutoExpireHours = h),
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  decoration: BoxDecoration(
+                    color: isSelected
+                        ? AppColors.teal.withValues(alpha: 0.15)
+                        : AppColors.bgSurface,
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(
+                      color: isSelected
+                          ? AppColors.teal.withValues(alpha: 0.6)
+                          : AppColors.textMuted.withValues(alpha: 0.2),
+                    ),
+                  ),
+                  child: Text(
+                    expireLabel(h),
+                    style: TextStyle(
+                      color: isSelected ? AppColors.teal : AppColors.textMuted,
+                      fontSize: 11,
+                      fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
+                    ),
+                  ),
+                ),
+              );
+            }).toList(),
+          ),
+        ],
       ),
     );
   }

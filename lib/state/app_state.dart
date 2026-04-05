@@ -3308,6 +3308,8 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
     int fontStyle = 0,
     String? imageUrl, // 첨부 이미지 경로 (프리미엄)
     bool isExpress = false, // 프리미엄/브랜드 특급 배송
+    bool brandUniquePerUser = false, // 브랜드: 수신자당 1회 수신
+    int? brandAutoExpireHours, // 브랜드: 자동 삭제 시간
   }) async {
     if (!_canSendLetterByDailyLimit()) {
       return false;
@@ -3430,6 +3432,10 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
           : _currentUser.isPremium
           ? LetterSenderTier.premium
           : LetterSenderTier.free,
+      brandUniquePerUser: _currentUser.isBrand && brandUniquePerUser,
+      expiresAt: (_currentUser.isBrand && brandAutoExpireHours != null)
+          ? now.add(Duration(minutes: totalMin) + Duration(hours: brandAutoExpireHours))
+          : null,
     );
 
     _worldLetters.add(letter);
@@ -3475,6 +3481,8 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
     String? imageUrl,
     int paperStyle = 0,
     int fontStyle = 0,
+    bool brandUniquePerUser = false,
+    int? brandAutoExpireHours,
   }) async {
     if (!_currentUser.isBrand) return 0;
     int sent = 0;
@@ -3492,6 +3500,8 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
           imageUrl: imageUrl,
           paperStyle: paperStyle,
           fontStyle: fontStyle,
+          brandUniquePerUser: brandUniquePerUser,
+          brandAutoExpireHours: brandAutoExpireHours,
         );
         if (ok) sent++;
       }
@@ -3512,6 +3522,8 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
     int paperStyle = 0,
     int fontStyle = 0,
     String? imageUrl,
+    bool brandUniquePerUser = false,
+    int? brandAutoExpireHours,
   }) async {
     if (!_currentUser.isBrand) return 0;
 
@@ -3587,6 +3599,10 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
         senderIsBrand: true,
         senderTier: LetterSenderTier.brand,
         isAnonymous: false,
+        brandUniquePerUser: brandUniquePerUser,
+        expiresAt: brandAutoExpireHours != null
+            ? now.add(Duration(minutes: expressTotalMin) + Duration(hours: brandAutoExpireHours))
+            : null,
       );
 
       _worldLetters.add(letter);

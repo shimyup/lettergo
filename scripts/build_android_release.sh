@@ -53,4 +53,14 @@ if [[ -n "${STADIA_MAPS_API_KEY:-}" ]]; then
 fi
 
 cd "$ROOT_DIR"
+
+echo "[android] building release AAB for Play Internal Test..."
+flutter build appbundle --release "${DART_DEFINES[@]}" "$@"
+
+echo "[android] building release APK for direct install QA..."
 flutter build apk --release "${DART_DEFINES[@]}" "$@"
+
+echo "[android] artifacts:"
+ls -lh \
+  "$ROOT_DIR/build/app/outputs/bundle/release/app-release.aab" \
+  "$ROOT_DIR/build/app/outputs/flutter-apk/app-release.apk"

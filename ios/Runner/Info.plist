@@ -5,15 +5,15 @@
 	<key>ITSAppUsesNonExemptEncryption</key>
 	<false/>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>주변 편지를 찾기 위해 위치 정보가 필요합니다.</string>
+	<string>Your location is needed to discover nearby letters.</string>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
-	<string>주변 편지를 찾기 위해 위치 정보가 필요합니다.</string>
+	<string>Your location is needed to discover nearby letters.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
-	<string>프로필 사진을 변경하려면 사진 라이브러리 접근이 필요합니다.</string>
+	<string>Photo library access is needed to change your profile picture.</string>
 	<key>NSPhotoLibraryAddUsageDescription</key>
-	<string>선택한 프로필 사진을 앱에 저장하기 위해 권한이 필요합니다.</string>
+	<string>Permission is needed to save your selected profile photo.</string>
 	<key>NSCameraUsageDescription</key>
-	<string>편지에 첨부할 사진을 촬영하기 위해 카메라 접근이 필요합니다.</string>
+	<string>Camera access is needed to take photos for your letters.</string>
 	<key>CADisableMinimumFrameDurationOnPhone</key>
 	<true/>
 	<key>CFBundleDevelopmentRegion</key>

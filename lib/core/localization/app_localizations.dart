@@ -3921,6 +3921,77 @@ class AppL10n {
     'th': 'ส่งจำนวนมาก (Brand เท่านั้น)',
   });
 
+  // ── Brand options ──────────────────────────────────────────────────────
+  String get composeBrandOptions => _t({
+    'ko': '브랜드 발송 옵션', 'en': 'Brand Send Options', 'ja': 'ブランド送信オプション', 'zh': '品牌发送选项',
+    'fr': 'Options d\'envoi Brand', 'de': 'Brand-Sendeoptionen', 'es': 'Opciones de envío Brand',
+    'pt': 'Opções de envio Brand', 'ru': 'Параметры отправки Brand', 'tr': 'Brand Gönderim Seçenekleri',
+    'ar': 'خيارات إرسال Brand', 'it': 'Opzioni invio Brand', 'hi': 'Brand भेजने के विकल्प', 'th': 'ตัวเลือกการส่ง Brand',
+  });
+
+  String get composeBrandUniquePerUser => _t({
+    'ko': '1인당 1회 수신 제한', 'en': 'Limit to 1 per recipient', 'ja': '1人1通に制限', 'zh': '每人限收1封',
+    'fr': '1 par destinataire', 'de': '1 pro Empfänger', 'es': '1 por destinatario',
+    'pt': '1 por destinatário', 'ru': '1 на получателя', 'tr': 'Alıcı başına 1',
+    'ar': 'رسالة واحدة لكل مستلم', 'it': '1 per destinatario', 'hi': 'प्रति प्राप्तकर्ता 1', 'th': '1 ต่อผู้รับ',
+  });
+
+  String get composeBrandUniquePerUserDesc => _t({
+    'ko': '같은 사용자에게 중복 발송되지 않습니다', 'en': 'Same user won\'t receive duplicate letters', 'ja': '同じユーザーに重複送信されません', 'zh': '同一用户不会收到重复信件',
+    'fr': 'L\'utilisateur ne recevra pas de doublons', 'de': 'Benutzer erhält keine Duplikate', 'es': 'El usuario no recibirá duplicados',
+    'pt': 'Usuário não receberá duplicatas', 'ru': 'Пользователь не получит дублей', 'tr': 'Kullanıcı mükerrer almaz',
+    'ar': 'لن يتلقى المستخدم نسخاً مكررة', 'it': 'L\'utente non riceverà duplicati', 'hi': 'उपयोगकर्ता को डुप्लिकेट नहीं मिलेगा', 'th': 'ผู้ใช้จะไม่ได้รับซ้ำ',
+  });
+
+  String get composeBrandAutoExpire => _t({
+    'ko': '자동 삭제 기간', 'en': 'Auto-delete after', 'ja': '自動削除期間', 'zh': '自动删除时间',
+    'fr': 'Suppression auto après', 'de': 'Automatisch löschen nach', 'es': 'Eliminar auto después de',
+    'pt': 'Excluir auto após', 'ru': 'Авто-удаление через', 'tr': 'Otomatik silme süresi',
+    'ar': 'حذف تلقائي بعد', 'it': 'Elimina auto dopo', 'hi': 'स्वत: हटाने की अवधि', 'th': 'ลบอัตโนมัติหลัง',
+  });
+
+  String get composeBrandAutoExpireDesc => _t({
+    'ko': '설정 시간 후 편지가 자동으로 사라집니다', 'en': 'Letter will auto-disappear after the set time', 'ja': '設定時間後にレターが自動的に消えます', 'zh': '设定时间后信件将自动消失',
+    'fr': 'La lettre disparaîtra automatiquement', 'de': 'Brief verschwindet automatisch', 'es': 'La carta desaparecerá automáticamente',
+    'pt': 'A carta desaparecerá automaticamente', 'ru': 'Письмо автоудалится', 'tr': 'Mektup otomatik silinir',
+    'ar': 'ستختفي الرسالة تلقائياً', 'it': 'La lettera scomparirà automaticamente', 'hi': 'पत्र स्वतः गायब हो जाएगा', 'th': 'จดหมายจะหายไปโดยอัตโนมัติ',
+  });
+
+  String get composeBrandExpireOff => _t({
+    'ko': '없음', 'en': 'None', 'ja': 'なし', 'zh': '无',
+    'fr': 'Aucun', 'de': 'Keine', 'es': 'Ninguno',
+    'pt': 'Nenhum', 'ru': 'Нет', 'tr': 'Yok',
+    'ar': 'بلا', 'it': 'Nessuno', 'hi': 'कोई नहीं', 'th': 'ไม่มี',
+  });
+
+  String get composeBrandExpire12h => _t({
+    'ko': '12시간', 'en': '12 hours', 'ja': '12時間', 'zh': '12小时',
+    'fr': '12 heures', 'de': '12 Stunden', 'es': '12 horas',
+    'pt': '12 horas', 'ru': '12 часов', 'tr': '12 saat',
+    'ar': '12 ساعة', 'it': '12 ore', 'hi': '12 घंटे', 'th': '12 ชั่วโมง',
+  });
+
+  String get composeBrandExpire24h => _t({
+    'ko': '24시간', 'en': '24 hours', 'ja': '24時間', 'zh': '24小时',
+    'fr': '24 heures', 'de': '24 Stunden', 'es': '24 horas',
+    'pt': '24 horas', 'ru': '24 часа', 'tr': '24 saat',
+    'ar': '24 ساعة', 'it': '24 ore', 'hi': '24 घंटे', 'th': '24 ชั่วโมง',
+  });
+
+  String get composeBrandExpire2d => _t({
+    'ko': '2일', 'en': '2 days', 'ja': '2日', 'zh': '2天',
+    'fr': '2 jours', 'de': '2 Tage', 'es': '2 días',
+    'pt': '2 dias', 'ru': '2 дня', 'tr': '2 gün',
+    'ar': 'يومان', 'it': '2 giorni', 'hi': '2 दिन', 'th': '2 วัน',
+  });
+
+  String get composeBrandExpire3d => _t({
+    'ko': '3일', 'en': '3 days', 'ja': '3日', 'zh': '3天',
+    'fr': '3 jours', 'de': '3 Tage', 'es': '3 días',
+    'pt': '3 dias', 'ru': '3 дня', 'tr': '3 gün',
+    'ar': '3 أيام', 'it': '3 giorni', 'hi': '3 दिन', 'th': '3 วัน',
+  });
+
   String get composeWithin5Min => _t({
     'ko': '5분 내 발송',
     'en': 'Sent within 5 min',

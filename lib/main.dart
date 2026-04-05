@@ -12,6 +12,8 @@ import 'core/services/purchase_service.dart';
 import 'state/app_state.dart';
 import 'features/splash/splash_screen.dart'; // kept for route
 import 'features/auth/screens/auth_screen.dart';
+import 'features/compose/screens/compose_screen.dart';
+import 'features/intro/delivery_intro_screen.dart';
 import 'features/onboarding/onboarding_screen.dart';
 import 'features/premium/premium_screen.dart';
 import 'widgets/main_scaffold.dart';
@@ -98,9 +100,18 @@ class _GlobalDriftAppState extends State<GlobalDriftApp> {
   TimeOfDayPeriod? _lastPeriod;
 
   void _onPurchaseChanged() {
+    _purchaseService.setPreferredLanguageCode(
+      _appState.currentUser.languageCode,
+    );
     _appState.syncPremiumStatus(
       isPremium: _purchaseService.isPremium,
       isBrand: _purchaseService.isBrand,
+    );
+  }
+
+  void _onAppStateChanged() {
+    _purchaseService.setPreferredLanguageCode(
+      _appState.currentUser.languageCode,
     );
   }
 
@@ -108,6 +119,10 @@ class _GlobalDriftAppState extends State<GlobalDriftApp> {
   void initState() {
     super.initState();
     _appState = AppState();
+    _appState.addListener(_onAppStateChanged);
+    _purchaseService.setPreferredLanguageCode(
+      _appState.currentUser.languageCode,
+    );
     // 인앱 결제 초기화 후 AppState 프리미엄 상태 동기화
     _purchaseService.initialize().then((_) {
       if (!mounted) return;
@@ -158,6 +173,7 @@ class _GlobalDriftAppState extends State<GlobalDriftApp> {
   @override
   void dispose() {
     _purchaseService.removeListener(_onPurchaseChanged);
+    _appState.removeListener(_onAppStateChanged);
     _themeTimer?.cancel();
     _appState.dispose();
     super.dispose();
@@ -190,6 +206,13 @@ class _GlobalDriftAppState extends State<GlobalDriftApp> {
   }
 
   String _getInitialRoute() {
+    // Allows controlled capture/testing flows via:
+    // --dart-define=APP_INITIAL_ROUTE=/delivery_intro
+    const forcedRoute = String.fromEnvironment(
+      'APP_INITIAL_ROUTE',
+      defaultValue: '',
+    );
+    if (forcedRoute.isNotEmpty) return forcedRoute;
     return '/splash';
   }
 
@@ -212,7 +235,12 @@ class _GlobalDriftAppState extends State<GlobalDriftApp> {
               '/splash': (_) =>
                   SplashScreen(skipToAuth: !widget.initialLoggedIn),
               '/auth': (_) => const AuthScreen(),
+              '/delivery_intro': (_) => const DeliveryIntroScreen(),
               '/home': (_) => const MainScaffold(),
+              '/home_inbox': (_) => const MainScaffold(initialIndex: 1),
+              '/home_tower': (_) => const MainScaffold(initialIndex: 2),
+              '/home_profile': (_) => const MainScaffold(initialIndex: 3),
+              '/compose': (_) => const ComposeScreen(),
               '/premium_welcome': (_) =>
                   const PremiumScreen(isWelcomeMode: true),
             },
