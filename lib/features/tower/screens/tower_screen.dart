@@ -160,7 +160,7 @@ class _TowerScreenState extends State<TowerScreen>
                           ],
                         ),
                         child: Text(
-                          'Lv.${score.tier.tierNumber}  ${score.tier.label}',
+                          'Lv.${score.tier.tierNumber}  ${score.tier.labelL(_lc)}',
                           style: TextStyle(
                             color: tierColor,
                             fontSize: 11,
@@ -669,7 +669,7 @@ class _TowerScreenState extends State<TowerScreen>
                             borderRadius: BorderRadius.circular(8),
                           ),
                           child: Text(
-                            '${score.tier.emoji}  ${score.tier.label}',
+                            '${score.tier.emoji}  ${score.tier.labelL(user.languageCode)}',
                             style: const TextStyle(
                               color: AppColors.gold,
                               fontSize: 12,
@@ -816,7 +816,7 @@ class _TowerScreenState extends State<TowerScreen>
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        tier.label,
+                        tier.labelL(ctx.read<AppState>().currentUser.languageCode),
                         style: TextStyle(
                           color: tierColor,
                           fontSize: 14,
@@ -824,7 +824,7 @@ class _TowerScreenState extends State<TowerScreen>
                         ),
                       ),
                       Text(
-                        '${tier.tierNumber}단계 / 10단계',
+                        _sl.towerTierProgress(tier.tierNumber, 10),
                         style: const TextStyle(
                           color: AppColors.textMuted,
                           fontSize: 10,
@@ -992,7 +992,7 @@ class _TowerScreenState extends State<TowerScreen>
                   ),
                   const SizedBox(height: 3),
                   Text(
-                    score.tier.nextGoal,
+                    score.tier.nextGoalL(ctx.read<AppState>().currentUser.languageCode),
                     style: const TextStyle(
                       color: AppColors.textPrimary,
                       fontSize: 13,
@@ -1103,6 +1103,7 @@ class _TowerScreenState extends State<TowerScreen>
 
   Widget _buildCommunityTowers(BuildContext ctx, AppState state) {
     final _cl = AppL10n.of(state.currentUser.languageCode);
+    final _clc = state.currentUser.languageCode;
     // Mock community members with usernames
     final members = [
       {
@@ -1110,56 +1111,48 @@ class _TowerScreenState extends State<TowerScreen>
         'name': 'Kenji M.',
         'floors': 83,
         'tier': TowerTier.landmark,
-        'label': '랜드마크',
       },
       {
         'flag': '🇧🇷',
         'name': 'Luis G.',
         'floors': 67,
         'tier': TowerTier.landmark,
-        'label': '랜드마크',
       },
       {
         'flag': '🇨🇳',
         'name': 'Mei L.',
         'floors': 55,
         'tier': TowerTier.skyscraper,
-        'label': '마천루',
       },
       {
         'flag': '🇺🇸',
         'name': 'Tom H.',
         'floors': 47,
         'tier': TowerTier.skyscraper,
-        'label': '마천루',
       },
       {
         'flag': '🇫🇷',
         'name': 'Nina S.',
         'floors': 31,
         'tier': TowerTier.building,
-        'label': '빌딩',
       },
       {
         'flag': '🇬🇧',
         'name': 'Emma W.',
         'floors': 22,
         'tier': TowerTier.building,
-        'label': '빌딩',
       },
       {
         'flag': '🇩🇪',
         'name': 'Hana B.',
         'floors': 12,
         'tier': TowerTier.house,
-        'label': '마을집',
       },
       {
         'flag': '🇰🇷',
         'name': _cl.towerAnonymousUser,
         'floors': 5,
         'tier': TowerTier.cottage,
-        'label': '오두막',
       },
     ];
     final myScore = state.currentUser.activityScore;
@@ -1182,7 +1175,7 @@ class _TowerScreenState extends State<TowerScreen>
           Row(
             children: [
               Text(
-                '🌍 세계 랭킹',
+                '🌍 ${_cl.towerWorldRanking}',
                 style: Theme.of(ctx).textTheme.titleMedium?.copyWith(
                   color: AppColors.textSecondary,
                   letterSpacing: 1.0,
@@ -1283,7 +1276,7 @@ class _TowerScreenState extends State<TowerScreen>
                               ),
                               const SizedBox(width: 4),
                               Text(
-                                m['label'] as String,
+                                tier.labelL(_clc),
                                 style: TextStyle(
                                   color: tierColor,
                                   fontSize: 11,
@@ -1377,7 +1370,7 @@ class _TowerScreenState extends State<TowerScreen>
                           ),
                           const SizedBox(width: 4),
                           Text(
-                            myScore.tier.label,
+                            myScore.tier.labelL(_clc),
                             style: const TextStyle(
                               color: AppColors.textMuted,
                               fontSize: 11,

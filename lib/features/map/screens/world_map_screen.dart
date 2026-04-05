@@ -820,7 +820,7 @@ class _WorldMapScreenState extends State<WorldMapScreen>
               icon: state.currentUser.activityScore.tier.emoji,
               title: l10n.mapMyTower,
               subtitle:
-                  '${state.currentUser.activityScore.towerFloors}${l10n.mapFloorUnit} · ${state.currentUser.activityScore.tier.label}',
+                  '${state.currentUser.activityScore.towerFloors}${l10n.mapFloorUnit} · ${state.currentUser.activityScore.tier.labelL(langCode)}',
               onTap: () {
                 Navigator.pop(ctx);
                 _showMyTowerInfo(ctx, state, l10n);
@@ -938,7 +938,7 @@ class _WorldMapScreenState extends State<WorldMapScreen>
                             ),
                           ),
                           child: Text(
-                            '${tier.emoji}  ${tier.label}',
+                            '${tier.emoji}  ${tier.labelL(l10n.languageCode)}',
                             style: TextStyle(
                               color: tierColor,
                               fontSize: 12,

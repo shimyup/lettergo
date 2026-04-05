@@ -11437,6 +11437,13 @@ class AppL10n {
     'ar': 'إحصائيات النشاط', 'it': 'Statistiche attività', 'hi': 'गतिविधि आँकड़े', 'th': 'สถิติกิจกรรม',
   });
 
+  String towerTierProgress(int current, int total) => _t({
+    'ko': '$current단계 / $total단계', 'en': 'Tier $current / $total', 'ja': 'ステージ$current / $total', 'zh': '第$current阶 / $total阶',
+    'fr': 'Étape $current / $total', 'de': 'Stufe $current / $total', 'es': 'Nivel $current / $total',
+    'pt': 'Nível $current / $total', 'ru': 'Уровень $current / $total', 'tr': 'Aşama $current / $total',
+    'ar': 'المرحلة $current / $total', 'it': 'Livello $current / $total', 'hi': 'चरण $current / $total', 'th': 'ระดับ $current / $total',
+  });
+
   String get towerActivityScore => _t({
     'ko': '활동 점수', 'en': 'Activity Score', 'ja': 'アクティビティスコア', 'zh': '活动分数',
     'fr': 'Score d\'activité', 'de': 'Aktivitätspunktzahl', 'es': 'Puntuación de actividad',

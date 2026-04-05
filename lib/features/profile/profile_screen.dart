@@ -697,7 +697,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ),
                 const SizedBox(height: 3),
                 Text(
-                  score.reputationTitle,
+                  score.reputationTitleL(user.languageCode),
                   style: TextStyle(
                     color: tierColor,
                     fontSize: 16,
@@ -1202,7 +1202,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     ),
                     const SizedBox(width: 10),
                     Text(
-                      user.activityScore.reputationTitle,
+                      user.activityScore.reputationTitleL(user.languageCode),
                       style: TextStyle(
                         color: tierClr,
                         fontSize: 12,
@@ -1530,7 +1530,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     ),
                     const SizedBox(height: 2),
                     Text(
-                      tier.label,
+                      tier.labelL(user.languageCode),
                       style: TextStyle(
                         color: tierClr,
                         fontSize: 17,
@@ -1538,7 +1538,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       ),
                     ),
                     Text(
-                      score.reputationTitle,
+                      score.reputationTitleL(user.languageCode),
                       style: const TextStyle(
                         color: AppColors.textSecondary,
                         fontSize: 12,
@@ -1583,7 +1583,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                isMax ? '🏆 ${_tl.towerTopTierReached}' : tier.nextGoal,
+                isMax ? '🏆 ${_tl.towerTopTierReached}' : tier.nextGoalL(user.languageCode),
                 style: const TextStyle(
                   color: AppColors.textMuted,
                   fontSize: 11,
