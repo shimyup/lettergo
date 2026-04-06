@@ -110,12 +110,22 @@ class CountryCities {
       '강북구', '도봉구', '노원구', '은평구', '서대문구', '영등포구',
       '동작구', '관악구', '금천구', '구로구', '양천구', '강서구',
       // ── 부산 (구 단위) ──
-      '부산', '해운대구', '부산진구', '동래구', '남구', '사하구', '금정구',
+      '부산', '부산중구', '부산서구', '부산동구', '영도구', '부산진구', '동래구',
+      '부산남구', '부산북구', '해운대구', '사하구', '금정구', '부산강서구',
       '연제구', '수영구', '사상구', '기장군',
       // ── 인천 ──
-      '인천', '연수구', '남동구', '부평구', '계양구', '서구', '미추홀구',
-      // ── 광역시 ──
-      '대구', '광주', '대전', '울산', '세종',
+      '인천', '인천중구', '인천동구', '미추홀구', '연수구', '남동구', '부평구',
+      '계양구', '인천서구', '강화군', '옹진군',
+      // ── 대구 ──
+      '대구', '대구중구', '대구서구', '대구남구', '대구북구', '수성구', '달서구', '달성군',
+      // ── 광주 ──
+      '광주', '광주동구', '광주서구', '광주남구', '광주북구', '광산구',
+      // ── 대전 ──
+      '대전', '대전동구', '대전중구', '대전서구', '유성구', '대덕구',
+      // ── 울산 ──
+      '울산', '울산중구', '울산남구', '울산동구', '울산북구', '울주군',
+      // ── 세종 ──
+      '세종',
       // ── 경기도 ──
       '수원', '고양', '용인', '성남', '부천', '안산', '안양', '평택',
       '의정부', '화성', '광명', '군포', '하남', '오산', '의왕', '파주',
@@ -147,72 +157,87 @@ class CountryCities {
       '제주', '서귀포', '애월', '한림', '대정', '성산', '표선',
     },
     '일본': {
-      '東京',
-      '大阪',
-      '名古屋',
-      '横浜',
-      '福岡',
-      '神戸',
-      '京都',
-      '札幌',
-      '仙台',
-      '広島',
-      '北九州',
-      '千葉',
-      'さいたま',
-      '堺',
-      '浜松',
-      '熊本',
-      '相模原',
-      '岡山',
-      '静岡',
-      '鹿児島',
+      // ── 주요 도시 ──
+      '東京', '大阪', '名古屋', '横浜', '福岡', '神戸', '京都',
+      '札幌', '仙台', '広島', '北九州', '千葉', 'さいたま', '堺',
+      '浜松', '熊本', '相模原', '岡山', '静岡', '鹿児島',
+      // ── 東京23区 (추가) ──
+      '練馬区', '江戸川区',
+      // ── 大阪24区 ──
+      '北区', '中央区', '天王寺区', '浪速区', '西区', '淀川区', '東淀川区',
+      '生野区', '城東区', '鶴見区', '此花区', '西成区', '住吉区', '阿倍野区',
+      '東住吉区', '平野区', '住之江区', '港区', '大正区', '旭区', '都島区',
+      '福島区', '東成区',
     },
     '중국': {
-      '北京',
-      '上海',
-      '广州',
-      '深圳',
-      '成都',
-      '杭州',
-      '武汉',
-      '西安',
-      '苏州',
-      '南京',
-      '天津',
-      '重庆',
-      '长沙',
-      '青岛',
-      '宁波',
-      '郑州',
+      // ── 주요 도시 ──
+      '北京', '上海', '广州', '深圳', '成都', '杭州', '武汉', '西安',
+      '苏州', '南京', '天津', '重庆', '长沙', '青岛', '宁波', '郑州',
+      // ── 주요 구 ──
+      '浦东新区', '闵行区', '天河区', '越秀区', '海珠区',
+      '南山区', '福田区', '罗湖区',
     },
     '미국': {
-      'New York',
-      'Los Angeles',
-      'Chicago',
-      'Houston',
-      'Phoenix',
-      'Philadelphia',
-      'San Antonio',
-      'San Diego',
-      'Dallas',
-      'San Jose',
-      'Austin',
-      'Jacksonville',
-      'San Francisco',
-      'Columbus',
-      'Indianapolis',
-      'Seattle',
-      'Denver',
-      'Boston',
-      'Portland',
-      'Las Vegas',
-      'Atlanta',
-      'Miami',
-      'Minneapolis',
+      // ── 주요 도시 ──
+      'New York', 'Los Angeles', 'Chicago', 'Houston', 'Phoenix',
+      'Philadelphia', 'San Antonio', 'San Diego', 'Dallas', 'San Jose',
+      'Austin', 'Jacksonville', 'San Francisco', 'Columbus', 'Indianapolis',
+      'Seattle', 'Denver', 'Boston', 'Portland', 'Las Vegas', 'Atlanta',
+      'Miami', 'Minneapolis',
       'Tampa',
       'New Orleans',
       'Cleveland',
+      // ── 주요 지역구 ──
+      'SoHo', 'Wicker Park', 'Venice Beach', 'Mission District',
+      'French Quarter', 'Back Bay', 'Capitol Hill', 'Pacific Heights',
+      'South Beach', 'Buckhead', 'River North', 'Adams Morgan', 'Dupont Circle',
+    },
+    '프랑스': {
+      'Paris', 'Marseille', 'Lyon', 'Toulouse', 'Nice', 'Nantes',
+      'Strasbourg', 'Montpellier', 'Bordeaux', 'Lille',
+      // ── 파리 구 ──
+      'Paris 1er', 'Paris 2e', 'Paris 3e', 'Paris 4e', 'Paris 5e',
+      'Paris 6e', 'Paris 7e', 'Paris 8e', 'Paris 9e',
+      'Paris 10e', 'Paris 11e', 'Paris 12e', 'Paris 13e', 'Paris 14e',
+      'Paris 15e', 'Paris 16e', 'Paris 17e', 'Paris 18e', 'Paris 19e', 'Paris 20e',
+    },
+    '영국': {
+      'London', 'Birmingham', 'Manchester', 'Leeds', 'Glasgow', 'Liverpool',
+      'Bristol', 'Edinburgh', 'Cardiff', 'Belfast',
+      // ── 런던 자치구 ──
+      'Westminster', 'Camden', 'Southwark', 'Tower Hamlets', 'Greenwich',
+      'Hackney', 'Islington', 'Lambeth', 'Kensington', 'Chelsea',
+      'Hammersmith', 'Wandsworth', 'Lewisham', 'Newham', 'Barnet',
+      'Ealing', 'Brent', 'Haringey', 'Croydon', 'Bromley',
+    },
+    '인도': {
+      'New Delhi', 'Mumbai', 'Bangalore', 'Chennai', 'Kolkata', 'Hyderabad',
+      'Pune', 'Ahmedabad', 'Jaipur', 'Lucknow',
+      // ── 주요 지역 ──
+      'Bandra', 'Andheri', 'Colaba', 'Juhu', 'Connaught Place',
+      'Karol Bagh', 'Hauz Khas', 'Lajpat Nagar', 'Koramangala',
+      'Indiranagar', 'Whitefield',
+    },
+    '브라질': {
+      'São Paulo', 'Rio de Janeiro', 'Brasília', 'Salvador', 'Fortaleza',
+      'Belo Horizonte', 'Manaus', 'Curitiba', 'Recife', 'Porto Alegre',
+      // ── 주요 지역 ──
+      'Pinheiros', 'Itaim Bibi', 'Jardins', 'Moema',
+      'Copacabana', 'Ipanema', 'Botafogo', 'Leblon', 'Lapa', 'Santa Teresa',
+    },
+    '러시아': {
+      'Moscow', 'Saint Petersburg', 'Novosibirsk', 'Yekaterinburg',
+      'Kazan', 'Nizhny Novgorod', 'Chelyabinsk', 'Samara', 'Omsk', 'Rostov-on-Don',
+      // ── 모스크바 지역 ──
+      'Arbat', 'Tverskaya', 'Kitay-gorod', 'Zamoskvorechye', 'Basmanny',
+    },
+    '호주': {
+      'Sydney', 'Melbourne', 'Brisbane', 'Perth', 'Adelaide',
+      'Gold Coast', 'Canberra', 'Newcastle', 'Wollongong',
+      // ── 주요 교외 ──
+      'Parramatta', 'Bondi', 'Manly', 'Surry Hills', 'Newtown',
+      'St Kilda', 'Fitzroy', 'Carlton', 'South Yarra', 'Richmond',
+      'South Bank', 'Fortitude Valley', 'West End',
     },
   };
 
@@ -230,9 +255,9 @@ class CountryCities {
     final result = all.where((c) {
       final name = c['name'] as String? ?? '';
       if (name.length <= 1) return false;
-      if (name.contains(RegExp(r'[A-Za-z0-9]'))) return false;
-      // 화이트리스트에 있으면 포함
+      // 화이트리스트에 있으면 무조건 포함 (라틴 문자 포함해도 OK)
       if (whitelist != null && whitelist.contains(name)) return true;
+      if (name.contains(RegExp(r'[A-Za-z0-9]'))) return false;
       // 행정구역 어미면 포함
       for (final e in adminEndings) {
         if (name.endsWith(e)) return true;
@@ -244,8 +269,14 @@ class CountryCities {
   }
 
   /// 도시명 품질 필터 (숫자로 시작, 괄호, 슬래시, 과도하게 긴 이름 제외)
-  static bool _isCleanCityName(String name) {
+  /// 화이트리스트 항목은 무조건 통과
+  static bool _isCleanCityName(String name, {String? country}) {
     if (name.isEmpty || name.length > 35) return false;
+    // 화이트리스트에 있으면 무조건 통과
+    if (country != null) {
+      final wl = _majorCityWhitelist[country];
+      if (wl != null && wl.contains(name)) return true;
+    }
     if (name.contains('(') || name.contains(')')) return false;
     if (name.contains('/') || name.contains('\\')) return false;
     if (RegExp(r'^\d').hasMatch(name)) return false; // 숫자로 시작
@@ -263,7 +294,7 @@ class CountryCities {
     // 행정구역 필터 + 전역 품질 필터 적용
     final raw = majorCitiesOf(country);
     final list = raw
-        .where((c) => _isCleanCityName(c['name'] as String? ?? ''))
+        .where((c) => _isCleanCityName(c['name'] as String? ?? '', country: country))
         .toList();
     final pool = list.isNotEmpty ? list : raw;
     if (pool.isEmpty) return null;

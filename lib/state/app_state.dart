@@ -1686,7 +1686,7 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
         'lat': -26.2041,
         'lng': 28.0473,
         'content':
-            "Writing to you from Johannesburg as the golden sunset paints the sky in shades of orange and pink. South Africa holds such breathtaking beauty — the wide savanna, the warmth of its people, the stories in every corner. I hope this letter finds you well, wherever you are.",
+            "Hallo vanuit Johannesburg! Die goue sonsondergang verf die lug in skakerings van oranje en pienk. Suid-Afrika het sulke asemrowende skoonheid — die wye savanna, die warmte van sy mense, die stories in elke hoek. Ek hoop hierdie brief vind jou goed, waar jy ook al is.",
       },
       {
         'name': 'Lucas B.',
@@ -1809,10 +1809,10 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
         'name': 'Emily C.',
         'country': '캐나다',
         'flag': '🇨🇦',
-        'lat': 43.6532,
-        'lng': -79.3832,
+        'lat': 45.5017,
+        'lng': -73.5673,
         'content':
-            'Hello from Toronto! The maple trees have turned into a sea of red and amber, and I\'ve been walking through the leaves all morning. Canada is a country of quiet wonders — frozen lakes, endless forests, and the kindest strangers. Sending you some of this autumn warmth.',
+            "Bonjour de Montréal! Les érables se sont transformés en une mer de rouge et d'ambre, et j'ai marché dans les feuilles toute la matinée. Le Canada est un pays de merveilles tranquilles — des lacs gelés, des forêts infinies et les étrangers les plus gentils. Je t'envoie un peu de cette chaleur automnale.",
       },
       {
         'name': 'Diego R.',
@@ -2005,7 +2005,7 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
         'lat': -26.2041,
         'lng': 28.0473,
         'content':
-            "Writing to you from Johannesburg as the golden sunset paints the sky in shades of orange and pink. South Africa holds such breathtaking beauty — the wide savanna, the warmth of its people, the stories in every corner. I hope this letter finds you well, wherever you are.",
+            "Hallo vanuit Johannesburg! Die goue sonsondergang verf die lug in skakerings van oranje en pienk. Suid-Afrika het sulke asemrowende skoonheid — die wye savanna, die warmte van sy mense, die stories in elke hoek. Ek hoop hierdie brief vind jou goed, waar jy ook al is.",
       },
       {
         'name': 'Lucas B.',
@@ -2128,10 +2128,10 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
         'name': 'Emily C.',
         'country': '캐나다',
         'flag': '🇨🇦',
-        'lat': 43.6532,
-        'lng': -79.3832,
+        'lat': 45.5017,
+        'lng': -73.5673,
         'content':
-            'Hello from Toronto! The maple trees have turned into a sea of red and amber, and I\'ve been walking through the leaves all morning. Canada is a country of quiet wonders — frozen lakes, endless forests, and the kindest strangers. Sending you some of this autumn warmth.',
+            "Bonjour de Montréal! Les érables se sont transformés en une mer de rouge et d'ambre, et j'ai marché dans les feuilles toute la matinée. Le Canada est un pays de merveilles tranquilles — des lacs gelés, des forêts infinies et les étrangers les plus gentils. Je t'envoie un peu de cette chaleur automnale.",
       },
       {
         'name': 'Diego R.',

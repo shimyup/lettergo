@@ -4094,23 +4094,6 @@ class AppL10n {
     'th': 'ประเทศเป้าหมาย',
   });
 
-  String get composeAddressCount => _t({
-    'ko': '발송 주소 수',
-    'en': 'Address count',
-    'ja': '送信先アドレス数',
-    'zh': '地址数量',
-    'fr': 'Nombre d\'adresses',
-    'de': 'Adressanzahl',
-    'es': 'Cantidad de direcciones',
-    'pt': 'Número de endereços',
-    'ru': 'Количество адресов',
-    'tr': 'Adres sayısı',
-    'ar': 'عدد العناوين',
-    'it': 'Numero di indirizzi',
-    'hi': 'पता संख्या',
-    'th': 'จำนวนที่อยู่',
-  });
-
   String composeCountUnit(int count) => _t({
     'ko': '$count 개',
     'en': '$count',
@@ -4197,8 +4180,8 @@ class AppL10n {
   });
 
   String get composeAddressPerCountry => _t({
-    'ko': '나라당 발송 주소 수',
-    'en': 'Addresses per country',
+    'ko': '나라당 발송 수',
+    'en': 'Sends per country',
     'ja': '国ごとの送信先アドレス数',
     'zh': '每个国家的地址数',
     'fr': 'Adresses par pays',
