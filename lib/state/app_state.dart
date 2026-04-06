@@ -535,6 +535,9 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
   // ── 딜리버리 타이머 ─────────────────────────────────────────────────────────
   Timer? _deliveryTimer;
 
+  // ── AI 자동 편지 발송 ──────────────────────────────────────────────────────
+  String _lastAiLetterDateKey = '';
+
   // ── 사용된 배송지 (나라 → 도시 키 Set, 중복 방지) ──────────────────────────
   final Map<String, Set<String>> _usedDestinations = {};
 
@@ -1070,6 +1073,7 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
       );
       prefs.setStringList('blocked', _blockedSenderIds.toList());
       prefs.setStringList('temp_blocked', _tempBlockedSenderIds.toList());
+      prefs.setString('lastAiLetterDateKey', _lastAiLetterDateKey);
       prefs.setInt('sentSinceLastUnlock', _sentSinceLastUnlock);
       prefs.setInt('dailySentCount', _dailySentCount);
       prefs.setString('dailySentDateKey', _dailySentDateKey);
@@ -1386,6 +1390,10 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
       _saveToPrefs();
     }
 
+    // AI 자동 편지 생성 (하루 5통)
+    _lastAiLetterDateKey = prefs.getString('lastAiLetterDateKey') ?? '';
+    _generateDailyAiLetters();
+
     await _ensureInviteIdentityOnServer();
     notifyListeners();
   }
@@ -1429,6 +1437,8 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
     _saveUserToFirestore();
     unawaited(_ensureInviteIdentityOnServer());
     fetchMapUsers(force: true);
+    // AI 자동 편지 생성 (하루 5통)
+    _generateDailyAiLetters();
   }
 
   // ── 위치 업데이트 ─────────────────────────────────────────────────────────
@@ -1535,11 +1545,22 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
             'customTowerName': {'stringValue': _currentUser.customTowerName!},
         },
       });
-      await http.patch(
-        url,
-        headers: {'Content-Type': 'application/json'},
-        body: body,
-      );
+      for (int attempt = 0; attempt < 3; attempt++) {
+        try {
+          await http.patch(
+            url,
+            headers: {'Content-Type': 'application/json'},
+            body: body,
+          ).timeout(const Duration(seconds: 20));
+          return; // 성공 시 종료
+        } catch (e) {
+          if (attempt < 2) {
+            await Future.delayed(Duration(seconds: 2 * (attempt + 1)));
+          } else {
+            debugPrint('[Firestore] user save error (3 attempts): $e');
+          }
+        }
+      }
     } catch (e) {
       debugPrint('[Firestore] user save error: $e');
     }
@@ -2375,7 +2396,7 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
         final pageToken = nextPageToken?.trim() ?? '';
         final url = Uri.parse(buildUsersListUrl(pageToken));
 
-        final res = await http.get(url).timeout(const Duration(seconds: 8));
+        final res = await http.get(url).timeout(const Duration(seconds: 20));
         if (res.statusCode != 200) {
           debugPrint('[Firestore] fetchMapUsers http ${res.statusCode}');
           break;
@@ -3173,6 +3194,133 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
 
       if (changed) notifyListeners();
     });
+  }
+
+  // ── AI 자동 편지 발송 (하루 5통, 랜덤 나라 → 한국) ─────────────────────────
+  void _generateDailyAiLetters() {
+    final today = _dateKey(DateTime.now());
+    if (_lastAiLetterDateKey == today) return; // 오늘 이미 생성됨
+    if (_currentUser.id.isEmpty) return; // 로그인 전이면 스킵
+
+    _lastAiLetterDateKey = today;
+    final rng = Random();
+    final now = DateTime.now();
+
+    // AI 편지 발송 나라/도시/내용 풀
+    const aiSenders = [
+      {'name': 'Emma', 'country': '영국', 'flag': '🇬🇧', 'lat': 51.5074, 'lng': -0.1278, 'city': 'London'},
+      {'name': 'Yuki', 'country': '일본', 'flag': '🇯🇵', 'lat': 35.6762, 'lng': 139.6503, 'city': 'Tokyo'},
+      {'name': 'Lucas', 'country': '브라질', 'flag': '🇧🇷', 'lat': -23.5505, 'lng': -46.6333, 'city': 'São Paulo'},
+      {'name': 'Marie', 'country': '프랑스', 'flag': '🇫🇷', 'lat': 48.8566, 'lng': 2.3522, 'city': 'Paris'},
+      {'name': 'James', 'country': '미국', 'flag': '🇺🇸', 'lat': 40.7128, 'lng': -74.0060, 'city': 'New York'},
+      {'name': 'Lina', 'country': '독일', 'flag': '🇩🇪', 'lat': 52.5200, 'lng': 13.4050, 'city': 'Berlin'},
+      {'name': 'Carlos', 'country': '스페인', 'flag': '🇪🇸', 'lat': 40.4168, 'lng': -3.7038, 'city': 'Madrid'},
+      {'name': 'Mei', 'country': '중국', 'flag': '🇨🇳', 'lat': 31.2304, 'lng': 121.4737, 'city': 'Shanghai'},
+      {'name': 'Alessandro', 'country': '이탈리아', 'flag': '🇮🇹', 'lat': 41.9028, 'lng': 12.4964, 'city': 'Rome'},
+      {'name': 'Olivia', 'country': '호주', 'flag': '🇦🇺', 'lat': -33.8688, 'lng': 151.2093, 'city': 'Sydney'},
+      {'name': 'Priya', 'country': '인도', 'flag': '🇮🇳', 'lat': 28.6139, 'lng': 77.2090, 'city': 'New Delhi'},
+      {'name': 'Sven', 'country': '스웨덴', 'flag': '🇸🇪', 'lat': 59.3293, 'lng': 18.0686, 'city': 'Stockholm'},
+      {'name': 'Fatima', 'country': '터키', 'flag': '🇹🇷', 'lat': 41.0082, 'lng': 28.9784, 'city': 'Istanbul'},
+      {'name': 'Aiden', 'country': '캐나다', 'flag': '🇨🇦', 'lat': 43.6532, 'lng': -79.3832, 'city': 'Toronto'},
+      {'name': 'Sofia', 'country': '아르헨티나', 'flag': '🇦🇷', 'lat': -34.6037, 'lng': -58.3816, 'city': 'Buenos Aires'},
+      {'name': 'Jing', 'country': '태국', 'flag': '🇹🇭', 'lat': 13.7563, 'lng': 100.5018, 'city': 'Bangkok'},
+      {'name': 'Anna', 'country': '러시아', 'flag': '🇷🇺', 'lat': 55.7558, 'lng': 37.6173, 'city': 'Moscow'},
+      {'name': 'Noah', 'country': '뉴질랜드', 'flag': '🇳🇿', 'lat': -36.8485, 'lng': 174.7633, 'city': 'Auckland'},
+    ];
+
+    const aiMessages = [
+      'Hello from across the world! 🌍\n\nI found this app today and wanted to send a letter to someone in Korea. I hope this little message brightens your day.\n\nTell me about your city — what\'s your favorite place to visit?',
+      'Hi there! 🌸\n\nI\'ve always dreamed of visiting Korea someday. The culture, the food, the beautiful mountains... it all seems so wonderful.\n\nWhat\'s something about Korea that only locals know? I\'d love to hear from you!',
+      'Good day! ✨\n\nIt\'s amazing that we can send letters across the globe like this. Right now I\'m sitting in a café watching the rain outside.\n\nWhat\'s the weather like where you are? I hope you\'re having a lovely day.',
+      'Hey! 😊\n\nI just sent this letter into the world, not knowing who would receive it. That\'s what makes this so exciting, right?\n\nIf you could travel anywhere tomorrow, where would you go?',
+      'Greetings! 🌏\n\nI\'m writing this late at night. The stars are beautiful tonight. Do you ever look up at the sky and wonder who else is looking at the same stars?\n\nI hope this letter finds you well.',
+      'Hello! 🎵\n\nMusic has no borders. Right now I\'m listening to some K-pop and it inspired me to write to someone in Korea.\n\nWhat songs are you listening to these days? I\'d love some recommendations!',
+      'Hi! 🍜\n\nI tried making Korean food yesterday — bibimbap! It was my first attempt and honestly... not bad! But I\'m sure yours is much better.\n\nWhat\'s your favorite Korean dish?',
+      'Annyeonghaseyo! 👋\n\nThat\'s about all the Korean I know, haha. I\'m trying to learn though! This app is perfect for connecting with people from different cultures.\n\nWould you like to be pen pals?',
+      'Hello from my corner of the world! 🏔️\n\nI love the idea of sending a letter to a stranger. There\'s something magical about connecting with someone you\'ve never met.\n\nTell me one interesting thing about yourself!',
+      'Hi! 📮\n\nI wonder how long this letter will take to reach you. The journey itself is part of the magic, isn\'t it?\n\nI hope when you read this, it brings a smile to your face. Have a wonderful day!',
+      'Bonjour! 🥐\n\nI\'m fascinated by Korean culture. The way you blend tradition with modernity is truly inspiring.\n\nWhat\'s your favorite season in Korea? I\'ve heard autumn is breathtaking.',
+      'Hey there! 🌅\n\nI just watched the sunset and thought — someone on the other side of the world is watching the sunrise right now. Maybe that\'s you!\n\nWhat did your morning look like today?',
+      'Hello! 🎨\n\nI\'m an art lover and Korean art has always intrigued me. From traditional paintings to modern galleries.\n\nDo you have a favorite museum or art spot in your city?',
+      'Hi! ☕\n\nI\'m drinking coffee while writing this. I heard Korea has an amazing café culture. Is that true?\n\nWhat\'s your go-to coffee order?',
+      'Greetings from far away! 🌊\n\nThe ocean connects all of us, no matter how far apart we are. This letter is like a message in a bottle, floating across the digital sea.\n\nI hope it reaches someone kind — and I think it has.',
+    ];
+
+    // 오늘 5개 랜덤 선택 (중복 없이)
+    final shuffledSenders = List<Map<String, Object>>.from(aiSenders)..shuffle(rng);
+    final selectedSenders = shuffledSenders.take(5).toList();
+    final shuffledMessages = List<String>.from(aiMessages)..shuffle(rng);
+
+    for (int i = 0; i < 5; i++) {
+      final sender = selectedSenders[i];
+      final message = shuffledMessages[i % shuffledMessages.length];
+      final senderName = sender['name'] as String;
+      final senderCountry = sender['country'] as String;
+      final senderFlag = sender['flag'] as String;
+      final senderLat = sender['lat'] as double;
+      final senderLng = sender['lng'] as double;
+      final senderCity = sender['city'] as String;
+
+      // 한국 내 랜덤 도시 좌표
+      final destCity = CountryCities.randomCityWithOffset('대한민국');
+      final destLat = destCity != null ? (destCity['lat'] as num).toDouble() : 37.5665;
+      final destLng = destCity != null ? (destCity['lng'] as num).toDouble() : 126.9780;
+
+      // 배송 시간: 30분~4시간 랜덤
+      final deliveryMin = 30 + rng.nextInt(210);
+      // 발송 시간을 오늘 내 랜덤 시점으로 분산
+      final offsetMin = rng.nextInt(60 * i + 1);
+      final sentAt = now.subtract(Duration(minutes: offsetMin));
+
+      final id = 'daily_ai_${today}_$i';
+      // 이미 존재하면 스킵
+      if (_worldLetters.any((l) => l.id == id) || _inbox.any((l) => l.id == id)) {
+        continue;
+      }
+
+      final fromCity = LatLng(senderLat, senderLng);
+      final toCity = LatLng(destLat, destLng);
+
+      final segments = LogisticsHubs.buildRoute(
+        fromCountry: senderCountry,
+        fromCity: fromCity,
+        toCountry: _currentUser.country.isNotEmpty ? _currentUser.country : '대한민국',
+        toCity: toCity,
+        fromCityName: senderCity,
+        preferAir: true,
+      );
+      final segMin = segments.fold<int>(0, (s, seg) => s + seg.estimatedMinutes);
+      final totalMin = max(segMin, deliveryMin);
+      _rebalanceSegmentEstimatedMinutes(segments, totalMin);
+
+      final letter = Letter(
+        id: id,
+        senderId: 'ai_${senderName.toLowerCase()}_${senderCountry.hashCode}',
+        senderName: senderName,
+        senderCountry: senderCountry,
+        senderCountryFlag: senderFlag,
+        content: message,
+        originLocation: fromCity,
+        destinationLocation: toCity,
+        destinationCountry: _currentUser.country.isNotEmpty ? _currentUser.country : '대한민국',
+        destinationCountryFlag: _currentUser.countryFlag.isNotEmpty ? _currentUser.countryFlag : '🇰🇷',
+        destinationCity: null,
+        destinationDisplayAddress: null,
+        segments: segments,
+        currentSegmentIndex: 0,
+        status: DeliveryStatus.inTransit,
+        sentAt: sentAt,
+        arrivalTime: sentAt.add(Duration(minutes: totalMin)),
+        estimatedTotalMinutes: totalMin,
+        paperStyle: rng.nextInt(5),
+        fontStyle: rng.nextInt(3),
+        isAnonymous: false,
+      );
+
+      _worldLetters.add(letter);
+    }
+    _saveToPrefs();
+    notifyListeners();
   }
 
   bool _syncLetterProgressWithClock(Letter letter, DateTime now) {
