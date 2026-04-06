@@ -622,14 +622,16 @@ class _WorldMapScreenState extends State<WorldMapScreen>
           : (hasUsername ? '@${u.username}' : null);
       final labelText = displayLabel ?? '';
       final hasLabel = showLabels && labelText.isNotEmpty;
-      final totalW = hasLabel ? markerW + 32 : markerW + 12;
-      final totalH = hasLabel ? markerH + 34 : markerH + 20;
+      // 터치 영역은 최소 52x64 유지 (줌아웃 시에도 탭 가능)
+      final totalW = max(52.0, hasLabel ? markerW + 32 : markerW + 12);
+      final totalH = max(64.0, hasLabel ? markerH + 34 : markerH + 20);
       markers.add(
         Marker(
           point: ll.LatLng(u.lat + offset.dy, u.lng + offset.dx),
           width: totalW,
           height: totalH,
           child: GestureDetector(
+            behavior: HitTestBehavior.opaque,
             onTap: () => _showMapTowerDetail(context, u, null, l10n),
             child: Column(
               mainAxisSize: MainAxisSize.min,
@@ -724,7 +726,7 @@ class _WorldMapScreenState extends State<WorldMapScreen>
   List<Offset> _computeTowerOffsets(List<MapUser> users, double zoom) {
     final offsets = List<Offset>.filled(users.length, Offset.zero);
     // 줌 레벨에 따라 "겹침" 판정 거리 조절 (줌아웃일수록 넓게)
-    final threshold = 0.8 / pow(2, zoom - 3).clamp(0.1, 1000);
+    final threshold = 1.5 / pow(2, (zoom - 3).clamp(0.1, 20));
 
     for (int i = 0; i < users.length; i++) {
       // 이 타워와 겹치는 다른 타워 인덱스 수집
@@ -739,11 +741,11 @@ class _WorldMapScreenState extends State<WorldMapScreen>
       }
       if (cluster.length <= 1) continue; // 겹침 없음
 
-      // 클러스터 내 순서를 기반으로 원형 배치
+      // 클러스터 내 순서를 기반으로 원형 배치 (반경을 크게)
       final idx = cluster.indexOf(i);
       final count = cluster.length;
       final angle = (2 * pi * idx / count) - pi / 2;
-      final radius = threshold * 0.6;
+      final radius = threshold * 1.2;
       offsets[i] = Offset(cos(angle) * radius, sin(angle) * radius);
     }
     return offsets;
