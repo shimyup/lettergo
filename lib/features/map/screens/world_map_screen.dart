@@ -55,10 +55,20 @@ class _WorldMapScreenState extends State<WorldMapScreen>
     _positionTimer = Timer.periodic(const Duration(seconds: 1), (_) {
       if (mounted) _tickNotifier.value++;
     });
-    // 지도 열릴 때 회원 타워 즉시 로드
+    // 지도 열릴 때 회원 타워 즉시 로드 + 유저 위치로 자동 이동
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (mounted) {
-        context.read<AppState>().fetchMapUsers(force: true);
+      if (!mounted) return;
+      final state = context.read<AppState>();
+      state.fetchMapUsers(force: true);
+      // 유저 위치가 기본값(서울)이 아니면 유저 위치로 자동 이동
+      final lat = state.currentUser.latitude;
+      final lng = state.currentUser.longitude;
+      final isDefault = (lat - 37.5665).abs() < 0.001 && (lng - 126.978).abs() < 0.001;
+      if (lat != 0 && lng != 0) {
+        _mapController.move(
+          ll.LatLng(lat, lng),
+          isDefault ? 5.0 : 11.0, // 기본 위치면 넓게, 실제 위치면 가깝게
+        );
       }
     });
     // 15분마다 타워 목록 자동 갱신 (과도한 네트워크 호출 방지)

@@ -153,6 +153,21 @@ class _AuthScreenState extends State<AuthScreen>
 
   Future<void> _onAuthSuccess(Map<String, String> userData) async {
     final state = context.read<AppState>();
+
+    // 로그인 직후 현재 위치를 가져와서 setUser에 전달
+    Position? pos;
+    try {
+      final perm = await Geolocator.checkPermission();
+      if (perm == LocationPermission.always ||
+          perm == LocationPermission.whileInUse) {
+        pos = await Geolocator.getCurrentPosition(
+          locationSettings: const LocationSettings(
+            accuracy: LocationAccuracy.low,
+          ),
+        ).timeout(const Duration(seconds: 5));
+      }
+    } catch (_) {}
+
     state.setUser(
       id: userData['id'] ?? '',
       username: userData['username'] ?? '',
@@ -160,6 +175,8 @@ class _AuthScreenState extends State<AuthScreen>
       countryFlag: userData['countryFlag'] ?? '🇰🇷',
       languageCode: userData['languageCode'],
       socialLink: userData['socialLink'],
+      latitude: pos?.latitude,
+      longitude: pos?.longitude,
     );
     // 이메일을 UserProfile에 저장 (이메일 기반 기능에 필요)
     if (userData['email']?.isNotEmpty == true) {
