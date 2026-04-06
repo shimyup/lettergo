@@ -7775,6 +7775,23 @@ class AppL10n {
     'th': 'ชั้น',
   });
 
+  String mapNearbyTowers(int count) => _t({
+    'ko': '근처 타워 $count개',
+    'en': '$count Nearby Towers',
+    'ja': '近くのタワー ${count}個',
+    'zh': '附近 $count 个塔',
+    'fr': '$count tours à proximité',
+    'de': '$count Türme in der Nähe',
+    'es': '$count torres cercanas',
+    'pt': '$count torres próximas',
+    'ru': '$count ближайших башен',
+    'tr': '$count yakın kule',
+    'ar': '$count أبراج قريبة',
+    'it': '$count torri vicine',
+    'hi': '$count पास के टॉवर',
+    'th': '$count หอคอยใกล้เคียง',
+  });
+
   String mapLetterFrom(String country) => _t({
     'ko': '${country}에서 온 편지',
     'en': 'Letter from $country',

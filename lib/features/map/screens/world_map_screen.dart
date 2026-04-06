@@ -632,7 +632,24 @@ class _WorldMapScreenState extends State<WorldMapScreen>
           height: totalH,
           child: GestureDetector(
             behavior: HitTestBehavior.opaque,
-            onTap: () => _showMapTowerDetail(context, u, null, l10n),
+            onTap: () {
+              // 근처 겹친 타워 찾기
+              final nearby = <MapUser>[];
+              final degPerPx = 360.0 / (256.0 * pow(2, zoom));
+              final tapRadius = degPerPx * 50; // 50px 반경
+              for (final other in users) {
+                final dLat = u.lat - other.lat;
+                final dLng = u.lng - other.lng;
+                if (dLat * dLat + dLng * dLng < tapRadius * tapRadius) {
+                  nearby.add(other);
+                }
+              }
+              if (nearby.length > 1) {
+                _showOverlappingTowerPicker(context, nearby, l10n);
+              } else {
+                _showMapTowerDetail(context, u, null, l10n);
+              }
+            },
             child: Column(
               mainAxisSize: MainAxisSize.min,
               mainAxisAlignment: MainAxisAlignment.center,
@@ -722,14 +739,19 @@ class _WorldMapScreenState extends State<WorldMapScreen>
     return markers;
   }
 
-  /// 겹치는 타워들을 원형으로 퍼뜨리는 오프셋 계산
+  /// 겹치는 타워들을 원형으로 퍼뜨리는 오프셋 계산 (픽셀 기반)
   List<Offset> _computeTowerOffsets(List<MapUser> users, double zoom) {
     final offsets = List<Offset>.filled(users.length, Offset.zero);
-    // 줌 레벨에 따라 "겹침" 판정 거리 조절 (줌아웃일수록 넓게)
-    final threshold = 1.5 / pow(2, (zoom - 3).clamp(0.1, 20));
+
+    // 1픽셀 = 몇 도(degree)인지 계산 → 줌 레벨에 무관하게 일정한 화면 간격 보장
+    final degPerPixel = 360.0 / (256.0 * pow(2, zoom));
+
+    // 겹침 판정: 마커 60px 이내면 겹침으로 간주
+    final threshold = degPerPixel * 60;
+    // 퍼뜨리기 반경: 마커 너비(~48px) + 여유(12px) = 60px 이상 벌림
+    final spreadRadius = degPerPixel * 60;
 
     for (int i = 0; i < users.length; i++) {
-      // 이 타워와 겹치는 다른 타워 인덱스 수집
       final cluster = <int>[i];
       for (int j = 0; j < users.length; j++) {
         if (i == j) continue;
@@ -739,14 +761,12 @@ class _WorldMapScreenState extends State<WorldMapScreen>
           cluster.add(j);
         }
       }
-      if (cluster.length <= 1) continue; // 겹침 없음
+      if (cluster.length <= 1) continue;
 
-      // 클러스터 내 순서를 기반으로 원형 배치 (반경을 크게)
       final idx = cluster.indexOf(i);
       final count = cluster.length;
       final angle = (2 * pi * idx / count) - pi / 2;
-      final radius = threshold * 1.2;
-      offsets[i] = Offset(cos(angle) * radius, sin(angle) * radius);
+      offsets[i] = Offset(cos(angle) * spreadRadius, sin(angle) * spreadRadius);
     }
     return offsets;
   }
@@ -860,6 +880,118 @@ class _WorldMapScreenState extends State<WorldMapScreen>
                 ),
               ),
             ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  /// 겹친 타워 선택 시트
+  void _showOverlappingTowerPicker(
+    BuildContext ctx,
+    List<MapUser> towers,
+    AppL10n l10n,
+  ) {
+    showModalBottomSheet(
+      context: ctx,
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true,
+      useSafeArea: true,
+      builder: (_) => Container(
+        margin: const EdgeInsets.fromLTRB(12, 12, 12, 16),
+        padding: const EdgeInsets.fromLTRB(16, 16, 16, 16),
+        decoration: BoxDecoration(
+          color: AppColors.bgCard,
+          borderRadius: BorderRadius.circular(24),
+          border: Border.all(
+            color: AppColors.textMuted.withValues(alpha: 0.25),
+          ),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              '🏘️ ${l10n.mapNearbyTowers(towers.length)}',
+              style: const TextStyle(
+                color: AppColors.textPrimary,
+                fontSize: 15,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+            const SizedBox(height: 12),
+            ...towers.map((u) {
+              final tierColor = _towerTierColor(u.tier);
+              final name = u.towerName?.isNotEmpty == true
+                  ? u.towerName!
+                  : (u.username?.isNotEmpty == true
+                      ? '@${u.username}'
+                      : '${u.flag} #${u.rank}');
+              return Padding(
+                padding: const EdgeInsets.only(bottom: 8),
+                child: GestureDetector(
+                  onTap: () {
+                    Navigator.pop(ctx);
+                    _showMapTowerDetail(ctx, u, null, l10n);
+                  },
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 14,
+                      vertical: 12,
+                    ),
+                    decoration: BoxDecoration(
+                      color: AppColors.bgSurface,
+                      borderRadius: BorderRadius.circular(14),
+                      border: Border.all(
+                        color: tierColor.withValues(alpha: 0.4),
+                      ),
+                    ),
+                    child: Row(
+                      children: [
+                        Text(
+                          u.tier.emoji,
+                          style: const TextStyle(fontSize: 24),
+                        ),
+                        const SizedBox(width: 10),
+                        Text(
+                          u.flag,
+                          style: const TextStyle(fontSize: 18),
+                        ),
+                        const SizedBox(width: 10),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                name,
+                                style: const TextStyle(
+                                  color: AppColors.textPrimary,
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                              Text(
+                                '${u.tier.name.toUpperCase()} · ${u.floors}F',
+                                style: TextStyle(
+                                  color: tierColor,
+                                  fontSize: 11,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        Icon(
+                          Icons.chevron_right,
+                          color: AppColors.textMuted,
+                          size: 20,
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              );
+            }),
           ],
         ),
       ),
