@@ -12,6 +12,7 @@ import '../../../core/localization/country_names.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/theme/letter_style.dart';
 import '../../../core/data/country_cities.dart';
+import '../../../core/services/geocoding_service.dart';
 import '../../../state/app_state.dart';
 import '../../../core/services/purchase_service.dart';
 import '../../premium/premium_gate_sheet.dart';
@@ -364,7 +365,30 @@ class _ComposeScreenState extends State<ComposeScreen>
     final dest = AppState.randomDestination(excludeCountry: excludeCountry);
     final countryName = dest['name']!;
     final langCode = context.read<AppState>().currentUser.languageCode;
-    // 해당 국가의 랜덤 도시 선택
+
+    // 1차: GeocodingService 캐시에서 실제 주소 사용
+    final geo = GeocodingService.instance;
+    final cachedAddr = geo.isInitialized
+        ? geo.getCachedAddress(countryName)
+        : null;
+
+    if (cachedAddr != null) {
+      setState(() {
+        _selectedCountry = countryName;
+        _selectedFlag = dest['flag']!;
+        _selectedCity = (cachedAddr['city'] as String?) ?? '';
+        _destLat = (cachedAddr['lat'] as num).toDouble();
+        _destLng = (cachedAddr['lng'] as num).toDouble();
+        _isRandom = true;
+      });
+      // 캐시 소진 시 백그라운드 보충
+      if (geo.cachedCountOf(countryName) < 3) {
+        geo.prefetch(countryName, count: 5);
+      }
+      return;
+    }
+
+    // 2차: cities.json 기반 랜덤 도시
     final cityData = CountryCities.randomCity(
       countryName,
       languageCode: langCode,

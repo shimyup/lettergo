@@ -763,8 +763,15 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
   int get totalDMUnread =>
       _chatSessions.values.fold(0, (s, c) => s + c.unreadCount);
 
-  // ── 국가 목록 (좌표 포함) ──────────────────────────────────────────────────
-  static const List<Map<String, String>> countries = [
+  // ── 국가 목록 (GeocodingService 198개국 → fallback 50개) ────────────────
+  static List<Map<String, String>> get countries {
+    final geo = GeocodingService.instance;
+    if (geo.isInitialized && geo.countryCount > 0) return geo.allCountries;
+    return _fallbackCountries;
+  }
+
+  /// GeocodingService 미초기화 시 폴백 (기존 50개국)
+  static const List<Map<String, String>> _fallbackCountries = [
     {'name': '대한민국', 'flag': '🇰🇷', 'lat': '37.5665', 'lng': '126.9780'},
     {'name': '일본', 'flag': '🇯🇵', 'lat': '35.6762', 'lng': '139.6503'},
     {'name': '미국', 'flag': '🇺🇸', 'lat': '40.7128', 'lng': '-74.0060'},
@@ -817,10 +824,19 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
     {'name': '오스트리아', 'flag': '🇦🇹', 'lat': '48.2082', 'lng': '16.3738'},
   ];
 
-  // ── 랜덤 목적지 선택 ───────────────────────────────────────────────────────
+  // ── 랜덤 목적지 선택 (198개국 지원) ────────────────────────────────────────
   static Map<String, String> randomDestination({String? excludeCountry}) {
+    final geo = GeocodingService.instance;
+    if (geo.isInitialized && geo.countryCount > 0) {
+      return geo.randomCountry(exclude: excludeCountry) ??
+          _fallbackRandomDestination(excludeCountry);
+    }
+    return _fallbackRandomDestination(excludeCountry);
+  }
+
+  static Map<String, String> _fallbackRandomDestination(String? exclude) {
     final rng = Random();
-    final pool = countries.where((c) => c['name'] != excludeCountry).toList();
+    final pool = _fallbackCountries.where((c) => c['name'] != exclude).toList();
     return pool[rng.nextInt(pool.length)];
   }
 
@@ -840,9 +856,10 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
       }
     } else if (state == AppLifecycleState.paused ||
         state == AppLifecycleState.detached) {
-      // 백그라운드 진입 → 타이머 정지
+      // 백그라운드 진입 → 타이머 정지 + 주소 캐시 저장
       _deliveryTimer?.cancel();
       _deliveryTimer = null;
+      unawaited(GeocodingService.instance.saveAllCache());
     }
   }
 
@@ -3692,27 +3709,64 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
         CountryCities.cityKey(destinationCountry, destCityName),
       );
     } else {
-      // 도시 미선택일 경우: 나라별 랜덤 도시 선택 (중복 방지)
+      // 도시 미선택일 경우: 실제 주소 캐시 → cities.json → 육지 랜덤 좌표 순
       _usedDestinations[destinationCountry] ??= {};
-      final cityData = CountryCities.randomCityWithOffset(
-        destinationCountry,
-        usedCityKeys: _usedDestinations[destinationCountry],
-        languageCode: _currentUser.languageCode,
-      );
-      if (cityData != null) {
-        finalLat = (cityData['lat'] as num).toDouble();
-        finalLng = (cityData['lng'] as num).toDouble();
-        toCityName = cityData['name'] as String?; // 도시명만 사용 (번지수 제외)
-        _usedDestinations[destinationCountry]!.add(
-          CountryCities.cityKey(destinationCountry, cityData['name'] as String),
-        );
+
+      // 1차: GeocodingService 캐시에서 실제 주소 사용
+      final geo = GeocodingService.instance;
+      final cachedAddr = geo.isInitialized
+          ? geo.getCachedAddress(destinationCountry)
+          : null;
+
+      if (cachedAddr != null) {
+        finalLat = (cachedAddr['lat'] as num).toDouble();
+        finalLng = (cachedAddr['lng'] as num).toDouble();
+        toCityName = cachedAddr['city'] as String?;
+        final cityName = toCityName;
+        if (cityName != null && cityName.isNotEmpty) {
+          _usedDestinations[destinationCountry]!.add(
+            CountryCities.cityKey(destinationCountry, cityName),
+          );
+        }
+        // 캐시 소진 시 백그라운드 보충
+        if (geo.cachedCountOf(destinationCountry) < 5) {
+          unawaited(geo.prefetch(destinationCountry, count: 10));
+        }
       } else {
-        // 2차: LandAddressGenerator — 육지 경계 박스 내 랜덤 좌표
-        final landAddr = LandAddressGenerator.generate(
-          excludeCountry: _currentUser.country,
+        // 2차: cities.json 기반 랜덤 도시 (기존 56개국)
+        final cityData = CountryCities.randomCityWithOffset(
+          destinationCountry,
+          usedCityKeys: _usedDestinations[destinationCountry],
+          languageCode: _currentUser.languageCode,
         );
-        finalLat = (landAddr['lat'] as num).toDouble();
-        finalLng = (landAddr['lng'] as num).toDouble();
+        if (cityData != null) {
+          finalLat = (cityData['lat'] as num).toDouble();
+          finalLng = (cityData['lng'] as num).toDouble();
+          toCityName = cityData['name'] as String?;
+          _usedDestinations[destinationCountry]!.add(
+            CountryCities.cityKey(destinationCountry, cityData['name'] as String),
+          );
+        } else if (geo.isInitialized) {
+          // 3차: GeocodingService 경계 내 랜덤 좌표 (cities.json에 없는 나라)
+          final coord = geo.randomCoordinate(destinationCountry);
+          if (coord != null) {
+            finalLat = coord['lat']!;
+            finalLng = coord['lng']!;
+          } else {
+            final landAddr = LandAddressGenerator.generate(
+              excludeCountry: _currentUser.country,
+            );
+            finalLat = (landAddr['lat'] as num).toDouble();
+            finalLng = (landAddr['lng'] as num).toDouble();
+          }
+        } else {
+          // 4차: 최종 폴백 — LandAddressGenerator
+          final landAddr = LandAddressGenerator.generate(
+            excludeCountry: _currentUser.country,
+          );
+          finalLat = (landAddr['lat'] as num).toDouble();
+          finalLng = (landAddr['lng'] as num).toDouble();
+        }
       }
     }
     final toCity = LatLng(finalLat, finalLng);

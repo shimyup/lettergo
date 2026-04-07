@@ -50,3 +50,4 @@ flutter:
   assets:
     - assets/images/
     - assets/cities.json
+    - assets/countries_bounds.json
