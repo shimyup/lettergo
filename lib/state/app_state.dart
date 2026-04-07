@@ -3242,35 +3242,112 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
       {'name': 'Noah', 'country': '뉴질랜드', 'flag': '🇳🇿', 'lat': -36.8485, 'lng': 174.7633, 'city': 'Auckland'},
     ];
 
-    const aiMessages = [
-      'Hello from across the world! 🌍\n\nI found this app today and wanted to send a letter to someone in Korea. I hope this little message brightens your day.\n\nTell me about your city — what\'s your favorite place to visit?',
-      'Hi there! 🌸\n\nI\'ve always dreamed of visiting Korea someday. The culture, the food, the beautiful mountains... it all seems so wonderful.\n\nWhat\'s something about Korea that only locals know? I\'d love to hear from you!',
-      'Good day! ✨\n\nIt\'s amazing that we can send letters across the globe like this. Right now I\'m sitting in a café watching the rain outside.\n\nWhat\'s the weather like where you are? I hope you\'re having a lovely day.',
-      'Hey! 😊\n\nI just sent this letter into the world, not knowing who would receive it. That\'s what makes this so exciting, right?\n\nIf you could travel anywhere tomorrow, where would you go?',
-      'Greetings! 🌏\n\nI\'m writing this late at night. The stars are beautiful tonight. Do you ever look up at the sky and wonder who else is looking at the same stars?\n\nI hope this letter finds you well.',
-      'Hello! 🎵\n\nMusic has no borders. Right now I\'m listening to some K-pop and it inspired me to write to someone in Korea.\n\nWhat songs are you listening to these days? I\'d love some recommendations!',
-      'Hi! 🍜\n\nI tried making Korean food yesterday — bibimbap! It was my first attempt and honestly... not bad! But I\'m sure yours is much better.\n\nWhat\'s your favorite Korean dish?',
-      'Annyeonghaseyo! 👋\n\nThat\'s about all the Korean I know, haha. I\'m trying to learn though! This app is perfect for connecting with people from different cultures.\n\nWould you like to be pen pals?',
-      'Hello from my corner of the world! 🏔️\n\nI love the idea of sending a letter to a stranger. There\'s something magical about connecting with someone you\'ve never met.\n\nTell me one interesting thing about yourself!',
-      'Hi! 📮\n\nI wonder how long this letter will take to reach you. The journey itself is part of the magic, isn\'t it?\n\nI hope when you read this, it brings a smile to your face. Have a wonderful day!',
-      'Bonjour! 🥐\n\nI\'m fascinated by Korean culture. The way you blend tradition with modernity is truly inspiring.\n\nWhat\'s your favorite season in Korea? I\'ve heard autumn is breathtaking.',
-      'Hey there! 🌅\n\nI just watched the sunset and thought — someone on the other side of the world is watching the sunrise right now. Maybe that\'s you!\n\nWhat did your morning look like today?',
-      'Hello! 🎨\n\nI\'m an art lover and Korean art has always intrigued me. From traditional paintings to modern galleries.\n\nDo you have a favorite museum or art spot in your city?',
-      'Hi! ☕\n\nI\'m drinking coffee while writing this. I heard Korea has an amazing café culture. Is that true?\n\nWhat\'s your go-to coffee order?',
-      'Greetings from far away! 🌊\n\nThe ocean connects all of us, no matter how far apart we are. This letter is like a message in a bottle, floating across the digital sea.\n\nI hope it reaches someone kind — and I think it has.',
-    ];
+    // 나라별 고유 언어 메시지 매핑 (flag 기준)
+    const aiMessagesByFlag = <String, List<String>>{
+      '🇬🇧': [
+        'Hello from London! 🌍\n\nI found this app today and wanted to send a letter to someone in Korea. I hope this little message brightens your day.\n\nTell me about your city — what\'s your favourite place to visit?',
+        'Good day! ☕\n\nI\'m writing this from a cosy pub near the Thames. It\'s raining outside, of course. There\'s something rather lovely about writing to a stranger across the world.\n\nHow are you doing today?',
+        'Hi there! 🌸\n\nI\'ve always dreamed of visiting Korea. The food, the mountains, the K-drama scenery... it all seems wonderful.\n\nWould you like to be pen pals?',
+      ],
+      '🇯🇵': [
+        'こんにちは！🌸\n\n東京からこの手紙を書いています。今日は桜が咲き始めて、街がピンク色に染まっています。\n\n韓国の春はどんな感じですか？いつか訪れてみたいです！',
+        'はじめまして！✨\n\n日本から韓国に手紙を送れるなんて素敵ですね。今カフェでコーヒーを飲みながら書いています。\n\nあなたの街のおすすめの場所を教えてください！',
+        'やっほー！😊\n\n知らない誰かに手紙を送るってワクワクしますね。今夜は星がとてもきれいです。\n\nそちらの空はどうですか？',
+      ],
+      '🇧🇷': [
+        'Olá! 🌍\n\nEstou escrevendo de São Paulo e queria mandar uma carta para alguém na Coreia. Espero que esta mensagem alegre o seu dia!\n\nMe conta sobre a sua cidade — qual é o seu lugar favorito?',
+        'Oi! 🌸\n\nSempre sonhei em visitar a Coreia. A cultura, a comida, as montanhas... tudo parece maravilhoso.\n\nO que só os locais sabem sobre a Coreia? Adoraria ouvir de você!',
+        'E aí! 😊\n\nMandei esta carta sem saber quem vai receber. É isso que torna tudo tão emocionante, né?\n\nSe pudesse viajar para qualquer lugar amanhã, para onde iria?',
+      ],
+      '🇫🇷': [
+        'Bonjour ! 🥐\n\nJe t\'écris depuis Paris, assis dans un café près de la Seine. La culture coréenne me fascine — le mélange de tradition et de modernité est vraiment inspirant.\n\nQuelle est ta saison préférée en Corée ?',
+        'Salut ! ✨\n\nC\'est incroyable de pouvoir envoyer des lettres à travers le monde comme ça. En ce moment, il pleut dehors et je regarde les gouttes sur la vitre.\n\nComment va-t-il chez toi ?',
+        'Coucou ! 🌸\n\nJ\'ai toujours rêvé de visiter la Corée. La nourriture, les montagnes, les temples... tout semble merveilleux.\n\nTu voudrais qu\'on devienne correspondants ?',
+      ],
+      '🇺🇸': [
+        'Hey there! 🌍\n\nWriting from New York City! I found this app and thought it would be cool to connect with someone in Korea.\n\nWhat\'s your favorite place to hang out in your city?',
+        'Hi! 🎵\n\nMusic has no borders. I\'ve been listening to a lot of K-pop lately and it inspired me to write to someone in Korea.\n\nWhat songs are you listening to these days?',
+        'What\'s up! 🍜\n\nI tried making bibimbap yesterday — first attempt and honestly not bad! But I\'m sure yours is way better.\n\nWhat\'s your favorite Korean dish?',
+      ],
+      '🇩🇪': [
+        'Hallo aus Berlin! 🌍\n\nIch schreibe dir aus einem Café an der Spree. Es ist faszinierend, dass wir Briefe um die Welt schicken können.\n\nWie ist das Leben in Korea? Erzähl mir von deiner Stadt!',
+        'Guten Tag! ✨\n\nHeute Abend sind die Sterne wunderschön. Ob wohl jemand auf der anderen Seite der Welt gerade die gleichen Sterne sieht?\n\nIch hoffe, es geht dir gut!',
+        'Hi! 😊\n\nIch habe diesen Brief in die Welt geschickt, ohne zu wissen, wer ihn empfangen wird. Das macht es so aufregend!\n\nWohin würdest du morgen reisen, wenn du könntest?',
+      ],
+      '🇪🇸': [
+        '¡Hola desde Madrid! 🌍\n\nHoy encontré esta app y quise enviar una carta a alguien en Corea. ¡Espero que este mensaje te alegre el día!\n\nCuéntame de tu ciudad — ¿cuál es tu lugar favorito?',
+        '¡Hey! 🌸\n\nSiempre soñé con visitar Corea. La cultura, la comida, las montañas... todo parece maravilloso.\n\n¿Qué es algo de Corea que solo los locales saben?',
+        '¡Buenas! ☕\n\nEstoy tomando café mientras escribo esto. Me han dicho que Corea tiene una cultura cafetera increíble. ¿Es verdad?\n\n¿Cuál es tu pedido favorito?',
+      ],
+      '🇨🇳': [
+        '你好！🌍\n\n我从上海给你写这封信。能把信寄到世界另一端，真是太神奇了。\n\n跟我聊聊你的城市吧——你最喜欢的地方是哪里？',
+        '嗨！🌸\n\n我一直梦想着去韩国旅行。听说韩国的秋天特别美，是真的吗？\n\n希望我们能成为笔友！',
+        '你好呀！✨\n\n今晚的星星很美。你有没有抬头看过夜空，想着世界某处是否有人也在看同样的星星？\n\n愿你一切都好。',
+      ],
+      '🇮🇹': [
+        'Ciao dalla Roma! 🌍\n\nHo trovato questa app oggi e volevo mandare una lettera a qualcuno in Corea. Spero che questo piccolo messaggio ti renda la giornata più bella!\n\nRaccontami della tua città — qual è il tuo posto preferito?',
+        'Salve! 🍝\n\nSono seduto in un caffè vicino al Colosseo e penso a quanto sia bello poter scrivere a uno sconosciuto dall\'altra parte del mondo.\n\nCome stai oggi?',
+        'Ehi! 😊\n\nHo mandato questa lettera nel mondo senza sapere chi la riceverà. È emozionante, no?\n\nSe potessi viaggiare ovunque domani, dove andresti?',
+      ],
+      '🇦🇺': [
+        'G\'day! 🌍\n\nWriting from Sydney! Found this app and reckoned it\'d be bonzer to connect with someone in Korea.\n\nWhat\'s your city like? I\'d love to hear about it!',
+        'Hey mate! 🌅\n\nJust watched the sunset over the harbour and thought — someone across the world is watching the sunrise right now. Maybe that\'s you!\n\nHow was your morning?',
+        'Hi! 🏄\n\nI went surfing today and it got me thinking about how the ocean connects all of us. This letter is like a message in a bottle.\n\nHope it reached someone awesome — and I reckon it has!',
+      ],
+      '🇮🇳': [
+        'नमस्ते! 🌍\n\nमैं नई दिल्ली से यह पत्र लिख रहा/रही हूँ। दुनिया भर में पत्र भेज सकना कितना अद्भुत है!\n\nअपने शहर के बारे में बताइए — आपकी पसंदीदा जगह कौन सी है?',
+        'हेलो! 🌸\n\nमैंने हमेशा कोरिया जाने का सपना देखा है। वहाँ का खाना, संस्कृति, पहाड़... सब कुछ अद्भुत लगता है।\n\nक्या आप पेन पाल बनना चाहेंगे?',
+        'हाय! ✨\n\nआज रात तारे बहुत सुंदर हैं। क्या आप भी कभी आसमान देखकर सोचते हैं कि कोई और भी वही तारे देख रहा है?\n\nउम्मीद है आप ठीक हैं!',
+      ],
+      '🇸🇪': [
+        'Hej! 🌍\n\nJag skriver till dig från Stockholm. Det är fantastiskt att kunna skicka brev runt hela världen.\n\nBerätta om din stad — vad är din favoritplats?',
+        'Tjena! 🌸\n\nJag har alltid drömt om att besöka Korea. Kulturen, maten, de vackra bergen... allt verkar underbart.\n\nVill du bli brevvänner?',
+        'Hallå! ✨\n\nStjärnorna är vackra ikväll. Undrar du ibland om någon på andra sidan jorden tittar på samma stjärnor?\n\nHoppas allt är bra med dig!',
+      ],
+      '🇹🇷': [
+        'Merhaba! 🌍\n\nİstanbul\'dan sana bu mektubu yazıyorum. Dünyanın öbür ucuna mektup gönderebilmek ne güzel!\n\nŞehrini anlat bana — en sevdiğin yer neresi?',
+        'Selam! 🌸\n\nHep Kore\'yi ziyaret etmeyi hayal ettim. Yemekleri, kültürü, dağları... her şey harika görünüyor.\n\nMektup arkadaşı olmak ister misin?',
+        'Hey! ✨\n\nBu gece yıldızlar çok güzel. Sen de gökyüzüne bakıp dünyanın başka bir yerinde birinin aynı yıldızlara baktığını merak eder misin?\n\nUmarım iyisindir!',
+      ],
+      '🇨🇦': [
+        'Hello from Toronto! 🌍\n\nI found this app today and wanted to send a letter to someone in Korea. I hope this little message brightens your day!\n\nTell me about your city — what\'s your favourite place to visit?',
+        'Bonjour ! 🍁\n\nLes érables ici sont magnifiques en automne. J\'ai entendu dire que l\'automne en Corée est aussi très beau.\n\nQuelle est ta saison préférée ?',
+        'Hey! 😊\n\nI just sent this letter into the world, not knowing who would receive it. That\'s pretty exciting, right?\n\nIf you could travel anywhere tomorrow, where would you go?',
+      ],
+      '🇦🇷': [
+        '¡Hola desde Buenos Aires! 🌍\n\nEncontré esta app hoy y quise enviar una carta a alguien en Corea. ¡Espero que este mensaje te alegre el día!\n\nContame de tu ciudad — ¿cuál es tu lugar favorito?',
+        '¡Che! 🌸\n\nSiempre soñé con visitar Corea. La cultura, la comida, las montañas... todo parece increíble.\n\n¿Qué es algo de Corea que solo los locales conocen?',
+        '¡Buenas! 😊\n\nMandé esta carta sin saber quién la iba a recibir. Eso es lo emocionante, ¿no?\n\nSi pudieras viajar a cualquier lugar mañana, ¿a dónde irías?',
+      ],
+      '🇹🇭': [
+        'สวัสดี! 🌍\n\nฉันเขียนจดหมายนี้จากกรุงเทพฯ สุดยอดมากที่เราส่งจดหมายข้ามโลกได้!\n\nเล่าให้ฟังหน่อยสิว่าเมืองคุณเป็นยังไง ที่ไหนที่คุณชอบไปมากที่สุด?',
+        'หวัดดี! 🌸\n\nฉันฝันอยากไปเกาหลีมาตลอดเลย อาหาร วัฒนธรรม ภูเขา... ดูวิเศษไปหมด\n\nอยากเป็นเพื่อนทางจดหมายกันไหม?',
+        'ไง! ✨\n\nคืนนี้ดาวสวยมาก คุณเคยมองท้องฟ้าแล้วสงสัยไหมว่ามีใครอีกฝั่งโลกกำลังมองดาวดวงเดียวกันอยู?\n\nหวังว่าคุณสบายดีนะ!',
+      ],
+      '🇷🇺': [
+        'Привет! 🌍\n\nПишу тебе из Москвы. Удивительно, что можно отправлять письма через весь мир!\n\nРасскажи мне о своём городе — какое твоё любимое место?',
+        'Здравствуй! 🌸\n\nЯ всегда мечтал(а) побывать в Корее. Культура, еда, горы... всё кажется таким замечательным.\n\nДавай станем друзьями по переписке?',
+        'Привет! ✨\n\nСегодня ночью звёзды невероятно красивые. Ты когда-нибудь смотришь на небо и думаешь, кто ещё на другом конце мира смотрит на те же звёзды?\n\nНадеюсь, у тебя всё хорошо!',
+      ],
+      '🇳🇿': [
+        'Kia ora! 🌍\n\nWriting from Auckland! Found this app and thought it would be awesome to connect with someone in Korea.\n\nWhat\'s your city like? I\'d love to hear about it!',
+        'Hey! 🌅\n\nJust came back from a hike and the views were incredible. New Zealand is like a dream.\n\nWhat\'s the most beautiful spot in your area?',
+        'Hi! 😊\n\nSent this letter out into the world not knowing who\'d get it. That\'s the magic of it, right?\n\nIf you could travel anywhere tomorrow, where would you go?',
+      ],
+    };
 
     // 오늘 5개 랜덤 선택 (중복 없이)
     final shuffledSenders = List<Map<String, Object>>.from(aiSenders)..shuffle(rng);
     final selectedSenders = shuffledSenders.take(5).toList();
-    final shuffledMessages = List<String>.from(aiMessages)..shuffle(rng);
 
     for (int i = 0; i < 5; i++) {
       final sender = selectedSenders[i];
-      final message = shuffledMessages[i % shuffledMessages.length];
+      // 발송 나라 고유 언어 메시지 선택
+      final senderFlag = sender['flag'] as String;
+      final msgs = aiMessagesByFlag[senderFlag] ?? aiMessagesByFlag['🇬🇧']!;
+      final message = msgs[rng.nextInt(msgs.length)];
       final senderName = sender['name'] as String;
       final senderCountry = sender['country'] as String;
-      final senderFlag = sender['flag'] as String;
       final senderLat = sender['lat'] as double;
       final senderLng = sender['lng'] as double;
       final senderCity = sender['city'] as String;
