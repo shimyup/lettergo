@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../core/config/app_keys.dart';
@@ -15,11 +16,8 @@ class PremiumScreen extends StatelessWidget {
   final bool isWelcomeMode;
   const PremiumScreen({super.key, this.isWelcomeMode = false});
 
-  String _formatDate(DateTime date) {
-    final y = date.year.toString();
-    final m = date.month.toString().padLeft(2, '0');
-    final d = date.day.toString().padLeft(2, '0');
-    return '$y.$m.$d';
+  String _formatDate(DateTime date, String langCode) {
+    return DateFormat.yMd(langCode).format(date);
   }
 
   void _showPurchaseResultToast(
@@ -58,8 +56,9 @@ class PremiumScreen extends StatelessWidget {
         final isRestoring = purchase.isOperationInProgress(
           PurchaseOperation.restore,
         );
+        final langCode = state.currentUser.languageCode;
         final autoRenewDateText = purchase.nextBillingDate != null
-            ? _formatDate(purchase.nextBillingDate!)
+            ? _formatDate(purchase.nextBillingDate!, langCode)
             : null;
         final premiumFeatures = state.useValueBasedPremiumCopy
             ? [
@@ -1687,9 +1686,9 @@ class _PendingPlanChangeBanner extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final l = AppL10n.of(context.read<AppState>().currentUser.languageCode);
-    final formatted =
-        '${changeDate.year}.${changeDate.month.toString().padLeft(2, '0')}.${changeDate.day.toString().padLeft(2, '0')}';
+    final langCode = context.read<AppState>().currentUser.languageCode;
+    final l = AppL10n.of(langCode);
+    final formatted = DateFormat.yMd(langCode).format(changeDate);
     final isFreeTarget = target == ScheduledPlanTarget.free;
     return Container(
       padding: const EdgeInsets.all(16),
@@ -2339,11 +2338,11 @@ void _showBrandUpgradeDialog({
   required PurchaseService purchase,
   required String userEmail,
 }) {
-  final l10n = AppL10n.of(context.read<AppState>().currentUser.languageCode);
+  final langCode = context.read<AppState>().currentUser.languageCode;
+  final l10n = AppL10n.of(langCode);
   final effectiveDate =
       purchase.nextBillingDate ?? DateTime.now().add(const Duration(days: 30));
-  final formatted =
-      '${effectiveDate.year}.${effectiveDate.month.toString().padLeft(2, '0')}.${effectiveDate.day.toString().padLeft(2, '0')}';
+  final formatted = DateFormat.yMd(langCode).format(effectiveDate);
 
   showDialog<bool>(
     context: context,

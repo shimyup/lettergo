@@ -314,10 +314,10 @@ class PurchaseService extends ChangeNotifier {
     try {
       await _ensureRevenueCatConfigured();
     } on PlatformException catch (e) {
-      debugPrint('[PurchaseService] RC 초기화 실패: $e');
+      if (kDebugMode) debugPrint('[PurchaseService] RC 초기화 실패: $e');
       await _initFromPrefs(); // 폴백
     } catch (e) {
-      debugPrint('[PurchaseService] RC 초기화 실패(unknown): $e');
+      if (kDebugMode) debugPrint('[PurchaseService] RC 초기화 실패(unknown): $e');
       await _initFromPrefs(); // 폴백
     }
   }
@@ -370,7 +370,7 @@ class PurchaseService extends ChangeNotifier {
     try {
       _offerings = await Purchases.getOfferings();
     } on PlatformException catch (e) {
-      debugPrint('[PurchaseService] Offering 로드 실패: $e');
+      if (kDebugMode) debugPrint('[PurchaseService] Offering 로드 실패: $e');
     }
     _isRevenueCatConfigured = true;
   }
@@ -923,7 +923,7 @@ class PurchaseService extends ChangeNotifier {
         return;
       }
     } on PlatformException catch (e) {
-      debugPrint('[PurchaseService] 사용자 식별 동기화 준비 실패: $e');
+      if (kDebugMode) debugPrint('[PurchaseService] 사용자 식별 동기화 준비 실패: $e');
       _activeAppUserId = normalizedUserId;
       return;
     }
@@ -950,7 +950,7 @@ class PurchaseService extends ChangeNotifier {
       await _loadAndApplyScheduledPlanChange(prefs);
       notifyListeners();
     } on PlatformException catch (e) {
-      debugPrint('[PurchaseService] 사용자 식별 동기화 실패: $e');
+      if (kDebugMode) debugPrint('[PurchaseService] 사용자 식별 동기화 실패: $e');
     }
   }
 
@@ -994,7 +994,7 @@ class PurchaseService extends ChangeNotifier {
       pkg = _findPackage(productId);
       return pkg;
     } on PlatformException catch (e) {
-      debugPrint('[PurchaseService] 상품 재조회 실패 ($productId): $e');
+      if (kDebugMode) debugPrint('[PurchaseService] 상품 재조회 실패 ($productId): $e');
       return null;
     }
   }
@@ -1050,7 +1050,7 @@ class PurchaseService extends ChangeNotifier {
           }
         }
       } on PlatformException catch (e) {
-        debugPrint(
+        if (kDebugMode) debugPrint(
           '[PurchaseService] StoreProduct 조회 실패 ($productId/${category.name}): $e',
         );
       }

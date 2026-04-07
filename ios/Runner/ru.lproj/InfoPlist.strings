@@ -1,0 +1,5 @@
+"NSLocationWhenInUseUsageDescription" = "Ваше местоположение необходимо для обнаружения ближайших писем.";
+"NSLocationAlwaysAndWhenInUseUsageDescription" = "Ваше местоположение необходимо для обнаружения ближайших писем.";
+"NSPhotoLibraryUsageDescription" = "Доступ к фотобиблиотеке необходим для изменения фото профиля.";
+"NSPhotoLibraryAddUsageDescription" = "Разрешение необходимо для сохранения выбранного фото профиля.";
+"NSCameraUsageDescription" = "Доступ к камере необходим для съёмки фото для ваших писем.";

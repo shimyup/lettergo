@@ -42,7 +42,7 @@ class FirestoreService {
         return jsonDecode(res.body) as Map<String, dynamic>;
       }
     } catch (e, st) {
-      debugPrint('[FirestoreService] 에러: $e\n$st');
+      if (kDebugMode) debugPrint('[FirestoreService] 에러: $e\n$st');
     }
     return null;
   }
@@ -65,7 +65,7 @@ class FirestoreService {
           .timeout(const Duration(seconds: 10));
       return res.statusCode == 200;
     } catch (e, st) {
-      debugPrint('[FirestoreService] 에러: $e\n$st');
+      if (kDebugMode) debugPrint('[FirestoreService] 에러: $e\n$st');
     }
     return false;
   }
@@ -93,11 +93,11 @@ class FirestoreService {
       if (res.statusCode == 409 || res.statusCode == 412) {
         return CreateDocumentResult.alreadyExists;
       }
-      debugPrint(
+      if (kDebugMode) debugPrint(
         '[FirestoreService] createDocumentIfAbsent 실패: ${res.statusCode} ${res.body}',
       );
     } catch (e, st) {
-      debugPrint('[FirestoreService] 에러: $e\n$st');
+      if (kDebugMode) debugPrint('[FirestoreService] 에러: $e\n$st');
     }
     return CreateDocumentResult.error;
   }
@@ -123,7 +123,7 @@ class FirestoreService {
         return docs.cast<Map<String, dynamic>>();
       }
     } catch (e, st) {
-      debugPrint('[FirestoreService] 에러: $e\n$st');
+      if (kDebugMode) debugPrint('[FirestoreService] 에러: $e\n$st');
     }
     return [];
   }
@@ -141,7 +141,7 @@ class FirestoreService {
           .timeout(const Duration(seconds: 10));
       return res.statusCode == 200;
     } catch (e, st) {
-      debugPrint('[FirestoreService] 에러: $e\n$st');
+      if (kDebugMode) debugPrint('[FirestoreService] 에러: $e\n$st');
     }
     return false;
   }
@@ -190,11 +190,11 @@ class FirestoreService {
         }
         return docs;
       }
-      debugPrint(
+      if (kDebugMode) debugPrint(
         '[FirestoreService] queryWhereEquals 실패: ${res.statusCode} ${res.body}',
       );
     } catch (e, st) {
-      debugPrint('[FirestoreService] 에러: $e\n$st');
+      if (kDebugMode) debugPrint('[FirestoreService] 에러: $e\n$st');
     }
     return [];
   }

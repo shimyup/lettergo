@@ -509,7 +509,7 @@ class _WorldMapScreenState extends State<WorldMapScreen>
             }
             // 사전 계산된 최근접 클러스터 사용 (GPS 거리 검색 대신)
             if (nearestCluster != null && nearestCluster.isNotEmpty) {
-              debugPrint('[MyTowerTap] nearestCluster=${nearestCluster.length}');
+              if (kDebugMode) debugPrint('[MyTowerTap] nearestCluster=${nearestCluster.length}');
               _showOverlappingTowerPicker(context, nearestCluster, l10n);
             } else {
               _showMyTowerInfo(context, context.read<AppState>(), l10n);

@@ -1,4 +1,5 @@
 import 'dart:math';
+import 'package:intl/intl.dart';
 import '../core/data/country_cities.dart';
 import '../core/localization/app_localizations.dart';
 
@@ -412,11 +413,11 @@ class Letter {
 
     final days = (remainMin / 1440).ceil();
     final etaDate = DateTime.now().add(Duration(minutes: remainMin));
-    return l.arrivalDays(days, _fmtDate(etaDate));
+    return l.arrivalDays(days, _fmtDate(etaDate, langCode));
   }
 
-  static String _fmtDate(DateTime dt) =>
-      '${dt.month}/${dt.day} ${dt.hour.toString().padLeft(2, '0')}:${dt.minute.toString().padLeft(2, '0')}';
+  static String _fmtDate(DateTime dt, String langCode) =>
+      DateFormat.MMMd(langCode).add_Hm().format(dt);
 
   // ── 예상 남은 시간 ──────────────────────────────────────────────────────────
   String get etaLabel => arrivalTimeLabel;

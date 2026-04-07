@@ -1,0 +1,5 @@
+"NSLocationWhenInUseUsageDescription" = "موقعك مطلوب لاكتشاف الرسائل القريبة.";
+"NSLocationAlwaysAndWhenInUseUsageDescription" = "موقعك مطلوب لاكتشاف الرسائل القريبة.";
+"NSPhotoLibraryUsageDescription" = "الوصول إلى مكتبة الصور مطلوب لتغيير صورة ملفك الشخصي.";
+"NSPhotoLibraryAddUsageDescription" = "الإذن مطلوب لحفظ صورة ملفك الشخصي المختارة.";
+"NSCameraUsageDescription" = "الوصول إلى الكاميرا مطلوب لالتقاط صور لرسائلك.";

@@ -60,7 +60,7 @@ class FirebaseAuthService {
         return data;
       }
     } catch (e, st) {
-      debugPrint('[FirebaseAuthService] 에러: $e\n$st');
+      if (kDebugMode) debugPrint('[FirebaseAuthService] 에러: $e\n$st');
     }
     return null;
   }
@@ -96,7 +96,7 @@ class FirebaseAuthService {
         return data;
       }
     } catch (e, st) {
-      debugPrint('[FirebaseAuthService] 에러: $e\n$st');
+      if (kDebugMode) debugPrint('[FirebaseAuthService] 에러: $e\n$st');
     }
     return null;
   }
@@ -139,7 +139,7 @@ class FirebaseAuthService {
         FirestoreService.setIdToken(_idToken ?? '');
       }
     } catch (e, st) {
-      debugPrint('[FirebaseAuthService] 에러: $e\n$st');
+      if (kDebugMode) debugPrint('[FirebaseAuthService] 에러: $e\n$st');
     }
   }
 }

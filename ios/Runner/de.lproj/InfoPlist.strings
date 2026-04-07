@@ -1,0 +1,5 @@
+"NSLocationWhenInUseUsageDescription" = "Ihr Standort wird benötigt, um Briefe in der Nähe zu entdecken.";
+"NSLocationAlwaysAndWhenInUseUsageDescription" = "Ihr Standort wird benötigt, um Briefe in der Nähe zu entdecken.";
+"NSPhotoLibraryUsageDescription" = "Zugriff auf die Fotobibliothek wird benötigt, um Ihr Profilbild zu ändern.";
+"NSPhotoLibraryAddUsageDescription" = "Berechtigung wird benötigt, um Ihr ausgewähltes Profilfoto zu speichern.";
+"NSCameraUsageDescription" = "Kamerazugriff wird benötigt, um Fotos für Ihre Briefe aufzunehmen.";

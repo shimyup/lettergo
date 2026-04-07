@@ -1,0 +1,5 @@
+"NSLocationWhenInUseUsageDescription" = "Votre position est nécessaire pour découvrir les lettres à proximité.";
+"NSLocationAlwaysAndWhenInUseUsageDescription" = "Votre position est nécessaire pour découvrir les lettres à proximité.";
+"NSPhotoLibraryUsageDescription" = "L'accès à la photothèque est nécessaire pour changer votre photo de profil.";
+"NSPhotoLibraryAddUsageDescription" = "L'autorisation est nécessaire pour enregistrer votre photo de profil sélectionnée.";
+"NSCameraUsageDescription" = "L'accès à la caméra est nécessaire pour prendre des photos pour vos lettres.";

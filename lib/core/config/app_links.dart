@@ -21,9 +21,9 @@ abstract class AppLinks {
     return '$privacyPolicy?lang=$lang';
   }
 
-  // ── 이용약관 (필요 시 추가) ────────────────────────────────────────────────
-  // static const String termsOfService =
-  //     'https://shimyup.github.io/lettergo/terms.html';
+  // ── 이용약관 ─────────────────────────────────────────────────────────────
+  static const String termsOfService =
+      'https://shimyup.github.io/lettergo/terms.html';
 
   // ── 고객 지원 ────────────────────────────────────────────────────────────
   static const String supportEmail = 'ceo@airony.xyz';

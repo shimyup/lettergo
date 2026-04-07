@@ -10404,6 +10404,16 @@ class AppL10n {
     'en': 'MORNING',
     'ja': '朝',
     'zh': '早晨',
+    'fr': 'MATIN',
+    'de': 'MORGEN',
+    'es': 'MAÑANA',
+    'pt': 'MANHÃ',
+    'ru': 'УТРО',
+    'tr': 'SABAH',
+    'ar': 'الصباح',
+    'it': 'MATTINA',
+    'hi': 'सुबह',
+    'th': 'เช้า',
   });
 
   String get onboardingTimelineMorningFree => _t({
@@ -10411,6 +10421,16 @@ class AppL10n {
     'en': 'Send 1 letter',
     'ja': '手紙1通送信',
     'zh': '发送1封信',
+    'fr': 'Envoyer 1 lettre',
+    'de': '1 Brief senden',
+    'es': 'Enviar 1 carta',
+    'pt': 'Enviar 1 carta',
+    'ru': 'Отправить 1 письмо',
+    'tr': '1 mektup gönder',
+    'ar': 'إرسال رسالة واحدة',
+    'it': 'Invia 1 lettera',
+    'hi': '1 पत्र भेजें',
+    'th': 'ส่งจดหมาย 1 ฉบับ',
   });
 
   String get onboardingTimelineMorningPremium => _t({
@@ -10418,6 +10438,16 @@ class AppL10n {
     'en': '10x more connections, with photos',
     'ja': '出会いの機会10倍、写真付き',
     'zh': '10倍缘分机会，附带照片',
+    'fr': '10x plus de connexions, avec photos',
+    'de': '10x mehr Verbindungen, mit Fotos',
+    'es': '10x más conexiones, con fotos',
+    'pt': '10x mais conexões, com fotos',
+    'ru': 'В 10 раз больше связей, с фото',
+    'tr': '10 kat daha fazla bağlantı, fotoğraflarla',
+    'ar': 'اتصالات أكثر 10 مرات، مع صور',
+    'it': '10x più connessioni, con foto',
+    'hi': '10 गुना अधिक कनेक्शन, फोटो के साथ',
+    'th': 'การเชื่อมต่อมากขึ้น 10 เท่า พร้อมรูปภาพ',
   });
 
   String get onboardingTimelineAfternoon => _t({
@@ -10425,6 +10455,16 @@ class AppL10n {
     'en': 'AFTERNOON',
     'ja': '午後',
     'zh': '下午',
+    'fr': 'APRÈS-MIDI',
+    'de': 'NACHMITTAG',
+    'es': 'TARDE',
+    'pt': 'TARDE',
+    'ru': 'ДЕНЬ',
+    'tr': 'ÖĞLEDEN SONRA',
+    'ar': 'بعد الظهر',
+    'it': 'POMERIGGIO',
+    'hi': 'दोपहर',
+    'th': 'บ่าย',
   });
 
   String get onboardingTimelineAfternoonFree => _t({
@@ -10432,6 +10472,16 @@ class AppL10n {
     'en': 'Waiting for replies...',
     'ja': '返信を待っている...',
     'zh': '等待回信中...',
+    'fr': 'En attente de réponses...',
+    'de': 'Warten auf Antworten...',
+    'es': 'Esperando respuestas...',
+    'pt': 'Aguardando respostas...',
+    'ru': 'Ожидание ответов...',
+    'tr': 'Yanıtlar bekleniyor...',
+    'ar': 'في انتظار الردود...',
+    'it': 'In attesa di risposte...',
+    'hi': 'जवाब का इंतज़ार...',
+    'th': 'รอการตอบกลับ...',
   });
 
   String get onboardingTimelineAfternoonPremium => _t({
@@ -10439,6 +10489,16 @@ class AppL10n {
     'en': '3 letters already arrived via express',
     'ja': '特急便で既に3通到着',
     'zh': '特快配送已收到3封',
+    'fr': '3 lettres déjà arrivées par express',
+    'de': '3 Briefe bereits per Express angekommen',
+    'es': '3 cartas ya llegaron por exprés',
+    'pt': '3 cartas já chegaram via expresso',
+    'ru': '3 письма уже доставлены экспрессом',
+    'tr': 'Ekspresle zaten 3 mektup geldi',
+    'ar': '3 رسائل وصلت بالفعل عبر البريد السريع',
+    'it': '3 lettere già arrivate via express',
+    'hi': 'एक्सप्रेस से पहले ही 3 पत्र आ चुके',
+    'th': 'จดหมาย 3 ฉบับมาถึงแล้วทางด่วน',
   });
 
   String get onboardingTimelineEvening => _t({
@@ -10446,6 +10506,16 @@ class AppL10n {
     'en': 'EVENING',
     'ja': '夜',
     'zh': '晚上',
+    'fr': 'SOIR',
+    'de': 'ABEND',
+    'es': 'NOCHE',
+    'pt': 'NOITE',
+    'ru': 'ВЕЧЕР',
+    'tr': 'AKŞAM',
+    'ar': 'المساء',
+    'it': 'SERA',
+    'hi': 'शाम',
+    'th': 'เย็น',
   });
 
   String get onboardingTimelineEveningFree => _t({
@@ -10453,6 +10523,16 @@ class AppL10n {
     'en': "That's it for today",
     'ja': '今日はここまで',
     'zh': '今天就到这里',
+    'fr': "C'est tout pour aujourd'hui",
+    'de': 'Das war es für heute',
+    'es': 'Eso es todo por hoy',
+    'pt': 'Isso é tudo por hoje',
+    'ru': 'На сегодня всё',
+    'tr': 'Bugünlük bu kadar',
+    'ar': 'هذا كل شيء لليوم',
+    'it': 'Per oggi è tutto',
+    'hi': 'आज के लिए बस इतना',
+    'th': 'วันนี้แค่นี้',
   });
 
   String get onboardingTimelineEveningBrand => _t({
@@ -10460,6 +10540,16 @@ class AppL10n {
     'en': 'Brand delivered to 10,000 people/month',
     'ja': '月10,000人にブランドを届け完了',
     'zh': '每月向10,000人传递我的品牌',
+    'fr': 'Marque diffusée à 10 000 personnes/mois',
+    'de': 'Marke an 10.000 Menschen/Monat geliefert',
+    'es': 'Marca entregada a 10.000 personas/mes',
+    'pt': 'Marca entregue a 10.000 pessoas/mês',
+    'ru': 'Бренд доставлен 10 000 людям в месяц',
+    'tr': 'Marka ayda 10.000 kişiye ulaştırıldı',
+    'ar': 'العلامة التجارية وصلت إلى 10,000 شخص/شهر',
+    'it': 'Brand consegnato a 10.000 persone/mese',
+    'hi': 'ब्रांड 10,000 लोगों/माह तक पहुंचाया गया',
+    'th': 'แบรนด์ส่งถึง 10,000 คน/เดือน',
   });
 
   String get onboardingLiveStats => _t({
@@ -11840,6 +11930,122 @@ class AppL10n {
     'fr': 'Couleur de lueur', 'de': 'Leuchtfarbe', 'es': 'Color de brillo',
     'pt': 'Cor de brilho', 'ru': 'Цвет свечения', 'tr': 'Parlama rengi',
     'ar': 'لون التوهج', 'it': 'Colore bagliore', 'hi': 'चमक रंग', 'th': 'สีเรืองแสง',
+  });
+
+  // ── Roof & Window Styles ──────────────────────────────────────────────────
+
+  String get towerRoofStyle => _t({
+    'ko': '지붕 스타일', 'en': 'Roof Style', 'ja': '屋根スタイル', 'zh': '屋顶样式',
+    'fr': 'Style de toit', 'de': 'Dachstil', 'es': 'Estilo de techo',
+    'pt': 'Estilo de telhado', 'ru': 'Стиль крыши', 'tr': 'Çatı stili',
+    'ar': 'نمط السقف', 'it': 'Stile del tetto', 'hi': 'छत शैली', 'th': 'รูปแบบหลังคา',
+  });
+
+  String get towerRoofDefault => _t({
+    'ko': '기본', 'en': 'Default', 'ja': 'デフォルト', 'zh': '默认',
+    'fr': 'Par défaut', 'de': 'Standard', 'es': 'Predeterminado',
+    'pt': 'Padrão', 'ru': 'По умолчанию', 'tr': 'Varsayılan',
+    'ar': 'افتراضي', 'it': 'Predefinito', 'hi': 'डिफ़ॉल्ट', 'th': 'ค่าเริ่มต้น',
+  });
+
+  String get towerRoofPointed => _t({
+    'ko': '뾰족', 'en': 'Pointed', 'ja': '尖塔', 'zh': '尖顶',
+    'fr': 'Pointu', 'de': 'Spitz', 'es': 'Puntiagudo',
+    'pt': 'Pontiagudo', 'ru': 'Остроконечная', 'tr': 'Sivri',
+    'ar': 'مدبب', 'it': 'Appuntito', 'hi': 'नुकीला', 'th': 'แหลม',
+  });
+
+  String get towerRoofDome => _t({
+    'ko': '돔', 'en': 'Dome', 'ja': 'ドーム', 'zh': '圆顶',
+    'fr': 'Dôme', 'de': 'Kuppel', 'es': 'Cúpula',
+    'pt': 'Cúpula', 'ru': 'Купол', 'tr': 'Kubbe',
+    'ar': 'قبة', 'it': 'Cupola', 'hi': 'गुंबद', 'th': 'โดม',
+  });
+
+  String get towerRoofFlat => _t({
+    'ko': '평지붕', 'en': 'Flat', 'ja': 'フラット', 'zh': '平顶',
+    'fr': 'Plat', 'de': 'Flach', 'es': 'Plano',
+    'pt': 'Plano', 'ru': 'Плоская', 'tr': 'Düz',
+    'ar': 'مسطح', 'it': 'Piatto', 'hi': 'सपाट', 'th': 'แบน',
+  });
+
+  String get towerRoofAntenna => _t({
+    'ko': '안테나', 'en': 'Antenna', 'ja': 'アンテナ', 'zh': '天线',
+    'fr': 'Antenne', 'de': 'Antenne', 'es': 'Antena',
+    'pt': 'Antena', 'ru': 'Антенна', 'tr': 'Anten',
+    'ar': 'هوائي', 'it': 'Antenna', 'hi': 'एंटीना', 'th': 'เสาอากาศ',
+  });
+
+  String get towerWindowStyle => _t({
+    'ko': '창문 스타일', 'en': 'Window Style', 'ja': '窓スタイル', 'zh': '窗户样式',
+    'fr': 'Style de fenêtre', 'de': 'Fensterstil', 'es': 'Estilo de ventana',
+    'pt': 'Estilo de janela', 'ru': 'Стиль окон', 'tr': 'Pencere stili',
+    'ar': 'نمط النافذة', 'it': 'Stile finestra', 'hi': 'खिड़की शैली', 'th': 'รูปแบบหน้าต่าง',
+  });
+
+  String get towerWindowSquare => _t({
+    'ko': '사각', 'en': 'Square', 'ja': '四角', 'zh': '方形',
+    'fr': 'Carré', 'de': 'Quadratisch', 'es': 'Cuadrada',
+    'pt': 'Quadrada', 'ru': 'Квадратное', 'tr': 'Kare',
+    'ar': 'مربع', 'it': 'Quadrata', 'hi': 'चौकोर', 'th': 'สี่เหลี่ยม',
+  });
+
+  String get towerWindowCircle => _t({
+    'ko': '원형', 'en': 'Circle', 'ja': '円形', 'zh': '圆形',
+    'fr': 'Rond', 'de': 'Rund', 'es': 'Circular',
+    'pt': 'Circular', 'ru': 'Круглое', 'tr': 'Yuvarlak',
+    'ar': 'دائري', 'it': 'Circolare', 'hi': 'गोल', 'th': 'กลม',
+  });
+
+  String get towerWindowArch => _t({
+    'ko': '아치', 'en': 'Arch', 'ja': 'アーチ', 'zh': '拱形',
+    'fr': 'Arche', 'de': 'Bogen', 'es': 'Arco',
+    'pt': 'Arco', 'ru': 'Арочное', 'tr': 'Kemer',
+    'ar': 'مقوس', 'it': 'Arco', 'hi': 'मेहराब', 'th': 'โค้ง',
+  });
+
+  String get towerWindowModern => _t({
+    'ko': '모던', 'en': 'Modern', 'ja': 'モダン', 'zh': '现代',
+    'fr': 'Moderne', 'de': 'Modern', 'es': 'Moderno',
+    'pt': 'Moderno', 'ru': 'Современное', 'tr': 'Modern',
+    'ar': 'حديث', 'it': 'Moderno', 'hi': 'आधुनिक', 'th': 'โมเดิร์น',
+  });
+
+  // ── Ranking Labels ────────────────────────────────────────────────────────
+
+  String get towerRank1 => _t({
+    'ko': '1위', 'en': '#1', 'ja': '1位', 'zh': '第1名',
+    'fr': '1er', 'de': 'Rang 1', 'es': '1.º',
+    'pt': '1º lugar', 'ru': '1-е место', 'tr': '1. sıra',
+    'ar': 'المرتبة 1', 'it': '1° posto', 'hi': 'रैंक #1', 'th': 'อันดับ 1',
+  });
+
+  String get towerRank2 => _t({
+    'ko': '2위', 'en': '#2', 'ja': '2位', 'zh': '第2名',
+    'fr': '2e', 'de': 'Rang 2', 'es': '2.º',
+    'pt': '2º lugar', 'ru': '2-е место', 'tr': '2. sıra',
+    'ar': 'المرتبة 2', 'it': '2° posto', 'hi': 'रैंक #2', 'th': 'อันดับ 2',
+  });
+
+  String get towerRank3 => _t({
+    'ko': '3위', 'en': '#3', 'ja': '3位', 'zh': '第3名',
+    'fr': '3e', 'de': 'Rang 3', 'es': '3.º',
+    'pt': '3º lugar', 'ru': '3-е место', 'tr': '3. sıra',
+    'ar': 'المرتبة 3', 'it': '3° posto', 'hi': 'रैंक #3', 'th': 'อันดับ 3',
+  });
+
+  String towerRankN(int rank) => _t({
+    'ko': '${rank}위', 'en': '#$rank', 'ja': '${rank}位', 'zh': '第${rank}名',
+    'fr': '${rank}e', 'de': 'Rang $rank', 'es': '$rank.º',
+    'pt': '${rank}º lugar', 'ru': '${rank}-е место', 'tr': '$rank. sıra',
+    'ar': 'المرتبة $rank', 'it': '${rank}° posto', 'hi': 'रैंक #$rank', 'th': 'อันดับ $rank',
+  });
+
+  String towerMyRankLabel(int rank) => _t({
+    'ko': '내 순위 ${rank}위', 'en': 'My rank #$rank', 'ja': '自分の順位 ${rank}位', 'zh': '我的排名 第${rank}名',
+    'fr': 'Mon classement ${rank}e', 'de': 'Mein Rang $rank', 'es': 'Mi puesto $rank.º',
+    'pt': 'Meu ranking ${rank}º', 'ru': 'Моё место: ${rank}-е', 'tr': 'Sıralamam: $rank.',
+    'ar': 'ترتيبي: $rank', 'it': 'La mia posizione: ${rank}°', 'hi': 'मेरी रैंक #$rank', 'th': 'อันดับของฉัน $rank',
   });
 
   String get towerSaveChanges => _t({

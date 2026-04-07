@@ -1,0 +1,5 @@
+"NSLocationWhenInUseUsageDescription" = "आस-पास के पत्रों को खोजने के लिए आपके स्थान की आवश्यकता है।";
+"NSLocationAlwaysAndWhenInUseUsageDescription" = "आस-पास के पत्रों को खोजने के लिए आपके स्थान की आवश्यकता है।";
+"NSPhotoLibraryUsageDescription" = "अपनी प्रोफ़ाइल तस्वीर बदलने के लिए फोटो लाइब्रेरी एक्सेस आवश्यक है।";
+"NSPhotoLibraryAddUsageDescription" = "आपकी चयनित प्रोफ़ाइल फ़ोटो सहेजने के लिए अनुमति आवश्यक है।";
+"NSCameraUsageDescription" = "अपने पत्रों के लिए फ़ोटो लेने हेतु कैमरा एक्सेस आवश्यक है।";

@@ -78,41 +78,85 @@ class _ComposeScreenState extends State<ComposeScreen>
   // ── 행운의 편지 ──────────────────────────────────────────────────────────
   bool _isLuckyLetter = false;
 
-  static const List<String> _luckyQuotes = [
-    '안녕하세요, 이 편지를 받게 된 당신에게 따뜻한 인사를 전합니다.\n\n'
-        '오늘 하루, 작은 것들 속에서 행복을 발견하는 하루가 되기를 바랍니다. '
-        '아침에 마신 따뜻한 커피 한 잔, 스쳐 지나가는 바람, 창밖의 햇살 — '
-        '그 작은 것들이 모여 당신의 하루를 빛나게 만들어 줄 거예요.\n\n'
-        '어디선가 당신을 응원하고 있는 낯선 친구로부터. 🍀',
+  static const Map<String, List<String>> _luckyQuotesByLang = {
+    'ko': [
+      '안녕하세요, 이 편지를 받게 된 당신에게 따뜻한 인사를 전합니다.\n\n'
+          '오늘 하루, 작은 것들 속에서 행복을 발견하는 하루가 되기를 바랍니다. '
+          '아침에 마신 따뜻한 커피 한 잔, 스쳐 지나가는 바람, 창밖의 햇살 — '
+          '그 작은 것들이 모여 당신의 하루를 빛나게 만들어 줄 거예요.\n\n'
+          '어디선가 당신을 응원하고 있는 낯선 친구로부터. 🍀',
+      '안녕하세요, 이 편지가 당신에게 닿기를 바라며 씁니다.\n\n'
+          '세상은 참 넓고, 좋은 인연은 언제 어디서 시작될지 모릅니다. '
+          '이 편지가 그 시작이 된다면 정말 좋겠어요.\n\n'
+          '언젠가, 어딘가에서 만날 날을 기대하며. 💌',
+      '안녕하세요, 이 글이 당신에게 작은 힘이 되길 바랍니다.\n\n'
+          '지금 어떤 하루를 보내고 있든, 당신은 충분히 잘 하고 있어요. '
+          '완벽하지 않아도 괜찮고, 모든 걸 해내지 않아도 됩니다.\n\n'
+          '포기하지 마세요. 멀리서 응원합니다. 💪',
+      '안녕하세요, 세상 어딘가에서 이 편지를 보냅니다.\n\n'
+          '매일 조금씩 나아가는 것, 그것만으로도 충분히 대단한 일입니다. '
+          '당신의 속도로 걸어가는 삶이 가장 아름다운 삶입니다.\n\n'
+          '오늘도 수고 많으셨습니다. 🌟',
+      '안녕하세요, 이 편지를 받게 된 것도 하나의 인연이라 생각합니다.\n\n'
+          '세상은 생각보다 훨씬 따뜻한 사람들로 가득 차 있습니다. '
+          '이 편지가 당신의 오늘에 작은 온기가 되었으면 합니다.\n\n'
+          '당신 덕분에 세상이 조금 더 따뜻해집니다. 🌍',
+    ],
+    'en': [
+      'Hello! Warm greetings to you, the lucky finder of this letter.\n\n'
+          'I hope today brings you joy in the little things — '
+          'a warm cup of coffee, a passing breeze, sunlight through a window. '
+          'Those small moments make a day shine.\n\n'
+          'Cheering for you from somewhere in the world. 🍀',
+      'Hi there! I\'m writing this hoping it reaches someone special.\n\n'
+          'The world is vast, and meaningful connections can begin anywhere. '
+          'If this letter is the start of one, that would be wonderful.\n\n'
+          'Looking forward to the day our paths cross. 💌',
+      'Hello! I hope these words give you a little strength.\n\n'
+          'Whatever kind of day you\'re having, you\'re doing great. '
+          'It\'s okay not to be perfect. Just getting through today is enough.\n\n'
+          'Don\'t give up. Someone far away is rooting for you. 💪',
+      'Hello from somewhere in the world.\n\n'
+          'Moving forward a little each day is already something remarkable. '
+          'Don\'t compare yourself to others — your own pace is beautiful.\n\n'
+          'Great job today. 🌟',
+      'Hi! I believe receiving this letter is a special kind of fate.\n\n'
+          'The world is full of warmer people than you might think. '
+          'Sometimes a small kindness from a stranger can change your whole day.\n\n'
+          'The world is a little warmer because of you. 🌍',
+    ],
+    'ja': [
+      'こんにちは、この手紙を受け取ったあなたに温かい挨拶を送ります。\n\n'
+          '今日一日、小さなことの中に幸せを見つける日になりますように。'
+          '朝のコーヒー、通り過ぎる風、窓からの日差し — '
+          'そんな小さなことがあなたの一日を輝かせてくれるでしょう。\n\n'
+          'どこかであなたを応援している見知らぬ友より。🍀',
+      'こんにちは、この手紙があなたに届くことを願って書いています。\n\n'
+          '世界は広く、良い縁はいつどこで始まるかわかりません。'
+          'この手紙がその始まりになれば嬉しいです。\n\n'
+          'いつかどこかで会える日を楽しみにしています。💌',
+      'こんにちは、この言葉があなたの小さな力になれば幸いです。\n\n'
+          'どんな一日を過ごしていても、あなたは十分頑張っています。'
+          '完璧でなくても大丈夫。今日一日を乗り越えただけで十分すごいことです。\n\n'
+          '諦めないでください。遠くから応援しています。💪',
+      'こんにちは、世界のどこかからこの手紙を送ります。\n\n'
+          '毎日少しずつ進むこと、それだけで十分素晴らしいことです。'
+          'あなたのペースで歩む人生が一番美しい人生です。\n\n'
+          '今日もお疲れ様でした。🌟',
+      'こんにちは、この手紙を受け取ったことも一つの縁だと思います。\n\n'
+          '世界は思ったよりもずっと温かい人々でいっぱいです。'
+          'この手紙があなたの今日に小さな温もりとなれば嬉しいです。\n\n'
+          'あなたのおかげで世界が少し温かくなります。🌍',
+    ],
+  };
 
-    '안녕하세요, 이 편지가 당신에게 닿기를 바라며 씁니다.\n\n'
-        '세상은 참 넓고, 좋은 인연은 언제 어디서 시작될지 모릅니다. '
-        '이 편지가 그 시작이 된다면 정말 좋겠어요. '
-        '우리가 비록 이름도, 얼굴도 모르지만, 이렇게 편지로 이어진 것만으로도 '
-        '충분히 아름다운 인연이라고 생각합니다.\n\n'
-        '언젠가, 어딘가에서 만날 날을 기대하며. 💌',
-
-    '안녕하세요, 이 글이 당신에게 작은 힘이 되길 바랍니다.\n\n'
-        '지금 어떤 하루를 보내고 있든, 당신은 충분히 잘 하고 있어요. '
-        '완벽하지 않아도 괜찮고, 모든 걸 해내지 않아도 됩니다. '
-        '그냥 오늘 하루를 버텨낸 것만으로도, 당신은 이미 대단한 사람입니다.\n\n'
-        '포기하지 마세요. 멀리서 응원합니다. 💪',
-
-    '안녕하세요, 세상 어딘가에서 이 편지를 보냅니다.\n\n'
-        '매일 조금씩 나아가는 것, 그것만으로도 충분히 대단한 일입니다. '
-        '남들과 비교하지 말고, 어제의 나보다 조금만 더 나아가면 그걸로 충분해요. '
-        '당신의 속도로 걸어가는 삶이 가장 아름다운 삶입니다.\n\n'
-        '오늘도 수고 많으셨습니다. 🌟',
-
-    '안녕하세요, 이 편지를 받게 된 것도 하나의 인연이라 생각합니다.\n\n'
-        '세상은 생각보다 훨씬 따뜻한 사람들로 가득 차 있습니다. '
-        '때로는 낯선 사람의 작은 배려가 하루를 바꾸기도 하죠. '
-        '이 편지가 당신의 오늘에 그런 작은 온기가 되었으면 합니다.\n\n'
-        '당신 덕분에 세상이 조금 더 따뜻해집니다. 🌍',
-  ];
+  static List<String> _luckyQuotesForLang(String langCode) {
+    return _luckyQuotesByLang[langCode] ?? _luckyQuotesByLang['en']!;
+  }
 
   void _applyLuckyLetter() {
-    final quotes = _luckyQuotes.toList()..shuffle();
+    final langCode = context.read<AppState>().currentUser.languageCode;
+    final quotes = _luckyQuotesForLang(langCode).toList()..shuffle();
     final quote = quotes.first;
     setState(() {
       _isLuckyLetter = true;
@@ -138,15 +182,38 @@ class _ComposeScreenState extends State<ComposeScreen>
   int? _brandAutoExpireHours; // 자동 삭제 시간 (null=없음)
 
   static const List<String> _bannedWords = [
-    // 영어
+    // English
     'fuck', 'shit', 'bitch', 'asshole', 'bastard', 'dick', 'pussy', 'cunt',
     'nigger', 'nigga', 'faggot', 'whore', 'slut', 'rape', 'kill yourself',
     'kys', 'retard',
-    // 한국어 욕설
+    // 한국어
     '씨발', '병신', '개새끼', '존나', '지랄', '엿먹', '꺼져', '죽어',
     '미친놈', '미친년', '창녀', '보지', '자지', '좆',
-    // 스팸 패턴
+    // 日本語
+    'くそ', 'ばか', 'しね', '死ね', 'きもい', 'うざい', 'ころす', '殺す',
+    'ちんこ', 'まんこ', 'おっぱい', 'やりまん',
+    // 中文
+    '他妈', '操你', '妈逼', '傻逼', '狗屎', '去死', '废物', '贱人',
+    '混蛋', '王八蛋', '滚蛋',
+    // Español
+    'mierda', 'puta', 'cabrón', 'pendejo', 'joder', 'coño', 'maricón',
+    'hijo de puta', 'culero', 'verga',
+    // Français
+    'merde', 'putain', 'connard', 'salaud', 'enculé', 'bordel', 'nique',
+    'ta gueule', 'pédé', 'salope',
+    // Deutsch
+    'scheiße', 'arschloch', 'hurensohn', 'wichser', 'fotze', 'missgeburt',
+    'schwuchtel', 'drecksau',
+    // Português
+    'merda', 'porra', 'caralho', 'filho da puta', 'buceta', 'viado',
+    'desgraça', 'otário', 'piranha',
+    // Русский
+    'блядь', 'сука', 'хуй', 'пизда', 'ебать', 'мудак', 'дерьмо',
+    'говно', 'пиздец', 'заткнись',
+    // Spam patterns (multilingual)
     '카지노', '도박', '대출', '비트코인 투자', '클릭하세요',
+    'casino', 'gambling', 'bitcoin invest', 'click here', 'free money',
+    'カジノ', '赌博', '賭博',
   ];
 
   @override
@@ -160,7 +227,9 @@ class _ComposeScreenState extends State<ComposeScreen>
     _contentController.addListener(() {
       final text = _contentController.text;
       // 행운의 편지 글귀와 달라지면 플래그 해제 (직접 수정한 것으로 간주)
-      final isStillLucky = _luckyQuotes.contains(text);
+      final langCode = context.read<AppState>().currentUser.languageCode;
+      final allQuotes = _luckyQuotesForLang(langCode);
+      final isStillLucky = allQuotes.contains(text);
       setState(() {
         _charCount = text.length;
         if (_isLuckyLetter && !isStillLucky) _isLuckyLetter = false;
