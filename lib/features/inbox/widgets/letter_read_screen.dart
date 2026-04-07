@@ -475,43 +475,48 @@ class _LetterReadScreenState extends State<LetterReadScreen>
               ],
             ),
             const SizedBox(height: 14),
-            // 별점 (크게)
+            // 별점 + 좋아요 + 인증/신고 (Flexible 적용으로 오버플로우 방지)
             Row(
               children: [
-                ...List.generate(5, (i) {
-                  final star = i + 1;
-                  final selected = star <= _userRating;
-                  return GestureDetector(
-                    onTap: () {
-                      final prev = _userRating;
-                      setState(() => _userRating = star);
-                      if (prev == 0) {
-                        state.rateLetter(letter.id, star);
-                      } else {
-                        state.updateRating(letter.id, prev, star);
-                      }
-                    },
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 4,
-                        vertical: 4,
-                      ),
-                      child: AnimatedSwitcher(
-                        duration: const Duration(milliseconds: 150),
-                        child: Text(
-                          selected ? '⭐' : '☆',
-                          key: ValueKey('star_${i}_$selected'),
-                          style: TextStyle(
-                            fontSize: 28,
-                            color: selected
-                                ? AppColors.gold
-                                : AppColors.textMuted,
+                Flexible(
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: List.generate(5, (i) {
+                      final star = i + 1;
+                      final selected = star <= _userRating;
+                      return GestureDetector(
+                        onTap: () {
+                          final prev = _userRating;
+                          setState(() => _userRating = star);
+                          if (prev == 0) {
+                            state.rateLetter(letter.id, star);
+                          } else {
+                            state.updateRating(letter.id, prev, star);
+                          }
+                        },
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 3,
+                            vertical: 4,
+                          ),
+                          child: AnimatedSwitcher(
+                            duration: const Duration(milliseconds: 150),
+                            child: Text(
+                              selected ? '⭐' : '☆',
+                              key: ValueKey('star_${i}_$selected'),
+                              style: TextStyle(
+                                fontSize: 26,
+                                color: selected
+                                    ? AppColors.gold
+                                    : AppColors.textMuted,
+                              ),
+                            ),
                           ),
                         ),
-                      ),
-                    ),
-                  );
-                }),
+                      );
+                    }),
+                  ),
+                ),
                 const Spacer(),
                 // 좋아요 버튼
                 GestureDetector(
@@ -524,7 +529,7 @@ class _LetterReadScreenState extends State<LetterReadScreen>
                   child: AnimatedContainer(
                     duration: const Duration(milliseconds: 200),
                     padding: const EdgeInsets.symmetric(
-                      horizontal: 14,
+                      horizontal: 12,
                       vertical: 8,
                     ),
                     decoration: BoxDecoration(
@@ -545,7 +550,7 @@ class _LetterReadScreenState extends State<LetterReadScreen>
                           _hasLiked ? '❤️' : '🤍',
                           style: const TextStyle(fontSize: 18),
                         ),
-                        const SizedBox(width: 6),
+                        const SizedBox(width: 5),
                         Text(
                           '${letter.likeCount}',
                           style: TextStyle(
@@ -560,27 +565,31 @@ class _LetterReadScreenState extends State<LetterReadScreen>
                     ),
                   ),
                 ),
-                const SizedBox(width: 8),
+                const SizedBox(width: 6),
                 // 신고 버튼 — 브랜드 계정은 미표시, 인증 배지로 대체
                 if (letter.senderIsBrand)
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 8,
-                      vertical: 6,
-                    ),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFFF8A5C).withValues(alpha: 0.1),
-                      borderRadius: BorderRadius.circular(8),
-                      border: Border.all(
-                        color: const Color(0xFFFF8A5C).withValues(alpha: 0.3),
+                  Flexible(
+                    flex: 0,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 6,
                       ),
-                    ),
-                    child: Text(
-                      l10n.letterReadVerifiedAccount,
-                      style: TextStyle(
-                        color: Color(0xFFFF8A5C),
-                        fontSize: 11,
-                        fontWeight: FontWeight.w700,
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFFF8A5C).withValues(alpha: 0.1),
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(
+                          color: const Color(0xFFFF8A5C).withValues(alpha: 0.3),
+                        ),
+                      ),
+                      child: Text(
+                        l10n.letterReadVerifiedAccount,
+                        style: TextStyle(
+                          color: Color(0xFFFF8A5C),
+                          fontSize: 11,
+                          fontWeight: FontWeight.w700,
+                        ),
+                        overflow: TextOverflow.ellipsis,
                       ),
                     ),
                   )

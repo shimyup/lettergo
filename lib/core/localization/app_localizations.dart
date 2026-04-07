@@ -8806,48 +8806,48 @@ class AppL10n {
     'th': 'จดหมายจาก $flag $country มาถึงในระยะ 2 กม.',
   });
 
-  // ── 다양한 근처 알림 문구 풀 ──────────────────────────────────────────────
+  // ── 랜덤 편지 도착 알림 문구 풀 ─────────────────────────────────────────────
   List<String> get stateNearbyNotifTitles => [
     _t({
-      'ko': '📩 편지가 근처에 있어요!',
-      'en': '📩 A letter is nearby!',
-      'ja': '📩 近くに手紙があります！',
-      'zh': '📩 附近有一封信！',
+      'ko': '💌 랜덤 편지가 도착했어요!',
+      'en': '💌 A random letter has arrived!',
+      'ja': '💌 ランダムレターが届きました！',
+      'zh': '💌 随机信件到了！',
     }),
     _t({
-      'ko': '🎐 바람이 편지를 가져왔어요',
-      'en': '🎐 The wind brought a letter',
-      'ja': '🎐 風が手紙を運んできました',
-      'zh': '🎐 风带来了一封信',
+      'ko': '🌏 세계 어딘가에서 편지가 왔어요!',
+      'en': '🌏 A letter came from somewhere in the world!',
+      'ja': '🌏 世界のどこかから手紙が来ました！',
+      'zh': '🌏 世界某处寄来了一封信！',
     }),
     _t({
-      'ko': '🌊 파도가 편지를 전해줬어요',
-      'en': '🌊 A wave delivered a letter',
-      'ja': '🌊 波が手紙を届けました',
-      'zh': '🌊 海浪送来了一封信',
+      'ko': '🎐 바람을 타고 편지가 날아왔어요',
+      'en': '🎐 A letter drifted in on the wind',
+      'ja': '🎐 風に乗って手紙が届きました',
+      'zh': '🎐 一封信随风飘来',
     }),
     _t({
       'ko': '✨ 누군가의 마음이 도착했어요',
-      'en': '✨ Someone\'s heart arrived',
+      'en': '✨ Someone\'s heart has arrived',
       'ja': '✨ 誰かの想いが届きました',
       'zh': '✨ 某人的心意到了',
     }),
     _t({
-      'ko': '🍃 어디선가 편지가 날아왔어요',
-      'en': '🍃 A letter flew in from somewhere',
-      'ja': '🍃 どこかから手紙が飛んできました',
-      'zh': '🍃 一封信从远方飘来',
+      'ko': '📬 편지함에 새 편지가 왔어요!',
+      'en': '📬 New letter in your mailbox!',
+      'ja': '📬 新しい手紙が届きました！',
+      'zh': '📬 信箱里有新信！',
     }),
     _t({
-      'ko': '💌 소중한 편지가 기다리고 있어요',
-      'en': '💌 A precious letter awaits you',
-      'ja': '💌 大切な手紙が待っています',
-      'zh': '💌 一封珍贵的信在等你',
+      'ko': '🌊 바다를 건너 편지가 도착했어요',
+      'en': '🌊 A letter crossed the ocean to reach you',
+      'ja': '🌊 海を越えて手紙が届きました',
+      'zh': '🌊 一封信漂洋过海到达了',
     }),
     _t({
       'ko': '🕊️ 비둘기가 편지를 물고 왔어요',
-      'en': '🕊️ A dove brought a letter',
-      'ja': '🕊️ 鳩が手紙を持ってきました',
+      'en': '🕊️ A dove brought you a letter',
+      'ja': '🕊️ 鳩が手紙を届けてくれました',
       'zh': '🕊️ 鸽子带来了一封信',
     }),
     _t({
@@ -8857,25 +8857,25 @@ class AppL10n {
       'zh': '🌟 一个新故事到了',
     }),
     _t({
-      'ko': '📮 우체통에 편지가 왔어요!',
-      'en': '📮 You\'ve got mail!',
-      'ja': '📮 ポストに手紙が届きました！',
-      'zh': '📮 信箱里有新信！',
+      'ko': '📮 랜덤 편지가 배달 완료!',
+      'en': '📮 Random letter delivered!',
+      'ja': '📮 ランダムレター配達完了！',
+      'zh': '📮 随机信件已送达！',
     }),
     _t({
-      'ko': '🗺️ 먼 곳에서 편지가 도착했어요',
-      'en': '🗺️ A letter arrived from afar',
-      'ja': '🗺️ 遠くから手紙が届きました',
+      'ko': '🗺️ 먼 나라에서 편지가 도착했어요',
+      'en': '🗺️ A letter arrived from a distant land',
+      'ja': '🗺️ 遠い国から手紙が届きました',
       'zh': '🗺️ 远方来信了',
     }),
   ];
 
   List<String> stateNearbyNotifBodies(String flag, String country) => [
     _t({
-      'ko': '$flag $country에서 온 편지가 당신을 기다려요',
-      'en': 'A letter from $flag $country is waiting for you',
-      'ja': '$flag ${country}からの手紙があなたを待っています',
-      'zh': '来自$flag $country的信在等你',
+      'ko': '$flag $country에서 보낸 편지가 도착했어요',
+      'en': 'A letter from $flag $country has arrived',
+      'ja': '$flag ${country}からの手紙が届きました',
+      'zh': '来自$flag $country的信到了',
     }),
     _t({
       'ko': '$flag $country 누군가가 당신에게 마음을 보냈어요',
@@ -8884,28 +8884,22 @@ class AppL10n {
       'zh': '$flag $country有人给你寄了心意',
     }),
     _t({
-      'ko': '지금 근처에서 $flag $country의 편지를 열어보세요',
-      'en': 'Open a letter from $flag $country nearby now',
-      'ja': '近くで$flag ${country}の手紙を開いてみましょう',
-      'zh': '现在可以打开$flag $country的来信了',
-    }),
-    _t({
       'ko': '$flag $country에서 출발한 편지가 드디어 도착!',
       'en': 'A letter from $flag $country finally arrived!',
       'ja': '$flag ${country}から出発した手紙がついに到着！',
       'zh': '从$flag $country出发的信终于到了！',
     }),
     _t({
-      'ko': '2km 안에 $flag $country의 이야기가 있어요',
-      'en': 'A story from $flag $country is within 2km',
-      'ja': '2km以内に$flag ${country}の物語があります',
-      'zh': '2km内有$flag $country的故事',
+      'ko': '$flag $country의 마음이 담긴 편지가 왔어요',
+      'en': 'A heartfelt letter from $flag $country is here',
+      'ja': '$flag ${country}の気持ちが込められた手紙が来ました',
+      'zh': '来自$flag $country的真挚信件到了',
     }),
     _t({
-      'ko': '$flag $country 편지가 당신 근처에 떠 있어요 🌊',
-      'en': 'A $flag $country letter is floating near you 🌊',
-      'ja': '$flag ${country}の手紙がそばに漂っています 🌊',
-      'zh': '$flag $country的信在你附近漂浮 🌊',
+      'ko': '$flag $country에서 온 편지를 지금 열어보세요',
+      'en': 'Open the letter from $flag $country now',
+      'ja': '$flag ${country}からの手紙を今すぐ開きましょう',
+      'zh': '快打开来自$flag $country的信吧',
     }),
     _t({
       'ko': '바다를 건너온 $flag $country의 진심을 확인하세요',
@@ -8914,10 +8908,16 @@ class AppL10n {
       'zh': '查看漂洋过海来自$flag $country的真心',
     }),
     _t({
-      'ko': '$flag $country에서 온 편지병이 해변에 닿았어요 🏖️',
-      'en': 'A bottle from $flag $country washed ashore 🏖️',
-      'ja': '$flag ${country}からのボトルが浜辺に着きました 🏖️',
-      'zh': '来自$flag $country的漂流瓶到岸了 🏖️',
+      'ko': '$flag $country에서 온 편지병이 도착했어요 🏖️',
+      'en': 'A bottle letter from $flag $country arrived 🏖️',
+      'ja': '$flag ${country}からのボトルレターが届きました 🏖️',
+      'zh': '来自$flag $country的漂流瓶到了 🏖️',
+    }),
+    _t({
+      'ko': '$flag $country 편지가 긴 여행을 마치고 도착했어요',
+      'en': 'A $flag $country letter finished its long journey',
+      'ja': '$flag ${country}の手紙が長い旅を終えて届きました',
+      'zh': '$flag $country的信完成了漫长旅程',
     }),
   ];
 
