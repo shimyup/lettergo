@@ -3878,12 +3878,15 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
   // ── 브랜드 대량 발송 ──────────────────────────────────────────────────────
   /// 브랜드 계정 전용: 동일 내용을 복수 나라에 지정 횟수만큼 발송
   /// [targets] : [{'country':..,'flag':..,'lat':..,'lng':..}] 목록
-  /// [sendCount]: 나라당 발송 횟수
+  ///             빈 목록이면 198개국 중 랜덤 선택하여 발송
+  /// [sendCount]: 나라당 발송 횟수 (랜덤 모드에서는 총 발송 횟수)
+  /// [randomMode]: true이면 targets 무시, 매 편지마다 랜덤 국가 선택
   /// returns: 실제 발송된 편지 수 (한도 초과 시 부분 발송)
   Future<int> sendBulkLetter({
     required String content,
     required List<Map<String, dynamic>> targets,
     required int sendCount,
+    bool randomMode = false,
     String? socialLink,
     String? imageUrl,
     int paperStyle = 0,
@@ -3893,16 +3896,20 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
   }) async {
     if (!_currentUser.isBrand) return 0;
     int sent = 0;
-    for (final target in targets) {
-      for (int i = 0; i < sendCount; i++) {
+
+    if (randomMode) {
+      // 랜덤 모드: 매 편지마다 198개국 중 랜덤 국가 선택
+      final totalToSend = sendCount;
+      for (int i = 0; i < totalToSend; i++) {
         if (!_canSendLetterByDailyLimit()) break;
         if (imageUrl != null && !_canSendImageLetter()) break;
+        final dest = randomDestination(excludeCountry: _currentUser.country);
         final ok = await sendLetter(
           content: content,
-          destinationCountry: target['country'] as String,
-          destinationFlag: target['flag'] as String,
-          destLat: (target['lat'] as num).toDouble(),
-          destLng: (target['lng'] as num).toDouble(),
+          destinationCountry: dest['name']!,
+          destinationFlag: dest['flag']!,
+          destLat: double.parse(dest['lat']!),
+          destLng: double.parse(dest['lng']!),
           socialLink: socialLink,
           imageUrl: imageUrl,
           paperStyle: paperStyle,
@@ -3911,6 +3918,28 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
           brandAutoExpireHours: brandAutoExpireHours,
         );
         if (ok) sent++;
+      }
+    } else {
+      // 기존: 선택된 나라에 나라당 sendCount만큼 발송
+      for (final target in targets) {
+        for (int i = 0; i < sendCount; i++) {
+          if (!_canSendLetterByDailyLimit()) break;
+          if (imageUrl != null && !_canSendImageLetter()) break;
+          final ok = await sendLetter(
+            content: content,
+            destinationCountry: target['country'] as String,
+            destinationFlag: target['flag'] as String,
+            destLat: (target['lat'] as num).toDouble(),
+            destLng: (target['lng'] as num).toDouble(),
+            socialLink: socialLink,
+            imageUrl: imageUrl,
+            paperStyle: paperStyle,
+            fontStyle: fontStyle,
+            brandUniquePerUser: brandUniquePerUser,
+            brandAutoExpireHours: brandAutoExpireHours,
+          );
+          if (ok) sent++;
+        }
       }
     }
     return sent;

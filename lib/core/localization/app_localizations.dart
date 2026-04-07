@@ -4196,6 +4196,27 @@ class AppL10n {
     'th': 'ที่อยู่ต่อประเทศ',
   });
 
+  String get composeBulkRandomCountry => _t({
+    'ko': '랜덤 국가로 발송',
+    'en': 'Send to random countries',
+    'ja': 'ランダムな国に送信',
+    'zh': '随机国家发送',
+  });
+
+  String get composeBulkRandomDesc => _t({
+    'ko': '198개국 중 랜덤으로 선택하여 발송합니다',
+    'en': 'Letters sent to random countries from 198 nations',
+    'ja': '198カ国からランダムに選んで送信します',
+    'zh': '从198个国家中随机选择发送',
+  });
+
+  String composeBulkRandomSummary(int count) => _t({
+    'ko': '랜덤 국가 ${count}통 발송',
+    'en': '$count letters to random countries',
+    'ja': 'ランダム国 ${count}通送信',
+    'zh': '随机国家 $count封',
+  });
+
   String get composeSelectTargetCountry => _t({
     'ko': '발송 나라 선택',
     'en': 'Select target countries',
