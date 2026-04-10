@@ -1450,7 +1450,85 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
     _generateDailyAiLetters();
 
     await _ensureInviteIdentityOnServer();
+
+    // ── 시간 기반 편지 상태 보정 ─────────────────────────────────────────────
+    // 앱이 꺼져 있던 동안 arrivalTime이 지난 편지를 즉시 도착 처리
+    _reconcileLetterStatuses();
+
     notifyListeners();
+  }
+
+  /// 앱 재시작 후 arrivalTime이 이미 지난 편지들의 상태를 즉시 보정한다.
+  /// (delivery timer 5초 대기 없이 로드 직후 실행)
+  void _reconcileLetterStatuses() {
+    final now = DateTime.now();
+    bool changed = false;
+    final List<Letter> dailyToInbox = [];
+
+    for (final letter in _worldLetters) {
+      // 이미 도착 처리된 편지는 건너뜀
+      if (letter.status == DeliveryStatus.deliveredFar ||
+          letter.status == DeliveryStatus.nearYou ||
+          letter.status == DeliveryStatus.delivered ||
+          letter.status == DeliveryStatus.read) {
+        continue;
+      }
+      if (letter.status != DeliveryStatus.inTransit) continue;
+
+      // 세그먼트 진행도를 현재 시각에 맞춰 동기화
+      _syncLetterProgressWithClock(letter, now);
+
+      final arrived = letter.arrivalTime != null
+          ? !now.isBefore(letter.arrivalTime!)
+          : letter.overallProgress >= 0.999;
+
+      if (arrived) {
+        if (letter.id.startsWith('daily_')) {
+          letter.status = DeliveryStatus.delivered;
+          letter.arrivedAt ??= now;
+          dailyToInbox.add(letter);
+          changed = true;
+          continue;
+        }
+        final dist = letter.destinationLocation.distanceTo(
+          LatLng(_currentUser.latitude, _currentUser.longitude),
+        );
+        if (dist <= 2000) {
+          letter.status = DeliveryStatus.nearYou;
+          _hasNearbyAlert = true;
+        } else {
+          letter.status = DeliveryStatus.deliveredFar;
+        }
+        letter.arrivedAt ??= now;
+        changed = true;
+      }
+    }
+
+    // daily 편지: worldLetters → inbox 이동
+    for (final l in dailyToInbox) {
+      _worldLetters.removeWhere((x) => x.id == l.id);
+      _inbox.add(l);
+      _currentUser.activityScore.receivedCount++;
+    }
+
+    // _sent 리스트의 편지 상태도 동기화 (_worldLetters와 같은 객체를 참조하지만
+    // worldLetters에 없는 sent 편지가 있을 수 있으므로 별도 처리)
+    for (final letter in _sent) {
+      if (letter.status != DeliveryStatus.inTransit) continue;
+      _syncLetterProgressWithClock(letter, now);
+      final arrived = letter.arrivalTime != null
+          ? !now.isBefore(letter.arrivalTime!)
+          : letter.overallProgress >= 0.999;
+      if (arrived) {
+        letter.status = DeliveryStatus.delivered;
+        letter.arrivedAt ??= now;
+        changed = true;
+      }
+    }
+
+    if (changed) {
+      _saveToPrefs();
+    }
   }
 
   // ── 유저 세팅 (로그인/회원가입 후) ────────────────────────────────────────
@@ -3255,11 +3333,13 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
         );
       }
       if (dailyToInbox.isNotEmpty) {
-        _saveToPrefs();
         changed = true;
       }
 
-      if (changed) notifyListeners();
+      if (changed) {
+        _saveToPrefs();
+        notifyListeners();
+      }
     });
   }
 
