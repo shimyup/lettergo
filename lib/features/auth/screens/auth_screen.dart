@@ -285,6 +285,8 @@ class _AuthScreenState extends State<AuthScreen>
       countryFlag: userData['countryFlag'] ?? '🇰🇷',
       languageCode: userData['languageCode'],
       socialLink: userData['socialLink'],
+      phoneNumber: userData['phoneNumber'],
+      verifyMethod: userData['verifyMethod'] ?? 'email',
       latitude: pos?.latitude,
       longitude: pos?.longitude,
     );
@@ -1075,6 +1077,10 @@ class _SignupTabState extends State<_SignupTab> {
   bool _agreePrivacy = false;
   bool _agreeTerms = false; // 이용약관 + 커뮤니티 가이드라인 동의
   bool _agreeLocation = false; // 동의 체크
+
+  // ── 핸드폰 번호 + 인증 수단 선택 ──
+  final _phoneCtrl = TextEditingController();
+  String _verifyMethod = 'email'; // 'email' or 'phone'
   bool _locationGranted = false; // 실제 OS 권한 허용 여부
 
   // ── 이메일 인증 OTP 상태 ──
@@ -1139,6 +1145,7 @@ class _SignupTabState extends State<_SignupTab> {
     _usernameCtrl.dispose();
     _passCtrl.dispose();
     _socialCtrl.dispose();
+    _phoneCtrl.dispose();
     _otpCtrl.dispose();
     _otpTimer?.cancel();
     super.dispose();
@@ -1235,6 +1242,8 @@ class _SignupTabState extends State<_SignupTab> {
       countryFlag: _selectedFlag,
       languageCode: LanguageConfig.getLanguageCode(_selectedCountry),
       socialLink: _socialCtrl.text.isNotEmpty ? _socialCtrl.text : null,
+      phoneNumber: _phoneCtrl.text.isNotEmpty ? _phoneCtrl.text : null,
+      verifyMethod: _verifyMethod,
     );
 
     if (!mounted) return;
@@ -1456,6 +1465,159 @@ class _SignupTabState extends State<_SignupTab> {
             hint: 'https://instagram.com/...',
             icon: Icons.link_rounded,
             keyboardType: TextInputType.url,
+          ),
+          const SizedBox(height: 12),
+
+          // ── 5-1. 핸드폰 번호 (선택) ────────────────────────────────────────
+          _InputField(
+            controller: _phoneCtrl,
+            label: l10n.authPhoneOptional,
+            hint: '+82 10-1234-5678',
+            icon: Icons.phone_rounded,
+            keyboardType: TextInputType.phone,
+          ),
+          const SizedBox(height: 12),
+
+          // ── 5-2. 인증 수단 선택 ────────────────────────────────────────────
+          Container(
+            padding: const EdgeInsets.all(14),
+            decoration: BoxDecoration(
+              color: AppColors.bgCard,
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: const Color(0xFF1F2D44)),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    const Icon(Icons.verified_user_rounded, color: AppColors.teal, size: 16),
+                    const SizedBox(width: 6),
+                    Text(
+                      l10n.authVerifyMethodTitle,
+                      style: const TextStyle(
+                        color: AppColors.textPrimary,
+                        fontSize: 13,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  l10n.authVerifyMethodDesc,
+                  style: const TextStyle(
+                    color: AppColors.textMuted,
+                    fontSize: 11,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Row(
+                  children: [
+                    Expanded(
+                      child: GestureDetector(
+                        onTap: () => setState(() => _verifyMethod = 'email'),
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(vertical: 10),
+                          decoration: BoxDecoration(
+                            color: _verifyMethod == 'email'
+                                ? AppColors.teal.withValues(alpha: 0.15)
+                                : Colors.transparent,
+                            borderRadius: BorderRadius.circular(8),
+                            border: Border.all(
+                              color: _verifyMethod == 'email'
+                                  ? AppColors.teal
+                                  : AppColors.textMuted.withValues(alpha: 0.3),
+                            ),
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(
+                                Icons.email_rounded,
+                                size: 16,
+                                color: _verifyMethod == 'email'
+                                    ? AppColors.teal
+                                    : AppColors.textMuted,
+                              ),
+                              const SizedBox(width: 6),
+                              Text(
+                                l10n.email,
+                                style: TextStyle(
+                                  color: _verifyMethod == 'email'
+                                      ? AppColors.teal
+                                      : AppColors.textMuted,
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: GestureDetector(
+                        onTap: () {
+                          if (_phoneCtrl.text.trim().isEmpty) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text(l10n.authPhoneRequiredForSms),
+                                backgroundColor: AppColors.bgCard,
+                                behavior: SnackBarBehavior.floating,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                              ),
+                            );
+                            return;
+                          }
+                          setState(() => _verifyMethod = 'phone');
+                        },
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(vertical: 10),
+                          decoration: BoxDecoration(
+                            color: _verifyMethod == 'phone'
+                                ? AppColors.teal.withValues(alpha: 0.15)
+                                : Colors.transparent,
+                            borderRadius: BorderRadius.circular(8),
+                            border: Border.all(
+                              color: _verifyMethod == 'phone'
+                                  ? AppColors.teal
+                                  : AppColors.textMuted.withValues(alpha: 0.3),
+                            ),
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(
+                                Icons.phone_rounded,
+                                size: 16,
+                                color: _verifyMethod == 'phone'
+                                    ? AppColors.teal
+                                    : AppColors.textMuted,
+                              ),
+                              const SizedBox(width: 6),
+                              Text(
+                                'SMS',
+                                style: TextStyle(
+                                  color: _verifyMethod == 'phone'
+                                      ? AppColors.teal
+                                      : AppColors.textMuted,
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
           const SizedBox(height: 20),
 

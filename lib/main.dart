@@ -153,6 +153,10 @@ class _GlobalDriftAppState extends State<GlobalDriftApp> {
         socialLink: widget.initialUserData!['socialLink']?.isNotEmpty == true
             ? widget.initialUserData!['socialLink']
             : null,
+        phoneNumber: widget.initialUserData!['phoneNumber']?.isNotEmpty == true
+            ? widget.initialUserData!['phoneNumber']
+            : null,
+        verifyMethod: widget.initialUserData!['verifyMethod'] ?? 'email',
         latitude: widget.initialLat,
         longitude: widget.initialLng,
       );

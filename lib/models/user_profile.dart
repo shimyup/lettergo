@@ -439,6 +439,8 @@ class UserProfile {
   String? customTowerName; // 사용자 지정 타워 이름
   int towerRoofStyle; // 지붕 스타일 (0=기본, 1=뾰족, 2=돔, 3=평지붕, 4=안테나)
   int towerWindowStyle; // 창문 스타일 (0=사각, 1=원형, 2=아치, 3=모던)
+  String? phoneNumber; // 핸드폰 번호 (선택)
+  String verifyMethod; // 인증 수단 ('email' or 'phone')
 
   UserProfile({
     required this.id,
@@ -465,6 +467,8 @@ class UserProfile {
     this.customTowerName,
     this.towerRoofStyle = 0,
     this.towerWindowStyle = 0,
+    this.phoneNumber,
+    this.verifyMethod = 'email',
   }) : activityScore = activityScore ?? ActivityScore(),
        joinedAt = joinedAt ?? DateTime.now(),
        followingIds = followingIds ?? [],

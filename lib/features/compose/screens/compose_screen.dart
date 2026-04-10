@@ -81,73 +81,163 @@ class _ComposeScreenState extends State<ComposeScreen>
 
   static const Map<String, List<String>> _luckyQuotesByLang = {
     'ko': [
+      // 1. 일상의 행복
       '안녕하세요, 이 편지를 받게 된 당신에게 따뜻한 인사를 전합니다.\n\n'
           '오늘 하루, 작은 것들 속에서 행복을 발견하는 하루가 되기를 바랍니다. '
           '아침에 마신 따뜻한 커피 한 잔, 스쳐 지나가는 바람, 창밖의 햇살 — '
           '그 작은 것들이 모여 당신의 하루를 빛나게 만들어 줄 거예요.\n\n'
           '어디선가 당신을 응원하고 있는 낯선 친구로부터. 🍀',
+      // 2. 인연을 만나고 싶은
       '안녕하세요, 이 편지가 당신에게 닿기를 바라며 씁니다.\n\n'
           '세상은 참 넓고, 좋은 인연은 언제 어디서 시작될지 모릅니다. '
           '이 편지가 그 시작이 된다면 정말 좋겠어요.\n\n'
           '언젠가, 어딘가에서 만날 날을 기대하며. 💌',
+      // 3. 힘이 되길
       '안녕하세요, 이 글이 당신에게 작은 힘이 되길 바랍니다.\n\n'
           '지금 어떤 하루를 보내고 있든, 당신은 충분히 잘 하고 있어요. '
           '완벽하지 않아도 괜찮고, 모든 걸 해내지 않아도 됩니다.\n\n'
           '포기하지 마세요. 멀리서 응원합니다. 💪',
+      // 4. 자기 속도의 삶
       '안녕하세요, 세상 어딘가에서 이 편지를 보냅니다.\n\n'
           '매일 조금씩 나아가는 것, 그것만으로도 충분히 대단한 일입니다. '
           '당신의 속도로 걸어가는 삶이 가장 아름다운 삶입니다.\n\n'
           '오늘도 수고 많으셨습니다. 🌟',
+      // 5. 따뜻한 세상
       '안녕하세요, 이 편지를 받게 된 것도 하나의 인연이라 생각합니다.\n\n'
           '세상은 생각보다 훨씬 따뜻한 사람들로 가득 차 있습니다. '
           '이 편지가 당신의 오늘에 작은 온기가 되었으면 합니다.\n\n'
           '당신 덕분에 세상이 조금 더 따뜻해집니다. 🌍',
+      // 6. 꿈을 향해
+      '안녕하세요, 이 편지가 당신의 꿈에 작은 불씨가 되길 바랍니다.\n\n'
+          '누구에게나 간직하고 있는 꿈이 있을 거예요. '
+          '아직 멀게만 느껴져도, 한 걸음 한 걸음이 그 꿈에 더 가까워지는 길입니다.\n\n'
+          '당신의 꿈을 응원합니다. 꼭 이루어질 거예요. ✨',
+      // 7. 외로울 때
+      '안녕하세요, 혹시 오늘 좀 외로운 하루를 보내고 있나요?\n\n'
+          '괜찮아요. 세상 어딘가에서 당신을 생각하는 사람이 있습니다. '
+          '이 작은 편지가 당신 곁에 따뜻한 친구처럼 느껴지면 좋겠어요.\n\n'
+          '혼자가 아니에요. 언제나 함께하고 있습니다. 🤗',
+      // 8. 감사의 마음
+      '안녕하세요, 이 편지를 읽어주셔서 감사합니다.\n\n'
+          '매일 감사할 일이 있다는 건 정말 행복한 일이에요. '
+          '오늘 당신이 누군가에게 베푼 작은 친절, 그것이 세상을 바꾸는 힘입니다.\n\n'
+          '당신의 따뜻한 마음에 감사드립니다. 🙏',
+      // 9. 새로운 시작
+      '안녕하세요, 이 편지가 당신의 새로운 시작을 응원합니다.\n\n'
+          '어제까지의 일은 어제의 것이에요. 오늘은 새로운 페이지입니다. '
+          '두려워하지 마세요. 모든 위대한 이야기는 첫 페이지부터 시작됩니다.\n\n'
+          '당신의 새로운 시작을 축하합니다. 🌈',
+      // 10. 건강과 행운
+      '안녕하세요, 이 행운의 편지가 당신에게 좋은 기운을 전해드립니다.\n\n'
+          '건강이 가장 큰 재산이라는 말, 정말 맞는 것 같아요. '
+          '오늘도 건강하게 하루를 보내고 계신가요? 당신의 건강과 행복을 빕니다.\n\n'
+          '행운이 당신과 함께하길. 🍀🌟',
     ],
     'en': [
+      // 1. Everyday happiness
       'Hello! Warm greetings to you, the lucky finder of this letter.\n\n'
           'I hope today brings you joy in the little things — '
           'a warm cup of coffee, a passing breeze, sunlight through a window. '
           'Those small moments make a day shine.\n\n'
           'Cheering for you from somewhere in the world. 🍀',
+      // 2. Finding connection
       'Hi there! I\'m writing this hoping it reaches someone special.\n\n'
           'The world is vast, and meaningful connections can begin anywhere. '
           'If this letter is the start of one, that would be wonderful.\n\n'
           'Looking forward to the day our paths cross. 💌',
+      // 3. Strength & encouragement
       'Hello! I hope these words give you a little strength.\n\n'
           'Whatever kind of day you\'re having, you\'re doing great. '
           'It\'s okay not to be perfect. Just getting through today is enough.\n\n'
           'Don\'t give up. Someone far away is rooting for you. 💪',
+      // 4. Your own pace
       'Hello from somewhere in the world.\n\n'
           'Moving forward a little each day is already something remarkable. '
           'Don\'t compare yourself to others — your own pace is beautiful.\n\n'
           'Great job today. 🌟',
+      // 5. Warm world
       'Hi! I believe receiving this letter is a special kind of fate.\n\n'
           'The world is full of warmer people than you might think. '
           'Sometimes a small kindness from a stranger can change your whole day.\n\n'
           'The world is a little warmer because of you. 🌍',
+      // 6. Chase your dreams
+      'Hello! I hope this letter sparks a little fire in your dreams.\n\n'
+          'Everyone carries a dream in their heart. '
+          'Even if it feels far away, every single step brings you closer.\n\n'
+          'I\'m cheering for your dreams. They will come true. ✨',
+      // 7. When you feel lonely
+      'Hi there. Are you having a lonely day today?\n\n'
+          'That\'s okay. Someone out there in the world is thinking of you right now. '
+          'I hope this little letter feels like a warm friend by your side.\n\n'
+          'You\'re not alone. Always with you. 🤗',
+      // 8. Gratitude
+      'Hello, and thank you for reading this letter.\n\n'
+          'Having something to be grateful for every day is truly a blessing. '
+          'That small kindness you showed someone today — that\'s the power that changes the world.\n\n'
+          'Thank you for your warm heart. 🙏',
+      // 9. Fresh start
+      'Hello! This letter cheers on your new beginning.\n\n'
+          'What happened yesterday belongs to yesterday. Today is a brand new page. '
+          'Don\'t be afraid. Every great story starts from page one.\n\n'
+          'Congratulations on your fresh start. 🌈',
+      // 10. Health & fortune
+      'Hello! This lucky letter brings good energy your way.\n\n'
+          'They say health is the greatest wealth — and I truly believe it. '
+          'Are you taking care of yourself today? I wish you health and happiness.\n\n'
+          'May luck always be with you. 🍀🌟',
     ],
     'ja': [
+      // 1. 日常の幸せ
       'こんにちは、この手紙を受け取ったあなたに温かい挨拶を送ります。\n\n'
           '今日一日、小さなことの中に幸せを見つける日になりますように。'
           '朝のコーヒー、通り過ぎる風、窓からの日差し — '
           'そんな小さなことがあなたの一日を輝かせてくれるでしょう。\n\n'
           'どこかであなたを応援している見知らぬ友より。🍀',
+      // 2. 出会いを求めて
       'こんにちは、この手紙があなたに届くことを願って書いています。\n\n'
           '世界は広く、良い縁はいつどこで始まるかわかりません。'
           'この手紙がその始まりになれば嬉しいです。\n\n'
           'いつかどこかで会える日を楽しみにしています。💌',
+      // 3. 力になれたら
       'こんにちは、この言葉があなたの小さな力になれば幸いです。\n\n'
           'どんな一日を過ごしていても、あなたは十分頑張っています。'
           '完璧でなくても大丈夫。今日一日を乗り越えただけで十分すごいことです。\n\n'
           '諦めないでください。遠くから応援しています。💪',
+      // 4. 自分のペースで
       'こんにちは、世界のどこかからこの手紙を送ります。\n\n'
           '毎日少しずつ進むこと、それだけで十分素晴らしいことです。'
           'あなたのペースで歩む人生が一番美しい人生です。\n\n'
           '今日もお疲れ様でした。🌟',
+      // 5. 温かい世界
       'こんにちは、この手紙を受け取ったことも一つの縁だと思います。\n\n'
           '世界は思ったよりもずっと温かい人々でいっぱいです。'
           'この手紙があなたの今日に小さな温もりとなれば嬉しいです。\n\n'
           'あなたのおかげで世界が少し温かくなります。🌍',
+      // 6. 夢に向かって
+      'こんにちは、この手紙があなたの夢に小さな火をつけますように。\n\n'
+          '誰もが心に夢を抱えています。まだ遠く感じても、'
+          '一歩一歩がその夢に近づく道です。\n\n'
+          'あなたの夢を応援しています。きっと叶いますよ。✨',
+      // 7. 寂しいとき
+      'こんにちは、今日はちょっと寂しい一日を過ごしていますか？\n\n'
+          '大丈夫ですよ。世界のどこかであなたのことを思っている人がいます。'
+          'この小さな手紙が温かい友達のように感じてもらえたら嬉しいです。\n\n'
+          '一人じゃないですよ。いつもそばにいます。🤗',
+      // 8. 感謝の気持ち
+      'こんにちは、この手紙を読んでくれてありがとうございます。\n\n'
+          '毎日感謝できることがあるって、本当に幸せなことですね。'
+          '今日あなたが誰かに見せた小さな親切、それが世界を変える力です。\n\n'
+          'あなたの温かい心に感謝します。🙏',
+      // 9. 新しい始まり
+      'こんにちは、この手紙はあなたの新しいスタートを応援しています。\n\n'
+          '昨日までのことは昨日のもの。今日は新しいページです。'
+          '恐れないでください。すべての偉大な物語は最初のページから始まります。\n\n'
+          '新しいスタートをお祝いします。🌈',
+      // 10. 健康と幸運
+      'こんにちは、この幸運の手紙があなたに良い気運をお届けします。\n\n'
+          '健康が一番の財産という言葉、本当にその通りだと思います。'
+          '今日も元気に過ごしていますか？あなたの健康と幸せを願っています。\n\n'
+          '幸運がいつもあなたと共にありますように。🍀🌟',
     ],
   };
 
@@ -360,6 +450,73 @@ class _ComposeScreenState extends State<ComposeScreen>
     SharedPreferences.getInstance().then((prefs) {
       prefs.remove('compose_draft');
     });
+  }
+
+  /// 마지막 보낸 편지 내용 저장 (사진/링크 제외, 텍스트만)
+  static void saveLastSentContent(String content) {
+    SharedPreferences.getInstance().then((prefs) {
+      prefs.setString('last_sent_content', content);
+    });
+  }
+
+  /// 마지막 보낸 편지 불러오기
+  void _loadLastSentLetter() async {
+    if (_isReply) return;
+    final prefs = await SharedPreferences.getInstance();
+    final lastContent = prefs.getString('last_sent_content') ?? '';
+    if (lastContent.isEmpty) {
+      if (mounted) {
+        final l10n = AppL10n.of(context.read<AppState>().currentUser.languageCode);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(l10n.composeNoLastLetter),
+            backgroundColor: AppColors.bgCard,
+            behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          ),
+        );
+      }
+      return;
+    }
+    if (!mounted) return;
+    final l10n = AppL10n.of(context.read<AppState>().currentUser.languageCode);
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: AppColors.bgCard,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: Text(
+          l10n.composeLoadLastTitle,
+          style: const TextStyle(color: AppColors.textPrimary, fontSize: 15),
+        ),
+        content: Container(
+          constraints: const BoxConstraints(maxHeight: 200),
+          child: SingleChildScrollView(
+            child: Text(
+              lastContent,
+              style: const TextStyle(color: AppColors.textSecondary, fontSize: 13),
+            ),
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: Text(l10n.composeDiscard, style: const TextStyle(color: AppColors.textMuted)),
+          ),
+          TextButton(
+            onPressed: () {
+              setState(() {
+                _contentController.text = lastContent;
+                _charCount = lastContent.length;
+                _isLuckyLetter = false;
+              });
+              Navigator.pop(ctx);
+            },
+            child: Text(l10n.composeLoadLastConfirm, style: const TextStyle(color: AppColors.teal)),
+          ),
+        ],
+      ),
+    );
   }
 
   void _pickRandomDestination({String? excludeCountry}) {
@@ -728,6 +885,8 @@ class _ComposeScreenState extends State<ComposeScreen>
     }
 
     if (mounted) {
+      // 마지막 보낸 편지 내용 저장 (텍스트만, 사진/링크 제외)
+      saveLastSentContent(content);
       // 편지 발송 성공 시 초안 삭제
       _clearDraft();
       // 편지 발송 성공 햅틱 (medium vibration)
@@ -941,6 +1100,10 @@ class _ComposeScreenState extends State<ComposeScreen>
                             ],
                             const SizedBox(height: 16),
                             _buildLuckyLetterButton(),
+                            if (!_isReply) ...[
+                              const SizedBox(height: 8),
+                              _buildRecallLastLetterButton(),
+                            ],
                             const SizedBox(height: 10),
                             _buildLetterBody(),
                             const SizedBox(height: 40),
@@ -1323,6 +1486,44 @@ class _ComposeScreenState extends State<ComposeScreen>
                   ? const Color(0xFFFFD700)
                   : AppColors.textMuted,
               size: 18,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildRecallLastLetterButton() {
+    final l10n = AppL10n.of(context.read<AppState>().currentUser.languageCode);
+    return GestureDetector(
+      onTap: _loadLastSentLetter,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+        decoration: BoxDecoration(
+          color: AppColors.bgCard,
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(
+            color: AppColors.textMuted.withValues(alpha: 0.2),
+            width: 1,
+          ),
+        ),
+        child: Row(
+          children: [
+            const Text('📝', style: TextStyle(fontSize: 18)),
+            const SizedBox(width: 10),
+            Expanded(
+              child: Text(
+                l10n.composeRecallLast,
+                style: const TextStyle(
+                  color: AppColors.textSecondary,
+                  fontSize: 12,
+                ),
+              ),
+            ),
+            const Icon(
+              Icons.history_rounded,
+              color: AppColors.textMuted,
+              size: 16,
             ),
           ],
         ),

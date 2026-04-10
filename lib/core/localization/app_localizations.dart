@@ -13837,4 +13837,148 @@ class AppL10n {
     'th': 'กรุณายอมรับข้อกำหนดการใช้งาน',
   });
 
+  // ══════════════════════════════════════════════════════════════════════════
+  // ── Compose: Recall Last Letter ─────────────────────────────────────────
+  // ══════════════════════════════════════════════════════════════════════════
+
+  String get composeRecallLast => _t({
+    'ko': '마지막 보낸 편지 내용 불러오기',
+    'en': 'Load last sent letter content',
+    'ja': '最後に送った手紙の内容を読み込む',
+    'zh': '加载上次发送的信件内容',
+    'fr': 'Charger le contenu de la dernière lettre envoyée',
+    'de': 'Inhalt des letzten gesendeten Briefes laden',
+    'es': 'Cargar el contenido de la última carta enviada',
+    'pt': 'Carregar conteúdo da última carta enviada',
+    'ru': 'Загрузить содержание последнего письма',
+    'tr': 'Son gönderilen mektup içeriğini yükle',
+    'ar': 'تحميل محتوى آخر رسالة مرسلة',
+    'it': 'Carica contenuto dell\'ultima lettera inviata',
+    'hi': 'अंतिम भेजे गए पत्र की सामग्री लोड करें',
+    'th': 'โหลดเนื้อหาจดหมายที่ส่งล่าสุด',
+  });
+
+  String get composeNoLastLetter => _t({
+    'ko': '이전에 보낸 편지가 없습니다',
+    'en': 'No previously sent letter found',
+    'ja': '以前送った手紙がありません',
+    'zh': '没有找到之前发送的信件',
+    'fr': 'Aucune lettre précédemment envoyée trouvée',
+    'de': 'Kein zuvor gesendeter Brief gefunden',
+    'es': 'No se encontró carta enviada anteriormente',
+    'pt': 'Nenhuma carta enviada anteriormente encontrada',
+    'ru': 'Ранее отправленных писем не найдено',
+    'tr': 'Daha önce gönderilen mektup bulunamadı',
+    'ar': 'لم يتم العثور على رسائل مرسلة سابقاً',
+    'it': 'Nessuna lettera inviata in precedenza trovata',
+    'hi': 'पहले भेजा गया कोई पत्र नहीं मिला',
+    'th': 'ไม่พบจดหมายที่ส่งก่อนหน้านี้',
+  });
+
+  String get composeLoadLastTitle => _t({
+    'ko': '마지막 보낸 편지',
+    'en': 'Last Sent Letter',
+    'ja': '最後に送った手紙',
+    'zh': '上次发送的信件',
+    'fr': 'Dernière lettre envoyée',
+    'de': 'Zuletzt gesendeter Brief',
+    'es': 'Última carta enviada',
+    'pt': 'Última carta enviada',
+    'ru': 'Последнее отправленное письмо',
+    'tr': 'Son gönderilen mektup',
+    'ar': 'آخر رسالة مرسلة',
+    'it': 'Ultima lettera inviata',
+    'hi': 'अंतिम भेजा गया पत्र',
+    'th': 'จดหมายที่ส่งล่าสุด',
+  });
+
+  String get composeLoadLastConfirm => _t({
+    'ko': '불러오기',
+    'en': 'Load',
+    'ja': '読み込む',
+    'zh': '加载',
+    'fr': 'Charger',
+    'de': 'Laden',
+    'es': 'Cargar',
+    'pt': 'Carregar',
+    'ru': 'Загрузить',
+    'tr': 'Yükle',
+    'ar': 'تحميل',
+    'it': 'Carica',
+    'hi': 'लोड करें',
+    'th': 'โหลด',
+  });
+
+  // ══════════════════════════════════════════════════════════════════════════
+  // ── Auth: Phone Number & Verify Method ──────────────────────────────────
+  // ══════════════════════════════════════════════════════════════════════════
+
+  String get authPhoneOptional => _t({
+    'ko': '핸드폰 번호 (선택)',
+    'en': 'Phone Number (Optional)',
+    'ja': '電話番号（任意）',
+    'zh': '手机号码（可选）',
+    'fr': 'Numéro de téléphone (facultatif)',
+    'de': 'Telefonnummer (optional)',
+    'es': 'Número de teléfono (opcional)',
+    'pt': 'Número de telefone (opcional)',
+    'ru': 'Номер телефона (необязательно)',
+    'tr': 'Telefon numarası (isteğe bağlı)',
+    'ar': 'رقم الهاتف (اختياري)',
+    'it': 'Numero di telefono (facoltativo)',
+    'hi': 'फ़ोन नंबर (वैकल्पिक)',
+    'th': 'หมายเลขโทรศัพท์ (ไม่บังคับ)',
+  });
+
+  String get authVerifyMethodTitle => _t({
+    'ko': '인증 수단 선택',
+    'en': 'Verification Method',
+    'ja': '認証方法の選択',
+    'zh': '验证方式选择',
+    'fr': 'Méthode de vérification',
+    'de': 'Verifizierungsmethode',
+    'es': 'Método de verificación',
+    'pt': 'Método de Verificação',
+    'ru': 'Способ верификации',
+    'tr': 'Doğrulama yöntemi',
+    'ar': 'طريقة التحقق',
+    'it': 'Metodo di verifica',
+    'hi': 'सत्यापन विधि',
+    'th': 'วิธีการยืนยัน',
+  });
+
+  String get authVerifyMethodDesc => _t({
+    'ko': '회원가입 확인, 비밀번호 재설정 시 사용됩니다',
+    'en': 'Used for signup verification and password reset',
+    'ja': '会員登録確認やパスワードリセット時に使用されます',
+    'zh': '用于注册验证和密码重置',
+    'fr': 'Utilisé pour la vérification d\'inscription et la réinitialisation du mot de passe',
+    'de': 'Wird für Registrierungsverifizierung und Passwort-Zurücksetzung verwendet',
+    'es': 'Usado para verificación de registro y restablecimiento de contraseña',
+    'pt': 'Usado para verificação de cadastro e redefinição de senha',
+    'ru': 'Используется для подтверждения регистрации и сброса пароля',
+    'tr': 'Kayıt doğrulama ve şifre sıfırlama için kullanılır',
+    'ar': 'يُستخدم لتأكيد التسجيل وإعادة تعيين كلمة المرور',
+    'it': 'Utilizzato per la verifica della registrazione e il ripristino della password',
+    'hi': 'साइनअप सत्यापन और पासवर्ड रीसेट के लिए उपयोग किया जाता है',
+    'th': 'ใช้สำหรับยืนยันการสมัครและรีเซ็ตรหัสผ่าน',
+  });
+
+  String get authPhoneRequiredForSms => _t({
+    'ko': 'SMS 인증을 사용하려면 핸드폰 번호를 먼저 입력해주세요',
+    'en': 'Please enter your phone number first to use SMS verification',
+    'ja': 'SMS認証を使用するには、まず電話番号を入力してください',
+    'zh': '请先输入手机号码才能使用短信验证',
+    'fr': 'Veuillez d\'abord entrer votre numéro de téléphone pour utiliser la vérification SMS',
+    'de': 'Bitte geben Sie zuerst Ihre Telefonnummer ein, um die SMS-Verifizierung zu nutzen',
+    'es': 'Ingrese su número de teléfono primero para usar la verificación por SMS',
+    'pt': 'Insira seu número de telefone primeiro para usar a verificação por SMS',
+    'ru': 'Сначала введите номер телефона для использования SMS-верификации',
+    'tr': 'SMS doğrulama için lütfen önce telefon numaranızı girin',
+    'ar': 'يرجى إدخال رقم هاتفك أولاً لاستخدام التحقق عبر SMS',
+    'it': 'Inserisci prima il tuo numero di telefono per usare la verifica SMS',
+    'hi': 'SMS सत्यापन उपयोग करने के लिए कृपया पहले अपना फ़ोन नंबर दर्ज करें',
+    'th': 'กรุณากรอกหมายเลขโทรศัพท์ก่อนเพื่อใช้การยืนยันทาง SMS',
+  });
+
 }

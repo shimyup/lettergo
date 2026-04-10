@@ -1758,6 +1758,8 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
     String? languageCode,
     double? latitude,
     double? longitude,
+    String? phoneNumber,
+    String? verifyMethod,
   }) {
     final resolvedLanguageCode =
         (languageCode != null && languageCode.isNotEmpty)
@@ -1777,6 +1779,8 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
       latitude: latitude ?? 37.5665,
       longitude: longitude ?? 126.9780,
       activityScore: _currentUser.activityScore, // 기존 점수 유지 (초기값 하드코딩 제거)
+      phoneNumber: phoneNumber,
+      verifyMethod: verifyMethod ?? 'email',
     );
     _dailySentCount = 0;
     _dailySentDateKey = _dateKey(DateTime.now());
@@ -1820,6 +1824,18 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
 
   void updateSocialLink(String? link) {
     _currentUser.socialLink = link;
+    _saveToPrefs();
+    notifyListeners();
+  }
+
+  void updateVerifyMethod(String method) {
+    _currentUser.verifyMethod = method;
+    _saveToPrefs();
+    notifyListeners();
+  }
+
+  void updatePhoneNumber(String? phone) {
+    _currentUser.phoneNumber = phone;
     _saveToPrefs();
     notifyListeners();
   }

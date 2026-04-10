@@ -244,6 +244,8 @@ class AuthService {
   static const _keyTempPasswordHash = 'tempPasswordHash';
   static const _keyTempPasswordExpiresAt = 'tempPasswordExpiresAt';
   static const _keyMustChangePassword = 'mustChangePassword';
+  static const _keyPhoneNumber = 'phoneNumber';
+  static const _keyVerifyMethod = 'verifyMethod'; // 'email' or 'phone'
   static const _keySecureMigrated = 'auth_secure_migrated_v1';
   static const _tempPasswordTtl = Duration(minutes: 15);
 
@@ -474,6 +476,8 @@ class AuthService {
       'countryFlag': (await _readSecure(_keyCountryFlag)) ?? '🇰🇷',
       'languageCode': languageCode,
       'socialLink': (await _readSecure(_keySocialLink)) ?? '',
+      'phoneNumber': (await _readSecure(_keyPhoneNumber)) ?? '',
+      'verifyMethod': (await _readSecure(_keyVerifyMethod)) ?? 'email',
     };
   }
 
@@ -535,6 +539,8 @@ class AuthService {
     String? languageCode,
     String? email,
     String? socialLink,
+    String? phoneNumber,
+    String verifyMethod = 'email',
     String langCode = 'en',
   }) async {
     // ── 형식 검사 ──
@@ -579,6 +585,12 @@ class AuthService {
     } else {
       await _deleteSecure(_keySocialLink);
     }
+    if (phoneNumber != null && phoneNumber.isNotEmpty) {
+      await _writeSecure(_keyPhoneNumber, phoneNumber.trim());
+    } else {
+      await _deleteSecure(_keyPhoneNumber);
+    }
+    await _writeSecure(_keyVerifyMethod, verifyMethod);
     return null; // null = 성공
   }
 
@@ -661,6 +673,8 @@ class AuthService {
     String? countryFlag,
     String? languageCode,
     String? socialLink,
+    String? phoneNumber,
+    String? verifyMethod,
   }) async {
     if (username != null && username.isNotEmpty) {
       await _writeSecure(_keyUsername, username.trim());
@@ -672,6 +686,12 @@ class AuthService {
     }
     if (socialLink != null) {
       await _writeSecure(_keySocialLink, socialLink.trim());
+    }
+    if (phoneNumber != null) {
+      await _writeSecure(_keyPhoneNumber, phoneNumber.trim());
+    }
+    if (verifyMethod != null) {
+      await _writeSecure(_keyVerifyMethod, verifyMethod);
     }
   }
 

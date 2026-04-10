@@ -598,21 +598,31 @@ class _WorldMapScreenState extends State<WorldMapScreen>
       if (letter.status != DeliveryStatus.inTransit &&
           letter.status != DeliveryStatus.deliveredFar)
         continue;
+
+      // 이미 도착 완료된 편지(progress >= 0.999 또는 arrivalTime 지남)는
+      // 다음 deliveryTimer 사이클에서 상태가 전환될 때까지 📬로 표시
+      final bool actuallyArrived = letter.status == DeliveryStatus.inTransit &&
+          (letter.overallProgress >= 0.999 ||
+              (letter.arrivalTime != null && !now.isBefore(letter.arrivalTime!)));
+
       // 실시간 위치: sentAt~arrivalTime 기반 보간 (arrivalTime 없으면 기존 currentLocation)
-      final pos = letter.status == DeliveryStatus.deliveredFar
+      final pos = (letter.status == DeliveryStatus.deliveredFar || actuallyArrived)
           ? letter.destinationLocation
           : letter.currentPositionAt(now);
+      final showAsArrived = letter.status == DeliveryStatus.deliveredFar || actuallyArrived;
       markers.add(
         Marker(
           point: ll.LatLng(pos.latitude, pos.longitude),
-          width: letter.status == DeliveryStatus.deliveredFar ? 48 : 36,
-          height: letter.status == DeliveryStatus.deliveredFar ? 48 : 36,
+          width: showAsArrived ? 48 : 36,
+          height: showAsArrived ? 48 : 36,
           child: GestureDetector(
             onTap: () => _onLetterTap(context, letter, state, l10n, langCode),
-            child: _TransportMarker(
-              letter: letter,
-              pulseController: _pulseController,
-            ),
+            child: showAsArrived && letter.status == DeliveryStatus.inTransit
+                ? _ArrivedWaitingMarker(pulseController: _pulseController)
+                : _TransportMarker(
+                    letter: letter,
+                    pulseController: _pulseController,
+                  ),
           ),
         ),
       );
@@ -1985,6 +1995,57 @@ class _MyLocationButtonState extends State<_MyLocationButton> {
 }
 
 // ── 운송수단 마커 ──────────────────────────────────────────────────────────────
+/// 도착 대기 중 마커 (inTransit → 실제 도착했지만 아직 상태 전환 전)
+/// 비행기 대신 📬로 표시
+class _ArrivedWaitingMarker extends StatelessWidget {
+  final AnimationController pulseController;
+  const _ArrivedWaitingMarker({required this.pulseController});
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedBuilder(
+      animation: pulseController,
+      builder: (_, __) {
+        final phase = (pulseController.value * 2 * pi) % (2 * pi);
+        final pulse = (sin(phase) * 0.5 + 0.5);
+        return Stack(
+          alignment: Alignment.center,
+          children: [
+            Container(
+              width: 40 + pulse * 8,
+              height: 40 + pulse * 8,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                border: Border.all(
+                  color: AppColors.gold.withValues(alpha: 0.25 + pulse * 0.35),
+                  width: 1.5,
+                ),
+              ),
+            ),
+            Text(
+              '📬',
+              style: TextStyle(
+                fontSize: 22,
+                shadows: [
+                  Shadow(
+                    color: AppColors.gold.withValues(alpha: 0.6 + pulse * 0.3),
+                    blurRadius: 10,
+                  ),
+                  const Shadow(
+                    color: Color(0x88000000),
+                    blurRadius: 3,
+                    offset: Offset(0, 1),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+}
+
 class _TransportMarker extends StatelessWidget {
   final Letter letter;
   final AnimationController pulseController;

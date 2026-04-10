@@ -578,6 +578,18 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       label: l.settingsChangePassword,
                       onTap: () => _changePassword(ctx),
                     ),
+                    _tile(
+                      icon: Icons.verified_user_rounded,
+                      label: l.authVerifyMethodTitle,
+                      trailing: Text(
+                        state.currentUser.verifyMethod == 'phone' ? 'SMS' : 'Email',
+                        style: const TextStyle(
+                          color: AppColors.textMuted,
+                          fontSize: 14,
+                        ),
+                      ),
+                      onTap: () => _showVerifyMethodPicker(ctx, state, l),
+                    ),
 
                     const SizedBox(height: 8),
                     // ── 알림 ────────────────────────────────────────────────
@@ -792,6 +804,75 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 ),
         );
       },
+    );
+  }
+
+  // ── 인증 수단 변경 ──────────────────────────────────────────────────────
+  void _showVerifyMethodPicker(BuildContext ctx, AppState state, AppL10n l) {
+    final current = state.currentUser.verifyMethod;
+    showDialog(
+      context: ctx,
+      builder: (_) => AlertDialog(
+        backgroundColor: AppColors.bgCard,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: Text(
+          l.authVerifyMethodTitle,
+          style: const TextStyle(color: AppColors.textPrimary),
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              l.authVerifyMethodDesc,
+              style: const TextStyle(color: AppColors.textMuted, fontSize: 12),
+            ),
+            const SizedBox(height: 16),
+            _verifyOption(ctx, state, 'email', 'Email', Icons.email_rounded, current == 'email'),
+            const SizedBox(height: 8),
+            _verifyOption(ctx, state, 'phone', 'SMS', Icons.phone_rounded, current == 'phone'),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _verifyOption(BuildContext ctx, AppState state, String method, String label, IconData icon, bool selected) {
+    return GestureDetector(
+      onTap: () async {
+        await AuthService.updateProfile(verifyMethod: method);
+        state.updateVerifyMethod(method);
+        if (ctx.mounted) Navigator.pop(ctx);
+      },
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        decoration: BoxDecoration(
+          color: selected
+              ? AppColors.teal.withValues(alpha: 0.12)
+              : Colors.transparent,
+          borderRadius: BorderRadius.circular(10),
+          border: Border.all(
+            color: selected
+                ? AppColors.teal
+                : AppColors.textMuted.withValues(alpha: 0.3),
+          ),
+        ),
+        child: Row(
+          children: [
+            Icon(icon, color: selected ? AppColors.teal : AppColors.textMuted, size: 20),
+            const SizedBox(width: 12),
+            Text(
+              label,
+              style: TextStyle(
+                color: selected ? AppColors.teal : AppColors.textPrimary,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            const Spacer(),
+            if (selected)
+              const Icon(Icons.check_circle_rounded, color: AppColors.teal, size: 20),
+          ],
+        ),
+      ),
     );
   }
 
