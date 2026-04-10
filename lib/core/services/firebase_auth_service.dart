@@ -101,6 +101,42 @@ class FirebaseAuthService {
     return null;
   }
 
+  // ── 익명 로그인 (테스터용 — Firebase 계정 없이 Firestore 접근) ────────────────
+  static Future<bool> signInAnonymously() async {
+    if (!FirebaseConfig.kFirebaseEnabled) return false;
+    // 이미 로그인 상태면 스킵
+    if (_idToken != null && _tokenExpiry != null &&
+        DateTime.now().isBefore(_tokenExpiry!)) return true;
+    try {
+      final res = await http
+          .post(
+            Uri.parse(
+              '${FirebaseConfig.authBase}:signUp?key=${FirebaseConfig.apiKey}',
+            ),
+            headers: {'Content-Type': 'application/json'},
+            body: jsonEncode({'returnSecureToken': true}),
+          )
+          .timeout(const Duration(seconds: 10));
+
+      if (res.statusCode == 200) {
+        final data = jsonDecode(res.body) as Map<String, dynamic>;
+        _idToken = data['idToken'] as String?;
+        _uid = data['localId'] as String?;
+        _refreshToken = data['refreshToken'] as String?;
+        _tokenExpiry = DateTime.now().add(const Duration(seconds: 3600));
+        FirestoreService.setIdToken(_idToken ?? '');
+        if (kDebugMode) debugPrint('[FirebaseAuth] 익명 로그인 성공: $_uid');
+        return true;
+      }
+      if (kDebugMode) debugPrint(
+        '[FirebaseAuth] 익명 로그인 실패: ${res.statusCode} ${res.body}',
+      );
+    } catch (e, st) {
+      if (kDebugMode) debugPrint('[FirebaseAuth] 익명 로그인 에러: $e\n$st');
+    }
+    return false;
+  }
+
   // ── 로그아웃 ─────────────────────────────────────────────────────────────────
   static void signOut() {
     _idToken = null;

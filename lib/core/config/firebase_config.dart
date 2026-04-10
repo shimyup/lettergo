@@ -17,19 +17,19 @@ class FirebaseConfig {
   /// Firebase 프로젝트 ID
   static const String projectId = String.fromEnvironment(
     'FIREBASE_PROJECT_ID',
-    defaultValue: '',
+    defaultValue: 'lettergo-147eb',
   );
 
   /// Firebase Web API Key (프로젝트 설정 → 일반 탭에서 확인)
   static const String apiKey = String.fromEnvironment(
     'FIREBASE_API_KEY',
-    defaultValue: '',
+    defaultValue: 'AIzaSyDGFvwa11HSDN45lMi2D_RwvD3SAfGf9qI',
   );
 
   /// Firebase Storage Bucket
   static const String storageBucket = String.fromEnvironment(
     'FIREBASE_STORAGE_BUCKET',
-    defaultValue: '',
+    defaultValue: 'lettergo-147eb.firebasestorage.app',
   );
 
   // Firestore REST API 기본 URL

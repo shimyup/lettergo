@@ -1451,6 +1451,9 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
 
     await _ensureInviteIdentityOnServer();
 
+    // ── Firebase 익명 로그인 + 서버 편지 동기화 ─────────────────────────────
+    await _initFirebaseAndSync();
+
     // ── 시간 기반 편지 상태 보정 ─────────────────────────────────────────────
     // 앱이 꺼져 있던 동안 arrivalTime이 지난 편지를 즉시 도착 처리
     _reconcileLetterStatuses();
@@ -1528,6 +1531,172 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
 
     if (changed) {
       _saveToPrefs();
+    }
+  }
+
+  // ── Firebase 익명 로그인 + 서버 편지 수신 ────────────────────────────────────
+  Future<void> _initFirebaseAndSync() async {
+    if (!FirebaseConfig.kFirebaseEnabled) return;
+    // 익명 로그인 (Firestore 접근용 ID 토큰 획득)
+    final ok = await FirebaseAuthService.signInAnonymously();
+    if (!ok) {
+      if (kDebugMode) debugPrint('[Firebase] 익명 로그인 실패 — 서버 동기화 스킵');
+      return;
+    }
+    // 서버에서 내 나라로 오는 미수신 편지 가져오기
+    await _fetchIncomingLettersFromServer();
+  }
+
+  /// 서버에서 내 나라 대상 + 미수신(recipientId 비어있음) 편지를 가져와 claim
+  Future<void> _fetchIncomingLettersFromServer() async {
+    if (!FirebaseConfig.kFirebaseEnabled) return;
+    if (_currentUser.country.isEmpty || _currentUser.id == 'guest') return;
+    try {
+      // 내 나라로 오는 미수신 편지 쿼리
+      final docs = await FirestoreService.queryWhereComposite(
+        collectionId: 'letters',
+        conditions: {
+          'destinationCountry': _currentUser.country,
+          'recipientId': '',
+        },
+        limit: 20,
+      );
+      if (docs.isEmpty) return;
+
+      final now = DateTime.now();
+      bool changed = false;
+
+      for (final doc in docs) {
+        final data = FirestoreService.fromFirestoreDoc(doc);
+        final letterId = data['id'] as String? ?? '';
+        // 자기가 보낸 편지는 건너뜀
+        if (data['senderId'] == _currentUser.id) continue;
+        // 이미 로컬에 있는 편지면 건너뜀
+        if (_inbox.any((l) => l.id == letterId) ||
+            _worldLetters.any((l) => l.id == letterId)) continue;
+
+        // claim: recipientId를 내 userId로 설정
+        final claimed = await FirestoreService.setDocument(
+          'letters/$letterId',
+          {'recipientId': _currentUser.id, 'claimedAt': now.toIso8601String()},
+        );
+        if (!claimed) continue;
+
+        // 서버 데이터로 Letter 객체 생성
+        final letter = _letterFromFirestoreData(data, now);
+        if (letter == null) continue;
+
+        // 로컬에 추가
+        _worldLetters.add(letter);
+        changed = true;
+
+        if (kDebugMode) {
+          debugPrint('[Firebase] 편지 수신: ${letter.id} from ${letter.senderName}');
+        }
+      }
+
+      if (changed) {
+        _saveToPrefs();
+      }
+    } catch (e, st) {
+      if (kDebugMode) debugPrint('[Firebase] 수신 편지 조회 실패: $e\n$st');
+    }
+  }
+
+  /// Firestore 문서 데이터를 Letter 객체로 변환
+  Letter? _letterFromFirestoreData(Map<String, dynamic> data, DateTime now) {
+    try {
+      final originLat = (data['originLat'] as num?)?.toDouble() ?? 0;
+      final originLng = (data['originLng'] as num?)?.toDouble() ?? 0;
+      final destLat = (data['destLat'] as num?)?.toDouble() ?? 0;
+      final destLng = (data['destLng'] as num?)?.toDouble() ?? 0;
+      final fromCity = LatLng(originLat, originLng);
+      final toCity = LatLng(destLat, destLng);
+      final sentAtStr = data['sentAt'] as String? ?? '';
+      final sentAt = DateTime.tryParse(sentAtStr) ?? now;
+      final totalMin = (data['estimatedTotalMinutes'] as num?)?.toInt() ?? 60;
+      final arrivalTime = sentAt.add(Duration(minutes: totalMin));
+
+      // 경로 세그먼트 재생성
+      final senderCountry = data['senderCountry'] as String? ?? '';
+      final destCountry = data['destinationCountry'] as String? ?? '';
+      final segments = LogisticsHubs.buildRoute(
+        fromCountry: senderCountry,
+        fromCity: fromCity,
+        toCountry: destCountry,
+        toCity: toCity,
+        fromCityName: data['senderName'] as String? ?? '',
+        preferAir: true,
+      );
+      _rebalanceSegmentEstimatedMinutes(segments, totalMin);
+
+      // 이미 도착했는지 확인
+      final arrived = now.isAfter(arrivalTime);
+      final status = arrived ? DeliveryStatus.delivered : DeliveryStatus.inTransit;
+
+      return Letter(
+        id: data['id'] as String? ?? 'srv_${now.millisecondsSinceEpoch}',
+        senderId: data['senderId'] as String? ?? '',
+        senderName: data['senderName'] as String? ?? '???',
+        senderCountry: senderCountry,
+        senderCountryFlag: data['senderCountryFlag'] as String? ?? '🏳️',
+        content: data['content'] as String? ?? '',
+        originLocation: fromCity,
+        destinationLocation: toCity,
+        destinationCountry: destCountry,
+        destinationCountryFlag: data['destinationCountryFlag'] as String? ?? '',
+        destinationCity: data['destinationCity'] as String?,
+        segments: segments,
+        currentSegmentIndex: 0,
+        status: status,
+        sentAt: sentAt,
+        arrivalTime: arrivalTime,
+        socialLink: data['socialLink'] as String?,
+        estimatedTotalMinutes: totalMin,
+        paperStyle: (data['paperStyle'] as num?)?.toInt() ?? 0,
+        fontStyle: (data['fontStyle'] as num?)?.toInt() ?? 0,
+        imageUrl: data['imageUrl'] as String?,
+        arrivedAt: arrived ? arrivalTime : null,
+      );
+    } catch (e, st) {
+      if (kDebugMode) debugPrint('[Firebase] Letter 변환 실패: $e\n$st');
+      return null;
+    }
+  }
+
+  /// 보낸 편지를 Firestore에 저장 (다른 유저가 수신할 수 있도록)
+  Future<void> _saveLetterToFirestore(Letter letter) async {
+    if (!FirebaseConfig.kFirebaseEnabled) return;
+    if (!FirebaseAuthService.isSignedIn) return;
+    try {
+      await FirestoreService.setDocument('letters/${letter.id}', {
+        'id': letter.id,
+        'senderId': letter.senderId,
+        'senderName': letter.senderName,
+        'senderCountry': letter.senderCountry,
+        'senderCountryFlag': letter.senderCountryFlag,
+        'content': letter.content,
+        'originLat': letter.originLocation.latitude,
+        'originLng': letter.originLocation.longitude,
+        'destLat': letter.destinationLocation.latitude,
+        'destLng': letter.destinationLocation.longitude,
+        'destinationCountry': letter.destinationCountry,
+        'destinationCountryFlag': letter.destinationCountryFlag,
+        'destinationCity': letter.destinationCity ?? '',
+        'sentAt': letter.sentAt.toIso8601String(),
+        'estimatedTotalMinutes': letter.estimatedTotalMinutes,
+        'paperStyle': letter.paperStyle,
+        'fontStyle': letter.fontStyle,
+        'imageUrl': letter.imageUrl ?? '',
+        'socialLink': letter.socialLink ?? '',
+        'letterType': letter.letterType.name,
+        'recipientId': '', // 빈 문자열 = 미수신
+      });
+      if (kDebugMode) {
+        debugPrint('[Firebase] 편지 업로드 완료: ${letter.id} → ${letter.destinationCountry}');
+      }
+    } catch (e, st) {
+      if (kDebugMode) debugPrint('[Firebase] 편지 업로드 실패: $e\n$st');
     }
   }
 
@@ -3934,6 +4103,8 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
     _sentSinceLastUnlock++;
     notifyListeners();
     _saveToPrefs();
+    // Firestore에 편지 저장 (다른 유저가 수신할 수 있도록)
+    unawaited(_saveLetterToFirestore(letter));
     // 주소 조회: 편지 저장 후 비동기 업데이트 (앱 종료 시에도 편지 유지)
     unawaited(
       GeocodingService.getDisplayAddress(

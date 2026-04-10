@@ -199,6 +199,65 @@ class FirestoreService {
     return [];
   }
 
+  // ── 복합 조건 쿼리 (여러 field == value) ──────────────────────────────────────
+  static Future<List<Map<String, dynamic>>> queryWhereComposite({
+    required String collectionId,
+    required Map<String, String> conditions, // {field: value, ...}
+    int limit = 20,
+  }) async {
+    if (!FirebaseConfig.kFirebaseEnabled) return [];
+    await FirebaseAuthService.ensureValidToken();
+    try {
+      final filters = conditions.entries.map((e) => {
+        'fieldFilter': {
+          'field': {'fieldPath': e.key},
+          'op': 'EQUAL',
+          'value': {'stringValue': e.value},
+        },
+      }).toList();
+
+      final where = filters.length == 1
+          ? filters.first
+          : {
+              'compositeFilter': {
+                'op': 'AND',
+                'filters': filters,
+              },
+            };
+
+      final body = jsonEncode({
+        'structuredQuery': {
+          'from': [{'collectionId': collectionId}],
+          'where': where,
+          'limit': limit,
+        },
+      });
+      final res = await http
+          .post(
+            Uri.parse('${FirebaseConfig.firestoreBase}:runQuery'),
+            headers: _headers,
+            body: body,
+          )
+          .timeout(const Duration(seconds: 15));
+      if (res.statusCode == 200) {
+        final rows = jsonDecode(res.body) as List<dynamic>;
+        final docs = <Map<String, dynamic>>[];
+        for (final row in rows) {
+          final map = row as Map<String, dynamic>;
+          final doc = map['document'];
+          if (doc is Map<String, dynamic>) docs.add(doc);
+        }
+        return docs;
+      }
+      if (kDebugMode) debugPrint(
+        '[FirestoreService] queryWhereComposite 실패: ${res.statusCode} ${res.body}',
+      );
+    } catch (e, st) {
+      if (kDebugMode) debugPrint('[FirestoreService] 에러: $e\n$st');
+    }
+    return [];
+  }
+
   // ── Dart Map → Firestore Fields 변환 ────────────────────────────────────────
   static Map<String, dynamic> _toFirestoreFields(Map<String, dynamic> data) {
     final result = <String, dynamic>{};
