@@ -738,10 +738,10 @@ class _ComposeScreenState extends State<ComposeScreen>
       }
       if (_isReply) {
         // 답장: ComposeScreen + LetterReadScreen 모두 닫고 편지함으로 복귀
-        Navigator.pop(context); // ComposeScreen 닫기
+        Navigator.pop(context, true); // ComposeScreen 닫기
         Navigator.pop(context); // LetterReadScreen 닫기
       } else {
-        Navigator.pop(context); // ComposeScreen만 닫기
+        Navigator.pop(context, true); // ComposeScreen 닫기 → 지도 탭 전환
       }
       final lastLetter = state.sent.isNotEmpty ? state.sent.last : null;
       final estMin = lastLetter?.estimatedTotalMinutes ?? 0;

@@ -1115,8 +1115,8 @@ class _LetterReadScreenState extends State<LetterReadScreen>
                             crossAxisAlignment: CrossAxisAlignment.start,
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              const Text(
-                                'BRAND LETTER',
+                              Text(
+                                l10n.labelBrandLetter,
                                 style: TextStyle(
                                   color: Colors.white,
                                   fontSize: 9,

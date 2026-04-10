@@ -717,8 +717,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                               width: 1,
                             ),
                           ),
-                          child: const Text(
-                            'ADMIN',
+                          child: Text(
+                            l.labelAdmin,
                             style: TextStyle(
                               color: AppColors.error,
                               fontSize: 10,

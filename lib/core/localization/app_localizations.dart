@@ -12840,4 +12840,97 @@ class AppL10n {
     'ar': 'رسالتك تسافر إلى وجهتها', 'it': 'La tua lettera viaggia verso la sua destinazione', 'hi': 'आपका पत्र अपने गंतव्य तक पहुँचता है', 'th': 'จดหมายของคุณเดินทางไปยังจุดหมาย',
   });
 
+  // ── Hardcoded string l10n (formerly hardcoded) ─────────────────────────
+
+  String get labelLetterGoPremium => _t({
+    'ko': 'LETTER GO PREMIUM', 'en': 'LETTER GO PREMIUM', 'ja': 'LETTER GO PREMIUM', 'zh': 'LETTER GO PREMIUM',
+    'fr': 'LETTER GO PREMIUM', 'de': 'LETTER GO PREMIUM', 'es': 'LETTER GO PREMIUM',
+    'pt': 'LETTER GO PREMIUM', 'ru': 'LETTER GO PREMIUM', 'tr': 'LETTER GO PREMIUM',
+    'ar': 'LETTER GO PREMIUM', 'it': 'LETTER GO PREMIUM', 'hi': 'LETTER GO PREMIUM', 'th': 'LETTER GO PREMIUM',
+  });
+
+  String get tierFree => _t({
+    'ko': 'FREE', 'en': 'FREE', 'ja': '無料', 'zh': '免费',
+    'fr': 'GRATUIT', 'de': 'KOSTENLOS', 'es': 'GRATIS',
+    'pt': 'GRÁTIS', 'ru': 'БЕСПЛАТНО', 'tr': 'ÜCRETSİZ',
+    'ar': 'مجاني', 'it': 'GRATIS', 'hi': 'मुफ़्त', 'th': 'ฟรี',
+  });
+
+  String get tierPremium => _t({
+    'ko': 'PREMIUM', 'en': 'PREMIUM', 'ja': 'プレミアム', 'zh': '高级版',
+    'fr': 'PREMIUM', 'de': 'PREMIUM', 'es': 'PREMIUM',
+    'pt': 'PREMIUM', 'ru': 'ПРЕМИУМ', 'tr': 'PREMİUM',
+    'ar': 'مميز', 'it': 'PREMIUM', 'hi': 'प्रीमियम', 'th': 'พรีเมียม',
+  });
+
+  String get tierBest => _t({
+    'ko': 'BEST', 'en': 'BEST', 'ja': 'おすすめ', 'zh': '最佳',
+    'fr': 'MEILLEUR', 'de': 'BESTE', 'es': 'MEJOR',
+    'pt': 'MELHOR', 'ru': 'ЛУЧШИЙ', 'tr': 'EN İYİ',
+    'ar': 'الأفضل', 'it': 'MIGLIORE', 'hi': 'सर्वश्रेष्ठ', 'th': 'ดีที่สุด',
+  });
+
+  String get labelStampAlbum => _t({
+    'ko': '스탬프 앨범', 'en': 'STAMP ALBUM', 'ja': 'スタンプアルバム', 'zh': '邮票册',
+    'fr': 'ALBUM DE TIMBRES', 'de': 'STEMPELALBUM', 'es': 'ÁLBUM DE SELLOS',
+    'pt': 'ÁLBUM DE SELOS', 'ru': 'АЛЬБОМ МАРОК', 'tr': 'PUL ALBÜmü',
+    'ar': 'ألبوم الطوابع', 'it': 'ALBUM DI FRANCOBOLLI', 'hi': 'स्टाम्प एल्बम', 'th': 'อัลบั้มแสตมป์',
+  });
+
+  String get labelReputationScore => _t({
+    'ko': '평판 점수', 'en': 'REPUTATION SCORE', 'ja': '評価スコア', 'zh': '声望分数',
+    'fr': 'SCORE DE RÉPUTATION', 'de': 'REPUTATIONSPUNKTE', 'es': 'PUNTUACIÓN',
+    'pt': 'PONTUAÇÃO', 'ru': 'РЕЙТИНГ', 'tr': 'İTİBAR PUANI',
+    'ar': 'نقاط السمعة', 'it': 'PUNTEGGIO', 'hi': 'प्रतिष्ठा स्कोर', 'th': 'คะแนนชื่อเสียง',
+  });
+
+  String get unitPts => _t({
+    'ko': 'pts', 'en': 'pts', 'ja': 'pt', 'zh': '分',
+    'fr': 'pts', 'de': 'Pkt', 'es': 'pts',
+    'pt': 'pts', 'ru': 'очк', 'tr': 'puan',
+    'ar': 'نقطة', 'it': 'pts', 'hi': 'अंक', 'th': 'คะแนน',
+  });
+
+  String get labelPassport => _t({
+    'ko': '여권', 'en': 'PASSPORT', 'ja': 'パスポート', 'zh': '护照',
+    'fr': 'PASSEPORT', 'de': 'REISEPASS', 'es': 'PASAPORTE',
+    'pt': 'PASSAPORTE', 'ru': 'ПАСПОРТ', 'tr': 'PASAPORT',
+    'ar': 'جواز سفر', 'it': 'PASSAPORTO', 'hi': 'पासपोर्ट', 'th': 'หนังสือเดินทาง',
+  });
+
+  String get inboxSubtitle => _t({
+    'ko': '바다 건너 속삭임', 'en': 'WHISPERS FROM ACROSS THE TIDES', 'ja': '海を越えたささやき', 'zh': '跨越潮汐的耳语',
+    'fr': 'MURMURES D\'OUTRE-MER', 'de': 'FLÜSTERN VON JENSEITS DER GEZEITEN', 'es': 'SUSURROS DEL OTRO LADO',
+    'pt': 'SUSSURROS DO ALÉM-MAR', 'ru': 'ШЁПОТ ИЗДАЛЕКА', 'tr': 'DENİZLER ÖTESİNDEN FISILDAMALAR',
+    'ar': 'همسات عبر المد', 'it': 'SUSSURRI D\'OLTREMARE', 'hi': 'समुद्र पार की फुसफुसाहट', 'th': 'เสียงกระซิบจากอีกฝั่ง',
+  });
+
+  String get labelBrand => _t({
+    'ko': '브랜드', 'en': 'BRAND', 'ja': 'ブランド', 'zh': '品牌',
+    'fr': 'MARQUE', 'de': 'MARKE', 'es': 'MARCA',
+    'pt': 'MARCA', 'ru': 'БРЕНД', 'tr': 'MARKA',
+    'ar': 'علامة تجارية', 'it': 'BRAND', 'hi': 'ब्रांड', 'th': 'แบรนด์',
+  });
+
+  String get labelBrandLetter => _t({
+    'ko': '브랜드 레터', 'en': 'BRAND LETTER', 'ja': 'ブランドレター', 'zh': '品牌信件',
+    'fr': 'LETTRE DE MARQUE', 'de': 'MARKENBRIEF', 'es': 'CARTA DE MARCA',
+    'pt': 'CARTA DA MARCA', 'ru': 'ПИСЬМО БРЕНДА', 'tr': 'MARKA MEKTUP',
+    'ar': 'رسالة العلامة التجارية', 'it': 'LETTERA BRAND', 'hi': 'ब्रांड पत्र', 'th': 'จดหมายแบรนด์',
+  });
+
+  String get labelAdmin => _t({
+    'ko': 'ADMIN', 'en': 'ADMIN', 'ja': '管理者', 'zh': '管理员',
+    'fr': 'ADMIN', 'de': 'ADMIN', 'es': 'ADMIN',
+    'pt': 'ADMIN', 'ru': 'АДМИН', 'tr': 'YÖNETİCİ',
+    'ar': 'المسؤول', 'it': 'ADMIN', 'hi': 'व्यवस्थापक', 'th': 'ผู้ดูแล',
+  });
+
+  String get labelGlobalFlow => _t({
+    'ko': '글로벌 흐름', 'en': 'GLOBAL FLOW', 'ja': 'グローバルフロー', 'zh': '全球流量',
+    'fr': 'FLUX GLOBAL', 'de': 'GLOBALER FLUSS', 'es': 'FLUJO GLOBAL',
+    'pt': 'FLUXO GLOBAL', 'ru': 'ГЛОБАЛЬНЫЙ ПОТОК', 'tr': 'KÜRESEL AKIŞ',
+    'ar': 'التدفق العالمي', 'it': 'FLUSSO GLOBALE', 'hi': 'वैश्विक प्रवाह', 'th': 'กระแสโลก',
+  });
+
 }

@@ -24,6 +24,9 @@ class WorldMapScreen extends StatefulWidget {
 
   @override
   State<WorldMapScreen> createState() => _WorldMapScreenState();
+
+  /// MainScaffold에서 발송 직후 호출: 마지막 발송 편지 위치로 카메라 이동
+  static final focusSentLetterNotifier = ValueNotifier<bool>(false);
 }
 
 class _WorldMapScreenState extends State<WorldMapScreen>
@@ -76,10 +79,26 @@ class _WorldMapScreenState extends State<WorldMapScreen>
       if (mounted) context.read<AppState>().fetchMapUsers();
     });
     _checkLocationPermission();
+    // 편지 발송 후 지도 포커스 이벤트 수신
+    WorldMapScreen.focusSentLetterNotifier.addListener(_onFocusSentLetter);
+  }
+
+  void _onFocusSentLetter() {
+    if (!WorldMapScreen.focusSentLetterNotifier.value) return;
+    WorldMapScreen.focusSentLetterNotifier.value = false;
+    final state = context.read<AppState>();
+    if (state.sent.isEmpty) return;
+    final last = state.sent.last;
+    // 발송 편지의 출발 좌표로 카메라 이동 (줌 3 = 세계지도에서 경로 보이는 수준)
+    final origin = last.originLocation;
+    if (origin.latitude != 0 && origin.longitude != 0) {
+      _mapController.move(ll.LatLng(origin.latitude, origin.longitude), 3.0);
+    }
   }
 
   @override
   void dispose() {
+    WorldMapScreen.focusSentLetterNotifier.removeListener(_onFocusSentLetter);
     _positionTimer?.cancel();
     _mapRefreshTimer?.cancel();
     _tickNotifier.dispose();
@@ -2470,8 +2489,8 @@ class _MapHeader extends StatelessWidget {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.end,
                         children: [
-                          const Text(
-                            'GLOBAL FLOW',
+                          Text(
+                            l10n.labelGlobalFlow,
                             style: TextStyle(
                               color: AppColors.teal,
                               fontSize: 8,

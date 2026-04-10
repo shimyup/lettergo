@@ -601,8 +601,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
-                    'STAMP ALBUM',
+                  Text(
+                    _sbl.labelStampAlbum,
                     style: TextStyle(
                       color: AppColors.gold,
                       fontSize: 9,
@@ -637,6 +637,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   // ── 명성 등급 카드 (Stitch AI 추천) ────────────────────────────────────────
   Widget _buildReputationCard(BuildContext ctx, UserProfile user) {
+    final _rl = AppL10n.of(ctx.read<AppState>().currentUser.languageCode);
     final score = user.activityScore;
     final tier = score.tier;
     const tierColors = {
@@ -687,8 +688,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
-                  'REPUTATION SCORE',
+                Text(
+                  _rl.labelReputationScore,
                   style: TextStyle(
                     color: AppColors.textMuted,
                     fontSize: 9,
@@ -719,9 +720,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   fontWeight: FontWeight.w900,
                 ),
               ),
-              const Text(
-                'pts',
-                style: TextStyle(color: AppColors.textMuted, fontSize: 11),
+              Text(
+                _rl.unitPts,
+                style: const TextStyle(color: AppColors.textMuted, fontSize: 11),
               ),
             ],
           ),
@@ -1560,9 +1561,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       fontWeight: FontWeight.w900,
                     ),
                   ),
-                  const Text(
-                    'pts',
-                    style: TextStyle(color: AppColors.textMuted, fontSize: 11),
+                  Text(
+                    _tl.unitPts,
+                    style: const TextStyle(color: AppColors.textMuted, fontSize: 11),
                   ),
                 ],
               ),

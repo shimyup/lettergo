@@ -714,8 +714,8 @@ class _PremiumPage extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 16),
-                    const Text(
-                      'LETTER GO PREMIUM',
+                    Text(
+                      l.labelLetterGoPremium,
                       style: TextStyle(
                         color: AppColors.gold,
                         fontSize: 11,
@@ -766,8 +766,8 @@ class _PremiumPage extends StatelessWidget {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text(
-                            'FREE',
+                          Text(
+                            l.tierFree,
                             style: TextStyle(
                               color: AppColors.textSecondary,
                               fontSize: 11,
@@ -839,8 +839,8 @@ class _PremiumPage extends StatelessWidget {
                         children: [
                           Row(
                             children: [
-                              const Text(
-                                'PREMIUM',
+                              Text(
+                                l.tierPremium,
                                 style: TextStyle(
                                   color: AppColors.gold,
                                   fontSize: 11,
@@ -858,8 +858,8 @@ class _PremiumPage extends StatelessWidget {
                                   color: AppColors.gold,
                                   borderRadius: BorderRadius.circular(6),
                                 ),
-                                child: const Text(
-                                  'BEST',
+                                child: Text(
+                                  l.tierBest,
                                   style: TextStyle(
                                     color: AppColors.bgDeep,
                                     fontSize: 8,

@@ -195,8 +195,8 @@ class _InboxScreenState extends State<InboxScreen>
                         ),
                       ),
                     ),
-                    const Text(
-                      'WHISPERS FROM ACROSS THE TIDES',
+                    Text(
+                      l10n.inboxSubtitle,
                       style: TextStyle(
                         color: AppColors.textMuted,
                         fontSize: 8,
@@ -1019,8 +1019,8 @@ class _LetterCard extends StatelessWidget {
                                     style: TextStyle(fontSize: 9),
                                   ),
                                   const SizedBox(width: 2),
-                                  const Text(
-                                    'BRAND',
+                                  Text(
+                                    l10n.labelBrand,
                                     style: TextStyle(
                                       color: Colors.white,
                                       fontSize: 8,

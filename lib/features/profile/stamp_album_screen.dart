@@ -125,13 +125,13 @@ class StampAlbumScreen extends StatelessWidget {
                 width: 1,
               ),
             ),
-            child: const Column(
+            child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Text('🌍', style: TextStyle(fontSize: 24)),
-                SizedBox(height: 4),
+                const Text('🌍', style: TextStyle(fontSize: 24)),
+                const SizedBox(height: 4),
                 Text(
-                  'PASSPORT',
+                  l.labelPassport,
                   style: TextStyle(
                     color: AppColors.gold,
                     fontSize: 7,
@@ -147,8 +147,8 @@ class StampAlbumScreen extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
-                  'LETTER GO',
+                Text(
+                  l.appName,
                   style: TextStyle(
                     color: AppColors.gold,
                     fontSize: 11,
