@@ -14000,6 +14000,23 @@ class AppL10n {
     'th': 'เลือกรหัสประเทศ',
   });
 
+  String get authVerifyViaEmail => _t({
+    'ko': '본인 인증은 이메일로 진행됩니다',
+    'en': 'Verification will be done via email',
+    'ja': '本人確認はメールで行われます',
+    'zh': '身份验证将通过邮箱进行',
+    'fr': 'La vérification se fera par e-mail',
+    'de': 'Die Verifizierung erfolgt per E-Mail',
+    'es': 'La verificación se realizará por correo electrónico',
+    'pt': 'A verificação será feita por e-mail',
+    'ru': 'Верификация будет выполнена по электронной почте',
+    'tr': 'Doğrulama e-posta ile yapılacaktır',
+    'ar': 'سيتم التحقق عبر البريد الإلكتروني',
+    'it': 'La verifica avverrà tramite e-mail',
+    'hi': 'सत्यापन ईमेल के माध्यम से किया जाएगा',
+    'th': 'การยืนยันจะดำเนินการผ่านอีเมล',
+  });
+
   String get authSmsVerification => _t({
     'ko': 'SMS 인증',
     'en': 'SMS Verification',

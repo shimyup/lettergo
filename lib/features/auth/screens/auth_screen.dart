@@ -1236,60 +1236,29 @@ class _SignupTabState extends State<_SignupTab> {
       _error = null;
     });
 
-    // 인증 수단에 따라 OTP 발송 방법 분기
-    if (_verifyMethod == 'phone') {
-      // SMS OTP 발송
-      final fullPhone = _fullPhoneNumber;
-      final code = await AuthService.generatePhoneOtp(
-        fullPhone,
-        langCode: _langCode,
-      );
+    // 이메일 OTP 발송 (전화번호는 형식 검증만, 실제 인증은 이메일로)
+    final code = AuthService.generateEmailOtp(emailVal);
 
-      if (!mounted) return;
-      if (code == null) {
-        final cooldown = AuthService.otpCooldownSecondsRemaining;
-        setState(() {
-          _isLoading = false;
-          _error = cooldown > 0
-              ? l10n.authOtpRetryLater(cooldown)
-              : l10n.authOtpLimitExceeded;
-        });
-        return;
-      }
-
+    if (!mounted) return;
+    if (code == null) {
+      final cooldown = AuthService.otpCooldownSecondsRemaining;
       setState(() {
         _isLoading = false;
-        _showOtpScreen = true;
-        _devOtpCode = code;
-        _otpError = null;
-        _otpCountdown = AuthService.otpRemainingSeconds;
+        _error = cooldown > 0
+            ? l10n.authOtpRetryLater(cooldown)
+            : l10n.authOtpLimitExceeded;
       });
-      _startOtpTimer();
-    } else {
-      // 이메일 OTP 발송
-      final code = AuthService.generateEmailOtp(emailVal);
-
-      if (!mounted) return;
-      if (code == null) {
-        final cooldown = AuthService.otpCooldownSecondsRemaining;
-        setState(() {
-          _isLoading = false;
-          _error = cooldown > 0
-              ? l10n.authOtpRetryLater(cooldown)
-              : l10n.authOtpLimitExceeded;
-        });
-        return;
-      }
-
-      setState(() {
-        _isLoading = false;
-        _showOtpScreen = true;
-        _devOtpCode = code;
-        _otpError = null;
-        _otpCountdown = AuthService.otpRemainingSeconds;
-      });
-      _startOtpTimer();
+      return;
     }
+
+    setState(() {
+      _isLoading = false;
+      _showOtpScreen = true;
+      _devOtpCode = code; // 개발용 표시 (배포시 제거)
+      _otpError = null;
+      _otpCountdown = AuthService.otpRemainingSeconds;
+    });
+    _startOtpTimer();
   }
 
   /// Step 2: OTP 확인 후 실제 회원가입 완료
@@ -1302,13 +1271,8 @@ class _SignupTabState extends State<_SignupTab> {
       return;
     }
 
-    // 인증 수단에 따라 OTP 검증 방법 분기
-    String? otpErr;
-    if (_verifyMethod == 'phone') {
-      otpErr = AuthService.verifyPhoneOtp(_fullPhoneNumber, otpVal, langCode: _langCode);
-    } else {
-      otpErr = AuthService.verifyEmailOtp(emailVal, otpVal, langCode: _langCode);
-    }
+    // 이메일 OTP 검증
+    final otpErr = AuthService.verifyEmailOtp(emailVal, otpVal, langCode: _langCode);
 
     if (otpErr != null) {
       setState(() => _otpError = otpErr);
@@ -1347,20 +1311,10 @@ class _SignupTabState extends State<_SignupTab> {
     if (user != null) await widget.onSignupSuccess(user);
   }
 
-  /// OTP 재발송 (이메일 또는 SMS)
-  Future<void> _resendOtp() async {
+  /// OTP 재발송 (이메일)
+  void _resendOtp() {
     _otpTimer?.cancel();
-
-    String? code;
-    if (_verifyMethod == 'phone') {
-      code = await AuthService.generatePhoneOtp(
-        _fullPhoneNumber,
-        langCode: _langCode,
-      );
-    } else {
-      code = AuthService.generateEmailOtp(_emailCtrl.text.trim());
-    }
-
+    final code = AuthService.generateEmailOtp(_emailCtrl.text.trim());
     if (code == null) {
       final cooldown = AuthService.otpCooldownSecondsRemaining;
       setState(() {
@@ -1769,130 +1723,26 @@ class _SignupTabState extends State<_SignupTab> {
           ),
           const SizedBox(height: 12),
 
-          // ── 5-2. 인증 수단 선택 ────────────────────────────────────────────
+          // ── 5-2. 이메일 인증 안내 ──────────────────────────────────────────
           Container(
-            padding: const EdgeInsets.all(14),
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
             decoration: BoxDecoration(
-              color: AppColors.bgCard,
+              color: AppColors.teal.withValues(alpha: 0.06),
               borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: const Color(0xFF1F2D44)),
+              border: Border.all(color: AppColors.teal.withValues(alpha: 0.2)),
             ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+            child: Row(
               children: [
-                Row(
-                  children: [
-                    const Icon(Icons.verified_user_rounded, color: AppColors.teal, size: 16),
-                    const SizedBox(width: 6),
-                    Text(
-                      l10n.authVerifyMethodTitle,
-                      style: const TextStyle(
-                        color: AppColors.textPrimary,
-                        fontSize: 13,
-                        fontWeight: FontWeight.w600,
-                      ),
+                const Icon(Icons.email_rounded, color: AppColors.teal, size: 16),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    l10n.authVerifyViaEmail,
+                    style: const TextStyle(
+                      color: AppColors.textSecondary,
+                      fontSize: 12,
                     ),
-                  ],
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  l10n.authVerifyMethodDesc,
-                  style: const TextStyle(
-                    color: AppColors.textMuted,
-                    fontSize: 11,
                   ),
-                ),
-                const SizedBox(height: 8),
-                Row(
-                  children: [
-                    Expanded(
-                      child: GestureDetector(
-                        onTap: () => setState(() => _verifyMethod = 'email'),
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(vertical: 10),
-                          decoration: BoxDecoration(
-                            color: _verifyMethod == 'email'
-                                ? AppColors.teal.withValues(alpha: 0.15)
-                                : Colors.transparent,
-                            borderRadius: BorderRadius.circular(8),
-                            border: Border.all(
-                              color: _verifyMethod == 'email'
-                                  ? AppColors.teal
-                                  : AppColors.textMuted.withValues(alpha: 0.3),
-                            ),
-                          ),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Icon(
-                                Icons.email_rounded,
-                                size: 16,
-                                color: _verifyMethod == 'email'
-                                    ? AppColors.teal
-                                    : AppColors.textMuted,
-                              ),
-                              const SizedBox(width: 6),
-                              Text(
-                                l10n.email,
-                                style: TextStyle(
-                                  color: _verifyMethod == 'email'
-                                      ? AppColors.teal
-                                      : AppColors.textMuted,
-                                  fontSize: 13,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 10),
-                    Expanded(
-                      child: GestureDetector(
-                        onTap: () {
-                          setState(() => _verifyMethod = 'phone');
-                        },
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(vertical: 10),
-                          decoration: BoxDecoration(
-                            color: _verifyMethod == 'phone'
-                                ? AppColors.teal.withValues(alpha: 0.15)
-                                : Colors.transparent,
-                            borderRadius: BorderRadius.circular(8),
-                            border: Border.all(
-                              color: _verifyMethod == 'phone'
-                                  ? AppColors.teal
-                                  : AppColors.textMuted.withValues(alpha: 0.3),
-                            ),
-                          ),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Icon(
-                                Icons.phone_rounded,
-                                size: 16,
-                                color: _verifyMethod == 'phone'
-                                    ? AppColors.teal
-                                    : AppColors.textMuted,
-                              ),
-                              const SizedBox(width: 6),
-                              Text(
-                                'SMS',
-                                style: TextStyle(
-                                  color: _verifyMethod == 'phone'
-                                      ? AppColors.teal
-                                      : AppColors.textMuted,
-                                  fontSize: 13,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
                 ),
               ],
             ),
@@ -2022,19 +1872,15 @@ class _SignupTabState extends State<_SignupTab> {
                     color: AppColors.teal.withValues(alpha: 0.12),
                     shape: BoxShape.circle,
                   ),
-                  child: Icon(
-                    _verifyMethod == 'phone'
-                        ? Icons.sms_rounded
-                        : Icons.mark_email_read_rounded,
+                  child: const Icon(
+                    Icons.mark_email_read_rounded,
                     size: 32,
                     color: AppColors.teal,
                   ),
                 ),
                 const SizedBox(height: 16),
                 Text(
-                  _verifyMethod == 'phone'
-                      ? l10n.authSmsVerification
-                      : l10n.authEmailVerification,
+                  l10n.authEmailVerification,
                   style: const TextStyle(
                     color: AppColors.textPrimary,
                     fontSize: 22,
@@ -2043,9 +1889,7 @@ class _SignupTabState extends State<_SignupTab> {
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  _verifyMethod == 'phone'
-                      ? l10n.authOtpSentSms(_fullPhoneNumber)
-                      : l10n.authOtpSent(email),
+                  l10n.authOtpSent(email),
                   textAlign: TextAlign.center,
                   style: const TextStyle(
                     color: AppColors.textSecondary,
