@@ -12,6 +12,7 @@ import '../../../core/localization/country_names.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/theme/letter_style.dart';
 import '../../../core/data/country_cities.dart';
+import '../../../core/services/geocoding_service.dart';
 import '../../../state/app_state.dart';
 import '../../../core/services/purchase_service.dart';
 import '../../premium/premium_gate_sheet.dart';
@@ -80,6 +81,7 @@ class _ComposeScreenState extends State<ComposeScreen>
 
   static const Map<String, List<String>> _luckyQuotesByLang = {
     'ko': [
+      // 1. 일상의 행복
       '안녕하세요, 이 편지를 받게 된 당신에게 따뜻한 인사를 전합니다.\n\n'
           '오늘 하루, 작은 것들 속에서 행복을 발견하는 하루가 되기를 바랍니다. '
           '아침에 마신 따뜻한 커피 한 잔, 스쳐 지나가는 바람, 창밖의 햇살 — '
@@ -186,44 +188,52 @@ class _ComposeScreenState extends State<ComposeScreen>
 
   // ── 브랜드 대량 발송 ──────────────────────────────────────────────────────
   bool _isBulkMode = false; // 대량 발송 모드 여부
+  bool _isBulkRandom = false; // 랜덤 국가 대량 발송 모드
   final List<Map<String, dynamic>> _bulkTargets = []; // 선택된 나라 목록
-  int _bulkSendCount = 1; // 나라당 발송 횟수
 
   // ── 브랜드 특송 ───────────────────────────────────────────────────────────
   bool _isExpressMode = false; // 특송 모드 여부
-  int _expressCount = 5; // 발송할 주소 수 (3~10)
+
+  // ── 나라당 발송 수 (통합) ─────────────────────────────────────────────────
+  int _sendPerCountry = 5; // 나라당 발송 수 (1~50)
+
+  // ── 브랜드 고급 옵션 ──────────────────────────────────────────────────────
+  bool _brandUniquePerUser = false; // 1 아이디당 1 편지
+  int? _brandAutoExpireHours; // 자동 삭제 시간 (null=없음)
 
   static const List<String> _bannedWords = [
-    // 영어 (English)
+    // English
     'fuck', 'shit', 'bitch', 'asshole', 'bastard', 'dick', 'pussy', 'cunt',
     'nigger', 'nigga', 'faggot', 'whore', 'slut', 'rape', 'kill yourself',
     'kys', 'retard',
-    // 한국어 욕설 (Korean)
+    // 한국어
     '씨발', '병신', '개새끼', '존나', '지랄', '엿먹', '꺼져', '죽어',
     '미친놈', '미친년', '창녀', '보지', '자지', '좆',
-    // 일본어 (Japanese)
-    'くそ', 'ばか', '死ね', 'きもい', 'うざい', 'クソ', 'バカ', 'アホ',
-    'ファック', 'くたばれ',
-    // 중국어 (Chinese)
-    '操', '妈的', '傻逼', '狗屎', '混蛋', '王八蛋', '去死', '废物',
-    '滚蛋', '他妈的',
-    // 스페인어 (Spanish)
-    'mierda', 'puta', 'joder', 'coño', 'cabrón', 'pendejo', 'chinga',
-    'maricón', 'hijo de puta', 'gilipollas',
-    // 프랑스어 (French)
-    'merde', 'putain', 'connard', 'enculé', 'salaud', 'bordel', 'connasse',
-    'nique', 'foutre', 'ta gueule',
-    // 독일어 (German)
-    'scheiße', 'arschloch', 'hurensohn', 'wichser', 'fotze', 'miststück',
-    'drecksau', 'fick dich', 'schlampe', 'vollidiot',
-    // 포르투갈어 (Portuguese)
-    'merda', 'puta', 'caralho', 'foda-se', 'filho da puta', 'cuzão',
-    'desgraçado', 'vadia', 'otário', 'arrombado',
-    // 러시아어 (Russian)
-    'блять', 'сука', 'хуй', 'пиздец', 'ебать', 'мудак', 'дерьмо',
-    'заткнись', 'иди нахуй', 'говно',
-    // 스팸 패턴 (Spam patterns)
+    // 日本語
+    'くそ', 'ばか', 'しね', '死ね', 'きもい', 'うざい', 'ころす', '殺す',
+    'ちんこ', 'まんこ', 'おっぱい', 'やりまん',
+    // 中文
+    '他妈', '操你', '妈逼', '傻逼', '狗屎', '去死', '废物', '贱人',
+    '混蛋', '王八蛋', '滚蛋',
+    // Español
+    'mierda', 'puta', 'cabrón', 'pendejo', 'joder', 'coño', 'maricón',
+    'hijo de puta', 'culero', 'verga',
+    // Français
+    'merde', 'putain', 'connard', 'salaud', 'enculé', 'bordel', 'nique',
+    'ta gueule', 'pédé', 'salope',
+    // Deutsch
+    'scheiße', 'arschloch', 'hurensohn', 'wichser', 'fotze', 'missgeburt',
+    'schwuchtel', 'drecksau',
+    // Português
+    'merda', 'porra', 'caralho', 'filho da puta', 'buceta', 'viado',
+    'desgraça', 'otário', 'piranha',
+    // Русский
+    'блядь', 'сука', 'хуй', 'пизда', 'ебать', 'мудак', 'дерьмо',
+    'говно', 'пиздец', 'заткнись',
+    // Spam patterns (multilingual)
     '카지노', '도박', '대출', '비트코인 투자', '클릭하세요',
+    'casino', 'gambling', 'bitcoin invest', 'click here', 'free money',
+    'カジノ', '赌博', '賭博',
   ];
 
   @override
@@ -237,8 +247,9 @@ class _ComposeScreenState extends State<ComposeScreen>
     _contentController.addListener(() {
       final text = _contentController.text;
       // 행운의 편지 글귀와 달라지면 플래그 해제 (직접 수정한 것으로 간주)
-      final isStillLucky = _luckyQuotesByLang.values
-          .any((quotes) => quotes.contains(text));
+      final langCode = context.read<AppState>().currentUser.languageCode;
+      final allQuotes = _luckyQuotesForLang(langCode);
+      final isStillLucky = allQuotes.contains(text);
       setState(() {
         _charCount = text.length;
         if (_isLuckyLetter && !isStillLucky) _isLuckyLetter = false;
@@ -369,11 +380,101 @@ class _ComposeScreenState extends State<ComposeScreen>
     });
   }
 
+  /// 마지막 보낸 편지 내용 저장 (사진/링크 제외, 텍스트만)
+  static void saveLastSentContent(String content) {
+    SharedPreferences.getInstance().then((prefs) {
+      prefs.setString('last_sent_content', content);
+    });
+  }
+
+  /// 마지막 보낸 편지 불러오기
+  void _loadLastSentLetter() async {
+    if (_isReply) return;
+    final prefs = await SharedPreferences.getInstance();
+    final lastContent = prefs.getString('last_sent_content') ?? '';
+    if (lastContent.isEmpty) {
+      if (mounted) {
+        final l10n = AppL10n.of(context.read<AppState>().currentUser.languageCode);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(l10n.composeNoLastLetter),
+            backgroundColor: AppColors.bgCard,
+            behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          ),
+        );
+      }
+      return;
+    }
+    if (!mounted) return;
+    final l10n = AppL10n.of(context.read<AppState>().currentUser.languageCode);
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: AppColors.bgCard,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: Text(
+          l10n.composeLoadLastTitle,
+          style: const TextStyle(color: AppColors.textPrimary, fontSize: 15),
+        ),
+        content: Container(
+          constraints: const BoxConstraints(maxHeight: 200),
+          child: SingleChildScrollView(
+            child: Text(
+              lastContent,
+              style: const TextStyle(color: AppColors.textSecondary, fontSize: 13),
+            ),
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: Text(l10n.composeDiscard, style: const TextStyle(color: AppColors.textMuted)),
+          ),
+          TextButton(
+            onPressed: () {
+              setState(() {
+                _contentController.text = lastContent;
+                _charCount = lastContent.length;
+                _isLuckyLetter = false;
+              });
+              Navigator.pop(ctx);
+            },
+            child: Text(l10n.composeLoadLastConfirm, style: const TextStyle(color: AppColors.teal)),
+          ),
+        ],
+      ),
+    );
+  }
+
   void _pickRandomDestination({String? excludeCountry}) {
     final dest = AppState.randomDestination(excludeCountry: excludeCountry);
     final countryName = dest['name']!;
     final langCode = context.read<AppState>().currentUser.languageCode;
-    // 해당 국가의 랜덤 도시 선택
+
+    // 1차: GeocodingService 캐시에서 실제 주소 사용
+    final geo = GeocodingService.instance;
+    final cachedAddr = geo.isInitialized
+        ? geo.getCachedAddress(countryName)
+        : null;
+
+    if (cachedAddr != null) {
+      setState(() {
+        _selectedCountry = countryName;
+        _selectedFlag = dest['flag']!;
+        _selectedCity = (cachedAddr['city'] as String?) ?? '';
+        _destLat = (cachedAddr['lat'] as num).toDouble();
+        _destLng = (cachedAddr['lng'] as num).toDouble();
+        _isRandom = true;
+      });
+      // 캐시 소진 시 백그라운드 보충
+      if (geo.cachedCountOf(countryName) < 3) {
+        geo.prefetch(countryName, count: 5);
+      }
+      return;
+    }
+
+    // 2차: cities.json 기반 랜덤 도시
     final cityData = CountryCities.randomCity(
       countryName,
       languageCode: langCode,
@@ -523,7 +624,7 @@ class _ComposeScreenState extends State<ComposeScreen>
 
     // ── 특송 + 대량 동시 모드 ──────────────────────────────────────────────
     if (_isExpressMode && _isBulkMode && state.currentUser.isBrand) {
-      if (_bulkTargets.isEmpty) {
+      if (!_isBulkRandom && _bulkTargets.isEmpty) {
         _showError(l10n.composeSelectCountryError);
         return;
       }
@@ -534,20 +635,48 @@ class _ComposeScreenState extends State<ComposeScreen>
       await _refreshCurrentLocationIfAvailable(state);
 
       int totalSent = 0;
-      for (final target in _bulkTargets) {
-        totalSent += await state.sendBrandExpressBlast(
-          content: content,
-          destinationCountry: target['country'] as String,
-          destinationFlag: target['flag'] as String,
-          count: _expressCount,
-          deliveryEmoji: _deliveryEmojiEncoded,
-          socialLink: _attachSocial && _socialLinkController.text.isNotEmpty
-              ? _socialLinkController.text.trim()
-              : null,
-          paperStyle: _paperStyle,
-          fontStyle: _fontStyle,
-          imageUrl: _imageFilePath,
-        );
+      if (_isBulkRandom) {
+        // 랜덤 국가 특송: 매 편지마다 랜덤 국가 선택
+        for (int i = 0; i < _sendPerCountry; i++) {
+          final dest = AppState.randomDestination(
+            excludeCountry: state.currentUser.country,
+          );
+          final sent = await state.sendBrandExpressBlast(
+            content: content,
+            destinationCountry: dest['name']!,
+            destinationFlag: dest['flag']!,
+            count: 1,
+            deliveryEmoji: _deliveryEmojiEncoded,
+            socialLink: _attachSocial && _socialLinkController.text.isNotEmpty
+                ? _socialLinkController.text.trim()
+                : null,
+            paperStyle: _paperStyle,
+            fontStyle: _fontStyle,
+            brandUniquePerUser: _brandUniquePerUser,
+            brandAutoExpireHours: _brandAutoExpireHours,
+            imageUrl: _imageFilePath,
+          );
+          totalSent += sent;
+          if (sent == 0) break; // 한도 초과 시 중단
+        }
+      } else {
+        for (final target in _bulkTargets) {
+          totalSent += await state.sendBrandExpressBlast(
+            content: content,
+            destinationCountry: target['country'] as String,
+            destinationFlag: target['flag'] as String,
+            count: _sendPerCountry,
+            deliveryEmoji: _deliveryEmojiEncoded,
+            socialLink: _attachSocial && _socialLinkController.text.isNotEmpty
+                ? _socialLinkController.text.trim()
+                : null,
+            paperStyle: _paperStyle,
+            fontStyle: _fontStyle,
+            brandUniquePerUser: _brandUniquePerUser,
+            brandAutoExpireHours: _brandAutoExpireHours,
+            imageUrl: _imageFilePath,
+          );
+        }
       }
       if (mounted) {
         _clearDraft();
@@ -556,7 +685,7 @@ class _ComposeScreenState extends State<ComposeScreen>
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
-              l10n.composeExpressBulkSent(_bulkTargets.length, _expressCount, totalSent),
+              l10n.composeExpressBulkSent(_bulkTargets.length, _sendPerCountry, totalSent),
               style: const TextStyle(color: Colors.white),
             ),
             backgroundColor: const Color(0xFF1A1A2A),
@@ -573,7 +702,7 @@ class _ComposeScreenState extends State<ComposeScreen>
 
     // ── 대량 발송 모드 ─────────────────────────────────────────────────────
     if (_isBulkMode && state.currentUser.isBrand) {
-      if (_bulkTargets.isEmpty) {
+      if (!_isBulkRandom && _bulkTargets.isEmpty) {
         _showError(l10n.composeSelectCountryError);
         return;
       }
@@ -587,13 +716,16 @@ class _ComposeScreenState extends State<ComposeScreen>
       final totalSent = await state.sendBulkLetter(
         content: content,
         targets: _bulkTargets,
-        sendCount: _bulkSendCount,
+        sendCount: _isBulkRandom ? _sendPerCountry : _sendPerCountry,
+        randomMode: _isBulkRandom,
         socialLink: _attachSocial && _socialLinkController.text.isNotEmpty
             ? _socialLinkController.text.trim()
             : null,
         imageUrl: _imageFilePath,
         paperStyle: _paperStyle,
         fontStyle: _fontStyle,
+        brandUniquePerUser: _brandUniquePerUser,
+        brandAutoExpireHours: _brandAutoExpireHours,
       );
 
       if (mounted) {
@@ -603,7 +735,9 @@ class _ComposeScreenState extends State<ComposeScreen>
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
-              l10n.composeBulkSent(totalSent, _bulkTargets.length),
+              _isBulkRandom
+                  ? '🎲 ${l10n.composeBulkSent(totalSent, totalSent)}'
+                  : l10n.composeBulkSent(totalSent, _bulkTargets.length),
               style: const TextStyle(color: Colors.white),
             ),
             backgroundColor: const Color(0xFF111827),
@@ -646,6 +780,8 @@ class _ComposeScreenState extends State<ComposeScreen>
         fontStyle: _fontStyle,
         imageUrl: _imageFilePath,
         isExpress: useExpressSingle,
+        brandUniquePerUser: _brandUniquePerUser,
+        brandAutoExpireHours: _brandAutoExpireHours,
       );
     }
 
@@ -677,6 +813,8 @@ class _ComposeScreenState extends State<ComposeScreen>
     }
 
     if (mounted) {
+      // 마지막 보낸 편지 내용 저장 (텍스트만, 사진/링크 제외)
+      saveLastSentContent(content);
       // 편지 발송 성공 시 초안 삭제
       _clearDraft();
       // 편지 발송 성공 햅틱 (medium vibration)
@@ -687,10 +825,10 @@ class _ComposeScreenState extends State<ComposeScreen>
       }
       if (_isReply) {
         // 답장: ComposeScreen + LetterReadScreen 모두 닫고 편지함으로 복귀
-        Navigator.pop(context); // ComposeScreen 닫기
+        Navigator.pop(context, true); // ComposeScreen 닫기
         Navigator.pop(context); // LetterReadScreen 닫기
       } else {
-        Navigator.pop(context); // ComposeScreen만 닫기
+        Navigator.pop(context, true); // ComposeScreen 닫기 → 지도 탭 전환
       }
       final lastLetter = state.sent.isNotEmpty ? state.sent.last : null;
       final estMin = lastLetter?.estimatedTotalMinutes ?? 0;
@@ -872,6 +1010,8 @@ class _ComposeScreenState extends State<ComposeScreen>
                             ],
                             if (!_isReply) const SizedBox(height: 10),
                             if (!_isReply) _buildAnonymousToggle(state),
+                            if (!_isReply && isBrand) const SizedBox(height: 10),
+                            if (!_isReply && isBrand) _buildBrandOptions(state),
                             const SizedBox(height: 10),
                             _buildStyleBar(),
                             const SizedBox(height: 10),
@@ -888,6 +1028,10 @@ class _ComposeScreenState extends State<ComposeScreen>
                             ],
                             const SizedBox(height: 16),
                             _buildLuckyLetterButton(),
+                            if (!_isReply) ...[
+                              const SizedBox(height: 8),
+                              _buildRecallLastLetterButton(),
+                            ],
                             const SizedBox(height: 10),
                             _buildLetterBody(),
                             const SizedBox(height: 40),
@@ -1277,6 +1421,44 @@ class _ComposeScreenState extends State<ComposeScreen>
     );
   }
 
+  Widget _buildRecallLastLetterButton() {
+    final l10n = AppL10n.of(context.read<AppState>().currentUser.languageCode);
+    return GestureDetector(
+      onTap: _loadLastSentLetter,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+        decoration: BoxDecoration(
+          color: AppColors.bgCard,
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(
+            color: AppColors.textMuted.withValues(alpha: 0.2),
+            width: 1,
+          ),
+        ),
+        child: Row(
+          children: [
+            const Text('📝', style: TextStyle(fontSize: 18)),
+            const SizedBox(width: 10),
+            Expanded(
+              child: Text(
+                l10n.composeRecallLast,
+                style: const TextStyle(
+                  color: AppColors.textSecondary,
+                  fontSize: 12,
+                ),
+              ),
+            ),
+            const Icon(
+              Icons.history_rounded,
+              color: AppColors.textMuted,
+              size: 16,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   Widget _buildLetterBody() {
     final l10n = AppL10n.of(context.read<AppState>().currentUser.languageCode);
     final paper = LetterStyles.paper(_paperStyle);
@@ -1649,6 +1831,137 @@ class _ComposeScreenState extends State<ComposeScreen>
     );
   }
 
+  // ── 브랜드 고급 옵션 ──────────────────────────────────────────────────────
+  Widget _buildBrandOptions(AppState state) {
+    final l10n = AppL10n.of(state.currentUser.languageCode);
+    final expireOptions = <int?>[null, 12, 24, 48, 72];
+
+    String expireLabel(int? hours) {
+      if (hours == null) return l10n.composeBrandExpireOff;
+      if (hours == 12) return l10n.composeBrandExpire12h;
+      if (hours == 24) return l10n.composeBrandExpire24h;
+      if (hours == 48) return l10n.composeBrandExpire2d;
+      return l10n.composeBrandExpire3d;
+    }
+
+    return Container(
+      padding: const EdgeInsets.all(13),
+      decoration: BoxDecoration(
+        color: AppColors.bgCard,
+        borderRadius: BorderRadius.circular(13),
+        border: Border.all(color: const Color(0xFF1F2D44)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // 헤더
+          Row(
+            children: [
+              const Text('🏢', style: TextStyle(fontSize: 15)),
+              const SizedBox(width: 8),
+              Text(
+                l10n.composeBrandOptions,
+                style: const TextStyle(
+                  color: AppColors.textSecondary,
+                  fontSize: 12,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 10),
+          // ── 1 아이디당 1 편지 ──
+          GestureDetector(
+            onTap: () => setState(() => _brandUniquePerUser = !_brandUniquePerUser),
+            child: Row(
+              children: [
+                Icon(
+                  _brandUniquePerUser ? Icons.check_circle : Icons.circle_outlined,
+                  color: _brandUniquePerUser ? AppColors.teal : AppColors.textMuted,
+                  size: 18,
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        l10n.composeBrandUniquePerUser,
+                        style: TextStyle(
+                          color: _brandUniquePerUser ? AppColors.teal : AppColors.textPrimary,
+                          fontSize: 12,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      Text(
+                        l10n.composeBrandUniquePerUserDesc,
+                        style: const TextStyle(
+                          color: AppColors.textMuted,
+                          fontSize: 10,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 12),
+          // ── 자동 삭제 기간 ──
+          Text(
+            l10n.composeBrandAutoExpire,
+            style: const TextStyle(
+              color: AppColors.textPrimary,
+              fontSize: 12,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          const SizedBox(height: 2),
+          Text(
+            l10n.composeBrandAutoExpireDesc,
+            style: const TextStyle(
+              color: AppColors.textMuted,
+              fontSize: 10,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Wrap(
+            spacing: 6,
+            runSpacing: 6,
+            children: expireOptions.map((h) {
+              final isSelected = _brandAutoExpireHours == h;
+              return GestureDetector(
+                onTap: () => setState(() => _brandAutoExpireHours = h),
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  decoration: BoxDecoration(
+                    color: isSelected
+                        ? AppColors.teal.withValues(alpha: 0.15)
+                        : AppColors.bgSurface,
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(
+                      color: isSelected
+                          ? AppColors.teal.withValues(alpha: 0.6)
+                          : AppColors.textMuted.withValues(alpha: 0.2),
+                    ),
+                  ),
+                  child: Text(
+                    expireLabel(h),
+                    style: TextStyle(
+                      color: isSelected ? AppColors.teal : AppColors.textMuted,
+                      fontSize: 11,
+                      fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
+                    ),
+                  ),
+                ),
+              );
+            }).toList(),
+          ),
+        ],
+      ),
+    );
+  }
+
   // ── 브랜드 대량 발송 토글 ────────────────────────────────────────────────
   Widget _buildBulkModeToggle() {
     final l10n = AppL10n.of(context.read<AppState>().currentUser.languageCode);
@@ -1900,7 +2213,7 @@ class _ComposeScreenState extends State<ComposeScreen>
           const SizedBox(height: 8),
           Text(
             _selectedCountry.isNotEmpty
-                ? l10n.composeExpressSummary(_selectedFlag, CountryL10n.localizedName(_selectedCountry, langCode), _expressCount)
+                ? l10n.composeExpressSummary(_selectedFlag, CountryL10n.localizedName(_selectedCountry, langCode), _sendPerCountry)
                 : l10n.composeSelectCountryAbove,
             style: TextStyle(
               color: _selectedCountry.isNotEmpty
@@ -2001,146 +2314,221 @@ class _ComposeScreenState extends State<ComposeScreen>
               ),
             ),
           ),
-          // 특송 ON → 나라당 주소 수 선택
-          if (_isExpressMode) ...[
-            const SizedBox(height: 10),
-            Row(
-              children: [
-                Text(
-                  '⚡ ${l10n.composeAddressPerCountry}',
-                  style: const TextStyle(
-                    color: Color(0xFFFFD700),
-                    fontSize: 11,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-                const Spacer(),
-                GestureDetector(
-                  onTap: () => setState(() {
-                    if (_expressCount > 3) _expressCount--;
-                  }),
-                  child: Container(
-                    width: 26,
-                    height: 26,
-                    decoration: BoxDecoration(
-                      color: AppColors.bgDeep,
-                      borderRadius: BorderRadius.circular(7),
-                      border: Border.all(
-                        color: const Color(0xFFFFD700).withValues(alpha: 0.3),
-                      ),
-                    ),
-                    child: const Icon(
-                      Icons.remove,
-                      size: 13,
-                      color: Color(0xFFFFD700),
-                    ),
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 10),
-                  child: Text(
-                    l10n.composeCountUnit(_expressCount),
-                    style: const TextStyle(
-                      color: Color(0xFFFFD700),
-                      fontSize: 13,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                ),
-                GestureDetector(
-                  onTap: () => setState(() {
-                    if (_expressCount < 10) _expressCount++;
-                  }),
-                  child: Container(
-                    width: 26,
-                    height: 26,
-                    decoration: BoxDecoration(
-                      color: AppColors.bgDeep,
-                      borderRadius: BorderRadius.circular(7),
-                      border: Border.all(
-                        color: const Color(0xFFFFD700).withValues(alpha: 0.3),
-                      ),
-                    ),
-                    child: const Icon(
-                      Icons.add,
-                      size: 13,
-                      color: Color(0xFFFFD700),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ],
-          const SizedBox(height: 12),
-          // 헤더
+          // 나라당 발송 수
+          const SizedBox(height: 10),
           Row(
             children: [
               Text(
-                '🌍 ${l10n.composeSelectTargetCountry}',
-                style: const TextStyle(
-                  color: AppColors.textPrimary,
-                  fontSize: 13,
+                _isExpressMode
+                    ? '⚡ ${l10n.composeSendPerCountry}'
+                    : '📮 ${l10n.composeSendPerCountry}',
+                style: TextStyle(
+                  color: _isExpressMode
+                      ? const Color(0xFFFFD700)
+                      : AppColors.textPrimary,
+                  fontSize: 12,
                   fontWeight: FontWeight.w700,
                 ),
               ),
               const Spacer(),
-              Text(
-                l10n.composeSelectedCount(_bulkTargets.length),
-                style: TextStyle(
-                  color: panelColor,
-                  fontSize: 12,
-                  fontWeight: FontWeight.w600,
+              GestureDetector(
+                onTap: () => setState(() {
+                  if (_sendPerCountry > 1) _sendPerCountry--;
+                }),
+                child: Container(
+                  width: 28,
+                  height: 28,
+                  decoration: BoxDecoration(
+                    color: AppColors.bgDeep,
+                    borderRadius: BorderRadius.circular(7),
+                    border: Border.all(
+                      color: _isExpressMode
+                          ? const Color(0xFFFFD700).withValues(alpha: 0.3)
+                          : AppColors.textMuted.withValues(alpha: 0.3),
+                    ),
+                  ),
+                  child: Icon(
+                    Icons.remove,
+                    size: 14,
+                    color: _isExpressMode
+                        ? const Color(0xFFFFD700)
+                        : AppColors.textSecondary,
+                  ),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 10),
+                child: Text(
+                  l10n.composeCountUnit(_sendPerCountry),
+                  style: TextStyle(
+                    color: _isExpressMode
+                        ? const Color(0xFFFFD700)
+                        : AppColors.textPrimary,
+                    fontSize: 14,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ),
+              GestureDetector(
+                onTap: () => setState(() {
+                  if (_sendPerCountry < 50) _sendPerCountry++;
+                }),
+                child: Container(
+                  width: 28,
+                  height: 28,
+                  decoration: BoxDecoration(
+                    color: AppColors.bgDeep,
+                    borderRadius: BorderRadius.circular(7),
+                    border: Border.all(
+                      color: _isExpressMode
+                          ? const Color(0xFFFFD700).withValues(alpha: 0.3)
+                          : AppColors.textMuted.withValues(alpha: 0.3),
+                    ),
+                  ),
+                  child: Icon(
+                    Icons.add,
+                    size: 14,
+                    color: _isExpressMode
+                        ? const Color(0xFFFFD700)
+                        : AppColors.textSecondary,
+                  ),
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 10),
-          // 나라 그리드
-          Wrap(
-            spacing: 8,
-            runSpacing: 8,
-            children: allCountries.map((c) {
-              final selected = _bulkTargets.any(
-                (t) => t['country'] == c['name'],
-              );
-              return GestureDetector(
-                onTap: () => setState(() {
-                  if (selected) {
-                    _bulkTargets.removeWhere((t) => t['country'] == c['name']);
-                  } else {
-                    _bulkTargets.add({
-                      'country': c['name'],
-                      'flag': c['flag'],
-                      'lat': double.parse(c['lat']!),
-                      'lng': double.parse(c['lng']!),
-                    });
-                  }
-                }),
-                child: Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 10,
-                    vertical: 6,
-                  ),
-                  decoration: BoxDecoration(
-                    color: selected
-                        ? const Color(0xFFFF8A5C).withValues(alpha: 0.2)
-                        : AppColors.bgSurface,
-                    borderRadius: BorderRadius.circular(20),
-                    border: Border.all(
-                      color: selected
-                          ? const Color(0xFFFF8A5C)
-                          : AppColors.textMuted.withValues(alpha: 0.25),
-                      width: selected ? 1.5 : 1,
+          const SizedBox(height: 12),
+          // 랜덤 국가 토글
+          GestureDetector(
+            onTap: () => setState(() {
+              _isBulkRandom = !_isBulkRandom;
+              if (_isBulkRandom) _bulkTargets.clear();
+            }),
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+              decoration: BoxDecoration(
+                color: _isBulkRandom
+                    ? const Color(0xFF6C5CE7).withValues(alpha: 0.12)
+                    : AppColors.bgSurface,
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(
+                  color: _isBulkRandom
+                      ? const Color(0xFF6C5CE7).withValues(alpha: 0.6)
+                      : AppColors.textMuted.withValues(alpha: 0.2),
+                ),
+              ),
+              child: Row(
+                children: [
+                  Text('🎲', style: const TextStyle(fontSize: 16)),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          l10n.composeBulkRandomCountry,
+                          style: TextStyle(
+                            color: _isBulkRandom
+                                ? const Color(0xFF6C5CE7)
+                                : AppColors.textSecondary,
+                            fontSize: 12,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                        if (_isBulkRandom)
+                          Text(
+                            l10n.composeBulkRandomDesc,
+                            style: const TextStyle(
+                              color: Color(0xFF6C5CE7),
+                              fontSize: 10,
+                            ),
+                          ),
+                      ],
                     ),
                   ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text(c['flag']!, style: const TextStyle(fontSize: 14)),
-                      const SizedBox(width: 5),
-                      Text(
-                        CountryL10n.localizedName(c['name']!, langCode),
-                        style: TextStyle(
+                  Switch(
+                    value: _isBulkRandom,
+                    onChanged: (v) => setState(() {
+                      _isBulkRandom = v;
+                      if (v) _bulkTargets.clear();
+                    }),
+                    activeColor: const Color(0xFF6C5CE7),
+                    materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                  ),
+                ],
+              ),
+            ),
+          ),
+          const SizedBox(height: 12),
+          // 헤더 + 나라 그리드 (랜덤 모드 OFF일 때만)
+          if (!_isBulkRandom) ...[
+            Row(
+              children: [
+                Text(
+                  '🌍 ${l10n.composeSelectTargetCountry}',
+                  style: const TextStyle(
+                    color: AppColors.textPrimary,
+                    fontSize: 13,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+                const Spacer(),
+                Text(
+                  l10n.composeSelectedCount(_bulkTargets.length),
+                  style: TextStyle(
+                    color: panelColor,
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 10),
+            // 나라 그리드
+            Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children: allCountries.map((c) {
+                final selected = _bulkTargets.any(
+                  (t) => t['country'] == c['name'],
+                );
+                return GestureDetector(
+                  onTap: () => setState(() {
+                    if (selected) {
+                      _bulkTargets.removeWhere((t) => t['country'] == c['name']);
+                    } else {
+                      _bulkTargets.add({
+                        'country': c['name'],
+                        'flag': c['flag'],
+                        'lat': double.parse(c['lat']!),
+                        'lng': double.parse(c['lng']!),
+                      });
+                    }
+                  }),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 6,
+                    ),
+                    decoration: BoxDecoration(
+                      color: selected
+                          ? const Color(0xFFFF8A5C).withValues(alpha: 0.2)
+                          : AppColors.bgSurface,
+                      borderRadius: BorderRadius.circular(20),
+                      border: Border.all(
+                        color: selected
+                            ? const Color(0xFFFF8A5C)
+                            : AppColors.textMuted.withValues(alpha: 0.25),
+                        width: selected ? 1.5 : 1,
+                      ),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(c['flag']!, style: const TextStyle(fontSize: 14)),
+                        const SizedBox(width: 5),
+                        Text(
+                          CountryL10n.localizedName(c['name']!, langCode),
+                          style: TextStyle(
                           color: selected
                               ? const Color(0xFFFF8A5C)
                               : AppColors.textSecondary,
@@ -2156,77 +2544,26 @@ class _ComposeScreenState extends State<ComposeScreen>
               );
             }).toList(),
           ),
-          const SizedBox(height: 14),
-          // 나라당 발송 횟수
-          Row(
-            children: [
-              Text(
-                '📮 ${l10n.composeSendPerCountry}',
-                style: const TextStyle(
-                  color: AppColors.textPrimary,
-                  fontSize: 13,
-                  fontWeight: FontWeight.w700,
-                ),
-              ),
-              const Spacer(),
-              GestureDetector(
-                onTap: () => setState(() {
-                  if (_bulkSendCount > 1) _bulkSendCount--;
-                }),
-                child: Container(
-                  width: 30,
-                  height: 30,
-                  decoration: BoxDecoration(
-                    color: AppColors.bgSurface,
-                    borderRadius: BorderRadius.circular(8),
-                    border: Border.all(
-                      color: AppColors.textMuted.withValues(alpha: 0.3),
-                    ),
-                  ),
-                  child: const Icon(
-                    Icons.remove,
-                    size: 16,
-                    color: AppColors.textSecondary,
-                  ),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 12),
-                child: Text(
-                  '$_bulkSendCount',
-                  style: const TextStyle(
-                    color: AppColors.textPrimary,
-                    fontSize: 18,
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-              ),
-              GestureDetector(
-                onTap: () => setState(() {
-                  if (_bulkSendCount < 10) _bulkSendCount++;
-                }),
-                child: Container(
-                  width: 30,
-                  height: 30,
-                  decoration: BoxDecoration(
-                    color: AppColors.bgSurface,
-                    borderRadius: BorderRadius.circular(8),
-                    border: Border.all(
-                      color: AppColors.textMuted.withValues(alpha: 0.3),
-                    ),
-                  ),
-                  child: const Icon(
-                    Icons.add,
-                    size: 16,
-                    color: AppColors.textSecondary,
-                  ),
-                ),
-              ),
-            ],
-          ),
+          ],  // end if (!_isBulkRandom)
           const SizedBox(height: 10),
           // 총 발송 요약
-          if (_bulkTargets.isNotEmpty)
+          if (_isBulkRandom)
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+              decoration: BoxDecoration(
+                color: const Color(0xFF6C5CE7).withValues(alpha: 0.08),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Text(
+                '🎲 ${l10n.composeBulkRandomSummary(_sendPerCountry)}',
+                style: const TextStyle(
+                  color: Color(0xFF6C5CE7),
+                  fontSize: 12,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            )
+          else if (_bulkTargets.isNotEmpty)
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
               decoration: BoxDecoration(
@@ -2240,8 +2577,8 @@ class _ComposeScreenState extends State<ComposeScreen>
                 children: [
                   Text(
                     _isExpressMode
-                        ? l10n.composeBulkExpressSummary(_bulkTargets.length * _expressCount, _bulkTargets.length, _expressCount)
-                        : l10n.composeBulkSendSummary(_bulkTargets.length * _bulkSendCount, _bulkTargets.length, _bulkSendCount),
+                        ? l10n.composeBulkExpressSummary(_bulkTargets.length * _sendPerCountry, _bulkTargets.length, _sendPerCountry)
+                        : l10n.composeBulkSendSummary(_bulkTargets.length * _sendPerCountry, _bulkTargets.length, _sendPerCountry),
                     style: TextStyle(
                       color: _isExpressMode
                           ? const Color(0xFFFFD700)
@@ -2392,7 +2729,8 @@ class _ComposeScreenState extends State<ComposeScreen>
   }
 
   Widget _buildStyleBar() {
-    final l10n = AppL10n.of(context.read<AppState>().currentUser.languageCode);
+    final _lc = context.read<AppState>().currentUser.languageCode;
+    final l10n = AppL10n.of(_lc);
     final paper = LetterStyles.paper(_paperStyle);
     final font = LetterStyles.font(_fontStyle);
     return Row(
@@ -2416,7 +2754,7 @@ class _ComposeScreenState extends State<ComposeScreen>
                   const SizedBox(width: 8),
                   Expanded(
                     child: Text(
-                      paper.name,
+                      paper.localizedName(_lc),
                       style: const TextStyle(
                         color: AppColors.textPrimary,
                         fontSize: 12,
@@ -2455,7 +2793,7 @@ class _ComposeScreenState extends State<ComposeScreen>
                   const SizedBox(width: 8),
                   Expanded(
                     child: Text(
-                      font.name,
+                      font.localizedName(_lc),
                       style: const TextStyle(
                         color: AppColors.textPrimary,
                         fontSize: 12,
@@ -3016,7 +3354,8 @@ class _ComposeScreenState extends State<ComposeScreen>
   }
 
   void _showPaperPicker() {
-    final l10n = AppL10n.of(context.read<AppState>().currentUser.languageCode);
+    final _plc = context.read<AppState>().currentUser.languageCode;
+    final l10n = AppL10n.of(_plc);
     showModalBottomSheet(
       context: context,
       backgroundColor: Colors.transparent,
@@ -3078,7 +3417,7 @@ class _ComposeScreenState extends State<ComposeScreen>
                         const SizedBox(width: 12),
                         Expanded(
                           child: Text(
-                            p.name,
+                            p.localizedName(_plc),
                             style: TextStyle(
                               color: p.inkColor,
                               fontSize: 14,
@@ -3148,7 +3487,8 @@ class _ComposeScreenState extends State<ComposeScreen>
   }
 
   void _showFontPicker() {
-    final l10n = AppL10n.of(context.read<AppState>().currentUser.languageCode);
+    final _flc = context.read<AppState>().currentUser.languageCode;
+    final l10n = AppL10n.of(_flc);
     showModalBottomSheet(
       context: context,
       backgroundColor: Colors.transparent,
@@ -3210,7 +3550,7 @@ class _ComposeScreenState extends State<ComposeScreen>
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              f.name,
+                              f.localizedName(_flc),
                               style: const TextStyle(
                                 color: AppColors.textPrimary,
                                 fontSize: 13,

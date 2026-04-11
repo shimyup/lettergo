@@ -1,5 +1,7 @@
 import 'dart:math';
+import 'package:intl/intl.dart';
 import '../core/data/country_cities.dart';
+import '../core/localization/app_localizations.dart';
 
 // ── 편지 타입 ──────────────────────────────────────────────────────────────────
 enum LetterType { normal, express, brandExpress }
@@ -32,14 +34,17 @@ extension TransportModeExt on TransportMode {
     }
   }
 
-  String get label {
+  String get label => localizedLabel('ko');
+
+  String localizedLabel(String langCode) {
+    final l = AppL10n.of(langCode);
     switch (this) {
       case TransportMode.truck:
-        return '육상 배송';
+        return l.transportLand;
       case TransportMode.airplane:
-        return '항공 배송';
+        return l.transportAir;
       case TransportMode.ship:
-        return '해상 배송';
+        return l.transportSea;
     }
   }
 
@@ -207,6 +212,8 @@ class Letter {
   final String? imageUrl; // 첨부 이미지 로컬 경로 (프리미엄)
   final bool senderIsBrand; // 발신자가 브랜드/크리에이터 계정인지
   final LetterSenderTier senderTier; // 발신자 등급 (시각 구분)
+  final bool brandUniquePerUser; // 브랜드: 수신자당 1회만 수신 가능
+  final DateTime? expiresAt; // 자동 삭제 시각 (null이면 만료 없음)
 
   Letter({
     required this.id,
@@ -247,6 +254,8 @@ class Letter {
     this.imageUrl,
     this.senderIsBrand = false,
     this.senderTier = LetterSenderTier.free,
+    this.brandUniquePerUser = false,
+    this.expiresAt,
   }) : reportedBy = reportedBy ?? {};
 
   /// 인박스용 독립 복사본 (worldLetters에서 제거 전 inbox에 추가할 때 사용)
@@ -287,12 +296,15 @@ class Letter {
     imageUrl: imageUrl,
     senderIsBrand: senderIsBrand,
     senderTier: senderTier,
+    brandUniquePerUser: brandUniquePerUser,
+    expiresAt: expiresAt,
     readCount: readCount,
     maxReaders: maxReaders,
   );
 
   double get avgRating => ratingCount > 0 ? ratingTotal / ratingCount : 0.0;
   bool get isBlocked => reportCount >= 3;
+  bool get isExpired => expiresAt != null && DateTime.now().isAfter(expiresAt!);
 
   // ── 현재 구간 ───────────────────────────────────────────────────────────────
   RouteSegment get currentSegment =>
@@ -325,28 +337,34 @@ class Letter {
   }
 
   // ── 상태 라벨 ───────────────────────────────────────────────────────────────
-  String get statusLabel {
+  String get statusLabel => localizedStatusLabel('ko');
+
+  String localizedStatusLabel(String langCode) {
+    final l = AppL10n.of(langCode);
     switch (status) {
       case DeliveryStatus.composing:
-        return '작성 중';
+        return l.statusDrafting;
       case DeliveryStatus.inTransit:
-        return currentSegment.mode.label;
+        return currentSegment.mode.localizedLabel(langCode);
       case DeliveryStatus.nearYou:
-        return '근처 도착!';
+        return l.statusNearby;
       case DeliveryStatus.deliveredFar:
-        return '도착 (수령 대기)';
+        return l.statusArrivedPickup;
       case DeliveryStatus.delivered:
-        return '배달 완료';
+        return l.statusDelivered;
       case DeliveryStatus.read:
-        return '읽음';
+        return l.statusRead;
     }
   }
 
-  String get currentStageLabel {
-    if (status == DeliveryStatus.nearYou) return '📍 2km 이내 도착!';
-    if (status == DeliveryStatus.deliveredFar) return '📬 목적지 도착 - 현지 수령 필요';
+  String get currentStageLabel => localizedCurrentStageLabel('ko');
+
+  String localizedCurrentStageLabel(String langCode) {
+    final l = AppL10n.of(langCode);
+    if (status == DeliveryStatus.nearYou) return l.stageNearby2km;
+    if (status == DeliveryStatus.deliveredFar) return l.stageArrivedLocalPickup;
     if (status == DeliveryStatus.delivered || status == DeliveryStatus.read) {
-      return '✅ 배달 완료';
+      return l.stageDelivered;
     }
     final seg = currentSegment;
     final isLastSeg = currentSegmentIndex >= segments.length - 1;
@@ -357,46 +375,53 @@ class Letter {
   }
 
   // ── 현실적인 배송 예상 시간 ─────────────────────────────────────────────────
-  String get realisticEtaLabel {
+  String get realisticEtaLabel => localizedRealisticEtaLabel('ko');
+
+  String localizedRealisticEtaLabel(String langCode) {
+    final l = AppL10n.of(langCode);
     final m = estimatedTotalMinutes;
-    if (m < 300) return '당일 배송 (1-2일)';
-    if (m < 2880) return '국내 배송 (2-5일)';
-    if (m < 10080) return '국제 항공 (5-10일)';
-    if (m < 20160) return '국제 항공 (7-14일)';
-    return '국제 선박 (20-45일)';
+    if (m < 300) return l.etaSameDay;
+    if (m < 2880) return l.etaDomestic;
+    if (m < 10080) return l.etaIntlAirShort;
+    if (m < 20160) return l.etaIntlAirLong;
+    return l.etaIntlSea;
   }
 
   // ── 예상 도착 시각 라벨 ─────────────────────────────────────────────────────
-  String get arrivalTimeLabel {
-    if (status == DeliveryStatus.nearYou) return '근처 도착! 수령 가능 📍';
-    if (status == DeliveryStatus.deliveredFar) return '목적지 도착 · 현지 수령 대기';
+  String get arrivalTimeLabel => localizedArrivalTimeLabel('ko');
+
+  String localizedArrivalTimeLabel(String langCode) {
+    final l = AppL10n.of(langCode);
+    if (status == DeliveryStatus.nearYou) return l.arrivalNearbyPickup;
+    if (status == DeliveryStatus.deliveredFar) return l.arrivalDestinationWaiting;
     if (status == DeliveryStatus.delivered || status == DeliveryStatus.read) {
-      return '도착 완료 ✅';
+      return l.arrivalComplete;
     }
 
     final remainMin =
         ((1.0 - overallProgress.clamp(0.0, 1.0)) * estimatedTotalMinutes)
             .ceil();
-    if (remainMin <= 0) return '도착 완료 ✅';
-    if (remainMin < 60) return '약 $remainMin분 후 도착';
+    if (remainMin <= 0) return l.arrivalComplete;
+    if (remainMin < 60) return l.arrivalMinutes(remainMin);
 
     if (remainMin < 1440) {
       final h = remainMin ~/ 60;
       final m = remainMin % 60;
-      if (m == 0) return '약 $h시간 후 도착';
-      return '약 $h시간 $m분 후 도착';
+      if (m == 0) return l.arrivalHours(h);
+      return l.arrivalHoursMinutes(h, m);
     }
 
     final days = (remainMin / 1440).ceil();
     final etaDate = DateTime.now().add(Duration(minutes: remainMin));
-    return '약 $days일 후 도착 (${_fmtDate(etaDate)})';
+    return l.arrivalDays(days, _fmtDate(etaDate, langCode));
   }
 
-  static String _fmtDate(DateTime dt) =>
-      '${dt.month}/${dt.day} ${dt.hour.toString().padLeft(2, '0')}:${dt.minute.toString().padLeft(2, '0')}';
+  static String _fmtDate(DateTime dt, String langCode) =>
+      DateFormat.MMMd(langCode).add_Hm().format(dt);
 
   // ── 예상 남은 시간 ──────────────────────────────────────────────────────────
   String get etaLabel => arrivalTimeLabel;
+  String localizedEtaLabel(String langCode) => localizedArrivalTimeLabel(langCode);
 
   // ── 실시간 위치 보간 (sentAt ~ arrivalTime 기반) ────────────────────────────
   /// 지도 애니메이션용: 현재 시각 기준으로 편지의 실제 위치를 계산
@@ -475,6 +500,8 @@ class Letter {
     if (imageUrl != null) 'imageUrl': imageUrl,
     'senderIsBrand': senderIsBrand,
     'senderTier': senderTier.index,
+    'brandUniquePerUser': brandUniquePerUser,
+    if (expiresAt != null) 'expiresAt': expiresAt!.millisecondsSinceEpoch,
     'readCount': readCount,
     'maxReaders': maxReaders,
   };
@@ -528,6 +555,10 @@ class Letter {
     imageUrl: j['imageUrl'] as String?,
     senderIsBrand: j['senderIsBrand'] as bool? ?? false,
     senderTier: LetterSenderTier.values[j['senderTier'] as int? ?? 0],
+    brandUniquePerUser: j['brandUniquePerUser'] as bool? ?? false,
+    expiresAt: j['expiresAt'] != null
+        ? DateTime.fromMillisecondsSinceEpoch(j['expiresAt'] as int)
+        : null,
     readCount: j['readCount'] as int? ?? 0,
     maxReaders: j['maxReaders'] as int? ?? Letter.maxReadersDefault,
   );

@@ -62,11 +62,11 @@ class _MainScaffoldState extends State<MainScaffold>
     super.dispose();
   }
 
-  void _openCompose(BuildContext ctx) {
+  void _openCompose(BuildContext ctx) async {
     // 가벼운 햅틱 + 버튼 눌림 애니메이션
     HapticFeedback.lightImpact();
     _fabTapController.forward().then((_) => _fabTapController.reverse());
-    Navigator.push(
+    final result = await Navigator.push<bool>(
       ctx,
       PageRouteBuilder(
         pageBuilder: (_, anim, __) => const ComposeScreen(),
@@ -79,6 +79,14 @@ class _MainScaffoldState extends State<MainScaffold>
         ),
       ),
     );
+    // 편지 발송 성공 시 → 지도 탭으로 전환 + 발송 편지 위치로 카메라 이동
+    if (result == true && mounted) {
+      setState(() => _currentIndex = 0);
+      // 약간의 딜레이 후 카메라 이동 (탭 전환 렌더링 완료 대기)
+      Future.delayed(const Duration(milliseconds: 300), () {
+        WorldMapScreen.focusSentLetterNotifier.value = true;
+      });
+    }
   }
 
   @override

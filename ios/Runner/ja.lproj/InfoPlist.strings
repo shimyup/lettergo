@@ -1,0 +1,5 @@
+"NSLocationWhenInUseUsageDescription" = "近くの手紙を見つけるために位置情報が必要です。";
+"NSLocationAlwaysAndWhenInUseUsageDescription" = "近くの手紙を見つけるために位置情報が必要です。";
+"NSPhotoLibraryUsageDescription" = "プロフィール写真を変更するためにフォトライブラリへのアクセスが必要です。";
+"NSPhotoLibraryAddUsageDescription" = "選択したプロフィール写真を保存するために権限が必要です。";
+"NSCameraUsageDescription" = "手紙に添付する写真を撮影するためにカメラへのアクセスが必要です。";

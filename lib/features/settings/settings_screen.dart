@@ -13,6 +13,7 @@ import '../../../core/config/app_keys.dart';
 import '../../../core/config/app_links.dart';
 import '../../../widgets/shared_profile_dialogs.dart';
 import '../../../core/localization/country_names.dart';
+import '../../../core/localization/language_config.dart';
 import '../premium/premium_screen.dart';
 import '../admin/admin_screen.dart';
 
@@ -343,6 +344,74 @@ class _SettingsScreenState extends State<SettingsScreen> {
     );
   }
 
+  // ── 언어 변경 ──────────────────────────────────────────────────────────────
+  void _showLanguagePicker(BuildContext ctx, AppState state) {
+    final currentCode = state.currentUser.languageCode;
+    final l = AppL10n.of(currentCode);
+    final languages = LanguageConfig.languageNames.entries.toList();
+
+    showModalBottomSheet(
+      context: ctx,
+      backgroundColor: AppColors.bgCard,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (_) => SafeArea(
+        child: Padding(
+          padding: EdgeInsets.only(
+            bottom: MediaQuery.of(ctx).viewInsets.bottom,
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(16),
+                child: Text(
+                  l.settingsLanguage,
+                  style: const TextStyle(
+                    color: AppColors.textPrimary,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ),
+              Divider(height: 1, color: AppColors.textMuted.withValues(alpha: 0.2)),
+              SizedBox(
+                height: MediaQuery.of(ctx).size.height * 0.45,
+                child: ListView.builder(
+                  itemCount: languages.length,
+                  itemBuilder: (_, i) {
+                    final code = languages[i].key;
+                    final name = languages[i].value;
+                    final isSelected = code == currentCode;
+                    return ListTile(
+                      dense: true,
+                      leading: isSelected
+                          ? const Icon(Icons.check_circle, color: AppColors.teal, size: 20)
+                          : const Icon(Icons.circle_outlined, color: AppColors.textMuted, size: 20),
+                      title: Text(
+                        name,
+                        style: TextStyle(
+                          color: isSelected ? AppColors.teal : AppColors.textPrimary,
+                          fontWeight: isSelected ? FontWeight.w700 : FontWeight.w400,
+                        ),
+                      ),
+                      onTap: () {
+                        state.updateProfile(languageCode: code);
+                        Navigator.pop(ctx);
+                      },
+                    );
+                  },
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
   // ── 회원탈퇴 ───────────────────────────────────────────────────────────────
   void _confirmDeleteAccount(BuildContext ctx) {
     final l = AppL10n.of(ctx.read<AppState>().currentUser.languageCode);
@@ -509,6 +578,18 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       label: l.settingsChangePassword,
                       onTap: () => _changePassword(ctx),
                     ),
+                    _tile(
+                      icon: Icons.verified_user_rounded,
+                      label: l.authVerifyMethodTitle,
+                      trailing: Text(
+                        state.currentUser.verifyMethod == 'phone' ? 'SMS' : 'Email',
+                        style: const TextStyle(
+                          color: AppColors.textMuted,
+                          fontSize: 14,
+                        ),
+                      ),
+                      onTap: () => _showVerifyMethodPicker(ctx, state, l),
+                    ),
 
                     const SizedBox(height: 8),
                     // ── 알림 ────────────────────────────────────────────────
@@ -563,6 +644,18 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       ),
                     ),
                     _tile(
+                      icon: Icons.language_rounded,
+                      label: l.settingsLanguage,
+                      trailing: Text(
+                        LanguageConfig.getLanguageName(user.languageCode),
+                        style: const TextStyle(
+                          color: AppColors.textMuted,
+                          fontSize: 14,
+                        ),
+                      ),
+                      onTap: () => _showLanguagePicker(context, state),
+                    ),
+                    _tile(
                       icon: Icons.shield_outlined,
                       label: l.settingsPrivacy,
                       onTap: () async {
@@ -582,6 +675,57 @@ class _SettingsScreenState extends State<SettingsScreen> {
                             mode: LaunchMode.externalApplication,
                           );
                         }
+                      },
+                    ),
+                    _tile(
+                      icon: Icons.description_outlined,
+                      label: l.settingsTerms,
+                      onTap: () async {
+                        final url = AppLinks.termsForCountry(user.country);
+                        final uri = Uri.parse(url);
+                        try {
+                          await launchUrl(
+                            uri,
+                            mode: LaunchMode.inAppBrowserView,
+                          );
+                        } catch (_) {
+                          await launchUrl(
+                            uri,
+                            mode: LaunchMode.externalApplication,
+                          );
+                        }
+                      },
+                    ),
+
+                    const SizedBox(height: 8),
+                    // ── 데이터 및 개인정보 ──────────────────────────────────
+                    _sectionHeader(l.settingsDataPrivacy),
+                    _tile(
+                      icon: Icons.policy_outlined,
+                      label: l.settingsContentPolicy,
+                      onTap: () => _showContentPolicyDialog(ctx, l),
+                    ),
+                    _tile(
+                      icon: Icons.groups_outlined,
+                      label: l.settingsCommunityGuidelines,
+                      onTap: () => _showCommunityGuidelinesDialog(ctx, l),
+                    ),
+                    _tile(
+                      icon: Icons.download_outlined,
+                      label: l.settingsRequestData,
+                      subtitle: l.settingsRequestDataDesc,
+                      onTap: () async {
+                        final uri = Uri(
+                          scheme: 'mailto',
+                          path: 'ceo@airony.xyz',
+                          queryParameters: {
+                            'subject': 'Data Request - Letter Go',
+                            'body': 'I would like to request a copy of my personal data.\n\nUsername: ${user.username}\nEmail: ${user.email ?? "N/A"}',
+                          },
+                        );
+                        try {
+                          await launchUrl(uri);
+                        } catch (_) {}
                       },
                     ),
 
@@ -636,8 +780,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                               width: 1,
                             ),
                           ),
-                          child: const Text(
-                            'ADMIN',
+                          child: Text(
+                            l.labelAdmin,
                             style: TextStyle(
                               color: AppColors.error,
                               fontSize: 10,
@@ -660,6 +804,159 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 ),
         );
       },
+    );
+  }
+
+  // ── 인증 수단 변경 ──────────────────────────────────────────────────────
+  void _showVerifyMethodPicker(BuildContext ctx, AppState state, AppL10n l) {
+    final current = state.currentUser.verifyMethod;
+    showDialog(
+      context: ctx,
+      builder: (_) => AlertDialog(
+        backgroundColor: AppColors.bgCard,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: Text(
+          l.authVerifyMethodTitle,
+          style: const TextStyle(color: AppColors.textPrimary),
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              l.authVerifyMethodDesc,
+              style: const TextStyle(color: AppColors.textMuted, fontSize: 12),
+            ),
+            const SizedBox(height: 16),
+            _verifyOption(ctx, state, 'email', 'Email', Icons.email_rounded, current == 'email'),
+            const SizedBox(height: 8),
+            _verifyOption(ctx, state, 'phone', 'SMS', Icons.phone_rounded, current == 'phone'),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _verifyOption(BuildContext ctx, AppState state, String method, String label, IconData icon, bool selected) {
+    return GestureDetector(
+      onTap: () async {
+        await AuthService.updateProfile(verifyMethod: method);
+        state.updateVerifyMethod(method);
+        if (ctx.mounted) Navigator.pop(ctx);
+      },
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        decoration: BoxDecoration(
+          color: selected
+              ? AppColors.teal.withValues(alpha: 0.12)
+              : Colors.transparent,
+          borderRadius: BorderRadius.circular(10),
+          border: Border.all(
+            color: selected
+                ? AppColors.teal
+                : AppColors.textMuted.withValues(alpha: 0.3),
+          ),
+        ),
+        child: Row(
+          children: [
+            Icon(icon, color: selected ? AppColors.teal : AppColors.textMuted, size: 20),
+            const SizedBox(width: 12),
+            Text(
+              label,
+              style: TextStyle(
+                color: selected ? AppColors.teal : AppColors.textPrimary,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            const Spacer(),
+            if (selected)
+              const Icon(Icons.check_circle_rounded, color: AppColors.teal, size: 20),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // ── 콘텐츠 열람 정책 다이얼로그 ──────────────────────────────────────────
+  void _showContentPolicyDialog(BuildContext ctx, AppL10n l) {
+    showDialog(
+      context: ctx,
+      builder: (_) => AlertDialog(
+        backgroundColor: AppColors.bgCard,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: Row(
+          children: [
+            const Icon(Icons.policy_outlined, color: AppColors.teal, size: 22),
+            const SizedBox(width: 8),
+            Expanded(
+              child: Text(
+                l.contentPolicyTitle,
+                style: const TextStyle(color: AppColors.textPrimary, fontSize: 17),
+              ),
+            ),
+          ],
+        ),
+        content: SingleChildScrollView(
+          child: Text(
+            l.contentPolicyBody,
+            style: const TextStyle(
+              color: AppColors.textSecondary,
+              fontSize: 13,
+              height: 1.6,
+            ),
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: Text(
+              l.authClose,
+              style: const TextStyle(color: AppColors.teal),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // ── 커뮤니티 가이드라인 다이얼로그 ────────────────────────────────────────
+  void _showCommunityGuidelinesDialog(BuildContext ctx, AppL10n l) {
+    showDialog(
+      context: ctx,
+      builder: (_) => AlertDialog(
+        backgroundColor: AppColors.bgCard,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: Row(
+          children: [
+            const Icon(Icons.groups_outlined, color: AppColors.gold, size: 22),
+            const SizedBox(width: 8),
+            Expanded(
+              child: Text(
+                l.communityGuidelinesTitle,
+                style: const TextStyle(color: AppColors.textPrimary, fontSize: 17),
+              ),
+            ),
+          ],
+        ),
+        content: SingleChildScrollView(
+          child: Text(
+            l.communityGuidelinesBody,
+            style: const TextStyle(
+              color: AppColors.textSecondary,
+              fontSize: 13,
+              height: 1.6,
+            ),
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: Text(
+              l.authClose,
+              style: const TextStyle(color: AppColors.teal),
+            ),
+          ),
+        ],
+      ),
     );
   }
 

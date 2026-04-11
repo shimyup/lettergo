@@ -66,6 +66,38 @@ if [[ ! -f "$ROOT_DIR/ios/Runner/GoogleService-Info.plist" ]]; then
   fail "missing ios/Runner/GoogleService-Info.plist"
 fi
 
+# Firebase app id / package-bundle consistency checks
+EXPECTED_ANDROID_PACKAGE="com.globaldrift.lettergo"
+EXPECTED_IOS_BUNDLE_ID="com.globaldrift.lettergo"
+
+if ! rg -q "\"package_name\"[[:space:]]*:[[:space:]]*\"$EXPECTED_ANDROID_PACKAGE\"" \
+  "$ROOT_DIR/android/app/google-services.json"; then
+  fail "android google-services.json does not include package_name=$EXPECTED_ANDROID_PACKAGE"
+fi
+
+other_android_packages=$(
+  rg -o "\"package_name\"[[:space:]]*:[[:space:]]*\"[^\"]+\"" "$ROOT_DIR/android/app/google-services.json" \
+    | sed -E 's/.*"package_name"[[:space:]]*:[[:space:]]*"([^"]+)".*/\1/' \
+    | sort -u \
+    | rg -v "^${EXPECTED_ANDROID_PACKAGE}$" || true
+)
+if [[ -n "$other_android_packages" ]]; then
+  warn "android google-services.json contains extra package_name values:"
+  while IFS= read -r package_name; do
+    [[ -z "$package_name" ]] && continue
+    warn " - $package_name"
+  done <<< "$other_android_packages"
+fi
+
+ios_bundle_id=$(/usr/libexec/PlistBuddy -c "Print :BUNDLE_ID" \
+  "$ROOT_DIR/ios/Runner/GoogleService-Info.plist" 2>/dev/null || true)
+if [[ -z "$ios_bundle_id" ]]; then
+  fail "ios GoogleService-Info.plist BUNDLE_ID is missing"
+fi
+if [[ "$ios_bundle_id" != "$EXPECTED_IOS_BUNDLE_ID" ]]; then
+  fail "ios GoogleService-Info.plist BUNDLE_ID mismatch: expected $EXPECTED_IOS_BUNDLE_ID, got $ios_bundle_id"
+fi
+
 if [[ -z "${STADIA_MAPS_API_KEY:-}" ]]; then
   warn "STADIA_MAPS_API_KEY is empty: map labels may be mixed local languages."
 fi

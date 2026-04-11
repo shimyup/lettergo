@@ -5,6 +5,8 @@ import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../../core/localization/app_localizations.dart';
+import '../../../core/localization/country_names.dart';
+import '../../../core/localization/language_config.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/services/auth_service.dart';
 import '../../../core/services/purchase_service.dart';
@@ -63,7 +65,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   // ── SNS 링크 수정 ──────────────────────────────────────────────────────────
   void _editSnsLink(BuildContext ctx, AppState state) {
-    final l = _l10n(ctx);
+    final _pl = AppL10n.of(state.currentUser.languageCode);
     final _initialText = state.currentUser.socialLink ?? '';
     final ctrl = TextEditingController.fromValue(
       TextEditingValue(
@@ -77,7 +79,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         backgroundColor: AppColors.bgCard,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         title: Text(
-          l.koEn('SNS 링크 수정', 'Edit SNS Link'),
+          _pl.profileSnsLinkEdit,
           style: const TextStyle(color: AppColors.textPrimary),
         ),
         content: TextField(
@@ -99,7 +101,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           TextButton(
             onPressed: () => Navigator.pop(ctx),
             child: Text(
-              l.koEn('취소', 'Cancel'),
+              _pl.cancel,
               style: const TextStyle(color: AppColors.textMuted),
             ),
           ),
@@ -110,10 +112,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               state.updateSocialLink(link.isEmpty ? null : link);
               if (ctx.mounted) Navigator.pop(ctx);
             },
-            child: Text(
-              l.koEn('저장', 'Save'),
-              style: const TextStyle(color: AppColors.teal),
-            ),
+            child: Text(_pl.save, style: const TextStyle(color: AppColors.teal)),
           ),
         ],
       ),
@@ -121,7 +120,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   Future<void> _changeProfileImage(BuildContext ctx, AppState state) async {
-    final l = _l10n(ctx);
+    final _pl = AppL10n.of(state.currentUser.languageCode);
     await showModalBottomSheet<void>(
       context: ctx,
       backgroundColor: AppColors.bgCard,
@@ -141,7 +140,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     color: AppColors.teal,
                   ),
                   title: Text(
-                    l.koEn('앨범에서 선택', 'Choose from Gallery'),
+                    _pl.profileSelectFromAlbum,
                     style: const TextStyle(color: AppColors.textPrimary),
                   ),
                   onTap: () async {
@@ -173,7 +172,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         if (await oldFile.exists()) await oldFile.delete();
                       } catch (_) {}
                     }
-                    if (mounted) _showSnack(ctx, l.koEn('프로필 사진이 변경되었습니다', 'Profile photo has been updated'));
+                    if (mounted) _showSnack(ctx, _pl.profilePhotoChanged);
                   },
                 ),
                 ListTile(
@@ -182,7 +181,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     color: AppColors.error,
                   ),
                   title: Text(
-                    l.koEn('기본 아바타로 변경', 'Use Default Avatar'),
+                    _pl.profileChangeToDefaultAvatar,
                     style: const TextStyle(color: AppColors.textPrimary),
                   ),
                   onTap: () async {
@@ -195,7 +194,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         if (await oldFile.exists()) await oldFile.delete();
                       } catch (_) {}
                     }
-                    if (mounted) _showSnack(ctx, l.koEn('기본 아바타로 변경되었습니다', 'Switched to the default avatar'));
+                    if (mounted) _showSnack(ctx, _pl.profileDefaultAvatarChanged);
                   },
                 ),
               ],
@@ -207,7 +206,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   Future<void> _showThemeModeSelector(BuildContext ctx, AppState state) async {
-    final l = _l10n(ctx);
+    final _pl = AppL10n.of(state.currentUser.languageCode);
     await showModalBottomSheet<void>(
       context: ctx,
       backgroundColor: AppColors.bgCard,
@@ -224,7 +223,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: 8),
                   child: Text(
-                    l.koEn('화면 모드 선택', 'Select Display Mode'),
+                    _pl.profileSelectDisplayMode,
                     style: const TextStyle(
                       color: AppColors.textPrimary,
                       fontSize: 16,
@@ -241,11 +240,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     Navigator.pop(sheetCtx);
                   },
                   title: Text(
-                    l.koEn('자동 (시간대)', 'Auto (Timezone)'),
+                    _pl.profileAutoTimezone,
                     style: const TextStyle(color: AppColors.textPrimary),
                   ),
                   subtitle: Text(
-                    l.koEn('국가 시간에 따라 낮/밤 테마 자동 변경', 'Auto switch day/night theme by timezone'),
+                    _pl.profileAutoTimezoneDesc,
                     style: const TextStyle(color: AppColors.textMuted, fontSize: 12),
                   ),
                   activeColor: AppColors.gold,
@@ -259,11 +258,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     Navigator.pop(sheetCtx);
                   },
                   title: Text(
-                    l.koEn('밝은 모드', 'Light Mode'),
+                    _pl.profileLightMode,
                     style: const TextStyle(color: AppColors.textPrimary),
                   ),
                   subtitle: Text(
-                    l.koEn('항상 낮 테마로 표시', 'Always use light theme'),
+                    _pl.profileLightModeDesc,
                     style: const TextStyle(color: AppColors.textMuted, fontSize: 12),
                   ),
                   activeColor: AppColors.gold,
@@ -277,11 +276,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     Navigator.pop(sheetCtx);
                   },
                   title: Text(
-                    l.koEn('다크 모드', 'Dark Mode'),
+                    _pl.profileDarkMode,
                     style: const TextStyle(color: AppColors.textPrimary),
                   ),
                   subtitle: Text(
-                    l.koEn('항상 밤 테마로 표시', 'Always use dark theme'),
+                    _pl.profileDarkModeDesc,
                     style: const TextStyle(color: AppColors.textMuted, fontSize: 12),
                   ),
                   activeColor: AppColors.gold,
@@ -296,7 +295,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   // ── 비밀번호 변경 ──────────────────────────────────────────────────────────
   void _changePassword(BuildContext ctx) {
-    final l = _l10n(ctx);
+    final _pl = AppL10n.of(ctx.read<AppState>().currentUser.languageCode);
     final oldCtrl = TextEditingController();
     final newCtrl = TextEditingController();
     final confirmCtrl = TextEditingController();
@@ -306,47 +305,35 @@ class _ProfileScreenState extends State<ProfileScreen> {
         backgroundColor: AppColors.bgCard,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         title: Text(
-          l.koEn('비밀번호 변경', 'Change Password'),
+          _pl.profileChangePassword,
           style: const TextStyle(color: AppColors.textPrimary),
         ),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            _pwField(oldCtrl, l.koEn('현재 비밀번호', 'Current Password')),
+            _pwField(oldCtrl, _pl.profileCurrentPassword),
             const SizedBox(height: 12),
-            _pwField(
-              newCtrl,
-              l.koEn('새 비밀번호 (6자 이상)', 'New Password (min 6 chars)'),
-            ),
+            _pwField(newCtrl, _pl.profileNewPassword),
             const SizedBox(height: 12),
-            _pwField(confirmCtrl, l.koEn('새 비밀번호 확인', 'Confirm New Password')),
+            _pwField(confirmCtrl, _pl.profileConfirmPassword),
           ],
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
             child: Text(
-              l.koEn('취소', 'Cancel'),
+              _pl.cancel,
               style: const TextStyle(color: AppColors.textMuted),
             ),
           ),
           TextButton(
             onPressed: () async {
               if (newCtrl.text.length < 6) {
-                _showSnack(
-                  ctx,
-                  l.koEn(
-                    '비밀번호는 6자 이상이어야 합니다',
-                    'Password must be at least 6 characters',
-                  ),
-                );
+                _showSnack(ctx, _pl.profilePasswordMinLength);
                 return;
               }
               if (newCtrl.text != confirmCtrl.text) {
-                _showSnack(
-                  ctx,
-                  l.koEn('새 비밀번호가 일치하지 않습니다', 'New passwords do not match'),
-                );
+                _showSnack(ctx, _pl.profilePasswordMismatch);
                 return;
               }
               final user = await AuthService.getCurrentUser();
@@ -357,30 +344,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 langCode: ctx.read<AppState>().currentUser.languageCode,
               );
               if (err != null) {
-                if (ctx.mounted) {
-                  _showSnack(
-                    ctx,
-                    l.koEn(
-                      '현재 비밀번호가 올바르지 않습니다',
-                      'Current password is incorrect',
-                    ),
-                  );
-                }
+                if (ctx.mounted) _showSnack(ctx, _pl.profileCurrentPasswordWrong);
                 return;
               }
               await AuthService.updatePassword(newCtrl.text);
               if (ctx.mounted) {
                 Navigator.pop(ctx);
-                _showSnack(
-                  ctx,
-                  l.koEn('비밀번호가 변경되었습니다 ✓', 'Password changed ✓'),
-                );
+                _showSnack(ctx, _pl.profilePasswordChanged);
               }
             },
-            child: Text(
-              l.koEn('변경', 'Update'),
-              style: const TextStyle(color: AppColors.teal),
-            ),
+            child: Text(_pl.change, style: const TextStyle(color: AppColors.teal)),
           ),
         ],
       ),
@@ -438,27 +411,95 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
+  // ── 언어 변경 ──────────────────────────────────────────────────────────────
+  void _showLanguagePicker(BuildContext ctx, AppState state) {
+    final currentCode = state.currentUser.languageCode;
+    final l = AppL10n.of(currentCode);
+    final languages = LanguageConfig.languageNames.entries.toList();
+
+    showModalBottomSheet(
+      context: ctx,
+      backgroundColor: AppColors.bgCard,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (_) => SafeArea(
+        child: Padding(
+          padding: EdgeInsets.only(
+            bottom: MediaQuery.of(ctx).viewInsets.bottom,
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(16),
+                child: Text(
+                  l.settingsLanguage,
+                  style: const TextStyle(
+                    color: AppColors.textPrimary,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ),
+              Divider(height: 1, color: AppColors.textMuted.withValues(alpha: 0.2)),
+              SizedBox(
+                height: MediaQuery.of(ctx).size.height * 0.45,
+                child: ListView.builder(
+                  itemCount: languages.length,
+                  itemBuilder: (_, i) {
+                    final code = languages[i].key;
+                    final name = languages[i].value;
+                    final isSelected = code == currentCode;
+                    return ListTile(
+                      dense: true,
+                      leading: isSelected
+                          ? const Icon(Icons.check_circle, color: AppColors.teal, size: 20)
+                          : const Icon(Icons.circle_outlined, color: AppColors.textMuted, size: 20),
+                      title: Text(
+                        name,
+                        style: TextStyle(
+                          color: isSelected ? AppColors.teal : AppColors.textPrimary,
+                          fontWeight: isSelected ? FontWeight.w700 : FontWeight.w400,
+                        ),
+                      ),
+                      onTap: () {
+                        state.updateProfile(languageCode: code);
+                        Navigator.pop(ctx);
+                      },
+                    );
+                  },
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
   // ── 로그아웃 ───────────────────────────────────────────────────────────────
   void _confirmLogout(BuildContext ctx) {
-    final l = _l10n(ctx);
+    final _pl = AppL10n.of(ctx.read<AppState>().currentUser.languageCode);
     showDialog(
       context: ctx,
       builder: (_) => AlertDialog(
         backgroundColor: AppColors.bgCard,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         title: Text(
-          l.koEn('로그아웃', 'Log Out'),
+          _pl.logout,
           style: const TextStyle(color: AppColors.textPrimary),
         ),
         content: Text(
-          l.koEn('정말 로그아웃 하시겠어요?', 'Are you sure you want to log out?'),
+          _pl.profileLogoutMsg,
           style: const TextStyle(color: AppColors.textSecondary),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
             child: Text(
-              l.koEn('취소', 'Cancel'),
+              _pl.cancel,
               style: const TextStyle(color: AppColors.textMuted),
             ),
           ),
@@ -471,7 +512,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ).pushNamedAndRemoveUntil('/auth', (_) => false);
               }
             },
-            child: Text(l.koEn('로그아웃', 'Log Out'), style: const TextStyle(color: AppColors.error)),
+            child: Text(_pl.logout, style: const TextStyle(color: AppColors.error)),
           ),
         ],
       ),
@@ -480,22 +521,22 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   // ── 회원탈퇴 ───────────────────────────────────────────────────────────────
   void _confirmDeleteAccount(BuildContext ctx) {
-    final l = _l10n(ctx);
+    final _dl = AppL10n.of(ctx.read<AppState>().currentUser.languageCode);
     showDialog(
       context: ctx,
       builder: (_) => AlertDialog(
         backgroundColor: AppColors.bgCard,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: Text(l.koEn('회원탈퇴', 'Delete Account'), style: const TextStyle(color: AppColors.error)),
+        title: Text(_dl.deleteAccount, style: const TextStyle(color: AppColors.error)),
         content: Text(
-          l.koEn('계정을 삭제하면 모든 편지와 데이터가 영구적으로 사라집니다.\n정말 탈퇴하시겠어요?', 'Deleting your account will permanently remove all letters and data.\nAre you sure?'),
+          _dl.profileDeleteAccountMsg,
           style: const TextStyle(color: AppColors.textSecondary),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
             child: Text(
-              l.koEn('취소', 'Cancel'),
+              _dl.cancel,
               style: const TextStyle(color: AppColors.textMuted),
             ),
           ),
@@ -508,7 +549,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ).pushNamedAndRemoveUntil('/auth', (_) => false);
               }
             },
-            child: Text(l.koEn('탈퇴', 'Delete'), style: const TextStyle(color: AppColors.error)),
+            child: Text(_dl.withdraw, style: const TextStyle(color: AppColors.error)),
           ),
         ],
       ),
@@ -517,7 +558,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   // ── 우표 앨범 배너 ────────────────────────────────────────────────────────
   Widget _buildStampAlbumBanner(BuildContext ctx, AppState state) {
-    final l = _l10n(ctx);
+    final _sbl = AppL10n.of(ctx.read<AppState>().currentUser.languageCode);
     // 수집된 국가 수 계산
     final countrySet = <String>{};
     for (final letter in state.inbox) {
@@ -564,8 +605,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    l.koEn('우표 앨범', 'STAMP ALBUM'),
-                    style: const TextStyle(
+                    _sbl.labelStampAlbum,
+                    style: TextStyle(
                       color: AppColors.gold,
                       fontSize: 9,
                       fontWeight: FontWeight.w700,
@@ -575,8 +616,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   const SizedBox(height: 3),
                   Text(
                     countryCount > 0
-                        ? l.koEn('$countryCount개국 우표 수집됨', '$countryCount countries collected')
-                        : l.koEn('아직 수집된 우표 없음', 'No stamps collected yet'),
+                        ? _sbl.profileStampCollected(countryCount)
+                        : _sbl.profileNoStamps,
                     style: const TextStyle(
                       color: Colors.white,
                       fontSize: 14,
@@ -599,7 +640,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   // ── 명성 등급 카드 (Stitch AI 추천) ────────────────────────────────────────
   Widget _buildReputationCard(BuildContext ctx, UserProfile user) {
-    final l = _l10n(ctx);
+    final _rl = AppL10n.of(ctx.read<AppState>().currentUser.languageCode);
     final score = user.activityScore;
     final tier = score.tier;
     const tierColors = {
@@ -651,8 +692,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  l.koEn('명성 점수', 'REPUTATION SCORE'),
-                  style: const TextStyle(
+                  _rl.labelReputationScore,
+                  style: TextStyle(
                     color: AppColors.textMuted,
                     fontSize: 9,
                     fontWeight: FontWeight.w700,
@@ -661,7 +702,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ),
                 const SizedBox(height: 3),
                 Text(
-                  score.reputationTitle,
+                  score.reputationTitleL(user.languageCode),
                   style: TextStyle(
                     color: tierColor,
                     fontSize: 16,
@@ -683,7 +724,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ),
               ),
               Text(
-                l.koEn('점', 'pts'),
+                _rl.unitPts,
                 style: const TextStyle(color: AppColors.textMuted, fontSize: 11),
               ),
             ],
@@ -698,7 +739,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     AppState state,
     UserProfile user,
   ) {
-    final l = _l10n(ctx);
+    final _fl = AppL10n.of(ctx.read<AppState>().currentUser.languageCode);
     return DefaultTabController(
       length: 2,
       child: Container(
@@ -719,8 +760,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 fontSize: 13,
               ),
               tabs: [
-                Tab(text: '👥 ${l.koEn('팔로잉', 'Following')} ${user.followingIds.length}'),
-                Tab(text: '🌟 ${l.koEn('팔로워', 'Followers')} ${user.followerIds.length}'),
+                Tab(text: '👥 ${_fl.profileFollowing} ${user.followingIds.length}'),
+                Tab(text: '🌟 ${_fl.profileFollowers} ${user.followerIds.length}'),
               ],
             ),
             SizedBox(
@@ -730,12 +771,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
               child: TabBarView(
                 children: [
                   _FollowListContent(
-                    title: l.koEn('팔로잉', 'Following'),
+                    title: _fl.profileFollowing,
+                    emptyMsg: _fl.profileNoFollowing,
                     userIds: user.followingIds,
                     sessions: state.chatSessions,
                   ),
                   _FollowListContent(
-                    title: l.koEn('팔로워', 'Followers'),
+                    title: _fl.profileFollowers,
+                    emptyMsg: _fl.profileNoFollowers,
                     userIds: user.followerIds,
                     sessions: state.chatSessions,
                   ),
@@ -754,6 +797,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
       builder: (ctx, state, purchase, _) {
         final l = _l10n(ctx);
         final user = state.currentUser;
+        final _lc = user.languageCode;
+        final _l = AppL10n.of(_lc);
 
         return Scaffold(
           backgroundColor: AppTimeColors.of(ctx).bgDeep,
@@ -783,10 +828,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           _buildFollowSection(ctx, state, user),
                           const SizedBox(height: 10),
                           // ── 계정 ──
-                          _settingsGroup(l.koEn('계정', 'Account'), [
+                          _settingsGroup(_l.profileAccountSection, [
                             _groupTile(
                               icon: Icons.person_rounded,
-                              label: l.koEn('닉네임', 'Nickname'),
+                              label: _l.profileNickname,
                               trailing: Text(
                                 user.username,
                                 style: const TextStyle(
@@ -798,11 +843,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             ),
                             _groupTile(
                               icon: Icons.location_city_rounded,
-                              label: l.koEn('타워 이름', 'Tower Name'),
+                              label: _l.profileTowerName,
                               trailing: Text(
                                 user.customTowerName?.isNotEmpty == true
                                     ? user.customTowerName!
-                                    : l.koEn('미설정', 'Not Set'),
+                                    : _l.profileNotSet,
                                 style: const TextStyle(
                                   color: AppColors.textMuted,
                                   fontSize: 14,
@@ -814,11 +859,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             ),
                             _groupTile(
                               icon: Icons.account_circle_rounded,
-                              label: l.koEn('프로필 사진', 'Profile Photo'),
+                              label: _l.profilePhoto,
                               trailing: Text(
                                 user.profileImagePath?.isNotEmpty == true
-                                    ? l.koEn('설정됨', 'Set')
-                                    : l.koEn('기본', 'Default'),
+                                    ? _l.profilePhotoSet
+                                    : _l.profilePhotoDefault,
                                 style: const TextStyle(
                                   color: AppColors.textMuted,
                                   fontSize: 14,
@@ -828,11 +873,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             ),
                             _groupTile(
                               icon: Icons.link_rounded,
-                              label: l.koEn('SNS 링크', 'SNS Link'),
+                              label: _l.profileSnsLink,
                               trailing: Text(
                                 user.socialLink?.isNotEmpty == true
                                     ? user.socialLink!
-                                    : l.koEn('미설정', 'Not Set'),
+                                    : _l.profileNotSet,
                                 style: const TextStyle(
                                   color: AppColors.textMuted,
                                   fontSize: 13,
@@ -844,17 +889,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             ),
                             _groupTile(
                               icon: Icons.lock_outline_rounded,
-                              label: l.koEn('비밀번호 변경', 'Change Password'),
+                              label: _l.profileChangePassword,
                               onTap: () => _changePassword(ctx),
                               isLast: true,
                             ),
                           ]),
                           // ── 공개 설정 ──
-                          _settingsGroup(l.koEn('공개 설정', 'Privacy'), [
+                          _settingsGroup(_l.profilePrivacySection, [
                             _groupSwitchTile(
                               icon: Icons.badge_rounded,
-                              label: l.koEn('닉네임 공개', 'Show Nickname'),
-                              subtitle: l.koEn('다른 사용자에게 닉네임 표시', 'Display nickname to other users'),
+                              label: _l.profileNicknamePublic,
+                              subtitle: _l.profileNicknamePublicDesc,
                               value: user.isUsernamePublic,
                               onChanged: (v) => state.updatePrivacySettings(
                                 isUsernamePublic: v,
@@ -862,8 +907,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             ),
                             _groupSwitchTile(
                               icon: Icons.link_rounded,
-                              label: l.koEn('SNS 링크 공개', 'Show SNS Link'),
-                              subtitle: l.koEn('편지에 SNS 링크 노출 허용', 'Allow SNS link to appear in letters'),
+                              label: _l.profileSnsLinkPublic,
+                              subtitle: _l.profileSnsPublicDesc,
                               value: user.isSnsPublic,
                               onChanged: (v) =>
                                   state.updatePrivacySettings(isSnsPublic: v),
@@ -871,21 +916,21 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             ),
                           ]),
                           // ── 알림 ──
-                          _settingsGroup(l.koEn('알림', 'Notifications'), [
+                          _settingsGroup(_l.profileNotificationSection, [
                             _groupSwitchTile(
                               icon: Icons.notifications_active_rounded,
-                              label: l.koEn('근처 편지 알림', 'Nearby Letter Alert'),
-                              subtitle: l.koEn('2km 이내에 편지가 도착하면 알림', 'Notify when a letter arrives within 2km'),
+                              label: _l.profileNearbyNotification,
+                              subtitle: _l.profileNearbyNotificationDesc,
                               value: _notifyNearby,
                               onChanged: _setNotifyNearby,
                               isLast: true,
                             ),
                           ]),
                           // ── 화면 ──
-                          _settingsGroup(l.koEn('화면', 'Display'), [
+                          _settingsGroup(_l.profileDisplaySection, [
                             _groupTile(
                               icon: Icons.brightness_6_rounded,
-                              label: l.koEn('화면 모드', 'Display Mode'),
+                              label: _l.profileDisplayMode,
                               trailing: Text(
                                 state.displayThemeModeLabel,
                                 style: const TextStyle(
@@ -898,10 +943,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             ),
                           ]),
                           // ── 앱 정보 ──
-                          _settingsGroup(l.koEn('앱 정보', 'App Info'), [
+                          _settingsGroup(_l.profileAppInfoSection, [
                             _groupTile(
                               icon: Icons.info_outline_rounded,
-                              label: l.koEn('버전', 'Version'),
+                              label: _l.profileVersion,
                               trailing: const Text(
                                 '1.0.0',
                                 style: TextStyle(
@@ -912,29 +957,41 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             ),
                             _groupTile(
                               icon: Icons.public_rounded,
-                              label: l.koEn('나라', 'Country'),
+                              label: _l.profileCountry,
                               trailing: Text(
-                                '${user.countryFlag} ${user.country}',
+                                '${user.countryFlag} ${CountryL10n.localizedName(user.country, _lc)}',
                                 style: const TextStyle(
                                   color: AppColors.textMuted,
                                   fontSize: 14,
                                 ),
                               ),
+                            ),
+                            _groupTile(
+                              icon: Icons.language_rounded,
+                              label: _l.settingsLanguage,
+                              trailing: Text(
+                                LanguageConfig.getLanguageName(_lc),
+                                style: const TextStyle(
+                                  color: AppColors.textMuted,
+                                  fontSize: 14,
+                                ),
+                              ),
+                              onTap: () => _showLanguagePicker(ctx, state),
                               isLast: true,
                             ),
                           ]),
                           // ── 계정 관리 ──
-                          _settingsGroup(l.koEn('계정 관리', 'Account Management'), [
+                          _settingsGroup(_l.profileAccountManageSection, [
                             _groupTile(
                               icon: Icons.logout_rounded,
-                              label: l.koEn('로그아웃', 'Log Out'),
+                              label: _l.logout,
                               iconColor: AppColors.textSecondary,
                               labelColor: AppColors.textSecondary,
                               onTap: () => _confirmLogout(ctx),
                             ),
                             _groupTile(
                               icon: Icons.delete_forever_rounded,
-                              label: l.koEn('회원탈퇴', 'Delete Account'),
+                              label: _l.deleteAccount,
                               iconColor: AppColors.error,
                               labelColor: AppColors.error,
                               onTap: () => _confirmDeleteAccount(ctx),
@@ -985,6 +1042,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     AppState state,
     PurchaseService purchase,
   ) {
+    final _al = AppL10n.of(user.languageCode);
     final tier = user.activityScore.tier;
     final tierClr = _tierColor(tier);
     final isBrand = purchase.isBrand || user.isBrand;
@@ -1136,7 +1194,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text(
-                      '${user.countryFlag} ${user.country}',
+                      '${user.countryFlag} ${CountryL10n.localizedName(user.country, user.languageCode)}',
                       style: const TextStyle(
                         color: AppColors.textMuted,
                         fontSize: 13,
@@ -1150,7 +1208,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     ),
                     const SizedBox(width: 10),
                     Text(
-                      user.activityScore.reputationTitle,
+                      user.activityScore.reputationTitleL(user.languageCode),
                       style: TextStyle(
                         color: tierClr,
                         fontSize: 12,
@@ -1165,7 +1223,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         ),
       ),
       title: Text(
-        _l10n(ctx).koEn('프로필', 'Profile'),
+        _al.profileTitle,
         style: const TextStyle(
           color: AppColors.textPrimary,
           fontWeight: FontWeight.w700,
@@ -1177,7 +1235,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   // ── ① 4열 스탯 바 (A+C) ────────────────────────────────────────────────────
   Widget _buildFourStatRow(BuildContext ctx, AppState state, UserProfile user) {
-    final l = _l10n(ctx);
+    final _fsl = AppL10n.of(user.languageCode);
     final score = user.activityScore;
     // 나라 수: 받은 편지 발송 국가
     final countrySet = state.inbox.map((l) => l.senderCountry).toSet();
@@ -1191,13 +1249,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
       ),
       child: Row(
         children: [
-          _stat4Cell('📬', '${score.sentCount}', l.koEn('보낸 편지', 'Sent')),
+          _stat4Cell('📬', '${score.sentCount}', _fsl.profileSentLetters),
           _stat4Divider(),
-          _stat4Cell('📥', '${score.receivedCount}', l.koEn('받은 편지', 'Received')),
+          _stat4Cell('📥', '${score.receivedCount}', _fsl.profileReceivedLetters),
           _stat4Divider(),
-          _stat4Cell('🌍', '${countrySet.length}', l.koEn('방문 나라', 'Countries')),
+          _stat4Cell('🌍', '${countrySet.length}', _fsl.profileVisitedCountries),
           _stat4Divider(),
-          _stat4Cell('👥', '${user.followerIds.length}', l.koEn('팔로워', 'Followers')),
+          _stat4Cell('👥', '${user.followerIds.length}', _fsl.profileFollowers),
         ],
       ),
     );
@@ -1238,6 +1296,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     UserProfile user,
     PurchaseService purchase,
   ) {
+    final _ql = AppL10n.of(user.languageCode);
     final isBrand = purchase.isBrand || user.isBrand;
     final isPremium = isBrand || purchase.isPremium || user.isPremium;
     final planName = isBrand
@@ -1247,10 +1306,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
         : '⭐ Free';
     final l = _l10n(ctx);
     final planPrice = isBrand
-        ? l.koEn('₩99,000/월', '₩99,000/mo')
+        ? '₩99,000/mo'
         : isPremium
-        ? l.koEn('₩4,900/월', '₩4,900/mo')
-        : l.koEn('무료', 'Free');
+        ? '₩4,900/mo'
+        : _ql.profileFree;
     final planColor = isBrand
         ? const Color(0xFFFF8A5C)
         : isPremium
@@ -1290,7 +1349,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     Row(
                       children: [
                         Text(
-                          l.koEn('구독 플랜', 'Subscription Plan'),
+                          _ql.profileSubscriptionPlan,
                           style: TextStyle(
                             color: AppColors.textMuted,
                             fontSize: 10,
@@ -1337,7 +1396,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           borderRadius: BorderRadius.circular(8),
                         ),
                         child: Text(
-                          l.koEn('업그레이드 →', 'Upgrade →'),
+                          _ql.profileUpgrade,
                           style: const TextStyle(
                             color: AppColors.bgDeep,
                             fontSize: 11,
@@ -1365,7 +1424,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    l.koEn('오늘 발송', 'Today Quota'),
+                    _ql.profileTodaySent,
                     style: const TextStyle(
                       color: AppColors.textMuted,
                       fontSize: 10,
@@ -1407,7 +1466,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    l.koEn('내일 자정 초기화', 'Resets at midnight'),
+                    _ql.profileResetMidnight,
                     style: const TextStyle(color: AppColors.textMuted, fontSize: 10),
                   ),
                 ],
@@ -1421,7 +1480,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   // ── ③ 타워 등급 + 프로그레스바 (A+B) ─────────────────────────────────────
   Widget _buildTowerProgressCard(BuildContext ctx, UserProfile user) {
-    final l = _l10n(ctx);
+    final _tl = AppL10n.of(user.languageCode);
     final score = user.activityScore;
     final tier = score.tier;
     final tierClr = _tierColor(tier);
@@ -1478,7 +1537,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     ),
                     const SizedBox(height: 2),
                     Text(
-                      tier.label,
+                      tier.labelL(user.languageCode),
                       style: TextStyle(
                         color: tierClr,
                         fontSize: 17,
@@ -1486,7 +1545,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       ),
                     ),
                     Text(
-                      score.reputationTitle,
+                      score.reputationTitleL(user.languageCode),
                       style: const TextStyle(
                         color: AppColors.textSecondary,
                         fontSize: 12,
@@ -1508,7 +1567,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     ),
                   ),
                   Text(
-                    l.koEn('점', 'pts'),
+                    _tl.unitPts,
                     style: const TextStyle(color: AppColors.textMuted, fontSize: 11),
                   ),
                 ],
@@ -1531,7 +1590,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                isMax ? l.koEn('🏆 최고 등급 달성!', '🏆 Max rank achieved!') : tier.nextGoal,
+                isMax ? '🏆 ${_tl.towerTopTierReached}' : tier.nextGoalL(user.languageCode),
                 style: const TextStyle(
                   color: AppColors.textMuted,
                   fontSize: 11,
@@ -1539,7 +1598,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ),
               if (!isMax)
                 Text(
-                  l.koEn('${ptsLeft.toStringAsFixed(0)}pts 남음', '${ptsLeft.toStringAsFixed(0)}pts left'),
+                  _tl.towerPtsRemaining(ptsLeft.toStringAsFixed(0)),
                   style: TextStyle(
                     color: tierClr,
                     fontSize: 11,
@@ -1848,11 +1907,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
 class _FollowListContent extends StatelessWidget {
   final String title;
+  final String emptyMsg;
   final List<String> userIds;
   final Map<String, dynamic> sessions;
 
   const _FollowListContent({
     required this.title,
+    required this.emptyMsg,
     required this.userIds,
     required this.sessions,
   });
@@ -1871,9 +1932,7 @@ class _FollowListContent extends StatelessWidget {
             ),
             const SizedBox(height: 8),
             Text(
-              title == l.koEn('팔로잉', 'Following')
-                  ? l.koEn('팔로잉 중인 유저가 없어요', 'You are not following anyone yet')
-                  : l.koEn('아직 팔로워가 없어요', 'No followers yet'),
+              emptyMsg,
               style: const TextStyle(color: AppColors.textMuted, fontSize: 13),
             ),
           ],

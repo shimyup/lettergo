@@ -1,0 +1,5 @@
+"NSLocationWhenInUseUsageDescription" = "Sua localização é necessária para descobrir cartas próximas.";
+"NSLocationAlwaysAndWhenInUseUsageDescription" = "Sua localização é necessária para descobrir cartas próximas.";
+"NSPhotoLibraryUsageDescription" = "O acesso à biblioteca de fotos é necessário para alterar sua foto de perfil.";
+"NSPhotoLibraryAddUsageDescription" = "Permissão necessária para salvar sua foto de perfil selecionada.";
+"NSCameraUsageDescription" = "O acesso à câmera é necessário para tirar fotos para suas cartas.";

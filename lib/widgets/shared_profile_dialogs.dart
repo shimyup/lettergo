@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import '../core/theme/app_theme.dart';
 import '../core/localization/app_localizations.dart';
 import '../core/services/auth_service.dart';
@@ -7,10 +8,11 @@ import '../state/app_state.dart';
 /// 닉네임 변경 불가 알림 스낵바
 void showNicknameCooldownSnack(BuildContext ctx, AppState state) {
   final l = AppL10n.of(state.currentUser.languageCode);
+  final langCode = state.currentUser.languageCode;
   final next = state.nextNicknameChangeAvailableAt;
   final dateLabel = next == null
       ? ''
-      : ' (${next.year}.${next.month.toString().padLeft(2, '0')}.${next.day.toString().padLeft(2, '0')})';
+      : ' (${DateFormat.yMd(langCode).format(next)})';
   ScaffoldMessenger.of(ctx).showSnackBar(
     SnackBar(
       content: Text(

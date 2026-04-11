@@ -7,8 +7,241 @@ import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uuid/uuid.dart';
 import '../config/firebase_config.dart';
+import '../localization/language_config.dart';
 import 'firebase_auth_service.dart';
 import 'purchase_service.dart';
+import 'sms_service.dart';
+
+/// Auth error message localization helper.
+/// Returns localized string for a given key based on language code.
+String _authMsg(String key, [String langCode = 'en']) {
+  return (_authMessages[key]?[langCode]) ??
+      (_authMessages[key]?['en']) ??
+      key;
+}
+
+const Map<String, Map<String, String>> _authMessages = {
+  'otp_not_found': {
+    'ko': '인증 코드가 없습니다. 다시 요청해주세요.',
+    'en': 'No verification code found. Please request a new one.',
+    'ja': '認証コードがありません。再度リクエストしてください。',
+    'zh': '没有验证码。请重新请求。',
+    'es': 'No se encontró el código. Solicite uno nuevo.',
+    'fr': 'Aucun code trouvé. Veuillez en demander un nouveau.',
+    'de': 'Kein Code gefunden. Bitte fordern Sie einen neuen an.',
+    'pt': 'Código não encontrado. Solicite um novo.',
+    'ru': 'Код не найден. Запросите новый.',
+  },
+  'otp_email_mismatch': {
+    'ko': '이메일이 일치하지 않습니다.',
+    'en': 'Email does not match.',
+    'ja': 'メールアドレスが一致しません。',
+    'zh': '邮箱不匹配。',
+    'es': 'El correo no coincide.',
+    'fr': 'L\'e-mail ne correspond pas.',
+    'de': 'E-Mail stimmt nicht überein.',
+    'pt': 'O e-mail não corresponde.',
+    'ru': 'Email не совпадает.',
+  },
+  'otp_phone_mismatch': {
+    'ko': '전화번호가 일치하지 않습니다.',
+    'en': 'Phone number does not match.',
+    'ja': '電話番号が一致しません。',
+    'zh': '手机号码不匹配。',
+    'es': 'El número de teléfono no coincide.',
+    'fr': 'Le numéro de téléphone ne correspond pas.',
+    'de': 'Telefonnummer stimmt nicht überein.',
+    'pt': 'O número de telefone não corresponde.',
+    'ru': 'Номер телефона не совпадает.',
+  },
+  'otp_expired': {
+    'ko': '인증 코드가 만료되었습니다. 다시 요청해주세요.',
+    'en': 'Verification code expired. Please request a new one.',
+    'ja': '認証コードの有効期限が切れました。再度リクエストしてください。',
+    'zh': '验证码已过期。请重新请求。',
+    'es': 'El código ha expirado. Solicite uno nuevo.',
+    'fr': 'Le code a expiré. Veuillez en demander un nouveau.',
+    'de': 'Code abgelaufen. Bitte fordern Sie einen neuen an.',
+    'pt': 'Código expirado. Solicite um novo.',
+    'ru': 'Код истёк. Запросите новый.',
+  },
+  'otp_invalid': {
+    'ko': '인증 코드가 올바르지 않습니다.',
+    'en': 'Invalid verification code.',
+    'ja': '認証コードが正しくありません。',
+    'zh': '验证码不正确。',
+    'es': 'Código de verificación incorrecto.',
+    'fr': 'Code de vérification incorrect.',
+    'de': 'Ungültiger Bestätigungscode.',
+    'pt': 'Código de verificação inválido.',
+    'ru': 'Неверный код подтверждения.',
+  },
+  'username_min': {
+    'ko': '2자 이상 입력해주세요',
+    'en': 'Must be at least 2 characters',
+    'ja': '2文字以上入力してください',
+    'zh': '至少输入2个字符',
+    'es': 'Mínimo 2 caracteres',
+    'fr': 'Minimum 2 caractères',
+    'de': 'Mindestens 2 Zeichen',
+    'pt': 'Mínimo 2 caracteres',
+    'ru': 'Минимум 2 символа',
+  },
+  'username_max': {
+    'ko': '20자 이하로 입력해주세요',
+    'en': 'Must be 20 characters or less',
+    'ja': '20文字以下で入力してください',
+    'zh': '不超过20个字符',
+    'es': 'Máximo 20 caracteres',
+    'fr': 'Maximum 20 caractères',
+    'de': 'Maximal 20 Zeichen',
+    'pt': 'Máximo 20 caracteres',
+    'ru': 'Максимум 20 символов',
+  },
+  'username_format': {
+    'ko': '영문으로 시작, 영문·숫자·_ 만 사용 가능',
+    'en': 'Must start with a letter; only letters, numbers, and _ allowed',
+    'ja': '英字で始まり、英数字と_のみ使用可能',
+    'zh': '以字母开头，仅允许字母、数字和_',
+    'es': 'Debe empezar con letra; solo letras, números y _',
+    'fr': 'Doit commencer par une lettre ; lettres, chiffres et _ uniquement',
+    'de': 'Muss mit Buchstabe beginnen; nur Buchstaben, Zahlen und _',
+    'pt': 'Deve começar com letra; apenas letras, números e _',
+    'ru': 'Должно начинаться с буквы; только буквы, цифры и _',
+  },
+  'password_format': {
+    'ko': '영문+숫자를 포함한 8~20자를 입력해주세요',
+    'en': 'Must be 8-20 characters with letters and numbers',
+    'ja': '英文と数字を含む8〜20文字を入力してください',
+    'zh': '请输入包含字母和数字的8-20个字符',
+    'es': '8-20 caracteres con letras y números',
+    'fr': '8-20 caractères avec lettres et chiffres',
+    'de': '8-20 Zeichen mit Buchstaben und Zahlen',
+    'pt': '8-20 caracteres com letras e números',
+    'ru': '8-20 символов с буквами и цифрами',
+  },
+  'email_required': {
+    'ko': '이메일을 입력해주세요.',
+    'en': 'Please enter your email.',
+    'ja': 'メールアドレスを入力してください。',
+    'zh': '请输入邮箱。',
+    'es': 'Ingrese su correo electrónico.',
+    'fr': 'Veuillez entrer votre e-mail.',
+    'de': 'Bitte E-Mail eingeben.',
+    'pt': 'Insira seu e-mail.',
+    'ru': 'Введите email.',
+  },
+  'email_invalid': {
+    'ko': '올바른 이메일 형식이 아닙니다.',
+    'en': 'Invalid email format.',
+    'ja': 'メールアドレスの形式が正しくありません。',
+    'zh': '邮箱格式不正确。',
+    'es': 'Formato de correo no válido.',
+    'fr': 'Format d\'e-mail invalide.',
+    'de': 'Ungültiges E-Mail-Format.',
+    'pt': 'Formato de e-mail inválido.',
+    'ru': 'Неверный формат email.',
+  },
+  'username_taken': {
+    'ko': '이미 사용 중인 아이디입니다. 다른 아이디를 입력해주세요.',
+    'en': 'This username is already taken. Please choose another.',
+    'ja': 'このユーザー名は既に使用されています。別の名前を入力してください。',
+    'zh': '用户名已被使用。请选择其他用户名。',
+    'es': 'Nombre de usuario en uso. Elija otro.',
+    'fr': 'Nom d\'utilisateur déjà pris. Choisissez-en un autre.',
+    'de': 'Benutzername bereits vergeben. Bitte wählen Sie einen anderen.',
+    'pt': 'Nome de usuário já em uso. Escolha outro.',
+    'ru': 'Имя пользователя занято. Выберите другое.',
+  },
+  'email_taken': {
+    'ko': '이미 가입된 이메일입니다. 다른 이메일을 사용하거나 로그인해주세요.',
+    'en': 'This email is already registered. Use another or sign in.',
+    'ja': 'このメールは既に登録されています。他のメールを使用するかログインしてください。',
+    'zh': '该邮箱已注册。请使用其他邮箱或登录。',
+    'es': 'Este correo ya está registrado. Use otro o inicie sesión.',
+    'fr': 'Cet e-mail est déjà enregistré. Utilisez-en un autre ou connectez-vous.',
+    'de': 'Diese E-Mail ist bereits registriert. Verwenden Sie eine andere oder melden Sie sich an.',
+    'pt': 'Este e-mail já está cadastrado. Use outro ou faça login.',
+    'ru': 'Email уже зарегистрирован. Используйте другой или войдите.',
+  },
+  'nickname_required': {
+    'ko': '닉네임을 입력해주세요.',
+    'en': 'Please enter your username.',
+    'ja': 'ユーザー名を入力してください。',
+    'zh': '请输入用户名。',
+    'es': 'Ingrese su nombre de usuario.',
+    'fr': 'Veuillez entrer votre nom d\'utilisateur.',
+    'de': 'Bitte Benutzernamen eingeben.',
+    'pt': 'Insira seu nome de usuário.',
+    'ru': 'Введите имя пользователя.',
+  },
+  'password_required': {
+    'ko': '비밀번호를 입력해주세요.',
+    'en': 'Please enter your password.',
+    'ja': 'パスワードを入力してください。',
+    'zh': '请输入密码。',
+    'es': 'Ingrese su contraseña.',
+    'fr': 'Veuillez entrer votre mot de passe.',
+    'de': 'Bitte Passwort eingeben.',
+    'pt': 'Insira sua senha.',
+    'ru': 'Введите пароль.',
+  },
+  'no_account': {
+    'ko': '등록된 계정이 없습니다. 회원가입을 먼저 해주세요.',
+    'en': 'No account found. Please sign up first.',
+    'ja': 'アカウントが見つかりません。先に会員登録してください。',
+    'zh': '未找到账户。请先注册。',
+    'es': 'No se encontró cuenta. Regístrese primero.',
+    'fr': 'Aucun compte trouvé. Inscrivez-vous d\'abord.',
+    'de': 'Kein Konto gefunden. Bitte registrieren Sie sich zuerst.',
+    'pt': 'Conta não encontrada. Cadastre-se primeiro.',
+    'ru': 'Аккаунт не найден. Сначала зарегистрируйтесь.',
+  },
+  'login_failed': {
+    'ko': '닉네임 또는 비밀번호가 올바르지 않습니다.',
+    'en': 'Incorrect username or password.',
+    'ja': 'ユーザー名またはパスワードが正しくありません。',
+    'zh': '用户名或密码不正确。',
+    'es': 'Nombre de usuario o contraseña incorrectos.',
+    'fr': 'Nom d\'utilisateur ou mot de passe incorrect.',
+    'de': 'Benutzername oder Passwort falsch.',
+    'pt': 'Nome de usuário ou senha incorretos.',
+    'ru': 'Неверное имя пользователя или пароль.',
+  },
+  'email_not_found': {
+    'ko': '해당 이메일로 등록된 계정을 찾을 수 없습니다.',
+    'en': 'No account found with this email.',
+    'ja': 'このメールアドレスに登録されたアカウントが見つかりません。',
+    'zh': '未找到与此邮箱关联的账户。',
+    'es': 'No se encontró cuenta con este correo.',
+    'fr': 'Aucun compte trouvé avec cet e-mail.',
+    'de': 'Kein Konto mit dieser E-Mail gefunden.',
+    'pt': 'Nenhuma conta encontrada com este e-mail.',
+    'ru': 'Аккаунт с этим email не найден.',
+  },
+  'reset_input_required': {
+    'ko': '닉네임과 가입 이메일을 모두 입력해주세요.',
+    'en': 'Please enter both username and email.',
+    'ja': 'ユーザー名とメールアドレスの両方を入力してください。',
+    'zh': '请同时输入用户名和邮箱。',
+    'es': 'Ingrese nombre de usuario y correo.',
+    'fr': 'Veuillez entrer le nom d\'utilisateur et l\'e-mail.',
+    'de': 'Bitte Benutzernamen und E-Mail eingeben.',
+    'pt': 'Insira nome de usuário e e-mail.',
+    'ru': 'Введите имя пользователя и email.',
+  },
+  'reset_mismatch': {
+    'ko': '닉네임 또는 이메일이 일치하지 않습니다.',
+    'en': 'Username or email does not match.',
+    'ja': 'ユーザー名またはメールアドレスが一致しません。',
+    'zh': '用户名或邮箱不匹配。',
+    'es': 'El nombre de usuario o correo no coincide.',
+    'fr': 'Le nom d\'utilisateur ou l\'e-mail ne correspond pas.',
+    'de': 'Benutzername oder E-Mail stimmt nicht überein.',
+    'pt': 'Nome de usuário ou e-mail não corresponde.',
+    'ru': 'Имя пользователя или email не совпадает.',
+  },
+};
 
 class AuthService {
   static const _keyIsLoggedIn = 'isLoggedIn';
@@ -23,6 +256,8 @@ class AuthService {
   static const _keyTempPasswordHash = 'tempPasswordHash';
   static const _keyTempPasswordExpiresAt = 'tempPasswordExpiresAt';
   static const _keyMustChangePassword = 'mustChangePassword';
+  static const _keyPhoneNumber = 'phoneNumber';
+  static const _keyVerifyMethod = 'verifyMethod'; // 'email' or 'phone'
   static const _keySecureMigrated = 'auth_secure_migrated_v1';
   static const _tempPasswordTtl = Duration(minutes: 15);
 
@@ -264,22 +499,22 @@ class AuthService {
   }
 
   /// OTP 검증. null = 성공, 문자열 = 오류 메시지
-  static String? verifyEmailOtp(String email, String otp, {String langCode = 'ko'}) {
+  static String? verifyEmailOtp(String email, String otp, {String langCode = 'en'}) {
     if (_pendingOtpHash == null || _pendingOtpEmail == null) {
-      return _t('otp_not_found', langCode);
+      return _authMsg('otp_not_found', langCode);
     }
     if (_pendingOtpEmail != email.trim().toLowerCase()) {
-      return _t('otp_email_mismatch', langCode);
+      return _authMsg('otp_email_mismatch', langCode);
     }
     if (_otpExpiresAt == null || DateTime.now().isAfter(_otpExpiresAt!)) {
       _pendingOtpHash = null;
       _pendingOtpEmail = null;
       _otpExpiresAt = null;
-      return _t('otp_expired', langCode);
+      return _authMsg('otp_expired', langCode);
     }
     // 입력값을 해시화하여 저장된 해시와 비교 (타이밍 공격 방지)
     if (_pendingOtpHash != _hashOtp(otp.trim())) {
-      return _t('otp_invalid', langCode);
+      return _authMsg('otp_invalid', langCode);
     }
     // 인증 성공 → OTP 무효화
     _pendingOtpHash = null;
@@ -305,9 +540,98 @@ class AuthService {
 
   /// [레거시] 단순 SHA-256 해시 — 기존 저장값 검증 전용, 신규 저장에는 사용하지 않음.
   static String _hashPasswordLegacy(String raw) {
-    const salt = 'globaldrift_v1_';
-    final bytes = utf8.encode(salt + raw);
-    return sha256.convert(bytes).toString(); // 64자 hex 문자열
+  // ── SMS OTP ───────────────────────────────────────────────────────────────
+  static String? _pendingPhoneOtpHash;
+  static String? _pendingOtpPhone;
+
+  /// SMS로 6자리 OTP 생성 및 발송.
+  /// Rate limit은 이메일 OTP와 공유 (동일 윈도우).
+  /// [phoneNumber]는 E.164 형식 (예: +821012345678).
+  /// 성공 시 코드 반환 (개발용), 실패 시 null.
+  static Future<String?> generatePhoneOtp(
+    String phoneNumber, {
+    String langCode = 'en',
+  }) async {
+    final now = DateTime.now();
+
+    // 윈도우 리셋 (10분 경과)
+    if (_otpWindowStart == null ||
+        now.difference(_otpWindowStart!) >= _otpWindowDuration) {
+      _otpWindowStart = now;
+      _otpRequestCount = 0;
+    }
+
+    // 쿨다운 체크 (마지막 요청으로부터 60초)
+    if (_lastOtpSentAt != null &&
+        now.difference(_lastOtpSentAt!) < _otpCooldownDuration) {
+      return null; // 쿨다운 중
+    }
+
+    // 윈도우 내 최대 요청 횟수 초과
+    if (_otpRequestCount >= _maxOtpRequestsPerWindow) {
+      return null; // Rate limit 초과
+    }
+
+    _otpRequestCount++;
+    _lastOtpSentAt = now;
+
+    final rng = Random.secure();
+    final code = List.generate(6, (_) => rng.nextInt(10)).join();
+    _pendingPhoneOtpHash = _hashOtp(code);
+    _pendingOtpPhone = phoneNumber.replaceAll(RegExp(r'[\s\-\(\)]'), '');
+    _otpExpiresAt = now.add(_otpTtl);
+
+    // Twilio를 통한 실제 SMS 발송
+    final smsError = await SmsService.sendOtp(
+      phoneNumber: _pendingOtpPhone!,
+      code: code,
+      langCode: langCode,
+    );
+
+    if (smsError != null) {
+      assert(() {
+        debugPrint('[AuthService] SMS 발송 실패: $smsError');
+        return true;
+      }());
+      // SMS 발송 실패해도 개발 환경에서는 코드 반환 (화면 표시용)
+      // 프로덕션에서는 return null; 로 변경
+    }
+
+    assert(() {
+      final masked = phoneNumber.length > 4
+          ? '${'*' * (phoneNumber.length - 4)}${phoneNumber.substring(phoneNumber.length - 4)}'
+          : '****';
+      debugPrint(
+        '[AuthService] SMS 인증 코드 발송: $masked (10분 유효, 이번 윈도우 $_otpRequestCount/$_maxOtpRequestsPerWindow)',
+      );
+      return true;
+    }());
+    return code;
+  }
+
+  /// SMS OTP 검증. null = 성공, 문자열 = 오류 메시지.
+  static String? verifyPhoneOtp(String phoneNumber, String otp, {String langCode = 'en'}) {
+    final cleaned = phoneNumber.replaceAll(RegExp(r'[\s\-\(\)]'), '');
+    if (_pendingPhoneOtpHash == null || _pendingOtpPhone == null) {
+      return _authMsg('otp_not_found', langCode);
+    }
+    if (_pendingOtpPhone != cleaned) {
+      return _authMsg('otp_phone_mismatch', langCode);
+    }
+    if (_otpExpiresAt == null || DateTime.now().isAfter(_otpExpiresAt!)) {
+      _pendingPhoneOtpHash = null;
+      _pendingOtpPhone = null;
+      _otpExpiresAt = null;
+      return _authMsg('otp_expired', langCode);
+    }
+    if (_pendingPhoneOtpHash != _hashOtp(otp.trim())) {
+      return _authMsg('otp_invalid', langCode);
+    }
+    // 인증 성공 → OTP 무효화
+    _pendingPhoneOtpHash = null;
+    _pendingOtpPhone = null;
+    _otpExpiresAt = null;
+    return null;
   }
 
   /// 16바이트 암호학적 랜덤 salt 생성 (hex 문자열 반환).
@@ -464,14 +788,24 @@ class AuthService {
     await _migrateLegacyAuthDataIfNeeded(prefs);
 
     if ((await _readSecure(_keyIsLoggedIn)) != 'true') return null;
+    final country = (await _readSecure(_keyCountry)) ?? '대한민국';
+    final languageCodeRaw = (await _readSecure(_keyLanguageCode)) ?? '';
+    final languageCode = languageCodeRaw.isNotEmpty
+        ? languageCodeRaw
+        : LanguageConfig.getLanguageCode(country);
+    if (languageCodeRaw.isEmpty) {
+      await _writeSecure(_keyLanguageCode, languageCode);
+    }
     return {
       'id': (await _readSecure(_keyUserId)) ?? '',
       'username': (await _readSecure(_keyUsername)) ?? '',
       'email': (await _readSecure(_keyEmail)) ?? '',
-      'country': (await _readSecure(_keyCountry)) ?? '대한민국',
+      'country': country,
       'countryFlag': (await _readSecure(_keyCountryFlag)) ?? '🇰🇷',
-      'languageCode': (await _readSecure(_keyLanguageCode)) ?? '',
+      'languageCode': languageCode,
       'socialLink': (await _readSecure(_keySocialLink)) ?? '',
+      'phoneNumber': (await _readSecure(_keyPhoneNumber)) ?? '',
+      'verifyMethod': (await _readSecure(_keyVerifyMethod)) ?? 'email',
     };
   }
 
@@ -486,28 +820,28 @@ class AuthService {
   );
 
   /// 아이디 유효성 검사 (UI 실시간 체크용)
-  static String? validateUsername(String value, {String langCode = 'ko'}) {
+  static String? validateUsername(String value, {String langCode = 'en'}) {
     final v = value.trim();
     if (v.isEmpty) return null;
-    if (v.length < 2) return _t('username_min_length', langCode);
-    if (v.length > 20) return _t('username_max_length', langCode);
-    if (!_usernameRe.hasMatch(v)) return _t('username_format', langCode);
-    return null; // 유효
+    if (v.length < 2) return _authMsg('username_min', langCode);
+    if (v.length > 20) return _authMsg('username_max', langCode);
+    if (!_usernameRe.hasMatch(v)) return _authMsg('username_format', langCode);
+    return null; // valid
   }
 
   /// 비밀번호 유효성 검사 (UI 실시간 체크용)
-  static String? validatePassword(String value, {String langCode = 'ko'}) {
+  static String? validatePassword(String value, {String langCode = 'en'}) {
     if (value.isEmpty) return null;
     if (!_passwordRe.hasMatch(value)) {
-      return _t('password_format', langCode);
+      return _authMsg('password_format', langCode);
     }
-    return null; // 유효
+    return null; // valid
   }
 
   /// 이메일 유효성 검사
-  static String? validateEmail(String email, {String langCode = 'ko'}) {
-    if (email.isEmpty) return _t('email_required', langCode);
-    if (!_emailRe.hasMatch(email)) return _t('email_invalid', langCode);
+  static String? validateEmail(String email, {String langCode = 'en'}) {
+    if (email.isEmpty) return _authMsg('email_required', langCode);
+    if (!_emailRe.hasMatch(email)) return _authMsg('email_invalid', langCode);
     return null;
   }
 
@@ -533,7 +867,9 @@ class AuthService {
     String? languageCode,
     String? email,
     String? socialLink,
-    String langCode = 'ko',
+    String? phoneNumber,
+    String verifyMethod = 'email',
+    String langCode = 'en',
   }) async {
     // ── 형식 검사 ──
     final normalizedEmail = email?.trim() ?? '';
@@ -541,8 +877,8 @@ class AuthService {
     if (usernameErr != null) return usernameErr;
     final passwordErr = validatePassword(password, langCode: langCode);
     if (passwordErr != null) return passwordErr;
-    if (normalizedEmail.isEmpty) return _t('email_required', langCode);
-    if (!_emailRe.hasMatch(normalizedEmail)) return _t('email_invalid', langCode);
+    if (normalizedEmail.isEmpty) return _authMsg('email_required', langCode);
+    if (!_emailRe.hasMatch(normalizedEmail)) return _authMsg('email_invalid', langCode);
 
     final prefs = await SharedPreferences.getInstance();
     await _migrateLegacyAuthDataIfNeeded(prefs);
@@ -551,12 +887,12 @@ class AuthService {
     final existingUsername = await _readSecure(_keyUsername);
     if (existingUsername != null &&
         existingUsername.toLowerCase() == username.trim().toLowerCase()) {
-      return _t('username_taken', langCode);
+      return _authMsg('username_taken', langCode);
     }
     final existingEmail = await _readSecure(_keyEmail);
     if (existingEmail != null &&
         existingEmail.toLowerCase() == normalizedEmail.toLowerCase()) {
-      return _t('email_taken', langCode);
+      return _authMsg('email_taken', langCode);
     }
 
     final userId = 'user_${const Uuid().v4()}';
@@ -577,6 +913,12 @@ class AuthService {
     } else {
       await _deleteSecure(_keySocialLink);
     }
+    if (phoneNumber != null && phoneNumber.isNotEmpty) {
+      await _writeSecure(_keyPhoneNumber, phoneNumber.trim());
+    } else {
+      await _deleteSecure(_keyPhoneNumber);
+    }
+    await _writeSecure(_keyVerifyMethod, verifyMethod);
     return null; // null = 성공
   }
 
@@ -584,10 +926,10 @@ class AuthService {
   static Future<String?> login({
     required String username,
     required String password,
-    String langCode = 'ko',
+    String langCode = 'en',
   }) async {
-    if (username.trim().isEmpty) return _t('nickname_required', langCode);
-    if (password.isEmpty) return _t('password_required', langCode);
+    if (username.trim().isEmpty) return _authMsg('nickname_required', langCode);
+    if (password.isEmpty) return _authMsg('password_required', langCode);
 
     final prefs = await SharedPreferences.getInstance();
     await _migrateLegacyAuthDataIfNeeded(prefs);
@@ -595,8 +937,8 @@ class AuthService {
     final savedUsername = await _readSecure(_keyUsername);
     final savedPassword = await _readSecure(_keyPassword);
 
-    if (savedUsername == null) return _t('no_account', langCode);
-    if (savedUsername != username.trim()) return _t('login_failed', langCode);
+    if (savedUsername == null) return _authMsg('no_account', langCode);
+    if (savedUsername != username.trim()) return _authMsg('login_failed', langCode);
 
     // 비밀번호 검증 (v2 강화 해시 → v1 레거시 → 평문 순, 자동 마이그레이션 포함)
     final primaryPasswordMatched =
@@ -629,7 +971,7 @@ class AuthService {
         await _deleteSecure(_keyTempPasswordExpiresAt);
       }
 
-      return _t('login_failed', langCode);
+      return _authMsg('login_failed', langCode);
     }
 
     await _deleteSecure(_keyTempPasswordHash);
@@ -651,23 +993,32 @@ class AuthService {
     String? username,
     String? country,
     String? countryFlag,
+    String? languageCode,
     String? socialLink,
+    String? phoneNumber,
+    String? verifyMethod,
   }) async {
     if (username != null && username.isNotEmpty) {
       await _writeSecure(_keyUsername, username.trim());
     }
     if (country != null) await _writeSecure(_keyCountry, country);
     if (countryFlag != null) await _writeSecure(_keyCountryFlag, countryFlag);
+    if (languageCode != null && languageCode.isNotEmpty) {
+      await _writeSecure(_keyLanguageCode, languageCode);
+    }
     if (socialLink != null) {
       await _writeSecure(_keySocialLink, socialLink.trim());
+    }
+    if (phoneNumber != null) {
+      await _writeSecure(_keyPhoneNumber, phoneNumber.trim());
+    }
+    if (verifyMethod != null) {
+      await _writeSecure(_keyVerifyMethod, verifyMethod);
     }
   }
 
   // Find username by email
-  static Future<Map<String, dynamic>> findId({
-    required String email,
-    String langCode = 'ko',
-  }) async {
+  static Future<Map<String, dynamic>> findId({required String email, String langCode = 'en'}) async {
     final prefs = await SharedPreferences.getInstance();
     await _migrateLegacyAuthDataIfNeeded(prefs);
 
@@ -676,14 +1027,14 @@ class AuthService {
       final username = (await _readSecure(_keyUsername)) ?? '';
       return {'success': true, 'username': username};
     }
-    return {'success': false, 'error': _t('email_not_found', langCode)};
+    return {'success': false, 'error': _authMsg('email_not_found', langCode)};
   }
 
   // Reset password
   static Future<Map<String, dynamic>> resetPassword({
     required String username,
     required String email,
-    String langCode = 'ko',
+    String langCode = 'en',
   }) async {
     final prefs = await SharedPreferences.getInstance();
     await _migrateLegacyAuthDataIfNeeded(prefs);
@@ -691,7 +1042,7 @@ class AuthService {
     final inputUsername = username.trim();
     final inputEmail = email.trim();
     if (inputUsername.isEmpty || inputEmail.isEmpty) {
-      return {'success': false, 'error': _t('reset_fields_required', langCode)};
+      return {'success': false, 'error': _authMsg('reset_input_required', langCode)};
     }
 
     final storedUsername = (await _readSecure(_keyUsername)) ?? '';
@@ -712,7 +1063,7 @@ class AuthService {
         'expiresInMinutes': _tempPasswordTtl.inMinutes,
       };
     }
-    return {'success': false, 'error': _t('reset_mismatch', langCode)};
+    return {'success': false, 'error': _authMsg('reset_mismatch', langCode)};
   }
 
   // Change password (requires old password verified by caller)
@@ -765,15 +1116,25 @@ class AuthService {
   static Future<void> saveOnboardingCountry({
     required String country,
     required String countryFlag,
+    String? languageCode,
   }) async {
     await _writeSecure(_keyCountry, country);
     await _writeSecure(_keyCountryFlag, countryFlag);
+    if (languageCode != null && languageCode.isNotEmpty) {
+      await _writeSecure(_keyLanguageCode, languageCode);
+    }
   }
 
   static Future<Map<String, String>> getOnboardingCountry() async {
+    final country = (await _readSecure(_keyCountry)) ?? '대한민국';
+    final languageCodeRaw = (await _readSecure(_keyLanguageCode)) ?? '';
+    final languageCode = languageCodeRaw.isNotEmpty
+        ? languageCodeRaw
+        : LanguageConfig.getLanguageCode(country);
     return {
-      'country': (await _readSecure(_keyCountry)) ?? '대한민국',
+      'country': country,
       'countryFlag': (await _readSecure(_keyCountryFlag)) ?? '🇰🇷',
+      'languageCode': languageCode,
     };
   }
 }

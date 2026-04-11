@@ -7,11 +7,14 @@ import 'core/theme/app_theme.dart';
 import 'core/theme/time_theme.dart';
 import 'core/data/country_cities.dart';
 import 'core/services/auth_service.dart';
+import 'core/services/geocoding_service.dart';
 import 'core/services/notification_service.dart';
 import 'core/services/purchase_service.dart';
 import 'state/app_state.dart';
 import 'features/splash/splash_screen.dart'; // kept for route
 import 'features/auth/screens/auth_screen.dart';
+import 'features/compose/screens/compose_screen.dart';
+import 'features/intro/delivery_intro_screen.dart';
 import 'features/onboarding/onboarding_screen.dart';
 import 'features/premium/premium_screen.dart';
 import 'widgets/main_scaffold.dart';
@@ -52,7 +55,11 @@ void main() async {
   );
 
   // void 초기화 + bool/Position 동시 병렬 실행 → 시작 시간 단축
-  await Future.wait([NotificationService.initialize(), CountryCities.init()]);
+  await Future.wait([
+    NotificationService.initialize(),
+    CountryCities.init(),
+    GeocodingService.instance.initialize(),
+  ]);
   final results = await Future.wait<dynamic>([
     AuthService.isLoggedIn(),
     _getLocation(),
@@ -98,9 +105,18 @@ class _GlobalDriftAppState extends State<GlobalDriftApp> {
   TimeOfDayPeriod? _lastPeriod;
 
   void _onPurchaseChanged() {
+    _purchaseService.setPreferredLanguageCode(
+      _appState.currentUser.languageCode,
+    );
     _appState.syncPremiumStatus(
       isPremium: _purchaseService.isPremium,
       isBrand: _purchaseService.isBrand,
+    );
+  }
+
+  void _onAppStateChanged() {
+    _purchaseService.setPreferredLanguageCode(
+      _appState.currentUser.languageCode,
     );
   }
 
@@ -108,6 +124,10 @@ class _GlobalDriftAppState extends State<GlobalDriftApp> {
   void initState() {
     super.initState();
     _appState = AppState();
+    _appState.addListener(_onAppStateChanged);
+    _purchaseService.setPreferredLanguageCode(
+      _appState.currentUser.languageCode,
+    );
     // 인앱 결제 초기화 후 AppState 프리미엄 상태 동기화
     _purchaseService.initialize().then((_) {
       if (!mounted) return;
@@ -133,6 +153,10 @@ class _GlobalDriftAppState extends State<GlobalDriftApp> {
         socialLink: widget.initialUserData!['socialLink']?.isNotEmpty == true
             ? widget.initialUserData!['socialLink']
             : null,
+        phoneNumber: widget.initialUserData!['phoneNumber']?.isNotEmpty == true
+            ? widget.initialUserData!['phoneNumber']
+            : null,
+        verifyMethod: widget.initialUserData!['verifyMethod'] ?? 'email',
         latitude: widget.initialLat,
         longitude: widget.initialLng,
       );
@@ -144,6 +168,8 @@ class _GlobalDriftAppState extends State<GlobalDriftApp> {
     }
     // 저장된 데이터 복원 (편지함, 보낸 편지, 활동 점수, 차단 목록)
     _appState.loadFromPrefs();
+    // 자주 사용하는 국가의 실제 주소 백그라운드 프리페치
+    _prefetchPopularAddresses();
     // 시간대 변화 감지 타이머 (30초마다 체크, 시간대 변경 시 테마 갱신)
     _lastPeriod = _appState.activeTimePeriod;
     _themeTimer = Timer.periodic(const Duration(seconds: 30), (_) {
@@ -155,9 +181,25 @@ class _GlobalDriftAppState extends State<GlobalDriftApp> {
     });
   }
 
+  /// 인기 국가 실제 주소 백그라운드 프리페치 (Nominatim, 1 req/sec)
+  void _prefetchPopularAddresses() {
+    final geo = GeocodingService.instance;
+    if (!geo.isInitialized) return;
+    // 사용자 언어·위치 기반 상위 국가 우선, 나머지 주요 20개국
+    const popular = [
+      '대한민국', '일본', '미국', '프랑스', '영국', '독일',
+      '이탈리아', '스페인', '브라질', '인도', '중국', '호주',
+      '캐나다', '멕시코', '태국', '터키', '인도네시아', '베트남',
+      '러시아', '아르헨티나',
+    ];
+    // 비동기로 실행 — UI 블로킹 없음
+    geo.prefetchMultiple(popular, perCountry: 5);
+  }
+
   @override
   void dispose() {
     _purchaseService.removeListener(_onPurchaseChanged);
+    _appState.removeListener(_onAppStateChanged);
     _themeTimer?.cancel();
     _appState.dispose();
     super.dispose();
@@ -190,6 +232,13 @@ class _GlobalDriftAppState extends State<GlobalDriftApp> {
   }
 
   String _getInitialRoute() {
+    // Allows controlled capture/testing flows via:
+    // --dart-define=APP_INITIAL_ROUTE=/delivery_intro
+    const forcedRoute = String.fromEnvironment(
+      'APP_INITIAL_ROUTE',
+      defaultValue: '',
+    );
+    if (forcedRoute.isNotEmpty) return forcedRoute;
     return '/splash';
   }
 
@@ -203,7 +252,7 @@ class _GlobalDriftAppState extends State<GlobalDriftApp> {
       child: Consumer<AppState>(
         builder: (context, state, _) {
           return MaterialApp(
-            title: 'Message in a Bottle',
+            title: 'Letter Go',
             debugShowCheckedModeBanner: false,
             theme: _buildTheme(state),
             initialRoute: _getInitialRoute(),
@@ -212,7 +261,12 @@ class _GlobalDriftAppState extends State<GlobalDriftApp> {
               '/splash': (_) =>
                   SplashScreen(skipToAuth: !widget.initialLoggedIn),
               '/auth': (_) => const AuthScreen(),
+              '/delivery_intro': (_) => const DeliveryIntroScreen(),
               '/home': (_) => const MainScaffold(),
+              '/home_inbox': (_) => const MainScaffold(initialIndex: 1),
+              '/home_tower': (_) => const MainScaffold(initialIndex: 2),
+              '/home_profile': (_) => const MainScaffold(initialIndex: 3),
+              '/compose': (_) => const ComposeScreen(),
               '/premium_welcome': (_) =>
                   const PremiumScreen(isWelcomeMode: true),
             },

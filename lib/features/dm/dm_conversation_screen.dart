@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
+import '../../../core/localization/app_localizations.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../models/direct_message.dart';
 import '../../../state/app_state.dart';
@@ -52,6 +53,7 @@ class _DmConversationScreenState extends State<DmConversationScreen> {
   }
 
   void _sendMessage(AppState state) {
+    final l = AppL10n.of(state.currentUser.languageCode);
     final text = _controller.text.trim();
     if (text.isEmpty) return;
 
@@ -67,7 +69,7 @@ class _DmConversationScreenState extends State<DmConversationScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
-            '발송 가능 쿼터가 부족해요. (DM ${state.dmPerLetterQuota}회 = 편지 1통 차감)',
+            l.dmQuotaInsufficient(state.dmPerLetterQuota),
           ),
           backgroundColor: AppColors.error,
           duration: const Duration(seconds: 3),
@@ -80,18 +82,19 @@ class _DmConversationScreenState extends State<DmConversationScreen> {
   }
 
   void _showDMUnavailableDialog(AppState state) {
+    final l = AppL10n.of(state.currentUser.languageCode);
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
         backgroundColor: AppColors.bgCard,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: const Row(
+        title: Row(
           children: [
-            Text('💌', style: TextStyle(fontSize: 20)),
-            SizedBox(width: 8),
+            const Text('💌', style: TextStyle(fontSize: 20)),
+            const SizedBox(width: 8),
             Text(
-              'DM 이용 불가',
-              style: TextStyle(color: AppColors.textPrimary, fontSize: 16),
+              l.dmUnavailableTitle,
+              style: const TextStyle(color: AppColors.textPrimary, fontSize: 16),
             ),
           ],
         ),
@@ -102,7 +105,7 @@ class _DmConversationScreenState extends State<DmConversationScreen> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
-            child: const Text('확인', style: TextStyle(color: AppColors.teal)),
+            child: Text(l.dmConfirm, style: const TextStyle(color: AppColors.teal)),
           ),
         ],
       ),
@@ -111,23 +114,24 @@ class _DmConversationScreenState extends State<DmConversationScreen> {
 
   /// 차단 확인 다이얼로그
   void _showBlockDialog(AppState state) {
+    final l = AppL10n.of(state.currentUser.languageCode);
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
         backgroundColor: AppColors.bgCard,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: const Row(
+        title: Row(
           children: [
-            Text('🚫', style: TextStyle(fontSize: 20)),
-            SizedBox(width: 8),
+            const Text('🚫', style: TextStyle(fontSize: 20)),
+            const SizedBox(width: 8),
             Text(
-              '사용자 차단',
-              style: TextStyle(color: AppColors.textPrimary, fontSize: 16),
+              l.dmBlockUser,
+              style: const TextStyle(color: AppColors.textPrimary, fontSize: 16),
             ),
           ],
         ),
         content: Text(
-          '${widget.partnerName}님을 차단하면 DM 대화가 종료되고\n해당 사용자의 편지도 더 이상 받지 않아요.\n\n차단하시겠어요?',
+          l.dmBlockConfirm(widget.partnerName),
           style: const TextStyle(
             color: AppColors.textSecondary,
             fontSize: 14,
@@ -137,9 +141,9 @@ class _DmConversationScreenState extends State<DmConversationScreen> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
-            child: const Text(
-              '취소',
-              style: TextStyle(color: AppColors.textMuted),
+            child: Text(
+              l.dmCancel,
+              style: const TextStyle(color: AppColors.textMuted),
             ),
           ),
           TextButton(
@@ -149,15 +153,15 @@ class _DmConversationScreenState extends State<DmConversationScreen> {
               Navigator.pop(context); // DM 화면도 닫기
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
-                  content: Text('${widget.partnerName}님을 차단했어요.'),
+                  content: Text(l.dmBlocked(widget.partnerName)),
                   backgroundColor: AppColors.bgCard,
                   duration: const Duration(seconds: 2),
                 ),
               );
             },
-            child: const Text(
-              '차단',
-              style: TextStyle(
+            child: Text(
+              l.dmBlock,
+              style: const TextStyle(
                 color: AppColors.error,
                 fontWeight: FontWeight.w700,
               ),
@@ -170,7 +174,8 @@ class _DmConversationScreenState extends State<DmConversationScreen> {
 
   /// 신고 사유 선택 다이얼로그
   void _showReportDialog(AppState state) {
-    final reasons = ['스팸 / 광고', '욕설 / 혐오 표현', '불법 정보', '성희롱 / 음란물', '기타'];
+    final l = AppL10n.of(state.currentUser.languageCode);
+    final reasons = [l.dmReportReasonSpam, l.dmReportReasonHate, l.dmReportReasonIllegal, l.dmReportReasonHarass, l.dmReportReasonOther];
     String? selectedReason;
 
     showDialog(
@@ -181,13 +186,13 @@ class _DmConversationScreenState extends State<DmConversationScreen> {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(16),
           ),
-          title: const Row(
+          title: Row(
             children: [
-              Text('🚨', style: TextStyle(fontSize: 20)),
-              SizedBox(width: 8),
+              const Text('🚨', style: TextStyle(fontSize: 20)),
+              const SizedBox(width: 8),
               Text(
-                '사용자 신고',
-                style: TextStyle(color: AppColors.textPrimary, fontSize: 16),
+                l.dmReportUser,
+                style: const TextStyle(color: AppColors.textPrimary, fontSize: 16),
               ),
             ],
           ),
@@ -196,7 +201,7 @@ class _DmConversationScreenState extends State<DmConversationScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                '${widget.partnerName}님을 신고하는 이유를 선택해주세요.',
+                l.dmReportReason(widget.partnerName),
                 style: const TextStyle(
                   color: AppColors.textSecondary,
                   fontSize: 13,
@@ -222,18 +227,18 @@ class _DmConversationScreenState extends State<DmConversationScreen> {
                 ),
               ),
               const SizedBox(height: 4),
-              const Text(
-                '* 신고 후 해당 사용자는 자동으로 차단됩니다.',
-                style: TextStyle(color: AppColors.textMuted, fontSize: 11),
+              Text(
+                l.dmReportAutoBlock,
+                style: const TextStyle(color: AppColors.textMuted, fontSize: 11),
               ),
             ],
           ),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(ctx),
-              child: const Text(
-                '취소',
-                style: TextStyle(color: AppColors.textMuted),
+              child: Text(
+                l.dmCancel,
+                style: const TextStyle(color: AppColors.textMuted),
               ),
             ),
             TextButton(
@@ -246,7 +251,7 @@ class _DmConversationScreenState extends State<DmConversationScreen> {
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
                           content: Text(
-                            '신고가 접수됐어요. ${widget.partnerName}님을 차단했습니다.',
+                            l.dmReported(widget.partnerName),
                           ),
                           backgroundColor: AppColors.bgCard,
                           duration: const Duration(seconds: 3),
@@ -254,7 +259,7 @@ class _DmConversationScreenState extends State<DmConversationScreen> {
                       );
                     },
               child: Text(
-                '신고',
+                l.dmReport,
                 style: TextStyle(
                   color: selectedReason == null
                       ? AppColors.textMuted
@@ -273,6 +278,7 @@ class _DmConversationScreenState extends State<DmConversationScreen> {
   Widget build(BuildContext context) {
     return Consumer<AppState>(
       builder: (context, state, _) {
+        final l = AppL10n.of(state.currentUser.languageCode);
         // 프리미엄 게이트: 비프리미엄 또는 브랜드 → 잠금 화면
         if (!state.canUseDM) {
           return _buildDMGateScreen(state);
@@ -319,7 +325,7 @@ class _DmConversationScreenState extends State<DmConversationScreen> {
                       ),
                     ),
                     Text(
-                      '⚡ 빠른 편지  •  ${state.dmCountUntilNextQuotaDeduction}회 후 쿼터 차감',
+                      l.dmQuotaInfo(widget.partnerName, state.dmCountUntilNextQuotaDeduction),
                       style: const TextStyle(
                         color: AppColors.teal,
                         fontSize: 10,
@@ -346,15 +352,15 @@ class _DmConversationScreenState extends State<DmConversationScreen> {
                   if (value == 'report') _showReportDialog(state);
                 },
                 itemBuilder: (_) => [
-                  const PopupMenuItem(
+                  PopupMenuItem(
                     value: 'block',
                     child: Row(
                       children: [
-                        Icon(Icons.block_rounded, color: AppColors.error, size: 18),
-                        SizedBox(width: 8),
+                        const Icon(Icons.block_rounded, color: AppColors.error, size: 18),
+                        const SizedBox(width: 8),
                         Text(
-                          '차단하기',
-                          style: TextStyle(
+                          l.dmBlockAction,
+                          style: const TextStyle(
                             color: AppColors.error,
                             fontSize: 14,
                           ),
@@ -362,15 +368,15 @@ class _DmConversationScreenState extends State<DmConversationScreen> {
                       ],
                     ),
                   ),
-                  const PopupMenuItem(
+                  PopupMenuItem(
                     value: 'report',
                     child: Row(
                       children: [
-                        Icon(Icons.flag_rounded, color: AppColors.error, size: 18),
-                        SizedBox(width: 8),
+                        const Icon(Icons.flag_rounded, color: AppColors.error, size: 18),
+                        const SizedBox(width: 8),
                         Text(
-                          '신고하기',
-                          style: TextStyle(
+                          l.dmReportAction,
+                          style: const TextStyle(
                             color: AppColors.error,
                             fontSize: 14,
                           ),
@@ -405,7 +411,7 @@ class _DmConversationScreenState extends State<DmConversationScreen> {
                     const SizedBox(width: 6),
                     Expanded(
                       child: Text(
-                        '${widget.partnerName}님과의 1:1 빠른 편지 대화예요. DM ${state.dmPerLetterQuota}회 = 편지 1통 쿼터 차감.',
+                        l.dmConversationInfo(widget.partnerName, state.dmPerLetterQuota),
                         style: const TextStyle(
                           color: AppColors.textMuted,
                           fontSize: 11,
@@ -428,7 +434,7 @@ class _DmConversationScreenState extends State<DmConversationScreen> {
                             ),
                             const SizedBox(height: 16),
                             Text(
-                              '${widget.partnerName}님과 첫 대화를 시작해보세요',
+                              l.dmStartChat(widget.partnerName),
                               style: const TextStyle(
                                 color: AppColors.textMuted,
                                 fontSize: 14,
@@ -463,6 +469,7 @@ class _DmConversationScreenState extends State<DmConversationScreen> {
 
   /// DM 권한 없을 때 보여주는 게이트 화면
   Widget _buildDMGateScreen(AppState state) {
+    final l = AppL10n.of(state.currentUser.languageCode);
     return Scaffold(
       backgroundColor: AppColors.bgDeep,
       appBar: AppBar(
@@ -476,9 +483,9 @@ class _DmConversationScreenState extends State<DmConversationScreen> {
             size: 20,
           ),
         ),
-        title: const Text(
-          '빠른 편지 (DM)',
-          style: TextStyle(color: AppColors.textPrimary, fontSize: 16),
+        title: Text(
+          l.dmTitle,
+          style: const TextStyle(color: AppColors.textPrimary, fontSize: 16),
         ),
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(1),
@@ -503,9 +510,9 @@ class _DmConversationScreenState extends State<DmConversationScreen> {
                 ),
               ),
               const SizedBox(height: 24),
-              const Text(
-                '프리미엄 전용 기능',
-                style: TextStyle(
+              Text(
+                l.dmPremiumOnly,
+                style: const TextStyle(
                   color: AppColors.textPrimary,
                   fontSize: 18,
                   fontWeight: FontWeight.w700,
@@ -533,13 +540,13 @@ class _DmConversationScreenState extends State<DmConversationScreen> {
                 ),
                 child: Column(
                   children: [
-                    _gateFeatureRow('⚡', '즉시 전달 빠른 편지 (DM)'),
+                    _gateFeatureRow('⚡', l.dmGateFeature1),
                     const SizedBox(height: 8),
-                    _gateFeatureRow('📮', '하루 30통 편지 발송'),
+                    _gateFeatureRow('📮', l.dmGateFeature2),
                     const SizedBox(height: 8),
-                    _gateFeatureRow('📅', '월 500통 발송'),
+                    _gateFeatureRow('📅', l.dmGateFeature3),
                     const SizedBox(height: 8),
-                    _gateFeatureRow('🌏', '더 많은 인연 연결'),
+                    _gateFeatureRow('🌏', l.dmGateFeature4),
                   ],
                 ),
               ),
@@ -646,6 +653,7 @@ class _DmConversationScreenState extends State<DmConversationScreen> {
   }
 
   Widget _buildInputBar(AppState state) {
+    final l = AppL10n.of(state.currentUser.languageCode);
     return Container(
       padding: const EdgeInsets.fromLTRB(12, 8, 12, 8),
       decoration: BoxDecoration(
@@ -673,8 +681,8 @@ class _DmConversationScreenState extends State<DmConversationScreen> {
                   maxLines: null,
                   keyboardType: TextInputType.multiline,
                   textInputAction: TextInputAction.newline,
-                  decoration: const InputDecoration(
-                    hintText: '빠른 편지 쓰기...',
+                  decoration: InputDecoration(
+                    hintText: l.dmWriteMessage,
                     hintStyle: TextStyle(
                       color: AppColors.textMuted,
                       fontSize: 14,

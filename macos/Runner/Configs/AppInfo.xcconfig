@@ -5,10 +5,10 @@
 // 'flutter create' template.
 
 // The application's name. By default this is also the title of the Flutter window.
-PRODUCT_NAME = message_in_a_bottle
+PRODUCT_NAME = lettergo
 
 // The application's bundle identifier
-PRODUCT_BUNDLE_IDENTIFIER = com.globaldrift.messageInABottle
+PRODUCT_BUNDLE_IDENTIFIER = com.globaldrift.lettergo
 
 // The copyright displayed in application information
 PRODUCT_COPYRIGHT = Copyright © 2026 com.globaldrift. All rights reserved.

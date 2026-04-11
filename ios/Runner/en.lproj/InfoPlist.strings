@@ -1,0 +1,5 @@
+"NSLocationWhenInUseUsageDescription" = "Your location is needed to discover nearby letters.";
+"NSLocationAlwaysAndWhenInUseUsageDescription" = "Your location is needed to discover nearby letters.";
+"NSPhotoLibraryUsageDescription" = "Photo library access is needed to change your profile picture.";
+"NSPhotoLibraryAddUsageDescription" = "Permission is needed to save your selected profile photo.";
+"NSCameraUsageDescription" = "Camera access is needed to take photos for your letters.";

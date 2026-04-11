@@ -12,7 +12,7 @@ class FcmPushService {
     Map<String, dynamic>? data,
     required String serverKey, // Firebase 서버 키 (레거시 API)
   }) async {
-    debugPrint(
+    if (kDebugMode) debugPrint(
       '[FCMPush] blocked on client: use server-side push sender only.',
     );
     return false;

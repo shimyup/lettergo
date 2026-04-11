@@ -1,8 +1,12 @@
 import 'dart:async';
 import 'dart:math';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../../core/localization/app_localizations.dart';
 import '../../core/theme/app_theme.dart';
+import '../../state/app_state.dart';
 
 class SplashScreen extends StatefulWidget {
   final bool skipToAuth;
@@ -31,25 +35,10 @@ class _SplashScreenState extends State<SplashScreen>
   late Animation<double> _fadeIn;
   late Animation<double> _slideUp;
 
-  // 다국어 슬로건 사이클
+  // 슬로건 페이드 인
   late AnimationController _sloganFadeCtrl;
   late Animation<double> _sloganFade;
-  int _sloganIndex = 0;
-  Timer? _sloganTimer;
   Timer? _navigationTimer;
-
-  static const _slogans = [
-    '세상 어딘가로 편지를 보내보세요',
-    'Send your words out into the world',
-    '世界のどこかへ、手紙を送ろう',
-    'Envía tus palabras al mundo',
-    '向世界某处寄出你的信',
-    'Envoyez vos mots vers le monde',
-    'Schick deine Worte in die Welt',
-    'أرسل كلماتك إلى العالم',
-    'Envie suas palavras para o mundo',
-    '세상 어딘가로 편지를 보내보세요',
-  ];
 
   @override
   void initState() {
@@ -100,31 +89,24 @@ class _SplashScreenState extends State<SplashScreen>
     _sloganFade = Tween<double>(begin: 0.0, end: 1.0).animate(
       CurvedAnimation(parent: _sloganFadeCtrl, curve: Curves.easeInOut),
     );
-    // 1초마다 다음 언어로 전환
-    _sloganTimer = Timer.periodic(const Duration(milliseconds: 1100), (_) {
-      if (!mounted) return;
-      _sloganFadeCtrl.reverse().then((_) {
-        if (!mounted) return;
-        setState(() {
-          _sloganIndex =
-              (_sloganIndex + 1) % (_slogans.length - 1); // 마지막(한국어) 제외 순환
-        });
-        _sloganFadeCtrl.forward();
-      });
-    });
-
     // Navigate after 3.5 s
     _navigationTimer = Timer(const Duration(milliseconds: 3500), () async {
       if (!mounted) return;
       final prefs = await SharedPreferences.getInstance();
       final onboardingDone = prefs.getBool('onboarding_v2_complete') ?? false;
       if (!mounted) return;
+      // DEBUG: 온보딩 미완료 시 자동 완료 처리 (테스트용)
+      if (!onboardingDone && kDebugMode) {
+        await prefs.setBool('onboarding_v2_complete', true);
+        Navigator.of(context).pushReplacementNamed('/auth');
+        return;
+      }
       if (!onboardingDone) {
         Navigator.of(context).pushReplacementNamed('/onboarding');
       } else if (widget.skipToAuth) {
         Navigator.of(context).pushReplacementNamed('/auth');
       } else {
-        Navigator.of(context).pushReplacementNamed('/home');
+        Navigator.of(context).pushReplacementNamed('/delivery_intro');
       }
     });
   }
@@ -136,13 +118,14 @@ class _SplashScreenState extends State<SplashScreen>
     _glowController.dispose();
     _fadeController.dispose();
     _sloganFadeCtrl.dispose();
-    _sloganTimer?.cancel();
     _navigationTimer?.cancel();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    final langCode = context.read<AppState>().currentUser.languageCode;
+    final l = AppL10n.of(langCode);
     return Scaffold(
       backgroundColor: AppColors.bgDeep,
       body: Stack(
@@ -255,27 +238,47 @@ class _SplashScreenState extends State<SplashScreen>
 
                     const SizedBox(height: 20),
 
-                    // ── 다국어 슬로건 (페이드 전환) ──────────────────────────
-                    SizedBox(
-                      height: 28,
-                      child: FadeTransition(
-                        opacity: _sloganFade,
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 40),
-                          child: Text(
-                            _slogans[_sloganIndex],
-                            textAlign: TextAlign.center,
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: TextStyle(
-                              fontSize: 13,
-                              color: AppColors.textSecondary.withValues(
-                                alpha: 0.85,
+                    // ── 슬로건 (현재 언어 + 영어) ────────────────────────────
+                    FadeTransition(
+                      opacity: _sloganFade,
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 40),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(
+                              l.tagline,
+                              textAlign: TextAlign.center,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: TextStyle(
+                                fontSize: 13,
+                                color: AppColors.textSecondary.withValues(
+                                  alpha: 0.85,
+                                ),
+                                letterSpacing: 0.4,
+                                height: 1.6,
                               ),
-                              letterSpacing: 0.4,
-                              height: 1.6,
                             ),
-                          ),
+                            if (langCode != 'en') ...[
+                              const SizedBox(height: 4),
+                              Text(
+                                AppL10n.of('en').tagline,
+                                textAlign: TextAlign.center,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: TextStyle(
+                                  fontSize: 11.5,
+                                  color: AppColors.textSecondary.withValues(
+                                    alpha: 0.55,
+                                  ),
+                                  letterSpacing: 0.3,
+                                  fontStyle: FontStyle.italic,
+                                  height: 1.5,
+                                ),
+                              ),
+                            ],
+                          ],
                         ),
                       ),
                     ),

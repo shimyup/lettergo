@@ -24,6 +24,9 @@ class WorldMapScreen extends StatefulWidget {
 
   @override
   State<WorldMapScreen> createState() => _WorldMapScreenState();
+
+  /// MainScaffold에서 발송 직후 호출: 마지막 발송 편지 위치로 카메라 이동
+  static final focusSentLetterNotifier = ValueNotifier<bool>(false);
 }
 
 class _WorldMapScreenState extends State<WorldMapScreen>
@@ -55,10 +58,20 @@ class _WorldMapScreenState extends State<WorldMapScreen>
     _positionTimer = Timer.periodic(const Duration(seconds: 1), (_) {
       if (mounted) _tickNotifier.value++;
     });
-    // 지도 열릴 때 회원 타워 즉시 로드
+    // 지도 열릴 때 회원 타워 즉시 로드 + 유저 위치로 자동 이동
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (mounted) {
-        context.read<AppState>().fetchMapUsers(force: true);
+      if (!mounted) return;
+      final state = context.read<AppState>();
+      state.fetchMapUsers(force: true);
+      // 유저 위치가 기본값(서울)이 아니면 유저 위치로 자동 이동
+      final lat = state.currentUser.latitude;
+      final lng = state.currentUser.longitude;
+      final isDefault = (lat - 37.5665).abs() < 0.001 && (lng - 126.978).abs() < 0.001;
+      if (lat != 0 && lng != 0) {
+        _mapController.move(
+          ll.LatLng(lat, lng),
+          isDefault ? 5.0 : 11.0, // 기본 위치면 넓게, 실제 위치면 가깝게
+        );
       }
     });
     // 15분마다 타워 목록 자동 갱신 (과도한 네트워크 호출 방지)
@@ -66,10 +79,26 @@ class _WorldMapScreenState extends State<WorldMapScreen>
       if (mounted) context.read<AppState>().fetchMapUsers();
     });
     _checkLocationPermission();
+    // 편지 발송 후 지도 포커스 이벤트 수신
+    WorldMapScreen.focusSentLetterNotifier.addListener(_onFocusSentLetter);
+  }
+
+  void _onFocusSentLetter() {
+    if (!WorldMapScreen.focusSentLetterNotifier.value) return;
+    WorldMapScreen.focusSentLetterNotifier.value = false;
+    final state = context.read<AppState>();
+    if (state.sent.isEmpty) return;
+    final last = state.sent.last;
+    // 발송 편지의 출발 좌표로 카메라 이동 (줌 3 = 세계지도에서 경로 보이는 수준)
+    final origin = last.originLocation;
+    if (origin.latitude != 0 && origin.longitude != 0) {
+      _mapController.move(ll.LatLng(origin.latitude, origin.longitude), 3.0);
+    }
   }
 
   @override
   void dispose() {
+    WorldMapScreen.focusSentLetterNotifier.removeListener(_onFocusSentLetter);
     _positionTimer?.cancel();
     _mapRefreshTimer?.cancel();
     _tickNotifier.dispose();
@@ -115,6 +144,14 @@ class _WorldMapScreenState extends State<WorldMapScreen>
         );
         const darkMode = false; // 지도는 항상 밝은 타일 고정 (밤/다크모드 무관)
 
+        // ── 클러스터 사전 계산 (타워 마커 + 내 타워 onTap 공유) ──
+        final mapClusters = _clusterMapUsers(state.mapUsers);
+        final myNearestCluster = _findNearestCluster(
+          mapClusters,
+          state.currentUser.latitude,
+          state.currentUser.longitude,
+        );
+
         return Stack(
           children: [
             // ── 지도 ───────────────────────────────────────────────────────
@@ -150,7 +187,7 @@ class _WorldMapScreenState extends State<WorldMapScreen>
                     darkMode: darkMode,
                   ),
                   subdomains: MapConfig.subdomains,
-                  userAgentPackageName: 'com.globaldrift.miab',
+                  userAgentPackageName: 'com.globaldrift.lettergo',
                   maxZoom: 19,
                   maxNativeZoom: 19,
                   keepBuffer: 2,
@@ -162,7 +199,7 @@ class _WorldMapScreenState extends State<WorldMapScreen>
                     key: ValueKey('label_${mapLangCode}_$darkMode'),
                     urlTemplate: MapConfig.labelOverlayUrl(darkMode: darkMode)!,
                     subdomains: MapConfig.subdomains,
-                    userAgentPackageName: 'com.globaldrift.miab',
+                    userAgentPackageName: 'com.globaldrift.lettergo',
                     maxZoom: 19,
                     maxNativeZoom: 19,
                     keepBuffer: 2,
@@ -173,26 +210,7 @@ class _WorldMapScreenState extends State<WorldMapScreen>
                   PolylineLayer(polylines: _buildRoutePolylines(letters)),
                 // ── 허브 마커 ─────────────────────────────────────────────
                 MarkerLayer(markers: _buildHubMarkers(letters)),
-                // ── 회원 타워 마커 ─────────────────────────────────────────
-                if (_showTowers)
-                  MarkerLayer(
-                    markers: _buildMapTowerMarkers(
-                      context,
-                      state,
-                      l10n,
-                      showLabels: _showTowerLabels,
-                    ),
-                  ),
-                // ── 편지(운송수단) 마커 ────────────────────────────────────
-                ValueListenableBuilder<int>(
-                  valueListenable: _tickNotifier,
-                  builder: (context, tick, child) {
-                    return MarkerLayer(
-                      markers: _buildLetterMarkers(letters, state, l10n, langCode),
-                    );
-                  },
-                ),
-                // ── 2km 반경 원 ──────────────────────────────────────────
+                // ── 2km 반경 원 (마커 아래에 배치 → 탭 차단 방지) ──────
                 CircleLayer(
                   circles: [
                     CircleMarker(
@@ -207,6 +225,30 @@ class _WorldMapScreenState extends State<WorldMapScreen>
                       borderStrokeWidth: 1.5,
                     ),
                   ],
+                ),
+                // ── 모든 마커 (단일 레이어 — 히트 테스팅 정확도 보장) ──
+                // 순서: 클러스터 타워 → 내 타워 + 편지 (뒤쪽이 위에 렌더링)
+                ValueListenableBuilder<int>(
+                  valueListenable: _tickNotifier,
+                  builder: (context, tick, child) {
+                    return MarkerLayer(
+                      markers: [
+                        if (_showTowers)
+                          ..._buildMapTowerMarkers(
+                            context,
+                            state,
+                            l10n,
+                            showLabels: _showTowerLabels,
+                            zoom: _lastKnownZoom,
+                            clusters: mapClusters,
+                          ),
+                        ..._buildLetterMarkers(
+                          letters, state, l10n, langCode,
+                          nearestCluster: myNearestCluster,
+                        ),
+                      ],
+                    );
+                  },
                 ),
               ],
             ),
@@ -253,7 +295,7 @@ class _WorldMapScreenState extends State<WorldMapScreen>
             // ── 근처 도착 배너 ─────────────────────────────────────────────
             if (state.hasNearbyAlert)
               Positioned(
-                top: 130,
+                top: 220,
                 left: 16,
                 right: 16,
                 child: _NearbyAlertBanner(
@@ -450,7 +492,10 @@ class _WorldMapScreenState extends State<WorldMapScreen>
   }
 
   // ── 편지 마커 ────────────────────────────────────────────────────────────────
-  List<Marker> _buildLetterMarkers(List<Letter> letters, AppState state, AppL10n l10n, String langCode) {
+  List<Marker> _buildLetterMarkers(
+    List<Letter> letters, AppState state, AppL10n l10n, String langCode, {
+    List<MapUser>? nearestCluster,
+  }) {
     final markers = <Marker>[];
 
     // 내 타워 마커 (탭하면 내 랭킹 정보 or 겹친 편지 disambiguation)
@@ -474,15 +519,21 @@ class _WorldMapScreenState extends State<WorldMapScreen>
         width: 64,
         height: 80,
         child: GestureDetector(
-          onTap: () => overlappingLetters.isNotEmpty
-              ? _showTowerLetterDisambiguation(
-                  context,
-                  state,
-                  overlappingLetters,
-                  l10n,
-                  langCode,
-                )
-              : _showMyTowerInfo(context, state, l10n),
+          onTap: () {
+            if (overlappingLetters.isNotEmpty) {
+              _showTowerLetterDisambiguation(
+                context, state, overlappingLetters, l10n, langCode,
+              );
+              return;
+            }
+            // 사전 계산된 최근접 클러스터 사용 (GPS 거리 검색 대신)
+            if (nearestCluster != null && nearestCluster.isNotEmpty) {
+              if (kDebugMode) debugPrint('[MyTowerTap] nearestCluster=${nearestCluster.length}');
+              _showOverlappingTowerPicker(context, nearestCluster, l10n);
+            } else {
+              _showMyTowerInfo(context, context.read<AppState>(), l10n);
+            }
+          },
           child: _MyTowerMarker(
             tier: state.currentUser.activityScore.tier,
             flag: state.currentUser.countryFlag,
@@ -547,181 +598,327 @@ class _WorldMapScreenState extends State<WorldMapScreen>
       if (letter.status != DeliveryStatus.inTransit &&
           letter.status != DeliveryStatus.deliveredFar)
         continue;
+
+      // 이미 도착 완료된 편지(progress >= 0.999 또는 arrivalTime 지남)는
+      // 다음 deliveryTimer 사이클에서 상태가 전환될 때까지 📬로 표시
+      final bool actuallyArrived = letter.status == DeliveryStatus.inTransit &&
+          (letter.overallProgress >= 0.999 ||
+              (letter.arrivalTime != null && !now.isBefore(letter.arrivalTime!)));
+
       // 실시간 위치: sentAt~arrivalTime 기반 보간 (arrivalTime 없으면 기존 currentLocation)
-      final pos = letter.status == DeliveryStatus.deliveredFar
+      final pos = (letter.status == DeliveryStatus.deliveredFar || actuallyArrived)
           ? letter.destinationLocation
           : letter.currentPositionAt(now);
+      final showAsArrived = letter.status == DeliveryStatus.deliveredFar || actuallyArrived;
       markers.add(
         Marker(
           point: ll.LatLng(pos.latitude, pos.longitude),
-          width: letter.status == DeliveryStatus.deliveredFar ? 48 : 36,
-          height: letter.status == DeliveryStatus.deliveredFar ? 48 : 36,
+          width: showAsArrived ? 48 : 36,
+          height: showAsArrived ? 48 : 36,
           child: GestureDetector(
             onTap: () => _onLetterTap(context, letter, state, l10n, langCode),
-            child: _TransportMarker(
-              letter: letter,
-              pulseController: _pulseController,
-            ),
+            child: showAsArrived && letter.status == DeliveryStatus.inTransit
+                ? _ArrivedWaitingMarker(pulseController: _pulseController)
+                : _TransportMarker(
+                    letter: letter,
+                    pulseController: _pulseController,
+                  ),
           ),
         ),
       );
-      // 도착지 핀 마커 추가
-      final destLoc = letter.destinationLocation;
-      markers.add(
-        Marker(
-          point: ll.LatLng(destLoc.latitude, destLoc.longitude),
-          width: 36,
-          height: 42,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Container(
-                width: 30,
-                height: 30,
-                decoration: BoxDecoration(
-                  color: AppColors.bgCard.withValues(alpha: 0.92),
-                  shape: BoxShape.circle,
-                  border: Border.all(
-                    color: AppColors.gold.withValues(alpha: 0.7),
-                    width: 1.5,
-                  ),
-                  boxShadow: [
-                    BoxShadow(
-                      color: AppColors.gold.withValues(alpha: 0.3),
-                      blurRadius: 6,
-                    ),
-                  ],
-                ),
-                child: Center(
-                  child: Text(
-                    letter.destinationCountryFlag,
-                    style: const TextStyle(fontSize: 16),
-                  ),
-                ),
-              ),
-              Container(
-                width: 2,
-                height: 8,
-                color: AppColors.gold.withValues(alpha: 0.6),
-              ),
-            ],
-          ),
-        ),
-      );
+      // 도착지 핀 마커 제거 — 편지 이모지(📮💌📪)만 표시
     }
     return markers;
   }
 
   // ── 지도 타워 마커 (내 타워 + 다른 회원) ─────────────────────────────────────
+  //
+  // 500m 이내 타워를 클러스터로 묶어 **하나의 마커**로 표시.
+  // 클러스터 탭 → 바텀시트 리스트, 단독 타워 탭 → 상세.
+  // ── 500m Union-Find 클러스터링 (공용) ──
+  static List<List<MapUser>> _clusterMapUsers(List<MapUser> users) {
+    if (users.isEmpty) return [];
+    const radius500m = 0.005; // 500m ≈ 0.005°
+    final n = users.length;
+    final parent = List<int>.generate(n, (i) => i);
+    int find(int x) {
+      while (parent[x] != x) { parent[x] = parent[parent[x]]; x = parent[x]; }
+      return x;
+    }
+    for (int i = 0; i < n; i++) {
+      for (int j = i + 1; j < n; j++) {
+        final dLat = users[i].lat - users[j].lat;
+        final dLng = users[i].lng - users[j].lng;
+        if (dLat * dLat + dLng * dLng < radius500m * radius500m) {
+          parent[find(i)] = find(j);
+        }
+      }
+    }
+    final map = <int, List<int>>{};
+    for (int i = 0; i < n; i++) {
+      map.putIfAbsent(find(i), () => []).add(i);
+    }
+    return map.values.map((indices) {
+      indices.sort((a, b) => users[a].rank.compareTo(users[b].rank));
+      return indices.map((i) => users[i]).toList();
+    }).toList();
+  }
+
+  /// 주어진 위치에 가장 가까운 클러스터를 반환 (5km 이내)
+  static List<MapUser>? _findNearestCluster(
+    List<List<MapUser>> clusters,
+    double lat,
+    double lng,
+  ) {
+    List<MapUser>? best;
+    double bestDist = 0.05 * 0.05; // 최대 5km
+    for (final cluster in clusters) {
+      for (final u in cluster) {
+        final dLat = u.lat - lat;
+        final dLng = u.lng - lng;
+        final dist = dLat * dLat + dLng * dLng;
+        if (dist < bestDist) {
+          bestDist = dist;
+          best = cluster;
+        }
+      }
+    }
+    return best;
+  }
+
   List<Marker> _buildMapTowerMarkers(
     BuildContext context,
     AppState state,
     AppL10n l10n, {
     required bool showLabels,
+    required double zoom,
+    required List<List<MapUser>> clusters,
   }) {
     final markers = <Marker>[];
+    final users = state.mapUsers;
+    if (users.isEmpty) return markers;
 
-    // 실제 회원 타워 (Firestore)
-    for (final u in state.mapUsers) {
-      final tierColor = _towerTierColor(u.tier);
-      final rankLabel = u.rank <= 3
-          ? (u.rank == 1
-                ? '🥇'
-                : u.rank == 2
-                ? '🥈'
-                : '🥉')
-          : '#${u.rank}';
-      final hasUsername = u.username != null && u.username!.isNotEmpty;
-      final displayLabel = u.towerName?.isNotEmpty == true
-          ? u.towerName!
-          : (hasUsername ? '@${u.username}' : null);
+    final scale = (zoom / 10.0).clamp(0.5, 1.2);
+
+    for (final clusterUsers in clusters) {
+      final rep = clusterUsers.first;
+      final isCluster = clusterUsers.length > 1;
+
+      // 커스텀 색상 적용 (기본은 티어색)
+      final customColor = _parseHexColor(rep.towerColor);
+      final tierColor = customColor ?? _towerTierColor(rep.tier);
+
+      final rankLabel = rep.rank <= 3
+          ? (rep.rank == 1 ? '🥇' : rep.rank == 2 ? '🥈' : '🥉')
+          : '#${rep.rank}';
+      final hasUsername = rep.username != null && rep.username!.isNotEmpty;
+      final displayLabel = rep.towerName?.isNotEmpty == true
+          ? rep.towerName!
+          : (hasUsername ? '@${rep.username}' : null);
       final labelText = displayLabel ?? '';
       final hasLabel = showLabels && labelText.isNotEmpty;
+
+      // 층수 제한 (마커 크기 제한)
+      final displayFloors = rep.floors.clamp(1, 15);
+      final floorH = (7.0 * scale).roundToDouble();
+      final towerW = (34 * scale).roundToDouble();
+      final roofH = (10 * scale).roundToDouble();
+      final towerBodyH = roofH + (displayFloors * floorH);
+      // 오라 여백
+      final tierIdx = rep.tier.index;
+      final hasAura = tierIdx >= 4; // Building 이상
+      final hasParticles = tierIdx >= 6; // Skyscraper 이상
+      final auraExtra = hasAura ? 14.0 * scale : 0.0;
+      final totalW = max(56.0, towerW + 24 + auraExtra * 2);
+      final totalH = towerBodyH + 36 * scale + (hasLabel ? 14.0 : 0.0) + auraExtra;
+
       markers.add(
         Marker(
-          point: ll.LatLng(u.lat, u.lng),
-          width: hasLabel ? 72 : 52,
-          height: hasLabel ? 82 : 64,
+          point: ll.LatLng(rep.lat, rep.lng),
+          width: totalW,
+          height: totalH,
           child: GestureDetector(
-            onTap: () => _showMapTowerDetail(context, u, null, l10n),
+            behavior: HitTestBehavior.opaque,
+            onTap: () {
+              if (isCluster) {
+                _showOverlappingTowerPicker(context, clusterUsers, l10n);
+              } else {
+                _showMapTowerDetail(context, rep, null, l10n);
+              }
+            },
             child: Column(
               mainAxisSize: MainAxisSize.min,
-              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.end,
               children: [
-                Container(
-                  width: 40,
-                  height: 44,
-                  decoration: BoxDecoration(
-                    color: AppColors.bgCard.withValues(alpha: 0.95),
-                    borderRadius: BorderRadius.circular(10),
-                    border: Border.all(
-                      color: tierColor.withValues(alpha: 0.75),
-                      width: 1.8,
+                // ── 오라 + 타워 본체 ──
+                Stack(
+                  clipBehavior: Clip.none,
+                  alignment: Alignment.center,
+                  children: [
+                    // 오라 글로우 (Building+)
+                    if (hasAura)
+                      Positioned.fill(
+                        child: Center(
+                          child: Container(
+                            width: towerW + 20 * scale,
+                            height: towerBodyH + 10 * scale,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(towerW * 0.5),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: tierColor.withValues(alpha: hasParticles ? 0.35 : 0.2),
+                                  blurRadius: hasParticles ? 20 * scale : 12 * scale,
+                                  spreadRadius: hasParticles ? 4 * scale : 2 * scale,
+                                ),
+                                if (hasParticles)
+                                  BoxShadow(
+                                    color: tierColor.withValues(alpha: 0.12),
+                                    blurRadius: 36 * scale,
+                                    spreadRadius: 8 * scale,
+                                  ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                    // 파티클 (Skyscraper+)
+                    if (hasParticles) ...[
+                      for (int pi = 0; pi < (tierIdx >= 8 ? 5 : 3); pi++)
+                        Positioned(
+                          top: (towerBodyH * 0.15 * pi) - 2 * scale,
+                          left: pi.isEven ? -3 * scale : null,
+                          right: pi.isOdd ? -3 * scale : null,
+                          child: Container(
+                            width: 3 * scale,
+                            height: 3 * scale,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: tierColor.withValues(alpha: 0.6),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: tierColor.withValues(alpha: 0.4),
+                                  blurRadius: 4 * scale,
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                    ],
+                    // ── 타워 본체 ──
+                    Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        // 장식 이모지 (지붕 위)
+                        if (rep.towerAccentEmoji != null)
+                          Padding(
+                            padding: EdgeInsets.only(bottom: 1 * scale),
+                            child: Text(
+                              rep.towerAccentEmoji!,
+                              style: TextStyle(fontSize: 10 * scale),
+                            ),
+                          ),
+                        // 국기 (지붕 위)
+                        Text(rep.flag, style: TextStyle(fontSize: 10 * scale)),
+                        // 지붕
+                        _buildTowerRoof(
+                          width: towerW + 6 * scale,
+                          height: roofH,
+                          color: tierColor,
+                          roofStyle: rep.towerRoofStyle,
+                          scale: scale,
+                        ),
+                        // 층 쌓기
+                        ...List.generate(displayFloors, (i) {
+                          final isBottom = i == displayFloors - 1;
+                          final fadeAlpha = 0.25 - (i / displayFloors) * 0.15;
+                          return _buildTowerFloor(
+                            width: towerW,
+                            height: floorH,
+                            color: tierColor,
+                            alpha: fadeAlpha.clamp(0.05, 0.25),
+                            isBottom: isBottom,
+                            borderWidth: 1.5 * scale,
+                            floorIndex: i,
+                            windowStyle: rep.towerWindowStyle,
+                            scale: scale,
+                          );
+                        }),
+                      ],
                     ),
+                    // ── 클러스터 뱃지 ──
+                    if (isCluster)
+                      Positioned(
+                        top: -4 * scale,
+                        right: -6 * scale,
+                        child: Container(
+                          padding: EdgeInsets.symmetric(
+                            horizontal: 4 * scale,
+                            vertical: 1 * scale,
+                          ),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFFEF4444),
+                            borderRadius: BorderRadius.circular(8 * scale),
+                            border: Border.all(color: AppColors.bgCard, width: 1.2),
+                          ),
+                          child: Text(
+                            '${clusterUsers.length}',
+                            style: TextStyle(
+                              fontSize: 8 * scale,
+                              color: Colors.white,
+                              fontWeight: FontWeight.w800,
+                            ),
+                          ),
+                        ),
+                      ),
+                  ],
+                ),
+                // ── 랭킹 뱃지 ──
+                Container(
+                  margin: EdgeInsets.only(top: 1 * scale),
+                  padding: EdgeInsets.symmetric(horizontal: 5 * scale, vertical: 1 * scale),
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [
+                        tierColor.withValues(alpha: 0.95),
+                        tierColor.withValues(alpha: 0.7),
+                      ],
+                    ),
+                    borderRadius: BorderRadius.circular(5 * scale),
                     boxShadow: [
                       BoxShadow(
-                        color: tierColor.withValues(alpha: 0.3),
-                        blurRadius: 8,
+                        color: Colors.black.withValues(alpha: 0.3),
+                        blurRadius: 3,
+                        offset: const Offset(0, 1),
                       ),
                     ],
                   ),
-                  child: FittedBox(
-                    fit: BoxFit.scaleDown,
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          u.tier.emoji,
-                          style: const TextStyle(fontSize: 16),
-                        ),
-                        Text(u.flag, style: const TextStyle(fontSize: 10)),
-                      ],
+                  child: Text(
+                    rankLabel,
+                    style: TextStyle(
+                      fontSize: 8 * scale,
+                      color: Colors.white,
+                      fontWeight: FontWeight.w800,
                     ),
                   ),
                 ),
-                // 랭킹 뱃지 (고정 높이)
-                SizedBox(
-                  height: 16,
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 5),
-                    decoration: BoxDecoration(
-                      color: tierColor.withValues(alpha: 0.85),
-                      borderRadius: BorderRadius.circular(5),
-                    ),
-                    child: FittedBox(
-                      fit: BoxFit.scaleDown,
-                      child: Text(
-                        rankLabel,
-                        style: const TextStyle(
-                          fontSize: 9,
-                          color: Colors.white,
-                          fontWeight: FontWeight.w800,
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-                // 타워 이름 또는 닉네임 표시
+                // ── 타워 이름 ──
                 if (hasLabel)
-                  SizedBox(
-                    height: 14,
-                    child: FittedBox(
-                      fit: BoxFit.scaleDown,
-                      child: Text(
-                        labelText,
-                        style: TextStyle(
-                          fontSize: 8,
-                          color: Colors.white.withValues(alpha: 0.9),
-                          fontWeight: FontWeight.w700,
-                          shadows: [
-                            Shadow(
-                              color: Colors.black.withValues(alpha: 0.8),
-                              blurRadius: 4,
-                            ),
-                          ],
-                        ),
+                  Padding(
+                    padding: EdgeInsets.only(top: 1 * scale),
+                    child: Text(
+                      labelText,
+                      style: TextStyle(
+                        fontSize: 7.5 * scale,
+                        color: Colors.white.withValues(alpha: 0.9),
+                        fontWeight: FontWeight.w700,
+                        shadows: [
+                          Shadow(
+                            color: Colors.black.withValues(alpha: 0.8),
+                            blurRadius: 4,
+                          ),
+                        ],
                       ),
+                      overflow: TextOverflow.ellipsis,
                     ),
                   ),
               ],
@@ -731,6 +928,220 @@ class _WorldMapScreenState extends State<WorldMapScreen>
       );
     }
     return markers;
+  }
+
+  // ── 지붕 빌더 ──────────────────────────────────────────────────────────────
+  Widget _buildTowerRoof({
+    required double width,
+    required double height,
+    required Color color,
+    required int roofStyle,
+    required double scale,
+  }) {
+    switch (roofStyle) {
+      case 1: // 뾰족 지붕
+        return CustomPaint(
+          size: Size(width, height + 4 * scale),
+          painter: _PointedRoofPainter(color: color),
+        );
+      case 2: // 돔 지붕
+        return Container(
+          width: width,
+          height: height,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.vertical(
+              top: Radius.elliptical(width * 0.5, height),
+            ),
+            gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [
+                color.withValues(alpha: 0.9),
+                color.withValues(alpha: 0.4),
+              ],
+            ),
+          ),
+        );
+      case 3: // 평지붕
+        return Container(
+          width: width,
+          height: height * 0.5,
+          decoration: BoxDecoration(
+            color: color.withValues(alpha: 0.7),
+            borderRadius: BorderRadius.vertical(top: Radius.circular(2 * scale)),
+          ),
+        );
+      case 4: // 안테나
+        return Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              width: 2 * scale,
+              height: 8 * scale,
+              decoration: BoxDecoration(
+                color: color.withValues(alpha: 0.7),
+                borderRadius: BorderRadius.circular(1),
+              ),
+            ),
+            Container(
+              width: width,
+              height: height * 0.5,
+              decoration: BoxDecoration(
+                color: color.withValues(alpha: 0.6),
+                borderRadius: BorderRadius.vertical(top: Radius.circular(3 * scale)),
+              ),
+            ),
+          ],
+        );
+      default: // 기본 둥근 지붕
+        return Container(
+          width: width,
+          height: height,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.vertical(top: Radius.circular(6 * scale)),
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [
+                color.withValues(alpha: 0.85),
+                color.withValues(alpha: 0.45),
+              ],
+            ),
+          ),
+        );
+    }
+  }
+
+  // ── 층 빌더 ────────────────────────────────────────────────────────────────
+  Widget _buildTowerFloor({
+    required double width,
+    required double height,
+    required Color color,
+    required double alpha,
+    required bool isBottom,
+    required double borderWidth,
+    required int floorIndex,
+    required int windowStyle,
+    required double scale,
+  }) {
+    return Container(
+      width: width,
+      height: height,
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            color.withValues(alpha: alpha),
+            const Color(0xFF1E293B).withValues(alpha: 0.85),
+          ],
+        ),
+        border: Border(
+          left: BorderSide(color: color.withValues(alpha: 0.45), width: borderWidth),
+          right: BorderSide(color: color.withValues(alpha: 0.45), width: borderWidth),
+          bottom: isBottom
+              ? BorderSide(color: color.withValues(alpha: 0.45), width: borderWidth)
+              : BorderSide(
+                  color: Colors.white.withValues(alpha: 0.06),
+                  width: 0.5,
+                ),
+        ),
+        borderRadius: isBottom
+            ? BorderRadius.vertical(bottom: Radius.circular(3 * scale))
+            : null,
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: _buildWindows(
+          windowStyle: windowStyle,
+          floorIndex: floorIndex,
+          scale: scale,
+        ),
+      ),
+    );
+  }
+
+  // ── 창문 빌더 ──────────────────────────────────────────────────────────────
+  List<Widget> _buildWindows({
+    required int windowStyle,
+    required int floorIndex,
+    required double scale,
+  }) {
+    final lit = (floorIndex * 7 + 3) % 3 != 0; // pseudo-random lit pattern
+    final lit2 = (floorIndex * 5 + 1) % 3 != 0;
+    final wSize = 3.0 * scale;
+
+    Widget window(bool isLit) {
+      final baseColor = isLit
+          ? const Color(0xFFFFFFCC).withValues(alpha: 0.75)
+          : const Color(0xFFFFFFCC).withValues(alpha: 0.15);
+      switch (windowStyle) {
+        case 1: // 원형 창문
+          return Container(
+            width: wSize,
+            height: wSize,
+            margin: EdgeInsets.symmetric(horizontal: 1.5 * scale),
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: baseColor,
+              boxShadow: isLit
+                  ? [BoxShadow(color: baseColor.withValues(alpha: 0.5), blurRadius: 2 * scale)]
+                  : [],
+            ),
+          );
+        case 2: // 아치 창문
+          return Container(
+            width: wSize,
+            height: wSize + 1 * scale,
+            margin: EdgeInsets.symmetric(horizontal: 1.5 * scale),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.vertical(top: Radius.circular(wSize * 0.5)),
+              color: baseColor,
+              boxShadow: isLit
+                  ? [BoxShadow(color: baseColor.withValues(alpha: 0.5), blurRadius: 2 * scale)]
+                  : [],
+            ),
+          );
+        case 3: // 모던 (가로로 넓은 슬릿)
+          return Container(
+            width: wSize * 1.8,
+            height: wSize * 0.6,
+            margin: EdgeInsets.symmetric(horizontal: 1 * scale),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(0.5 * scale),
+              color: baseColor,
+              boxShadow: isLit
+                  ? [BoxShadow(color: baseColor.withValues(alpha: 0.5), blurRadius: 2 * scale)]
+                  : [],
+            ),
+          );
+        default: // 사각 창문
+          return Container(
+            width: wSize,
+            height: wSize,
+            margin: EdgeInsets.symmetric(horizontal: 1.5 * scale),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(0.5 * scale),
+              color: baseColor,
+              boxShadow: isLit
+                  ? [BoxShadow(color: baseColor.withValues(alpha: 0.5), blurRadius: 2 * scale)]
+                  : [],
+            ),
+          );
+      }
+    }
+
+    return [window(lit), window(lit2)];
+  }
+
+  // ── hex 색상 파싱 ──────────────────────────────────────────────────────────
+  Color? _parseHexColor(String hex) {
+    if (hex.isEmpty || hex == '#FFD700') return null; // 기본값이면 null → 티어색 사용
+    try {
+      final clean = hex.replaceFirst('#', '');
+      if (clean.length == 6) return Color(int.parse('0xFF$clean'));
+    } catch (_) {}
+    return null;
   }
 
   Color _towerTierColor(TowerTier tier) {
@@ -820,7 +1231,7 @@ class _WorldMapScreenState extends State<WorldMapScreen>
               icon: state.currentUser.activityScore.tier.emoji,
               title: l10n.mapMyTower,
               subtitle:
-                  '${state.currentUser.activityScore.towerFloors}${l10n.mapFloorUnit} · ${state.currentUser.activityScore.tier.label}',
+                  '${state.currentUser.activityScore.towerFloors}${l10n.mapFloorUnit} · ${state.currentUser.activityScore.tier.labelL(langCode)}',
               onTap: () {
                 Navigator.pop(ctx);
                 _showMyTowerInfo(ctx, state, l10n);
@@ -842,6 +1253,118 @@ class _WorldMapScreenState extends State<WorldMapScreen>
                 ),
               ),
             ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  /// 겹친 타워 선택 시트
+  void _showOverlappingTowerPicker(
+    BuildContext ctx,
+    List<MapUser> towers,
+    AppL10n l10n,
+  ) {
+    showModalBottomSheet(
+      context: ctx,
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true,
+      useSafeArea: true,
+      builder: (_) => Container(
+        margin: const EdgeInsets.fromLTRB(12, 12, 12, 16),
+        padding: const EdgeInsets.fromLTRB(16, 16, 16, 16),
+        decoration: BoxDecoration(
+          color: AppColors.bgCard,
+          borderRadius: BorderRadius.circular(24),
+          border: Border.all(
+            color: AppColors.textMuted.withValues(alpha: 0.25),
+          ),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              '🏘️ ${l10n.mapNearbyTowers(towers.length)}',
+              style: const TextStyle(
+                color: AppColors.textPrimary,
+                fontSize: 15,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+            const SizedBox(height: 12),
+            ...towers.map((u) {
+              final tierColor = _towerTierColor(u.tier);
+              final name = u.towerName?.isNotEmpty == true
+                  ? u.towerName!
+                  : (u.username?.isNotEmpty == true
+                      ? '@${u.username}'
+                      : '${u.flag} #${u.rank}');
+              return Padding(
+                padding: const EdgeInsets.only(bottom: 8),
+                child: GestureDetector(
+                  onTap: () {
+                    Navigator.pop(ctx);
+                    _showMapTowerDetail(ctx, u, null, l10n);
+                  },
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 14,
+                      vertical: 12,
+                    ),
+                    decoration: BoxDecoration(
+                      color: AppColors.bgSurface,
+                      borderRadius: BorderRadius.circular(14),
+                      border: Border.all(
+                        color: tierColor.withValues(alpha: 0.4),
+                      ),
+                    ),
+                    child: Row(
+                      children: [
+                        Text(
+                          u.tier.emoji,
+                          style: const TextStyle(fontSize: 24),
+                        ),
+                        const SizedBox(width: 10),
+                        Text(
+                          u.flag,
+                          style: const TextStyle(fontSize: 18),
+                        ),
+                        const SizedBox(width: 10),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                name,
+                                style: const TextStyle(
+                                  color: AppColors.textPrimary,
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                              Text(
+                                '${u.tier.name.toUpperCase()} · ${u.floors}F',
+                                style: TextStyle(
+                                  color: tierColor,
+                                  fontSize: 11,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        Icon(
+                          Icons.chevron_right,
+                          color: AppColors.textMuted,
+                          size: 20,
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              );
+            }),
           ],
         ),
       ),
@@ -938,7 +1461,7 @@ class _WorldMapScreenState extends State<WorldMapScreen>
                             ),
                           ),
                           child: Text(
-                            '${tier.emoji}  ${tier.label}',
+                            '${tier.emoji}  ${tier.labelL(l10n.languageCode)}',
                             style: TextStyle(
                               color: tierColor,
                               fontSize: 12,
@@ -1472,6 +1995,57 @@ class _MyLocationButtonState extends State<_MyLocationButton> {
 }
 
 // ── 운송수단 마커 ──────────────────────────────────────────────────────────────
+/// 도착 대기 중 마커 (inTransit → 실제 도착했지만 아직 상태 전환 전)
+/// 비행기 대신 📬로 표시
+class _ArrivedWaitingMarker extends StatelessWidget {
+  final AnimationController pulseController;
+  const _ArrivedWaitingMarker({required this.pulseController});
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedBuilder(
+      animation: pulseController,
+      builder: (_, __) {
+        final phase = (pulseController.value * 2 * pi) % (2 * pi);
+        final pulse = (sin(phase) * 0.5 + 0.5);
+        return Stack(
+          alignment: Alignment.center,
+          children: [
+            Container(
+              width: 40 + pulse * 8,
+              height: 40 + pulse * 8,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                border: Border.all(
+                  color: AppColors.gold.withValues(alpha: 0.25 + pulse * 0.35),
+                  width: 1.5,
+                ),
+              ),
+            ),
+            Text(
+              '📬',
+              style: TextStyle(
+                fontSize: 22,
+                shadows: [
+                  Shadow(
+                    color: AppColors.gold.withValues(alpha: 0.6 + pulse * 0.3),
+                    blurRadius: 10,
+                  ),
+                  const Shadow(
+                    color: Color(0x88000000),
+                    blurRadius: 3,
+                    offset: Offset(0, 1),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+}
+
 class _TransportMarker extends StatelessWidget {
   final Letter letter;
   final AnimationController pulseController;
@@ -1976,8 +2550,8 @@ class _MapHeader extends StatelessWidget {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.end,
                         children: [
-                          const Text(
-                            'GLOBAL FLOW',
+                          Text(
+                            l10n.labelGlobalFlow,
                             style: TextStyle(
                               color: AppColors.teal,
                               fontSize: 8,
@@ -2224,43 +2798,85 @@ class _StatChip extends StatelessWidget {
 }
 
 // ── 근처 알림 배너 ─────────────────────────────────────────────────────────────
-class _NearbyAlertBanner extends StatelessWidget {
+class _NearbyAlertBanner extends StatefulWidget {
   final AppL10n l10n;
   final int count;
   final VoidCallback onTap;
   const _NearbyAlertBanner({required this.l10n, required this.count, required this.onTap});
 
   @override
+  State<_NearbyAlertBanner> createState() => _NearbyAlertBannerState();
+}
+
+class _NearbyAlertBannerState extends State<_NearbyAlertBanner>
+    with SingleTickerProviderStateMixin {
+  late final int _variantIndex;
+  late final AnimationController _pulseCtrl;
+  late final Animation<double> _pulse;
+
+  @override
+  void initState() {
+    super.initState();
+    final variants = widget.l10n.mapNearbyBannerVariants(widget.count);
+    _variantIndex = DateTime.now().millisecondsSinceEpoch % variants.length;
+    _pulseCtrl = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1800),
+    )..repeat(reverse: true);
+    _pulse = Tween<double>(begin: 0.85, end: 1.0).animate(
+      CurvedAnimation(parent: _pulseCtrl, curve: Curves.easeInOut),
+    );
+  }
+
+  @override
+  void dispose() {
+    _pulseCtrl.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-        decoration: BoxDecoration(
-          color: AppColors.gold.withValues(alpha: 0.15),
-          borderRadius: BorderRadius.circular(14),
-          border: Border.all(color: AppColors.gold.withValues(alpha: 0.4)),
-        ),
-        child: Row(
-          children: [
-            const Text('📩', style: TextStyle(fontSize: 18)),
-            const SizedBox(width: 10),
-            Expanded(
-              child: Text(
-                l10n.mapNearbyLettersArrived(count),
-                style: const TextStyle(
-                  color: AppColors.gold,
-                  fontSize: 13,
-                  fontWeight: FontWeight.w600,
+    final variants = widget.l10n.mapNearbyBannerVariants(widget.count);
+    final variant = variants[_variantIndex];
+    return FadeTransition(
+      opacity: _pulse,
+      child: GestureDetector(
+        onTap: widget.onTap,
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          decoration: BoxDecoration(
+            color: AppColors.gold.withValues(alpha: 0.15),
+            borderRadius: BorderRadius.circular(14),
+            border: Border.all(color: AppColors.gold.withValues(alpha: 0.4)),
+            boxShadow: [
+              BoxShadow(
+                color: AppColors.gold.withValues(alpha: 0.12),
+                blurRadius: 12,
+                offset: const Offset(0, 2),
+              ),
+            ],
+          ),
+          child: Row(
+            children: [
+              Text(variant.emoji, style: const TextStyle(fontSize: 20)),
+              const SizedBox(width: 10),
+              Expanded(
+                child: Text(
+                  variant.text,
+                  style: const TextStyle(
+                    color: AppColors.gold,
+                    fontSize: 13,
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
               ),
-            ),
-            const Icon(
-              Icons.chevron_right_rounded,
-              color: AppColors.gold,
-              size: 18,
-            ),
-          ],
+              const Icon(
+                Icons.chevron_right_rounded,
+                color: AppColors.gold,
+                size: 18,
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -2934,7 +3550,7 @@ class _MyTowerMarker extends StatelessWidget {
                     Text(
                       pendingLetterCount > 0 ? '📮' : flag,
                       style: TextStyle(
-                        fontSize: pendingLetterCount > 0 ? 13 : 12,
+                        fontSize: pendingLetterCount > 0 ? 12 : 10,
                       ),
                     ),
                     Text(
@@ -2952,8 +3568,8 @@ class _MyTowerMarker extends StatelessWidget {
             // 📮 뱃지: 타워 위치에 겹친 편지가 있을 때 우상단에 표시
             if (pendingLetterCount > 0)
               Positioned(
-                top: -5,
-                right: -8,
+                top: -10,
+                right: -12,
                 child: Container(
                   padding: const EdgeInsets.symmetric(
                     horizontal: 6,
@@ -2986,4 +3602,34 @@ class _MyTowerMarker extends StatelessWidget {
       },
     );
   }
+}
+
+// ── 뾰족 지붕 커스텀 페인터 ─────────────────────────────────────────────────
+class _PointedRoofPainter extends CustomPainter {
+  final Color color;
+  const _PointedRoofPainter({required this.color});
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..shader = LinearGradient(
+        begin: Alignment.topCenter,
+        end: Alignment.bottomCenter,
+        colors: [
+          color.withValues(alpha: 0.9),
+          color.withValues(alpha: 0.45),
+        ],
+      ).createShader(Rect.fromLTWH(0, 0, size.width, size.height));
+
+    final path = Path()
+      ..moveTo(size.width * 0.5, 0)
+      ..lineTo(size.width, size.height)
+      ..lineTo(0, size.height)
+      ..close();
+
+    canvas.drawPath(path, paint);
+  }
+
+  @override
+  bool shouldRepaint(covariant _PointedRoofPainter old) => old.color != color;
 }

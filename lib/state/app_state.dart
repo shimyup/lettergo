@@ -52,6 +52,10 @@ class MapUser {
   final int rank;
   final String? username;
   final String? towerName; // 사용자 지정 타워 이름
+  final String towerColor; // 타워 커스텀 색상 (hex)
+  final String? towerAccentEmoji; // 타워 장식 이모지
+  final int towerRoofStyle; // 지붕 스타일
+  final int towerWindowStyle; // 창문 스타일
 
   const MapUser({
     required this.id,
@@ -63,6 +67,10 @@ class MapUser {
     required this.rank,
     this.username,
     this.towerName,
+    this.towerColor = '#FFD700',
+    this.towerAccentEmoji,
+    this.towerRoofStyle = 0,
+    this.towerWindowStyle = 0,
   });
 
   MapUser copyWith({int? rank}) => MapUser(
@@ -75,6 +83,10 @@ class MapUser {
     rank: rank ?? this.rank,
     username: username,
     towerName: towerName,
+    towerColor: towerColor,
+    towerAccentEmoji: towerAccentEmoji,
+    towerRoofStyle: towerRoofStyle,
+    towerWindowStyle: towerWindowStyle,
   );
 }
 
@@ -161,6 +173,7 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
   static const int _dailyLimitBrand = 200;
   static const int _dailyPremiumExpressLimit = 3;
   static const Duration _readLetterRetention = Duration(days: 30);
+  static const Duration _unopenedLetterExpiry = Duration(days: 7);
 
   int _dailySentCount = 0;
   String _dailySentDateKey = _dateKey(DateTime.now());
@@ -536,12 +549,22 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
   // ── 딜리버리 타이머 ─────────────────────────────────────────────────────────
   Timer? _deliveryTimer;
 
+  // ── AI 자동 편지 발송 ──────────────────────────────────────────────────────
+  String _lastAiLetterDateKey = '';
+
   // ── 사용된 배송지 (나라 → 도시 키 Set, 중복 방지) ──────────────────────────
   final Map<String, Set<String>> _usedDestinations = {};
 
-  // ── 차단된 발신자 (3회 이상 신고) ────────────────────────────────────────
+  // ── 차단된 발신자 (영구 차단: 관리자 확인 후) ─────────────────────────────
   final Set<String> _blockedSenderIds = {};
   Set<String> get blockedSenderIds => Set.unmodifiable(_blockedSenderIds);
+
+  // ── 임시 차단 (신고 접수 → 관리자 검토 전까지) ──────────────────────────────
+  final Set<String> _tempBlockedSenderIds = {};
+  Set<String> get tempBlockedSenderIds =>
+      Set.unmodifiable(_tempBlockedSenderIds);
+  bool isSenderTempBlocked(String senderId) =>
+      _tempBlockedSenderIds.contains(senderId);
 
   // ── 관리자 전용: 이벤트 모드 & 배송 속도 배율 ──────────────────────────────
   bool _adminEventMode = false;
@@ -619,19 +642,40 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
     _saveToPrefs();
   }
 
-  /// 차단 목록 전체 초기화
+  /// 차단 목록 전체 초기화 (영구 + 임시)
   void adminClearBlockList() {
     _blockedSenderIds.clear();
+    _tempBlockedSenderIds.clear();
     notifyListeners();
     _saveToPrefs();
   }
 
-  /// 특정 발신자 차단 해제
+  /// 특정 발신자 차단 해제 (영구 + 임시 모두)
   void adminUnblockSender(String senderId) {
     _blockedSenderIds.remove(senderId);
+    _tempBlockedSenderIds.remove(senderId);
     notifyListeners();
     _saveToPrefs();
   }
+
+  /// 관리자: 임시 차단 → 영구 차단으로 승격
+  void adminConfirmBlock(String senderId) {
+    _tempBlockedSenderIds.remove(senderId);
+    _blockedSenderIds.add(senderId);
+    _inbox.removeWhere((l) => l.senderId == senderId);
+    notifyListeners();
+    _saveToPrefs();
+  }
+
+  /// 관리자: 임시 차단 해제 (무혐의)
+  void adminDismissReport(String senderId) {
+    _tempBlockedSenderIds.remove(senderId);
+    notifyListeners();
+    _saveToPrefs();
+  }
+
+  /// 임시 차단된 유저 수
+  int get adminTempBlockedCount => _tempBlockedSenderIds.length;
 
   /// 특정 편지의 신고 카운터 초기화 (관리자 검토 후 클리어)
   void adminClearLetterReport(String letterId) {
@@ -649,6 +693,16 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
   /// 편지함 전체 비우기 (받은 편지)
   void adminClearInbox() {
     _inbox.clear();
+    notifyListeners();
+    _saveToPrefs();
+  }
+
+  /// 모든 편지 전체 삭제 (받은 편지 + 보낸 편지 + 지도)
+  void adminClearAllLetters() {
+    _inbox.clear();
+    _sent.clear();
+    _worldLetters.clear();
+    _hasNearbyAlert = false;
     notifyListeners();
     _saveToPrefs();
   }
@@ -710,8 +764,15 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
   int get totalDMUnread =>
       _chatSessions.values.fold(0, (s, c) => s + c.unreadCount);
 
-  // ── 국가 목록 (좌표 포함) ──────────────────────────────────────────────────
-  static const List<Map<String, String>> countries = [
+  // ── 국가 목록 (GeocodingService 198개국 → fallback 50개) ────────────────
+  static List<Map<String, String>> get countries {
+    final geo = GeocodingService.instance;
+    if (geo.isInitialized && geo.countryCount > 0) return geo.allCountries;
+    return _fallbackCountries;
+  }
+
+  /// GeocodingService 미초기화 시 폴백 (기존 50개국)
+  static const List<Map<String, String>> _fallbackCountries = [
     {'name': '대한민국', 'flag': '🇰🇷', 'lat': '37.5665', 'lng': '126.9780'},
     {'name': '일본', 'flag': '🇯🇵', 'lat': '35.6762', 'lng': '139.6503'},
     {'name': '미국', 'flag': '🇺🇸', 'lat': '40.7128', 'lng': '-74.0060'},
@@ -764,10 +825,19 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
     {'name': '오스트리아', 'flag': '🇦🇹', 'lat': '48.2082', 'lng': '16.3738'},
   ];
 
-  // ── 랜덤 목적지 선택 ───────────────────────────────────────────────────────
+  // ── 랜덤 목적지 선택 (198개국 지원) ────────────────────────────────────────
   static Map<String, String> randomDestination({String? excludeCountry}) {
+    final geo = GeocodingService.instance;
+    if (geo.isInitialized && geo.countryCount > 0) {
+      return geo.randomCountry(exclude: excludeCountry) ??
+          _fallbackRandomDestination(excludeCountry);
+    }
+    return _fallbackRandomDestination(excludeCountry);
+  }
+
+  static Map<String, String> _fallbackRandomDestination(String? exclude) {
     final rng = Random();
-    final pool = countries.where((c) => c['name'] != excludeCountry).toList();
+    final pool = _fallbackCountries.where((c) => c['name'] != exclude).toList();
     return pool[rng.nextInt(pool.length)];
   }
 
@@ -785,11 +855,22 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
       if (_deliveryTimer == null || !_deliveryTimer!.isActive) {
         _startDeliverySimulation();
       }
+      // 서버 편지 동기화 재개
+      if (_worldLetterSyncTimer == null || !_worldLetterSyncTimer!.isActive) {
+        syncWorldLettersFromServer();
+        _worldLetterSyncTimer = Timer.periodic(
+          const Duration(seconds: 30),
+          (_) => syncWorldLettersFromServer(),
+        );
+      }
     } else if (state == AppLifecycleState.paused ||
         state == AppLifecycleState.detached) {
-      // 백그라운드 진입 → 타이머 정지
+      // 백그라운드 진입 → 타이머 정지 + 주소 캐시 저장
       _deliveryTimer?.cancel();
       _deliveryTimer = null;
+      _worldLetterSyncTimer?.cancel();
+      _worldLetterSyncTimer = null;
+      unawaited(GeocodingService.instance.saveAllCache());
     }
   }
 
@@ -825,9 +906,22 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
     final now = DateTime.now();
     final before = _inbox.length;
     _inbox.removeWhere((letter) {
-      if (letter.status != DeliveryStatus.read) return false;
-      final baseTime = letter.readAt ?? letter.arrivedAt ?? letter.sentAt;
-      return now.difference(baseTime) >= _readLetterRetention;
+      // 1) 읽은 편지: 30일 후 삭제
+      if (letter.status == DeliveryStatus.read) {
+        final baseTime = letter.readAt ?? letter.arrivedAt ?? letter.sentAt;
+        return now.difference(baseTime) >= _readLetterRetention;
+      }
+      // 2) 도착했지만 7일간 미열람 편지: 자동 삭제
+      if (letter.status == DeliveryStatus.delivered ||
+          letter.status == DeliveryStatus.nearYou ||
+          letter.status == DeliveryStatus.deliveredFar) {
+        final arrivedTime = letter.arrivedAt ?? letter.sentAt;
+        if (!letter.isReadByRecipient &&
+            now.difference(arrivedTime) >= _unopenedLetterExpiry) {
+          return true;
+        }
+      }
+      return false;
     });
     return _inbox.length != before;
   }
@@ -922,10 +1016,18 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
   }
 
   // ── 타워 스킨 업데이트 ────────────────────────────────────────────────────
-  void updateTowerSkin({String? color, String? accentEmoji}) {
+  void updateTowerSkin({
+    String? color,
+    String? accentEmoji,
+    int? roofStyle,
+    int? windowStyle,
+  }) {
     if (color != null) _currentUser.towerColor = color;
     if (accentEmoji != null) _currentUser.towerAccentEmoji = accentEmoji;
+    if (roofStyle != null) _currentUser.towerRoofStyle = roofStyle;
+    if (windowStyle != null) _currentUser.towerWindowStyle = windowStyle;
     _saveToPrefs();
+    _saveUserToFirestore();
     notifyListeners();
   }
 
@@ -1049,6 +1151,8 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
         ),
       );
       prefs.setStringList('blocked', _blockedSenderIds.toList());
+      prefs.setStringList('temp_blocked', _tempBlockedSenderIds.toList());
+      prefs.setString('lastAiLetterDateKey', _lastAiLetterDateKey);
       prefs.setInt('sentSinceLastUnlock', _sentSinceLastUnlock);
       prefs.setInt('dailySentCount', _dailySentCount);
       prefs.setString('dailySentDateKey', _dailySentDateKey);
@@ -1080,6 +1184,8 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
           _currentUser.towerAccentEmoji!,
         );
       }
+      prefs.setInt('towerRoofStyle', _currentUser.towerRoofStyle);
+      prefs.setInt('towerWindowStyle', _currentUser.towerWindowStyle);
       prefs.setBool(PrefKeys.isBrand, _currentUser.isBrand);
       if (_currentUser.brandName != null) {
         prefs.setString(PrefKeys.brandName, _currentUser.brandName!);
@@ -1225,6 +1331,8 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
     // 차단 목록 복원
     _blockedSenderIds.clear();
     _blockedSenderIds.addAll(prefs.getStringList('blocked') ?? []);
+    _tempBlockedSenderIds.clear();
+    _tempBlockedSenderIds.addAll(prefs.getStringList('temp_blocked') ?? []);
 
     // 잠금 해제 카운터 복원
     _sentSinceLastUnlock = prefs.getInt('sentSinceLastUnlock') ?? 0;
@@ -1266,6 +1374,8 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
     _rolloverMonthlySendCounterIfNeeded();
     _currentUser.towerColor = prefs.getString(PrefKeys.towerColor) ?? '#FFD700';
     _currentUser.towerAccentEmoji = prefs.getString(PrefKeys.towerAccentEmoji);
+    _currentUser.towerRoofStyle = prefs.getInt('towerRoofStyle') ?? 0;
+    _currentUser.towerWindowStyle = prefs.getInt('towerWindowStyle') ?? 0;
     _currentUser.isBrand = prefs.getBool(PrefKeys.isBrand) ?? false;
     _currentUser.isPremium = prefs.getBool(PrefKeys.purchaseIsPremium) ?? false;
     _currentUser.brandName = prefs.getString(PrefKeys.brandName);
@@ -1363,8 +1473,296 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
       _saveToPrefs();
     }
 
+    // AI 자동 편지 생성 (하루 5통)
+    _lastAiLetterDateKey = prefs.getString('lastAiLetterDateKey') ?? '';
+    _generateDailyAiLetters();
+
     await _ensureInviteIdentityOnServer();
+
+    // ── Firebase 익명 로그인 + 서버 편지 동기화 ─────────────────────────────
+    await _initFirebaseAndSync();
+
+    // ── 시간 기반 편지 상태 보정 ─────────────────────────────────────────────
+    // 앱이 꺼져 있던 동안 arrivalTime이 지난 편지를 즉시 도착 처리
+    _reconcileLetterStatuses();
+
     notifyListeners();
+  }
+
+  /// 앱 재시작 후 arrivalTime이 이미 지난 편지들의 상태를 즉시 보정한다.
+  /// (delivery timer 5초 대기 없이 로드 직후 실행)
+  void _reconcileLetterStatuses() {
+    final now = DateTime.now();
+    bool changed = false;
+    final List<Letter> dailyToInbox = [];
+
+    for (final letter in _worldLetters) {
+      // 이미 도착 처리된 편지는 건너뜀
+      if (letter.status == DeliveryStatus.deliveredFar ||
+          letter.status == DeliveryStatus.nearYou ||
+          letter.status == DeliveryStatus.delivered ||
+          letter.status == DeliveryStatus.read) {
+        continue;
+      }
+      if (letter.status != DeliveryStatus.inTransit) continue;
+
+      // 세그먼트 진행도를 현재 시각에 맞춰 동기화
+      _syncLetterProgressWithClock(letter, now);
+
+      final arrived = letter.arrivalTime != null
+          ? !now.isBefore(letter.arrivalTime!)
+          : letter.overallProgress >= 0.999;
+
+      if (arrived) {
+        if (letter.id.startsWith('daily_')) {
+          letter.status = DeliveryStatus.delivered;
+          letter.arrivedAt ??= now;
+          dailyToInbox.add(letter);
+          changed = true;
+          continue;
+        }
+        final dist = letter.destinationLocation.distanceTo(
+          LatLng(_currentUser.latitude, _currentUser.longitude),
+        );
+        if (dist <= 2000) {
+          letter.status = DeliveryStatus.nearYou;
+          _hasNearbyAlert = true;
+        } else {
+          letter.status = DeliveryStatus.deliveredFar;
+        }
+        letter.arrivedAt ??= now;
+        changed = true;
+      }
+    }
+
+    // daily 편지: worldLetters → inbox 이동
+    for (final l in dailyToInbox) {
+      _worldLetters.removeWhere((x) => x.id == l.id);
+      _inbox.add(l);
+      _currentUser.activityScore.receivedCount++;
+    }
+
+    // _sent 리스트의 편지 상태도 동기화 (_worldLetters와 같은 객체를 참조하지만
+    // worldLetters에 없는 sent 편지가 있을 수 있으므로 별도 처리)
+    for (final letter in _sent) {
+      if (letter.status != DeliveryStatus.inTransit) continue;
+      _syncLetterProgressWithClock(letter, now);
+      final arrived = letter.arrivalTime != null
+          ? !now.isBefore(letter.arrivalTime!)
+          : letter.overallProgress >= 0.999;
+      if (arrived) {
+        letter.status = DeliveryStatus.delivered;
+        letter.arrivedAt ??= now;
+        changed = true;
+      }
+    }
+
+    if (changed) {
+      _saveToPrefs();
+    }
+  }
+
+  // ── Firebase 익명 로그인 + 서버 동기화 ────────────────────────────────────────
+  Timer? _worldLetterSyncTimer;
+
+  Future<void> _initFirebaseAndSync() async {
+    if (!FirebaseConfig.kFirebaseEnabled) return;
+    // 익명 로그인 (Firestore 접근용 ID 토큰 획득)
+    final ok = await FirebaseAuthService.signInAnonymously();
+    if (!ok) {
+      if (kDebugMode) debugPrint('[Firebase] 익명 로그인 실패 — 서버 동기화 스킵');
+      return;
+    }
+    // 내 프로필을 Firestore에 저장 (다른 테스터가 지도에서 볼 수 있도록)
+    _saveUserToFirestore();
+    // 서버에서 다른 유저들의 편지 가져와서 지도에 표시
+    await syncWorldLettersFromServer();
+    // 30초마다 서버 편지 동기화 (다른 테스터가 보낸 새 편지를 반영)
+    _worldLetterSyncTimer?.cancel();
+    _worldLetterSyncTimer = Timer.periodic(
+      const Duration(seconds: 30),
+      (_) => syncWorldLettersFromServer(),
+    );
+  }
+
+  /// 서버에서 모든 유저의 최근 편지를 가져와 지도에 표시
+  Future<void> syncWorldLettersFromServer() async {
+    if (!FirebaseConfig.kFirebaseEnabled) return;
+    if (!FirebaseAuthService.isSignedIn) return;
+    try {
+      final docs = await FirestoreService.queryCollection(
+        'letters',
+        orderBy: 'sentAt desc',
+        limit: 50,
+      );
+      if (docs.isEmpty) return;
+
+      final now = DateTime.now();
+      bool changed = false;
+
+      for (final doc in docs) {
+        final data = FirestoreService.fromFirestoreDoc(doc);
+        final letterId = data['id'] as String? ?? '';
+        if (letterId.isEmpty) continue;
+        // 자기가 보낸 편지는 건너뜀 (이미 로컬에 있음)
+        if (data['senderId'] == _currentUser.id) continue;
+        // 이미 로컬에 있으면 건너뜀
+        if (_worldLetters.any((l) => l.id == letterId) ||
+            _inbox.any((l) => l.id == letterId)) continue;
+
+        // 서버 데이터로 Letter 객체 생성
+        final letter = _letterFromFirestoreData(data, now);
+        if (letter == null) continue;
+
+        // 지도에 추가 (배송 중이든 도착했든 모두 표시)
+        _worldLetters.add(letter);
+        changed = true;
+
+        if (kDebugMode) {
+          debugPrint('[Firebase] 월드 편지 추가: ${letter.id} '
+              '${letter.senderCountryFlag}→${letter.destinationCountryFlag} '
+              '(${letter.status.name})');
+        }
+      }
+
+      if (changed) {
+        _saveToPrefs();
+        notifyListeners();
+      }
+    } catch (e, st) {
+      if (kDebugMode) debugPrint('[Firebase] 월드 편지 동기화 실패: $e\n$st');
+    }
+  }
+
+  /// Firestore 문서 데이터를 Letter 객체로 변환
+  Letter? _letterFromFirestoreData(Map<String, dynamic> data, DateTime now) {
+    try {
+      final originLat = (data['originLat'] as num?)?.toDouble() ?? 0;
+      final originLng = (data['originLng'] as num?)?.toDouble() ?? 0;
+      final destLat = (data['destLat'] as num?)?.toDouble() ?? 0;
+      final destLng = (data['destLng'] as num?)?.toDouble() ?? 0;
+      final fromCity = LatLng(originLat, originLng);
+      final toCity = LatLng(destLat, destLng);
+      final sentAtStr = data['sentAt'] as String? ?? '';
+      final sentAt = DateTime.tryParse(sentAtStr) ?? now;
+      final totalMin = (data['estimatedTotalMinutes'] as num?)?.toInt() ?? 60;
+      final arrivalTime = sentAt.add(Duration(minutes: totalMin));
+
+      // 경로 세그먼트 재생성
+      final senderCountry = data['senderCountry'] as String? ?? '';
+      final destCountry = data['destinationCountry'] as String? ?? '';
+      final segments = LogisticsHubs.buildRoute(
+        fromCountry: senderCountry,
+        fromCity: fromCity,
+        toCountry: destCountry,
+        toCity: toCity,
+        fromCityName: data['senderName'] as String? ?? '',
+        preferAir: true,
+      );
+      _rebalanceSegmentEstimatedMinutes(segments, totalMin);
+
+      // 이미 도착했는지 확인
+      final arrived = now.isAfter(arrivalTime);
+      final status = arrived ? DeliveryStatus.delivered : DeliveryStatus.inTransit;
+
+      return Letter(
+        id: data['id'] as String? ?? 'srv_${now.millisecondsSinceEpoch}',
+        senderId: data['senderId'] as String? ?? '',
+        senderName: data['senderName'] as String? ?? '???',
+        senderCountry: senderCountry,
+        senderCountryFlag: data['senderCountryFlag'] as String? ?? '🏳️',
+        content: data['content'] as String? ?? '',
+        originLocation: fromCity,
+        destinationLocation: toCity,
+        destinationCountry: destCountry,
+        destinationCountryFlag: data['destinationCountryFlag'] as String? ?? '',
+        destinationCity: data['destinationCity'] as String?,
+        segments: segments,
+        currentSegmentIndex: 0,
+        status: status,
+        sentAt: sentAt,
+        arrivalTime: arrivalTime,
+        socialLink: data['socialLink'] as String?,
+        estimatedTotalMinutes: totalMin,
+        paperStyle: (data['paperStyle'] as num?)?.toInt() ?? 0,
+        fontStyle: (data['fontStyle'] as num?)?.toInt() ?? 0,
+        imageUrl: data['imageUrl'] as String?,
+        arrivedAt: arrived ? arrivalTime : null,
+      );
+    } catch (e, st) {
+      if (kDebugMode) debugPrint('[Firebase] Letter 변환 실패: $e\n$st');
+      return null;
+    }
+  }
+
+  /// 보낸 편지를 Firestore에 저장 (다른 유저가 수신할 수 있도록)
+  Future<void> _saveLetterToFirestore(Letter letter) async {
+    if (!FirebaseConfig.kFirebaseEnabled) return;
+    if (!FirebaseAuthService.isSignedIn) return;
+    try {
+      await FirestoreService.setDocument('letters/${letter.id}', {
+        'id': letter.id,
+        'senderId': letter.senderId,
+        'senderName': letter.senderName,
+        'senderCountry': letter.senderCountry,
+        'senderCountryFlag': letter.senderCountryFlag,
+        'content': letter.content,
+        'originLat': letter.originLocation.latitude,
+        'originLng': letter.originLocation.longitude,
+        'destLat': letter.destinationLocation.latitude,
+        'destLng': letter.destinationLocation.longitude,
+        'destinationCountry': letter.destinationCountry,
+        'destinationCountryFlag': letter.destinationCountryFlag,
+        'destinationCity': letter.destinationCity ?? '',
+        'sentAt': letter.sentAt.toIso8601String(),
+        'estimatedTotalMinutes': letter.estimatedTotalMinutes,
+        'paperStyle': letter.paperStyle,
+        'fontStyle': letter.fontStyle,
+        'imageUrl': letter.imageUrl ?? '',
+        'socialLink': letter.socialLink ?? '',
+        'letterType': letter.letterType.name,
+        'status': letter.status.name,
+        'senderTier': letter.senderTier.name,
+      });
+      if (kDebugMode) {
+        debugPrint('[Firebase] 편지 업로드 완료: ${letter.id} → ${letter.destinationCountry}');
+      }
+    } catch (e, st) {
+      if (kDebugMode) debugPrint('[Firebase] 편지 업로드 실패: $e\n$st');
+    }
+  }
+
+  /// 관리자: 서버의 모든 편지 목록 조회
+  Future<List<Map<String, dynamic>>> adminFetchAllLetters() async {
+    if (!FirebaseConfig.kFirebaseEnabled) return [];
+    if (!FirebaseAuthService.isSignedIn) {
+      await FirebaseAuthService.signInAnonymously();
+    }
+    final docs = await FirestoreService.queryCollection(
+      'letters',
+      orderBy: 'sentAt desc',
+      limit: 100,
+    );
+    return docs.map((d) => FirestoreService.fromFirestoreDoc(d)).toList();
+  }
+
+  /// 관리자: 서버의 모든 유저 목록 조회
+  Future<List<Map<String, dynamic>>> adminFetchAllUsers() async {
+    if (!FirebaseConfig.kFirebaseEnabled) return [];
+    if (!FirebaseAuthService.isSignedIn) {
+      await FirebaseAuthService.signInAnonymously();
+    }
+    final docs = await FirestoreService.queryCollection(
+      'users',
+      limit: 100,
+    );
+    return docs.map((d) => FirestoreService.fromFirestoreDoc(d)).toList();
+  }
+
+  /// 관리자: 특정 편지 삭제
+  Future<bool> adminDeleteLetter(String letterId) async {
+    if (!FirebaseConfig.kFirebaseEnabled) return false;
+    return FirestoreService.deleteDocument('letters/$letterId');
   }
 
   // ── 유저 세팅 (로그인/회원가입 후) ────────────────────────────────────────
@@ -1378,6 +1776,8 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
     String? languageCode,
     double? latitude,
     double? longitude,
+    String? phoneNumber,
+    String? verifyMethod,
   }) {
     final resolvedLanguageCode =
         (languageCode != null && languageCode.isNotEmpty)
@@ -1397,6 +1797,8 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
       latitude: latitude ?? 37.5665,
       longitude: longitude ?? 126.9780,
       activityScore: _currentUser.activityScore, // 기존 점수 유지 (초기값 하드코딩 제거)
+      phoneNumber: phoneNumber,
+      verifyMethod: verifyMethod ?? 'email',
     );
     _dailySentCount = 0;
     _dailySentDateKey = _dateKey(DateTime.now());
@@ -1406,6 +1808,8 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
     _saveUserToFirestore();
     unawaited(_ensureInviteIdentityOnServer());
     fetchMapUsers(force: true);
+    // AI 자동 편지 생성 (하루 5통)
+    _generateDailyAiLetters();
   }
 
   // ── 위치 업데이트 ─────────────────────────────────────────────────────────
@@ -1438,6 +1842,18 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
 
   void updateSocialLink(String? link) {
     _currentUser.socialLink = link;
+    _saveToPrefs();
+    notifyListeners();
+  }
+
+  void updateVerifyMethod(String method) {
+    _currentUser.verifyMethod = method;
+    _saveToPrefs();
+    notifyListeners();
+  }
+
+  void updatePhoneNumber(String? phone) {
+    _currentUser.phoneNumber = phone;
     _saveToPrefs();
     notifyListeners();
   }
@@ -1510,13 +1926,29 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
           'updatedAt': {'stringValue': DateTime.now().toIso8601String()},
           if (_currentUser.customTowerName != null)
             'customTowerName': {'stringValue': _currentUser.customTowerName!},
+          'towerColor': {'stringValue': _currentUser.towerColor},
+          if (_currentUser.towerAccentEmoji != null)
+            'towerAccentEmoji': {'stringValue': _currentUser.towerAccentEmoji!},
+          'towerRoofStyle': {'integerValue': '${_currentUser.towerRoofStyle}'},
+          'towerWindowStyle': {'integerValue': '${_currentUser.towerWindowStyle}'},
         },
       });
-      await http.patch(
-        url,
-        headers: {'Content-Type': 'application/json'},
-        body: body,
-      );
+      for (int attempt = 0; attempt < 3; attempt++) {
+        try {
+          await http.patch(
+            url,
+            headers: {'Content-Type': 'application/json'},
+            body: body,
+          ).timeout(const Duration(seconds: 20));
+          return; // 성공 시 종료
+        } catch (e) {
+          if (attempt < 2) {
+            await Future.delayed(Duration(seconds: 2 * (attempt + 1)));
+          } else {
+            debugPrint('[Firestore] user save error (3 attempts): $e');
+          }
+        }
+      }
     } catch (e) {
       debugPrint('[Firestore] user save error: $e');
     }
@@ -1642,7 +2074,7 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
         'lat': -26.2041,
         'lng': 28.0473,
         'content':
-            "Writing to you from Johannesburg as the golden sunset paints the sky in shades of orange and pink. South Africa holds such breathtaking beauty — the wide savanna, the warmth of its people, the stories in every corner. I hope this letter finds you well, wherever you are.",
+            "Hallo vanuit Johannesburg! Die goue sonsondergang verf die lug in skakerings van oranje en pienk. Suid-Afrika het sulke asemrowende skoonheid — die wye savanna, die warmte van sy mense, die stories in elke hoek. Ek hoop hierdie brief vind jou goed, waar jy ook al is.",
       },
       {
         'name': 'Lucas B.',
@@ -1765,10 +2197,10 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
         'name': 'Emily C.',
         'country': '캐나다',
         'flag': '🇨🇦',
-        'lat': 43.6532,
-        'lng': -79.3832,
+        'lat': 45.5017,
+        'lng': -73.5673,
         'content':
-            'Hello from Toronto! The maple trees have turned into a sea of red and amber, and I\'ve been walking through the leaves all morning. Canada is a country of quiet wonders — frozen lakes, endless forests, and the kindest strangers. Sending you some of this autumn warmth.',
+            "Bonjour de Montréal! Les érables se sont transformés en une mer de rouge et d'ambre, et j'ai marché dans les feuilles toute la matinée. Le Canada est un pays de merveilles tranquilles — des lacs gelés, des forêts infinies et les étrangers les plus gentils. Je t'envoie un peu de cette chaleur automnale.",
       },
       {
         'name': 'Diego R.',
@@ -1961,7 +2393,7 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
         'lat': -26.2041,
         'lng': 28.0473,
         'content':
-            "Writing to you from Johannesburg as the golden sunset paints the sky in shades of orange and pink. South Africa holds such breathtaking beauty — the wide savanna, the warmth of its people, the stories in every corner. I hope this letter finds you well, wherever you are.",
+            "Hallo vanuit Johannesburg! Die goue sonsondergang verf die lug in skakerings van oranje en pienk. Suid-Afrika het sulke asemrowende skoonheid — die wye savanna, die warmte van sy mense, die stories in elke hoek. Ek hoop hierdie brief vind jou goed, waar jy ook al is.",
       },
       {
         'name': 'Lucas B.',
@@ -2084,10 +2516,10 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
         'name': 'Emily C.',
         'country': '캐나다',
         'flag': '🇨🇦',
-        'lat': 43.6532,
-        'lng': -79.3832,
+        'lat': 45.5017,
+        'lng': -73.5673,
         'content':
-            'Hello from Toronto! The maple trees have turned into a sea of red and amber, and I\'ve been walking through the leaves all morning. Canada is a country of quiet wonders — frozen lakes, endless forests, and the kindest strangers. Sending you some of this autumn warmth.',
+            "Bonjour de Montréal! Les érables se sont transformés en une mer de rouge et d'ambre, et j'ai marché dans les feuilles toute la matinée. Le Canada est un pays de merveilles tranquilles — des lacs gelés, des forêts infinies et les étrangers les plus gentils. Je t'envoie un peu de cette chaleur automnale.",
       },
       {
         'name': 'Diego R.',
@@ -2352,7 +2784,7 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
         final pageToken = nextPageToken?.trim() ?? '';
         final url = Uri.parse(buildUsersListUrl(pageToken));
 
-        final res = await http.get(url).timeout(const Duration(seconds: 8));
+        final res = await http.get(url).timeout(const Duration(seconds: 20));
         if (res.statusCode != 200) {
           debugPrint('[Firestore] fetchMapUsers http ${res.statusCode}');
           break;
@@ -2399,6 +2831,9 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
 
             final towerNameRaw = parseString(fields, 'customTowerName');
             final towerName = towerNameRaw.isEmpty ? null : towerNameRaw;
+            final towerColorRaw = parseString(fields, 'towerColor', fallback: '#FFD700');
+            final towerAccentRaw = parseString(fields, 'towerAccentEmoji');
+            final towerAccent = towerAccentRaw.isEmpty ? null : towerAccentRaw;
 
             users.add(
               MapUser(
@@ -2411,6 +2846,10 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
                 rank: 0,
                 username: isPublic ? username : null,
                 towerName: towerName,
+                towerColor: towerColorRaw,
+                towerAccentEmoji: towerAccent,
+                towerRoofStyle: parseInt(fields, 'towerRoofStyle'),
+                towerWindowStyle: parseInt(fields, 'towerWindowStyle'),
               ),
             );
             if (users.length >= _mapUsersMaxCount) break;
@@ -3146,12 +3585,225 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
         );
       }
       if (dailyToInbox.isNotEmpty) {
-        _saveToPrefs();
         changed = true;
       }
 
-      if (changed) notifyListeners();
+      if (changed) {
+        _saveToPrefs();
+        notifyListeners();
+      }
     });
+  }
+
+  // ── AI 자동 편지 발송 (하루 3통, 랜덤 3개국 → 유저 나라 랜덤 주소) ──────────
+  static const _aiSenders = <Map<String, Object>>[
+    {'name': 'Emma', 'country': '영국', 'flag': '🇬🇧', 'lat': 51.5074, 'lng': -0.1278, 'city': 'London'},
+    {'name': 'Yuki', 'country': '일본', 'flag': '🇯🇵', 'lat': 35.6762, 'lng': 139.6503, 'city': 'Tokyo'},
+    {'name': 'Lucas', 'country': '브라질', 'flag': '🇧🇷', 'lat': -23.5505, 'lng': -46.6333, 'city': 'São Paulo'},
+    {'name': 'Marie', 'country': '프랑스', 'flag': '🇫🇷', 'lat': 48.8566, 'lng': 2.3522, 'city': 'Paris'},
+    {'name': 'James', 'country': '미국', 'flag': '🇺🇸', 'lat': 40.7128, 'lng': -74.0060, 'city': 'New York'},
+    {'name': 'Lina', 'country': '독일', 'flag': '🇩🇪', 'lat': 52.5200, 'lng': 13.4050, 'city': 'Berlin'},
+    {'name': 'Carlos', 'country': '스페인', 'flag': '🇪🇸', 'lat': 40.4168, 'lng': -3.7038, 'city': 'Madrid'},
+    {'name': 'Mei', 'country': '중국', 'flag': '🇨🇳', 'lat': 31.2304, 'lng': 121.4737, 'city': 'Shanghai'},
+    {'name': 'Alessandro', 'country': '이탈리아', 'flag': '🇮🇹', 'lat': 41.9028, 'lng': 12.4964, 'city': 'Rome'},
+    {'name': 'Olivia', 'country': '호주', 'flag': '🇦🇺', 'lat': -33.8688, 'lng': 151.2093, 'city': 'Sydney'},
+    {'name': 'Priya', 'country': '인도', 'flag': '🇮🇳', 'lat': 28.6139, 'lng': 77.2090, 'city': 'New Delhi'},
+    {'name': 'Sven', 'country': '스웨덴', 'flag': '🇸🇪', 'lat': 59.3293, 'lng': 18.0686, 'city': 'Stockholm'},
+    {'name': 'Fatima', 'country': '터키', 'flag': '🇹🇷', 'lat': 41.0082, 'lng': 28.9784, 'city': 'Istanbul'},
+    {'name': 'Aiden', 'country': '캐나다', 'flag': '🇨🇦', 'lat': 43.6532, 'lng': -79.3832, 'city': 'Toronto'},
+    {'name': 'Sofia', 'country': '아르헨티나', 'flag': '🇦🇷', 'lat': -34.6037, 'lng': -58.3816, 'city': 'Buenos Aires'},
+    {'name': 'Jing', 'country': '태국', 'flag': '🇹🇭', 'lat': 13.7563, 'lng': 100.5018, 'city': 'Bangkok'},
+    {'name': 'Anna', 'country': '러시아', 'flag': '🇷🇺', 'lat': 55.7558, 'lng': 37.6173, 'city': 'Moscow'},
+    {'name': 'Noah', 'country': '뉴질랜드', 'flag': '🇳🇿', 'lat': -36.8485, 'lng': 174.7633, 'city': 'Auckland'},
+  ];
+
+  // 나라별 고유 언어 메시지 (flag → 3개 메시지)
+  static const _aiMessagesByFlag = <String, List<String>>{
+    '🇬🇧': [
+      'Hello from London! 🌍\n\nI found this app today and wanted to send a letter to someone far away. I hope this little message brightens your day.\n\nTell me about your city — what\'s your favourite place to visit?',
+      'Good day! ☕\n\nI\'m writing this from a cosy pub near the Thames. It\'s raining outside, of course. There\'s something rather lovely about writing to a stranger across the world.\n\nHow are you doing today?',
+      'Hi there! 🌸\n\nI\'ve always been fascinated by different cultures. The food, the mountains, the scenery... your country seems wonderful.\n\nWould you like to be pen pals?',
+    ],
+    '🇯🇵': [
+      'こんにちは！🌸\n\n東京からこの手紙を書いています。今日は桜が咲き始めて、街がピンク色に染まっています。\n\nあなたの街の春はどんな感じですか？いつか訪れてみたいです！',
+      'はじめまして！✨\n\n日本から遠い国に手紙を送れるなんて素敵ですね。今カフェでコーヒーを飲みながら書いています。\n\nあなたの街のおすすめの場所を教えてください！',
+      'やっほー！😊\n\n知らない誰かに手紙を送るってワクワクしますね。今夜は星がとてもきれいです。\n\nそちらの空はどうですか？',
+    ],
+    '🇧🇷': [
+      'Olá! 🌍\n\nEstou escrevendo de São Paulo e queria mandar uma carta para alguém do outro lado do mundo. Espero que esta mensagem alegre o seu dia!\n\nMe conta sobre a sua cidade — qual é o seu lugar favorito?',
+      'Oi! 🌸\n\nSempre sonhei em conhecer novas culturas. A comida, as montanhas... tudo parece maravilhoso.\n\nO que só os locais sabem sobre a sua cidade? Adoraria ouvir de você!',
+      'E aí! 😊\n\nMandei esta carta sem saber quem vai receber. É isso que torna tudo tão emocionante, né?\n\nSe pudesse viajar para qualquer lugar amanhã, para onde iria?',
+    ],
+    '🇫🇷': [
+      'Bonjour ! 🥐\n\nJe t\'écris depuis Paris, assis dans un café près de la Seine. Découvrir de nouvelles cultures me fascine — le mélange de tradition et de modernité est vraiment inspirant.\n\nQuelle est ta saison préférée chez toi ?',
+      'Salut ! ✨\n\nC\'est incroyable de pouvoir envoyer des lettres à travers le monde comme ça. En ce moment, il pleut dehors et je regarde les gouttes sur la vitre.\n\nComment ça va chez toi ?',
+      'Coucou ! 🌸\n\nJ\'ai toujours rêvé de voyager partout dans le monde. La nourriture, les montagnes, les temples... tout semble merveilleux.\n\nTu voudrais qu\'on devienne correspondants ?',
+    ],
+    '🇺🇸': [
+      'Hey there! 🌍\n\nWriting from New York City! I found this app and thought it would be cool to connect with someone across the world.\n\nWhat\'s your favorite place to hang out in your city?',
+      'Hi! 🎵\n\nMusic has no borders. I\'ve been exploring different world music lately and it inspired me to write to a stranger.\n\nWhat songs are you listening to these days?',
+      'What\'s up! 🍜\n\nI love trying food from different countries. What\'s your favorite local dish?\n\nI\'d love to try making it someday!',
+    ],
+    '🇩🇪': [
+      'Hallo aus Berlin! 🌍\n\nIch schreibe dir aus einem Café an der Spree. Es ist faszinierend, dass wir Briefe um die Welt schicken können.\n\nWie ist das Leben bei dir? Erzähl mir von deiner Stadt!',
+      'Guten Tag! ✨\n\nHeute Abend sind die Sterne wunderschön. Ob wohl jemand auf der anderen Seite der Welt gerade die gleichen Sterne sieht?\n\nIch hoffe, es geht dir gut!',
+      'Hi! 😊\n\nIch habe diesen Brief in die Welt geschickt, ohne zu wissen, wer ihn empfangen wird. Das macht es so aufregend!\n\nWohin würdest du morgen reisen, wenn du könntest?',
+    ],
+    '🇪🇸': [
+      '¡Hola desde Madrid! 🌍\n\nHoy encontré esta app y quise enviar una carta a alguien del otro lado del mundo. ¡Espero que este mensaje te alegre el día!\n\nCuéntame de tu ciudad — ¿cuál es tu lugar favorito?',
+      '¡Hey! 🌸\n\nSiempre soñé con conocer nuevas culturas. La comida, las montañas... todo parece maravilloso.\n\n¿Qué es algo de tu país que solo los locales saben?',
+      '¡Buenas! ☕\n\nEstoy tomando café mientras escribo esto. Me encanta conectar con personas de diferentes países.\n\n¿Cuál es tu bebida favorita?',
+    ],
+    '🇨🇳': [
+      '你好！🌍\n\n我从上海给你写这封信。能把信寄到世界另一端，真是太神奇了。\n\n跟我聊聊你的城市吧——你最喜欢的地方是哪里？',
+      '嗨！🌸\n\n我一直梦想着去世界各地旅行。听说你那里的风景特别美，是真的吗？\n\n希望我们能成为笔友！',
+      '你好呀！✨\n\n今晚的星星很美。你有没有抬头看过夜空，想着世界某处是否有人也在看同样的星星？\n\n愿你一切都好。',
+    ],
+    '🇮🇹': [
+      'Ciao da Roma! 🌍\n\nHo trovato questa app oggi e volevo mandare una lettera a qualcuno dall\'altra parte del mondo. Spero che questo piccolo messaggio ti renda la giornata più bella!\n\nRaccontami della tua città — qual è il tuo posto preferito?',
+      'Salve! 🍝\n\nSono seduto in un caffè vicino al Colosseo e penso a quanto sia bello poter scrivere a uno sconosciuto dall\'altra parte del mondo.\n\nCome stai oggi?',
+      'Ehi! 😊\n\nHo mandato questa lettera nel mondo senza sapere chi la riceverà. È emozionante, no?\n\nSe potessi viaggiare ovunque domani, dove andresti?',
+    ],
+    '🇦🇺': [
+      'G\'day! 🌍\n\nWriting from Sydney! Found this app and reckoned it\'d be bonzer to connect with someone across the globe.\n\nWhat\'s your city like? I\'d love to hear about it!',
+      'Hey mate! 🌅\n\nJust watched the sunset over the harbour and thought — someone across the world is watching the sunrise right now. Maybe that\'s you!\n\nHow was your morning?',
+      'Hi! 🏄\n\nI went surfing today and it got me thinking about how the ocean connects all of us. This letter is like a message in a bottle.\n\nHope it reached someone awesome — and I reckon it has!',
+    ],
+    '🇮🇳': [
+      'नमस्ते! 🌍\n\nमैं नई दिल्ली से यह पत्र लिख रहा/रही हूँ। दुनिया भर में पत्र भेज सकना कितना अद्भुत है!\n\nअपने शहर के बारे में बताइए — आपकी पसंदीदा जगह कौन सी है?',
+      'हेलो! 🌸\n\nमैंने हमेशा दुनिया घूमने का सपना देखा है। आपका देश बहुत अद्भुत लगता है।\n\nक्या आप पेन पाल बनना चाहेंगे?',
+      'हाय! ✨\n\nआज रात तारे बहुत सुंदर हैं। क्या आप भी कभी आसमान देखकर सोचते हैं कि कोई और भी वही तारे देख रहा है?\n\nउम्मीद है आप ठीक हैं!',
+    ],
+    '🇸🇪': [
+      'Hej! 🌍\n\nJag skriver till dig från Stockholm. Det är fantastiskt att kunna skicka brev runt hela världen.\n\nBerätta om din stad — vad är din favoritplats?',
+      'Tjena! 🌸\n\nJag har alltid drömt om att resa jorden runt. Olika kulturer, mat och landskap... allt verkar underbart.\n\nVill du bli brevvänner?',
+      'Hallå! ✨\n\nStjärnorna är vackra ikväll. Undrar du ibland om någon på andra sidan jorden tittar på samma stjärnor?\n\nHoppas allt är bra med dig!',
+    ],
+    '🇹🇷': [
+      'Merhaba! 🌍\n\nİstanbul\'dan sana bu mektubu yazıyorum. Dünyanın öbür ucuna mektup gönderebilmek ne güzel!\n\nŞehrini anlat bana — en sevdiğin yer neresi?',
+      'Selam! 🌸\n\nHep farklı ülkeleri keşfetmeyi hayal ettim. Yemekleri, kültürü, doğası... her şey harika görünüyor.\n\nMektup arkadaşı olmak ister misin?',
+      'Hey! ✨\n\nBu gece yıldızlar çok güzel. Sen de gökyüzüne bakıp dünyanın başka bir yerinde birinin aynı yıldızlara baktığını merak eder misin?\n\nUmarım iyisindir!',
+    ],
+    '🇨🇦': [
+      'Hello from Toronto! 🌍\n\nI found this app today and wanted to send a letter to someone far away. I hope this little message brightens your day!\n\nTell me about your city — what\'s your favourite place to visit?',
+      'Bonjour ! 🍁\n\nLes érables ici sont magnifiques en automne. J\'aimerais savoir à quoi ressemble l\'automne chez toi.\n\nQuelle est ta saison préférée ?',
+      'Hey! 😊\n\nI just sent this letter into the world, not knowing who would receive it. That\'s pretty exciting, right?\n\nIf you could travel anywhere tomorrow, where would you go?',
+    ],
+    '🇦🇷': [
+      '¡Hola desde Buenos Aires! 🌍\n\nEncontré esta app hoy y quise enviar una carta a alguien del otro lado del mundo. ¡Espero que este mensaje te alegre el día!\n\nContame de tu ciudad — ¿cuál es tu lugar favorito?',
+      '¡Che! 🌸\n\nSiempre soñé con conocer nuevas culturas. La comida, la música, los paisajes... todo parece increíble.\n\n¿Qué es algo de tu país que solo los locales conocen?',
+      '¡Buenas! 😊\n\nMandé esta carta sin saber quién la iba a recibir. Eso es lo emocionante, ¿no?\n\nSi pudieras viajar a cualquier lugar mañana, ¿a dónde irías?',
+    ],
+    '🇹🇭': [
+      'สวัสดี! 🌍\n\nฉันเขียนจดหมายนี้จากกรุงเทพฯ สุดยอดมากที่เราส่งจดหมายข้ามโลกได้!\n\nเล่าให้ฟังหน่อยสิว่าเมืองคุณเป็นยังไง ที่ไหนที่คุณชอบไปมากที่สุด?',
+      'หวัดดี! 🌸\n\nฉันฝันอยากเดินทางไปทั่วโลก อาหาร วัฒนธรรม ธรรมชาติ... ดูวิเศษไปหมด\n\nอยากเป็นเพื่อนทางจดหมายกันไหม?',
+      'ไง! ✨\n\nคืนนี้ดาวสวยมาก คุณเคยมองท้องฟ้าแล้วสงสัยไหมว่ามีใครอีกฝั่งโลกกำลังมองดาวดวงเดียวกันอยู?\n\nหวังว่าคุณสบายดีนะ!',
+    ],
+    '🇷🇺': [
+      'Привет! 🌍\n\nПишу тебе из Москвы. Удивительно, что можно отправлять письма через весь мир!\n\nРасскажи мне о своём городе — какое твоё любимое место?',
+      'Здравствуй! 🌸\n\nЯ всегда мечтал(а) путешествовать по миру. Разные культуры, еда, природа... всё кажется таким замечательным.\n\nДавай станем друзьями по переписке?',
+      'Привет! ✨\n\nСегодня ночью звёзды невероятно красивые. Ты когда-нибудь смотришь на небо и думаешь, кто ещё на другом конце мира смотрит на те же звёзды?\n\nНадеюсь, у тебя всё хорошо!',
+    ],
+    '🇳🇿': [
+      'Kia ora! 🌍\n\nWriting from Auckland! Found this app and thought it would be awesome to connect with someone across the globe.\n\nWhat\'s your city like? I\'d love to hear about it!',
+      'Hey! 🌅\n\nJust came back from a hike and the views were incredible. New Zealand is like a dream.\n\nWhat\'s the most beautiful spot in your area?',
+      'Hi! 😊\n\nSent this letter out into the world not knowing who\'d get it. That\'s the magic of it, right?\n\nIf you could travel anywhere tomorrow, where would you go?',
+    ],
+  };
+
+  void _generateDailyAiLetters() {
+    final today = _dateKey(DateTime.now());
+    if (_lastAiLetterDateKey == today) return; // 오늘 이미 생성됨
+    if (_currentUser.id.isEmpty) return; // 로그인 전이면 스킵
+
+    _lastAiLetterDateKey = today;
+    final rng = Random();
+    final now = DateTime.now();
+
+    // 유저 나라 결정 (미설정 시 대한민국 기본)
+    final userCountry = _currentUser.country.isNotEmpty ? _currentUser.country : '대한민국';
+    final userFlag = _currentUser.countryFlag.isNotEmpty ? _currentUser.countryFlag : '🇰🇷';
+
+    // 랜덤 3개국 선택 (중복 없이, 유저 나라 제외)
+    final availableSenders = _aiSenders
+        .where((s) => s['country'] != userCountry)
+        .toList()
+      ..shuffle(rng);
+    final selectedSenders = availableSenders.take(3).toList();
+
+    for (int i = 0; i < selectedSenders.length; i++) {
+      final sender = selectedSenders[i];
+      final senderFlag = sender['flag'] as String;
+      final senderName = sender['name'] as String;
+      final senderCountry = sender['country'] as String;
+      final senderLat = sender['lat'] as double;
+      final senderLng = sender['lng'] as double;
+      final senderCity = sender['city'] as String;
+
+      // 발송 나라 고유 언어 메시지 랜덤 선택
+      final msgs = _aiMessagesByFlag[senderFlag] ?? _aiMessagesByFlag['🇬🇧']!;
+      final message = msgs[rng.nextInt(msgs.length)];
+
+      // 유저 나라 내 랜덤 도시 좌표
+      final destCity = CountryCities.randomCityWithOffset(userCountry);
+      final destLat = destCity != null ? (destCity['lat'] as num).toDouble() : _currentUser.latitude;
+      final destLng = destCity != null ? (destCity['lng'] as num).toDouble() : _currentUser.longitude;
+
+      // 배송 시간: 1~6시간 랜덤 (거리별 현실감)
+      final deliveryMin = 60 + rng.nextInt(300);
+      // 발송 시간을 오늘 내 랜덤 시점으로 분산
+      final offsetMin = rng.nextInt(120 * (i + 1));
+      final sentAt = now.subtract(Duration(minutes: offsetMin));
+
+      final id = 'daily_ai_${today}_$i';
+      // 이미 존재하면 스킵
+      if (_worldLetters.any((l) => l.id == id) || _inbox.any((l) => l.id == id)) {
+        continue;
+      }
+
+      final fromCity = LatLng(senderLat, senderLng);
+      final toCity = LatLng(destLat, destLng);
+
+      final segments = LogisticsHubs.buildRoute(
+        fromCountry: senderCountry,
+        fromCity: fromCity,
+        toCountry: userCountry,
+        toCity: toCity,
+        fromCityName: senderCity,
+        preferAir: true,
+      );
+      final segMin = segments.fold<int>(0, (s, seg) => s + seg.estimatedMinutes);
+      final totalMin = max(segMin, deliveryMin);
+      _rebalanceSegmentEstimatedMinutes(segments, totalMin);
+
+      final letter = Letter(
+        id: id,
+        senderId: 'ai_${senderName.toLowerCase()}_${senderCountry.hashCode}',
+        senderName: senderName,
+        senderCountry: senderCountry,
+        senderCountryFlag: senderFlag,
+        content: message,
+        originLocation: fromCity,
+        destinationLocation: toCity,
+        destinationCountry: userCountry,
+        destinationCountryFlag: userFlag,
+        destinationCity: null,
+        destinationDisplayAddress: null,
+        segments: segments,
+        currentSegmentIndex: 0,
+        status: DeliveryStatus.inTransit,
+        sentAt: sentAt,
+        arrivalTime: sentAt.add(Duration(minutes: totalMin)),
+        estimatedTotalMinutes: totalMin,
+        paperStyle: rng.nextInt(5),
+        fontStyle: rng.nextInt(3),
+        isAnonymous: false,
+      );
+
+      _worldLetters.add(letter);
+    }
+    _saveToPrefs();
+    notifyListeners();
   }
 
   bool _syncLetterProgressWithClock(Letter letter, DateTime now) {
@@ -3229,12 +3881,43 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
   }
 
   // ── 근처 도착 알림 트리거 ────────────────────────────────────────────────────
+  static final Random _notifRng = Random();
+
   Future<void> _triggerNearbyNotification(Letter letter) async {
     // 편지 도착 햅틱 (medium vibration)
     HapticFeedback.mediumImpact();
     final prefs = await SharedPreferences.getInstance();
     final notifyEnabled = prefs.getBool('notify_nearby') ?? true;
     if (!notifyEnabled) return;
+
+    // 쿨다운 중이면 "편지가 근처에 있지만 쿨다운 중" 알림
+    final remaining = nearbyPickupRemainingCooldown;
+    if (remaining != null) {
+      final mins = remaining.inMinutes;
+      final secs = remaining.inSeconds % 60;
+      final timeStr = mins > 0
+          ? _l10n.stateMinSec(mins, secs)
+          : _l10n.stateSec(secs);
+      NotificationService.showCooldownNotification(
+        title: _l10n.stateCooldownNearbyTitle,
+        body: _l10n.stateCooldownNearbyBody(
+          letter.senderCountryFlag,
+          letter.senderCountry,
+          timeStr,
+        ),
+      );
+      return;
+    }
+
+    // 다양한 알림 문구 중 랜덤 선택
+    final titles = _l10n.stateNearbyNotifTitles;
+    final bodies = _l10n.stateNearbyNotifBodies(
+      letter.senderCountryFlag,
+      letter.senderCountry,
+    );
+    final title = titles[_notifRng.nextInt(titles.length)];
+    final body = bodies[_notifRng.nextInt(bodies.length)];
+
     NotificationService.showNearbyLetterNotification(
       title: _l10n.stateNearbyNotificationTitle,
       body:
@@ -3329,6 +4012,8 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
     int fontStyle = 0,
     String? imageUrl, // 첨부 이미지 경로 (프리미엄)
     bool isExpress = false, // 프리미엄/브랜드 특급 배송
+    bool brandUniquePerUser = false, // 브랜드: 수신자당 1회 수신
+    int? brandAutoExpireHours, // 브랜드: 자동 삭제 시간
   }) async {
     if (!_canSendLetterByDailyLimit()) {
       return false;
@@ -3358,27 +4043,64 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
         CountryCities.cityKey(destinationCountry, destCityName),
       );
     } else {
-      // 도시 미선택일 경우: 나라별 랜덤 도시 선택 (중복 방지)
+      // 도시 미선택일 경우: 실제 주소 캐시 → cities.json → 육지 랜덤 좌표 순
       _usedDestinations[destinationCountry] ??= {};
-      final cityData = CountryCities.randomCityWithOffset(
-        destinationCountry,
-        usedCityKeys: _usedDestinations[destinationCountry],
-        languageCode: _currentUser.languageCode,
-      );
-      if (cityData != null) {
-        finalLat = (cityData['lat'] as num).toDouble();
-        finalLng = (cityData['lng'] as num).toDouble();
-        toCityName = cityData['name'] as String?; // 도시명만 사용 (번지수 제외)
-        _usedDestinations[destinationCountry]!.add(
-          CountryCities.cityKey(destinationCountry, cityData['name'] as String),
-        );
+
+      // 1차: GeocodingService 캐시에서 실제 주소 사용
+      final geo = GeocodingService.instance;
+      final cachedAddr = geo.isInitialized
+          ? geo.getCachedAddress(destinationCountry)
+          : null;
+
+      if (cachedAddr != null) {
+        finalLat = (cachedAddr['lat'] as num).toDouble();
+        finalLng = (cachedAddr['lng'] as num).toDouble();
+        toCityName = cachedAddr['city'] as String?;
+        final cityName = toCityName;
+        if (cityName != null && cityName.isNotEmpty) {
+          _usedDestinations[destinationCountry]!.add(
+            CountryCities.cityKey(destinationCountry, cityName),
+          );
+        }
+        // 캐시 소진 시 백그라운드 보충
+        if (geo.cachedCountOf(destinationCountry) < 5) {
+          unawaited(geo.prefetch(destinationCountry, count: 10));
+        }
       } else {
-        // 2차: LandAddressGenerator — 육지 경계 박스 내 랜덤 좌표
-        final landAddr = LandAddressGenerator.generate(
-          excludeCountry: _currentUser.country,
+        // 2차: cities.json 기반 랜덤 도시 (기존 56개국)
+        final cityData = CountryCities.randomCityWithOffset(
+          destinationCountry,
+          usedCityKeys: _usedDestinations[destinationCountry],
+          languageCode: _currentUser.languageCode,
         );
-        finalLat = (landAddr['lat'] as num).toDouble();
-        finalLng = (landAddr['lng'] as num).toDouble();
+        if (cityData != null) {
+          finalLat = (cityData['lat'] as num).toDouble();
+          finalLng = (cityData['lng'] as num).toDouble();
+          toCityName = cityData['name'] as String?;
+          _usedDestinations[destinationCountry]!.add(
+            CountryCities.cityKey(destinationCountry, cityData['name'] as String),
+          );
+        } else if (geo.isInitialized) {
+          // 3차: GeocodingService 경계 내 랜덤 좌표 (cities.json에 없는 나라)
+          final coord = geo.randomCoordinate(destinationCountry);
+          if (coord != null) {
+            finalLat = coord['lat']!;
+            finalLng = coord['lng']!;
+          } else {
+            final landAddr = LandAddressGenerator.generate(
+              excludeCountry: _currentUser.country,
+            );
+            finalLat = (landAddr['lat'] as num).toDouble();
+            finalLng = (landAddr['lng'] as num).toDouble();
+          }
+        } else {
+          // 4차: 최종 폴백 — LandAddressGenerator
+          final landAddr = LandAddressGenerator.generate(
+            excludeCountry: _currentUser.country,
+          );
+          finalLat = (landAddr['lat'] as num).toDouble();
+          finalLng = (landAddr['lng'] as num).toDouble();
+        }
       }
     }
     final toCity = LatLng(finalLat, finalLng);
@@ -3451,6 +4173,10 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
           : _currentUser.isPremium
           ? LetterSenderTier.premium
           : LetterSenderTier.free,
+      brandUniquePerUser: _currentUser.isBrand && brandUniquePerUser,
+      expiresAt: (_currentUser.isBrand && brandAutoExpireHours != null)
+          ? now.add(Duration(minutes: totalMin) + Duration(hours: brandAutoExpireHours))
+          : null,
     );
 
     _worldLetters.add(letter);
@@ -3462,6 +4188,8 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
     _sentSinceLastUnlock++;
     notifyListeners();
     _saveToPrefs();
+    // Firestore에 편지 저장 (다른 유저가 수신할 수 있도록)
+    unawaited(_saveLetterToFirestore(letter));
     // 주소 조회: 편지 저장 후 비동기 업데이트 (앱 종료 시에도 편지 유지)
     unawaited(
       GeocodingService.getDisplayAddress(
@@ -3486,35 +4214,68 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
   // ── 브랜드 대량 발송 ──────────────────────────────────────────────────────
   /// 브랜드 계정 전용: 동일 내용을 복수 나라에 지정 횟수만큼 발송
   /// [targets] : [{'country':..,'flag':..,'lat':..,'lng':..}] 목록
-  /// [sendCount]: 나라당 발송 횟수
+  ///             빈 목록이면 198개국 중 랜덤 선택하여 발송
+  /// [sendCount]: 나라당 발송 횟수 (랜덤 모드에서는 총 발송 횟수)
+  /// [randomMode]: true이면 targets 무시, 매 편지마다 랜덤 국가 선택
   /// returns: 실제 발송된 편지 수 (한도 초과 시 부분 발송)
   Future<int> sendBulkLetter({
     required String content,
     required List<Map<String, dynamic>> targets,
     required int sendCount,
+    bool randomMode = false,
     String? socialLink,
     String? imageUrl,
     int paperStyle = 0,
     int fontStyle = 0,
+    bool brandUniquePerUser = false,
+    int? brandAutoExpireHours,
   }) async {
     if (!_currentUser.isBrand) return 0;
     int sent = 0;
-    for (final target in targets) {
-      for (int i = 0; i < sendCount; i++) {
+
+    if (randomMode) {
+      // 랜덤 모드: 매 편지마다 198개국 중 랜덤 국가 선택
+      final totalToSend = sendCount;
+      for (int i = 0; i < totalToSend; i++) {
         if (!_canSendLetterByDailyLimit()) break;
         if (imageUrl != null && !_canSendImageLetter()) break;
+        final dest = randomDestination(excludeCountry: _currentUser.country);
         final ok = await sendLetter(
           content: content,
-          destinationCountry: target['country'] as String,
-          destinationFlag: target['flag'] as String,
-          destLat: (target['lat'] as num).toDouble(),
-          destLng: (target['lng'] as num).toDouble(),
+          destinationCountry: dest['name']!,
+          destinationFlag: dest['flag']!,
+          destLat: double.parse(dest['lat']!),
+          destLng: double.parse(dest['lng']!),
           socialLink: socialLink,
           imageUrl: imageUrl,
           paperStyle: paperStyle,
           fontStyle: fontStyle,
+          brandUniquePerUser: brandUniquePerUser,
+          brandAutoExpireHours: brandAutoExpireHours,
         );
         if (ok) sent++;
+      }
+    } else {
+      // 기존: 선택된 나라에 나라당 sendCount만큼 발송
+      for (final target in targets) {
+        for (int i = 0; i < sendCount; i++) {
+          if (!_canSendLetterByDailyLimit()) break;
+          if (imageUrl != null && !_canSendImageLetter()) break;
+          final ok = await sendLetter(
+            content: content,
+            destinationCountry: target['country'] as String,
+            destinationFlag: target['flag'] as String,
+            destLat: (target['lat'] as num).toDouble(),
+            destLng: (target['lng'] as num).toDouble(),
+            socialLink: socialLink,
+            imageUrl: imageUrl,
+            paperStyle: paperStyle,
+            fontStyle: fontStyle,
+            brandUniquePerUser: brandUniquePerUser,
+            brandAutoExpireHours: brandAutoExpireHours,
+          );
+          if (ok) sent++;
+        }
       }
     }
     return sent;
@@ -3533,6 +4294,8 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
     int paperStyle = 0,
     int fontStyle = 0,
     String? imageUrl,
+    bool brandUniquePerUser = false,
+    int? brandAutoExpireHours,
   }) async {
     if (!_currentUser.isBrand) return 0;
 
@@ -3608,6 +4371,10 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
         senderIsBrand: true,
         senderTier: LetterSenderTier.brand,
         isAnonymous: false,
+        brandUniquePerUser: brandUniquePerUser,
+        expiresAt: brandAutoExpireHours != null
+            ? now.add(Duration(minutes: expressTotalMin) + Duration(hours: brandAutoExpireHours))
+            : null,
       );
 
       _worldLetters.add(letter);
@@ -4065,6 +4832,7 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
     String? countryFlag,
     String? socialLink,
     String? email,
+    String? languageCode,
   }) {
     if (username != null && username.isNotEmpty)
       _currentUser.username = username;
@@ -4072,7 +4840,10 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
     if (countryFlag != null) _currentUser.countryFlag = countryFlag;
     if (socialLink != null) _currentUser.socialLink = socialLink;
     if (email != null) _currentUser.email = email;
+    if (languageCode != null && languageCode.isNotEmpty)
+      _currentUser.languageCode = languageCode;
     notifyListeners();
+    _saveToPrefs();
   }
 
   // ── 알림 초기화 ────────────────────────────────────────────────────────────
@@ -4082,20 +4853,82 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
   }
 
   // ── 편지 신고 ─────────────────────────────────────────────────────────────
-  void reportLetter(String letterId, String reporterId) {
-    final idx = _worldLetters.indexWhere((l) => l.id == letterId);
-    if (idx == -1) return;
-    final letter = _worldLetters[idx];
+  // 1회 신고 → 즉시 임시 차단 + 발송자 알림 → 관리자가 검토 후 영구 처리
+  void reportLetter(String letterId, String reporterId, {String reason = ''}) {
+    // inbox에서도 검색
+    Letter? letter;
+    for (final l in [..._worldLetters, ..._inbox]) {
+      if (l.id == letterId) { letter = l; break; }
+    }
+    if (letter == null) return;
     if (letter.reportedBy.contains(reporterId)) return; // 이미 신고함
+
     letter.reportedBy.add(reporterId);
     letter.reportCount++;
+
+    // ① 즉시 임시 차단: 발송자의 다른 편지도 지도에서 숨김
+    _tempBlockedSenderIds.add(letter.senderId);
+    _worldLetters.removeWhere((l) => l.senderId == letter!.senderId);
+
+    // ② 발송자에게 로컬 알림 (발송자가 현재 유저인 경우)
+    if (letter.senderId == _currentUser.id) {
+      NotificationService.showReportBlockNotification(
+        title: _l10n.stateReportBlockTitle,
+        body: _l10n.stateReportBlockBody,
+      );
+    }
+
+    // ③ Firestore에 신고 기록 저장 (관리자 대시보드에서 조회용)
+    if (FirebaseConfig.kFirebaseEnabled) {
+      _saveReportToFirestore(
+        letterId: letterId,
+        senderId: letter.senderId,
+        reporterId: reporterId,
+        reason: reason,
+        reportCount: letter.reportCount,
+      );
+    }
+
+    // ④ 3회 이상 누적 시 영구 차단으로 승격
     if (letter.reportCount >= 3) {
       _blockedSenderIds.add(letter.senderId);
-      _worldLetters.removeWhere((l) => l.senderId == letter.senderId);
-      _inbox.removeWhere((l) => l.senderId == letter.senderId);
+      _tempBlockedSenderIds.remove(letter.senderId);
+      _inbox.removeWhere((l) => l.senderId == letter!.senderId);
     }
+
     notifyListeners();
     _saveToPrefs();
+  }
+
+  /// Firestore에 신고 기록 저장 (관리자 조회용)
+  Future<void> _saveReportToFirestore({
+    required String letterId,
+    required String senderId,
+    required String reporterId,
+    required String reason,
+    required int reportCount,
+  }) async {
+    try {
+      final url = Uri.parse(
+        '${FirebaseConfig.firestoreBase}/reports?key=${Uri.encodeQueryComponent(FirebaseConfig.apiKey)}',
+      );
+      final body = {
+        'fields': {
+          'letterId': {'stringValue': letterId},
+          'senderId': {'stringValue': senderId},
+          'reporterId': {'stringValue': reporterId},
+          'reason': {'stringValue': reason},
+          'reportCount': {'integerValue': '$reportCount'},
+          'status': {'stringValue': 'pending'}, // pending → reviewed → resolved
+          'createdAt': {'timestampValue': DateTime.now().toUtc().toIso8601String()},
+        },
+      };
+      await http.post(url, body: jsonEncode(body), headers: {
+        'Content-Type': 'application/json',
+      }).timeout(const Duration(seconds: 10));
+    } catch (e) {
+      debugPrint('Failed to save report to Firestore: $e');
+    }
   }
 
   // ── 편지 좋아요 ───────────────────────────────────────────────────────────
@@ -4183,7 +5016,9 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
   }
 
   // ── 차단 여부 확인 ────────────────────────────────────────────────────────
-  bool isSenderBlocked(String senderId) => _blockedSenderIds.contains(senderId);
+  bool isSenderBlocked(String senderId) =>
+      _blockedSenderIds.contains(senderId) ||
+      _tempBlockedSenderIds.contains(senderId);
 
   // ── DM 발송자 차단 ────────────────────────────────────────────────────────
   /// DM 화면에서 상대방을 차단. 해당 세션과 메시지를 모두 제거.
@@ -4286,6 +5121,7 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
     _deliveryTimer?.cancel();
+    _worldLetterSyncTimer?.cancel();
     super.dispose();
   }
 }

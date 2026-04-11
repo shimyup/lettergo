@@ -1,0 +1,5 @@
+"NSLocationWhenInUseUsageDescription" = "Yakınızdaki mektupları keşfetmek için konumunuz gereklidir.";
+"NSLocationAlwaysAndWhenInUseUsageDescription" = "Yakınızdaki mektupları keşfetmek için konumunuz gereklidir.";
+"NSPhotoLibraryUsageDescription" = "Profil fotoğrafınızı değiştirmek için fotoğraf kitaplığı erişimi gereklidir.";
+"NSPhotoLibraryAddUsageDescription" = "Seçtiğiniz profil fotoğrafını kaydetmek için izin gereklidir.";
+"NSCameraUsageDescription" = "Mektuplarınız için fotoğraf çekmek amacıyla kamera erişimi gereklidir.";

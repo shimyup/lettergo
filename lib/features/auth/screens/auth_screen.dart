@@ -4,11 +4,13 @@ import 'dart:ui' as ui;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/gestures.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:geolocator/geolocator.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/services/auth_service.dart';
+import '../../../core/services/sms_service.dart';
 import '../../../core/localization/language_config.dart';
 import '../../../core/localization/app_localizations.dart';
 import '../../../core/localization/country_names.dart';
@@ -34,11 +36,13 @@ class AuthScreen extends StatefulWidget {
 class _AuthScreenState extends State<AuthScreen>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
+  late String _selectedLang;
 
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
+    _selectedLang = _deviceLangCode();
   }
 
   @override
@@ -61,7 +65,10 @@ class _AuthScreenState extends State<AuthScreen>
           SafeArea(
             child: Column(
               children: [
-                const SizedBox(height: 40),
+                const SizedBox(height: 8),
+                // 언어 선택 버튼
+                _buildLanguageSelector(),
+                const SizedBox(height: 16),
                 // 앱 로고
                 _buildLogo(),
                 const SizedBox(height: 32),
@@ -73,8 +80,8 @@ class _AuthScreenState extends State<AuthScreen>
                   child: TabBarView(
                     controller: _tabController,
                     children: [
-                      _LoginTab(onLoginSuccess: _onAuthSuccess),
-                      _SignupTab(onSignupSuccess: _onAuthSuccess),
+                      _LoginTab(onLoginSuccess: _onAuthSuccess, langCode: _selectedLang),
+                      _SignupTab(onSignupSuccess: _onAuthSuccess, langCode: _selectedLang),
                     ],
                   ),
                 ),
@@ -87,6 +94,7 @@ class _AuthScreenState extends State<AuthScreen>
   }
 
   Widget _buildLogo() {
+    final l = AppL10n.of(_selectedLang);
     return Column(
       children: [
         const Text('🍾', style: TextStyle(fontSize: 64)),
@@ -96,18 +104,18 @@ class _AuthScreenState extends State<AuthScreen>
             colors: [AppColors.goldLight, AppColors.gold, AppColors.goldDark],
           ).createShader(b),
           child: const Text(
-            'Message in a Bottle',
+            'Letter Go',
             style: TextStyle(
               color: Colors.white,
-              fontSize: 24,
+              fontSize: 28,
               fontWeight: FontWeight.w800,
-              letterSpacing: 0.5,
+              letterSpacing: 1.0,
             ),
           ),
         ),
         const SizedBox(height: 6),
         Text(
-          AppL10n.of(_deviceLangCode()).tagline,
+          l.tagline,
           style: TextStyle(
             color: AppColors.textMuted.withValues(alpha: 0.8),
             fontSize: 13,
@@ -116,6 +124,110 @@ class _AuthScreenState extends State<AuthScreen>
           ),
         ),
       ],
+    );
+  }
+
+  Widget _buildLanguageSelector() {
+    final langName = LanguageConfig.getLanguageName(_selectedLang);
+    return Align(
+      alignment: Alignment.centerRight,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 20),
+        child: GestureDetector(
+          onTap: _showLanguagePicker,
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+            decoration: BoxDecoration(
+              color: AppColors.bgCard,
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(
+                color: AppColors.textMuted.withValues(alpha: 0.3),
+              ),
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Icon(Icons.language_rounded, color: AppColors.textSecondary, size: 16),
+                const SizedBox(width: 6),
+                Text(
+                  langName,
+                  style: const TextStyle(
+                    color: AppColors.textSecondary,
+                    fontSize: 13,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+                const SizedBox(width: 4),
+                const Icon(Icons.expand_more_rounded, color: AppColors.textMuted, size: 16),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  void _showLanguagePicker() {
+    final languages = LanguageConfig.languageNames.entries.toList();
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: AppColors.bgCard,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (ctx) => SafeArea(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const SizedBox(height: 8),
+            Container(
+              width: 36, height: 4,
+              decoration: BoxDecoration(
+                color: AppColors.textMuted.withValues(alpha: 0.4),
+                borderRadius: BorderRadius.circular(2),
+              ),
+            ),
+            const SizedBox(height: 16),
+            const Text(
+              '🌐 Language',
+              style: TextStyle(
+                color: AppColors.textPrimary,
+                fontSize: 16,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+            const SizedBox(height: 12),
+            SizedBox(
+              height: 350,
+              child: ListView.builder(
+                itemCount: languages.length,
+                itemBuilder: (_, i) {
+                  final code = languages[i].key;
+                  final name = languages[i].value;
+                  final selected = code == _selectedLang;
+                  return ListTile(
+                    leading: selected
+                        ? const Icon(Icons.check_circle_rounded, color: AppColors.teal, size: 20)
+                        : const Icon(Icons.circle_outlined, color: AppColors.textMuted, size: 20),
+                    title: Text(
+                      name,
+                      style: TextStyle(
+                        color: selected ? AppColors.teal : AppColors.textSecondary,
+                        fontSize: 15,
+                        fontWeight: selected ? FontWeight.w700 : FontWeight.w400,
+                      ),
+                    ),
+                    onTap: () {
+                      setState(() => _selectedLang = code);
+                      Navigator.pop(ctx);
+                    },
+                  );
+                },
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 
@@ -143,8 +255,8 @@ class _AuthScreenState extends State<AuthScreen>
           fontSize: 14,
         ),
         tabs: [
-          Tab(text: AppL10n.of(_deviceLangCode()).authTabLogin),
-          Tab(text: AppL10n.of(_deviceLangCode()).authTabSignup),
+          Tab(text: AppL10n.of(_selectedLang).authTabLogin),
+          Tab(text: AppL10n.of(_selectedLang).authTabSignup),
         ],
       ),
     );
@@ -152,6 +264,21 @@ class _AuthScreenState extends State<AuthScreen>
 
   Future<void> _onAuthSuccess(Map<String, String> userData) async {
     final state = context.read<AppState>();
+
+    // 로그인 직후 현재 위치를 가져와서 setUser에 전달
+    Position? pos;
+    try {
+      final perm = await Geolocator.checkPermission();
+      if (perm == LocationPermission.always ||
+          perm == LocationPermission.whileInUse) {
+        pos = await Geolocator.getCurrentPosition(
+          locationSettings: const LocationSettings(
+            accuracy: LocationAccuracy.low,
+          ),
+        ).timeout(const Duration(seconds: 5));
+      }
+    } catch (_) {}
+
     state.setUser(
       id: userData['id'] ?? '',
       username: userData['username'] ?? '',
@@ -159,6 +286,10 @@ class _AuthScreenState extends State<AuthScreen>
       countryFlag: userData['countryFlag'] ?? '🇰🇷',
       languageCode: userData['languageCode'],
       socialLink: userData['socialLink'],
+      phoneNumber: userData['phoneNumber'],
+      verifyMethod: userData['verifyMethod'] ?? 'email',
+      latitude: pos?.latitude,
+      longitude: pos?.longitude,
     );
     // 이메일을 UserProfile에 저장 (이메일 기반 기능에 필요)
     if (userData['email']?.isNotEmpty == true) {
@@ -189,7 +320,8 @@ class _AuthScreenState extends State<AuthScreen>
 // ── 로그인 탭 ─────────────────────────────────────────────────────────────────
 class _LoginTab extends StatefulWidget {
   final Future<void> Function(Map<String, String>) onLoginSuccess;
-  const _LoginTab({required this.onLoginSuccess});
+  final String langCode;
+  const _LoginTab({required this.onLoginSuccess, required this.langCode});
 
   @override
   State<_LoginTab> createState() => _LoginTabState();
@@ -200,11 +332,20 @@ class _LoginTabState extends State<_LoginTab> {
   final _passCtrl = TextEditingController();
   bool _obscurePass = true;
   bool _isLoading = false;
-  bool _rememberMe = false;
+  bool _rememberMe = true; // 기본 활성 — 테스터/유저 편의
   String? _error;
 
   static const _kRememberMe = 'login_remember_me';
   static const _kSavedUsername = 'login_saved_username';
+  static const _kSavedPasswordSecure = 'login_saved_pw_v2';
+
+  // iOS Keychain / Android EncryptedSharedPreferences — 앱 업데이트 후에도 유지
+  static const FlutterSecureStorage _secure = FlutterSecureStorage(
+    aOptions: AndroidOptions(encryptedSharedPreferences: true),
+    iOptions: IOSOptions(
+      accessibility: KeychainAccessibility.first_unlock_this_device,
+    ),
+  );
 
   @override
   void initState() {
@@ -215,15 +356,17 @@ class _LoginTabState extends State<_LoginTab> {
   Future<void> _loadSavedCredentials() async {
     final prefs = await SharedPreferences.getInstance();
     final remember = prefs.getBool(_kRememberMe) ?? false;
-    // 보안 강화를 위해 비밀번호 자동저장은 중단. 기존 저장본도 즉시 삭제.
+    // 레거시 평문 저장분 정리
     await prefs.remove('login_saved_password');
     await prefs.remove('login_saved_password_secure');
     if (!remember) return;
     final username = prefs.getString(_kSavedUsername) ?? '';
+    final password = await _secure.read(key: _kSavedPasswordSecure) ?? '';
     if (username.isNotEmpty && mounted) {
       setState(() {
         _rememberMe = true;
         _usernameCtrl.text = username;
+        if (password.isNotEmpty) _passCtrl.text = password;
       });
     }
   }
@@ -233,14 +376,15 @@ class _LoginTabState extends State<_LoginTab> {
     if (_rememberMe) {
       await prefs.setBool(_kRememberMe, true);
       await prefs.setString(_kSavedUsername, _usernameCtrl.text.trim());
-      // 비밀번호는 보관하지 않고 아이디만 기억.
-      await prefs.remove('login_saved_password');
-      await prefs.remove('login_saved_password_secure');
+      // 비밀번호를 FlutterSecureStorage에 암호화 저장 (앱 업데이트 후에도 유지)
+      await _secure.write(
+        key: _kSavedPasswordSecure,
+        value: _passCtrl.text,
+      );
     } else {
       await prefs.remove(_kRememberMe);
       await prefs.remove(_kSavedUsername);
-      await prefs.remove('login_saved_password');
-      await prefs.remove('login_saved_password_secure');
+      await _secure.delete(key: _kSavedPasswordSecure);
     }
   }
 
@@ -281,7 +425,7 @@ class _LoginTabState extends State<_LoginTab> {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppL10n.of(_deviceLangCode());
+    final l10n = AppL10n.of(widget.langCode);
     return SingleChildScrollView(
       padding: const EdgeInsets.fromLTRB(24, 20, 24, 24),
       child: Column(
@@ -483,7 +627,7 @@ class _LoginTabState extends State<_LoginTab> {
   void _showFindIdDialog() {
     final emailCtrl = TextEditingController();
     bool isLoading = false;
-    final l10n = AppL10n.of(_deviceLangCode());
+    final l10n = AppL10n.of(widget.langCode);
 
     showDialog(
       context: context,
@@ -781,7 +925,7 @@ class _LoginTabState extends State<_LoginTab> {
   void _showResetPasswordDialog() {
     final usernameCtrl = TextEditingController();
     final emailCtrl = TextEditingController();
-    final l10n = AppL10n.of(_deviceLangCode());
+    final l10n = AppL10n.of(widget.langCode);
     showDialog(
       context: context,
       builder: (_) => AlertDialog(
@@ -911,7 +1055,8 @@ class _LoginTabState extends State<_LoginTab> {
 // ── 회원가입 탭 ───────────────────────────────────────────────────────────────
 class _SignupTab extends StatefulWidget {
   final Future<void> Function(Map<String, String>) onSignupSuccess;
-  const _SignupTab({required this.onSignupSuccess});
+  final String langCode;
+  const _SignupTab({required this.onSignupSuccess, required this.langCode});
 
   @override
   State<_SignupTab> createState() => _SignupTabState();
@@ -936,8 +1081,32 @@ class _SignupTabState extends State<_SignupTab> {
 
   // ── 동의 상태 ──
   bool _agreePrivacy = false;
+  bool _agreeTerms = false; // 이용약관 + 커뮤니티 가이드라인 동의
   bool _agreeLocation = false; // 동의 체크
+
+  // ── 핸드폰 번호 (필수) + 국가코드 + 인증 수단 선택 ──
+  final _phoneCtrl = TextEditingController();
+  String _selectedCountryCode = '+82'; // 국가번호 기본값
+  String _verifyMethod = 'email'; // 'email' or 'phone'
+  String? _phoneError; // 전화번호 검증 에러
   bool _locationGranted = false; // 실제 OS 권한 허용 여부
+
+  /// 국가별 전화번호 국가코드 맵
+  static const _countryCodes = {
+    '대한민국': '+82',
+    '일본': '+81',
+    '미국': '+1',
+    '프랑스': '+33',
+    '영국': '+44',
+    '독일': '+49',
+    '이탈리아': '+39',
+    '스페인': '+34',
+    '브라질': '+55',
+    '인도': '+91',
+    '중국': '+86',
+    '호주': '+61',
+    '캐나다': '+1',
+  };
 
   // ── 이메일 인증 OTP 상태 ──
   bool _showOtpScreen = false; // OTP 입력 화면 표시 여부
@@ -947,8 +1116,9 @@ class _SignupTabState extends State<_SignupTab> {
   int _otpCountdown = 0; // 남은 시간 (초)
   Timer? _otpTimer; // 타이머
 
-  // 가입 버튼 활성화 조건
-  bool get _canSignUp => _agreePrivacy && !_isLoading;
+  // 가입 버튼 활성화 조건 (개인정보 동의 + 이용약관 동의 + 전화번호 입력)
+  bool get _canSignUp =>
+      _agreePrivacy && _agreeTerms && _phoneCtrl.text.trim().isNotEmpty && !_isLoading;
 
   @override
   void initState() {
@@ -957,6 +1127,12 @@ class _SignupTabState extends State<_SignupTab> {
     // 실시간 검증 리스너
     _usernameCtrl.addListener(_validateUsername);
     _passCtrl.addListener(_validatePassword);
+    _phoneCtrl.addListener(_onPhoneChanged);
+  }
+
+  void _onPhoneChanged() {
+    // _canSignUp 갱신 (전화번호 입력 여부에 따라 버튼 활성화)
+    setState(() {});
   }
 
   Future<void> _loadOnboardingCountry() async {
@@ -965,6 +1141,7 @@ class _SignupTabState extends State<_SignupTab> {
       setState(() {
         _selectedCountry = data['country'] ?? '대한민국';
         _selectedFlag = data['countryFlag'] ?? '🇰🇷';
+        _selectedCountryCode = _countryCodes[_selectedCountry] ?? '+82';
       });
     }
   }
@@ -1001,6 +1178,7 @@ class _SignupTabState extends State<_SignupTab> {
     _usernameCtrl.dispose();
     _passCtrl.dispose();
     _socialCtrl.dispose();
+    _phoneCtrl.dispose();
     _otpCtrl.dispose();
     _otpTimer?.cancel();
     super.dispose();
@@ -1009,11 +1187,23 @@ class _SignupTabState extends State<_SignupTab> {
   String get _langCode => LanguageConfig.getLanguageCode(_selectedCountry);
   AppL10n get _l10n => AppL10n.of(_langCode);
 
+  /// 전체 전화번호 (E.164 형식) 생성
+  String get _fullPhoneNumber {
+    return SmsService.normalizePhoneNumber(
+      _phoneCtrl.text.trim(),
+      _selectedCountryCode,
+    );
+  }
+
   /// Step 1: 폼 검증 후 OTP 발송 화면으로 전환
   Future<void> _signUp() async {
     final l10n = _l10n;
     if (!_agreePrivacy) {
       setState(() => _error = l10n.authMustAgreePrivacy);
+      return;
+    }
+    if (!_agreeTerms) {
+      setState(() => _error = l10n.authMustAgreeTerms);
       return;
     }
     // 폼 기본 검증
@@ -1027,6 +1217,19 @@ class _SignupTabState extends State<_SignupTab> {
       setState(() => _error = emailErr);
       return;
     }
+    // 전화번호 필수 검증
+    final phoneVal = _phoneCtrl.text.trim();
+    if (phoneVal.isEmpty) {
+      setState(() => _error = l10n.authPhoneRequiredMsg);
+      return;
+    }
+    // 최소 자릿수 검증 (국가코드 제외 6자리 이상)
+    final digitsOnly = phoneVal.replaceAll(RegExp(r'[^\d]'), '');
+    if (digitsOnly.length < 6) {
+      setState(() => _error = l10n.authPhoneInvalid);
+      return;
+    }
+
     final taken = await AuthService.isEmailTaken(emailVal);
     if (taken) {
       setState(() => _error = l10n.authEmailTaken);
@@ -1038,7 +1241,7 @@ class _SignupTabState extends State<_SignupTab> {
       _error = null;
     });
 
-    // OTP 생성 (rate limit 초과 시 null 반환)
+    // 이메일 OTP 발송 (전화번호는 형식 검증만, 실제 인증은 이메일로)
     final code = AuthService.generateEmailOtp(emailVal);
 
     if (!mounted) return;
@@ -1073,7 +1276,9 @@ class _SignupTabState extends State<_SignupTab> {
       return;
     }
 
+    // 이메일 OTP 검증
     final otpErr = AuthService.verifyEmailOtp(emailVal, otpVal, langCode: _langCode);
+
     if (otpErr != null) {
       setState(() => _otpError = otpErr);
       return;
@@ -1093,6 +1298,8 @@ class _SignupTabState extends State<_SignupTab> {
       countryFlag: _selectedFlag,
       languageCode: LanguageConfig.getLanguageCode(_selectedCountry),
       socialLink: _socialCtrl.text.isNotEmpty ? _socialCtrl.text : null,
+      phoneNumber: _fullPhoneNumber,
+      verifyMethod: _verifyMethod,
       langCode: _langCode,
     );
 
@@ -1110,11 +1317,10 @@ class _SignupTabState extends State<_SignupTab> {
     if (user != null) await widget.onSignupSuccess(user);
   }
 
-  /// OTP 재발송
+  /// OTP 재발송 (이메일)
   void _resendOtp() {
     _otpTimer?.cancel();
-    final emailVal = _emailCtrl.text.trim();
-    final code = AuthService.generateEmailOtp(emailVal);
+    final code = AuthService.generateEmailOtp(_emailCtrl.text.trim());
     if (code == null) {
       final cooldown = AuthService.otpCooldownSecondsRemaining;
       setState(() {
@@ -1144,6 +1350,90 @@ class _SignupTabState extends State<_SignupTab> {
       setState(() => _otpCountdown = remaining);
       if (remaining <= 0) timer.cancel();
     });
+  }
+
+  /// 국가코드 선택 바텀시트
+  void _showCountryCodePicker() {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: AppColors.bgCard,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (ctx) {
+        return Container(
+          constraints: const BoxConstraints(maxHeight: 400),
+          padding: const EdgeInsets.symmetric(vertical: 16),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: Row(
+                  children: [
+                    const Icon(Icons.public_rounded, color: AppColors.teal, size: 20),
+                    const SizedBox(width: 8),
+                    Text(
+                      _l10n.authSelectCountryCode,
+                      style: const TextStyle(
+                        color: AppColors.textPrimary,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 12),
+              Expanded(
+                child: ListView.separated(
+                  itemCount: _countries.length,
+                  separatorBuilder: (_, __) => const Divider(
+                    height: 1,
+                    color: Color(0xFF1F2D44),
+                  ),
+                  itemBuilder: (_, i) {
+                    final country = _countries[i];
+                    final name = country['name']!;
+                    final flag = country['flag']!;
+                    final code = _countryCodes[name] ?? '+1';
+                    final isSelected = code == _selectedCountryCode;
+                    return ListTile(
+                      leading: Text(flag, style: const TextStyle(fontSize: 24)),
+                      title: Text(
+                        CountryL10n.localizedName(name, _langCode),
+                        style: TextStyle(
+                          color: isSelected ? AppColors.teal : AppColors.textPrimary,
+                          fontWeight: isSelected ? FontWeight.w700 : FontWeight.normal,
+                          fontSize: 14,
+                        ),
+                      ),
+                      trailing: Text(
+                        code,
+                        style: TextStyle(
+                          color: isSelected ? AppColors.teal : AppColors.textSecondary,
+                          fontWeight: FontWeight.w600,
+                          fontSize: 15,
+                        ),
+                      ),
+                      onTap: () {
+                        setState(() {
+                          _selectedCountryCode = code;
+                          // 국가 선택도 동기화
+                          _selectedCountry = name;
+                          _selectedFlag = flag;
+                        });
+                        Navigator.pop(ctx);
+                      },
+                    );
+                  },
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
   }
 
   /// 위치 동의 체크박스 탭 → OS 권한 요청
@@ -1316,6 +1606,153 @@ class _SignupTabState extends State<_SignupTab> {
             icon: Icons.link_rounded,
             keyboardType: TextInputType.url,
           ),
+          const SizedBox(height: 12),
+
+          // ── 5-1. 핸드폰 번호 (필수, 국가코드 포함) ─────────────────────────
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                l10n.authPhoneRequired,
+                style: const TextStyle(
+                  color: AppColors.textSecondary,
+                  fontSize: 12,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+              const SizedBox(height: 6),
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // 국가코드 드롭다운
+                  GestureDetector(
+                    onTap: _showCountryCodePicker,
+                    child: Container(
+                      width: 90,
+                      height: 50,
+                      padding: const EdgeInsets.symmetric(horizontal: 10),
+                      decoration: BoxDecoration(
+                        color: AppColors.bgCard,
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(color: const Color(0xFF1F2D44)),
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            _selectedFlag,
+                            style: const TextStyle(fontSize: 18),
+                          ),
+                          const SizedBox(width: 4),
+                          Flexible(
+                            child: Text(
+                              _selectedCountryCode,
+                              style: const TextStyle(
+                                color: AppColors.textPrimary,
+                                fontSize: 14,
+                                fontWeight: FontWeight.w600,
+                              ),
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                          const SizedBox(width: 2),
+                          const Icon(
+                            Icons.arrow_drop_down_rounded,
+                            size: 18,
+                            color: AppColors.textMuted,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  // 전화번호 입력 필드
+                  Expanded(
+                    child: TextField(
+                      controller: _phoneCtrl,
+                      keyboardType: TextInputType.phone,
+                      style: const TextStyle(
+                        color: AppColors.textPrimary,
+                        fontSize: 15,
+                      ),
+                      decoration: InputDecoration(
+                        hintText: '10-1234-5678',
+                        hintStyle: TextStyle(
+                          color: AppColors.textMuted.withValues(alpha: 0.5),
+                          fontSize: 15,
+                        ),
+                        prefixIcon: const Icon(
+                          Icons.phone_rounded,
+                          size: 18,
+                          color: AppColors.textMuted,
+                        ),
+                        filled: true,
+                        fillColor: AppColors.bgCard,
+                        contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 14,
+                          vertical: 14,
+                        ),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: const BorderSide(color: Color(0xFF1F2D44)),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: const BorderSide(color: Color(0xFF1F2D44)),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: const BorderSide(
+                            color: AppColors.teal,
+                            width: 1.5,
+                          ),
+                        ),
+                        errorText: _phoneError,
+                        errorStyle: const TextStyle(
+                          color: Colors.red,
+                          fontSize: 11,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 4),
+              Text(
+                l10n.authPhoneHint,
+                style: TextStyle(
+                  color: AppColors.textMuted.withValues(alpha: 0.6),
+                  fontSize: 11,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+
+          // ── 5-2. 이메일 인증 안내 ──────────────────────────────────────────
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+            decoration: BoxDecoration(
+              color: AppColors.teal.withValues(alpha: 0.06),
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: AppColors.teal.withValues(alpha: 0.2)),
+            ),
+            child: Row(
+              children: [
+                const Icon(Icons.email_rounded, color: AppColors.teal, size: 16),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    l10n.authVerifyViaEmail,
+                    style: const TextStyle(
+                      color: AppColors.textSecondary,
+                      fontSize: 12,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
           const SizedBox(height: 20),
 
           // ── 6. 개인정보 동의 ───────────────────────────────────────────────
@@ -1326,8 +1763,23 @@ class _SignupTabState extends State<_SignupTab> {
             title: l10n.authPrivacyRequired,
             linkLabel: l10n.authViewContent,
             description: l10n.authPrivacyDesc,
+            langCode: widget.langCode,
             onCheckChanged: (v) => setState(() => _agreePrivacy = v ?? false),
             onLinkTap: _openPrivacyPolicy,
+          ),
+          const SizedBox(height: 10),
+
+          // ── 6-1. 이용약관 + 커뮤니티 가이드라인 동의 ──────────────────────
+          _ConsentCard(
+            checked: _agreeTerms,
+            icon: Icons.gavel_rounded,
+            iconColor: AppColors.gold,
+            title: l10n.authTermsRequired,
+            linkLabel: l10n.authViewContent,
+            description: l10n.authTermsDesc,
+            langCode: widget.langCode,
+            onCheckChanged: (v) => setState(() => _agreeTerms = v ?? false),
+            onLinkTap: _showTermsAndGuidelines,
           ),
           const SizedBox(height: 10),
 
@@ -1340,6 +1792,7 @@ class _SignupTabState extends State<_SignupTab> {
             iconColor: _locationGranted ? AppColors.teal : AppColors.textMuted,
             title: l10n.authLocationOptional,
             description: l10n.authLocationDesc,
+            langCode: widget.langCode,
             statusWidget: _locationGranted
                 ? Row(
                     mainAxisSize: MainAxisSize.min,
@@ -1425,7 +1878,7 @@ class _SignupTabState extends State<_SignupTab> {
                     color: AppColors.teal.withValues(alpha: 0.12),
                     shape: BoxShape.circle,
                   ),
-                  child: Icon(
+                  child: const Icon(
                     Icons.mark_email_read_rounded,
                     size: 32,
                     color: AppColors.teal,
@@ -1455,8 +1908,8 @@ class _SignupTabState extends State<_SignupTab> {
           ),
           const SizedBox(height: 32),
 
-          // 개발용: OTP 코드 표시 (배포 시 이 블록 제거)
-          if (kDebugMode && _devOtpCode != null) ...[
+          // OTP 코드 표시 (테스트 기간용 — 정식 출시 시 이메일 발송 연동 후 제거)
+          if (_devOtpCode != null) ...[
             Container(
               width: double.infinity,
               padding: const EdgeInsets.all(12),
@@ -1467,23 +1920,15 @@ class _SignupTabState extends State<_SignupTab> {
                   color: const Color(0xFFFF8A5C).withValues(alpha: 0.4),
                 ),
               ),
-              child: Column(
-                children: [
-                  const Text(
-                    '[개발용] 실제 배포 시 이 박스는 제거됩니다.',
-                    style: TextStyle(color: Color(0xFFFF8A5C), fontSize: 10),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    '인증 코드: $_devOtpCode',
-                    style: const TextStyle(
-                      color: Color(0xFFFF8A5C),
-                      fontSize: 22,
-                      fontWeight: FontWeight.w800,
-                      letterSpacing: 6,
-                    ),
-                  ),
-                ],
+              child: Text(
+                '인증 코드: $_devOtpCode',
+                textAlign: TextAlign.center,
+                style: const TextStyle(
+                  color: Color(0xFFFF8A5C),
+                  fontSize: 22,
+                  fontWeight: FontWeight.w800,
+                  letterSpacing: 6,
+                ),
               ),
             ),
             const SizedBox(height: 20),
@@ -1701,6 +2146,45 @@ class _SignupTabState extends State<_SignupTab> {
                 l10n.authPrivacySec4Body,
                 style: const TextStyle(color: AppColors.textSecondary, fontSize: 13),
               ),
+              const SizedBox(height: 12),
+              Text(
+                l10n.authPrivacySec5Title,
+                style: const TextStyle(
+                  color: AppColors.gold,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                l10n.authPrivacySec5Body,
+                style: const TextStyle(color: AppColors.textSecondary, fontSize: 13),
+              ),
+              const SizedBox(height: 12),
+              Text(
+                l10n.authPrivacySec6Title,
+                style: const TextStyle(
+                  color: AppColors.gold,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                l10n.authPrivacySec6Body,
+                style: const TextStyle(color: AppColors.textSecondary, fontSize: 13),
+              ),
+              const SizedBox(height: 12),
+              Text(
+                l10n.authPrivacySec7Title,
+                style: const TextStyle(
+                  color: AppColors.gold,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                l10n.authPrivacySec7Body,
+                style: const TextStyle(color: AppColors.textSecondary, fontSize: 13),
+              ),
             ],
           ),
         ),
@@ -1708,6 +2192,75 @@ class _SignupTabState extends State<_SignupTab> {
           ElevatedButton(
             onPressed: () {
               setState(() => _agreePrivacy = true);
+              Navigator.pop(context);
+            },
+            style: ElevatedButton.styleFrom(backgroundColor: AppColors.teal),
+            child: Text(
+              l10n.authAgree,
+              style: const TextStyle(color: AppColors.bgDeep),
+            ),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text(
+              l10n.authClose,
+              style: const TextStyle(color: AppColors.textMuted),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showTermsAndGuidelines() {
+    final l10n = _l10n;
+    showDialog(
+      context: context,
+      builder: (_) => AlertDialog(
+        backgroundColor: AppColors.bgCard,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: Text(
+          l10n.communityGuidelinesTitle,
+          style: const TextStyle(color: AppColors.textPrimary),
+        ),
+        content: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // ── 콘텐츠 열람 정책 ──
+              Text(
+                l10n.authPrivacySec5Title,
+                style: const TextStyle(
+                  color: AppColors.gold,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                l10n.authPrivacySec5Body,
+                style: const TextStyle(color: AppColors.textSecondary, fontSize: 13),
+              ),
+              const SizedBox(height: 16),
+              // ── 커뮤니티 가이드라인 ──
+              Text(
+                l10n.authPrivacySec7Title,
+                style: const TextStyle(
+                  color: AppColors.gold,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                l10n.authPrivacySec7Body,
+                style: const TextStyle(color: AppColors.textSecondary, fontSize: 13),
+              ),
+            ],
+          ),
+        ),
+        actions: [
+          ElevatedButton(
+            onPressed: () {
+              setState(() => _agreeTerms = true);
               Navigator.pop(context);
             },
             style: ElevatedButton.styleFrom(backgroundColor: AppColors.teal),
@@ -1826,6 +2379,7 @@ class _SignupTabState extends State<_SignupTab> {
                         setState(() {
                           _selectedCountry = c['name']!;
                           _selectedFlag = c['flag']!;
+                          _selectedCountryCode = _countryCodes[c['name']!] ?? '+1';
                         });
                         Navigator.pop(ctx);
                         // 언어 안내 스낵바
@@ -2002,6 +2556,7 @@ class _ConsentCard extends StatelessWidget {
   final Color iconColor;
   final String title;
   final String description;
+  final String langCode;
   final String? linkLabel;
   final Widget? statusWidget;
   final ValueChanged<bool?>? onCheckChanged;
@@ -2013,6 +2568,7 @@ class _ConsentCard extends StatelessWidget {
     required this.iconColor,
     required this.title,
     required this.description,
+    required this.langCode,
     this.linkLabel,
     this.statusWidget,
     this.onCheckChanged,
@@ -2077,7 +2633,7 @@ class _ConsentCard extends StatelessWidget {
               const SizedBox(width: 4),
               Expanded(
                 child: Text(
-                  AppL10n.of(_deviceLangCode()).authIAgree,
+                  AppL10n.of(langCode).authIAgree,
                   style: TextStyle(
                     color: checked
                         ? AppColors.textPrimary

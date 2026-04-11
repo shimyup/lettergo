@@ -3921,6 +3921,77 @@ class AppL10n {
     'th': 'ส่งจำนวนมาก (Brand เท่านั้น)',
   });
 
+  // ── Brand options ──────────────────────────────────────────────────────
+  String get composeBrandOptions => _t({
+    'ko': '브랜드 발송 옵션', 'en': 'Brand Send Options', 'ja': 'ブランド送信オプション', 'zh': '品牌发送选项',
+    'fr': 'Options d\'envoi Brand', 'de': 'Brand-Sendeoptionen', 'es': 'Opciones de envío Brand',
+    'pt': 'Opções de envio Brand', 'ru': 'Параметры отправки Brand', 'tr': 'Brand Gönderim Seçenekleri',
+    'ar': 'خيارات إرسال Brand', 'it': 'Opzioni invio Brand', 'hi': 'Brand भेजने के विकल्प', 'th': 'ตัวเลือกการส่ง Brand',
+  });
+
+  String get composeBrandUniquePerUser => _t({
+    'ko': '1인당 1회 수신 제한', 'en': 'Limit to 1 per recipient', 'ja': '1人1通に制限', 'zh': '每人限收1封',
+    'fr': '1 par destinataire', 'de': '1 pro Empfänger', 'es': '1 por destinatario',
+    'pt': '1 por destinatário', 'ru': '1 на получателя', 'tr': 'Alıcı başına 1',
+    'ar': 'رسالة واحدة لكل مستلم', 'it': '1 per destinatario', 'hi': 'प्रति प्राप्तकर्ता 1', 'th': '1 ต่อผู้รับ',
+  });
+
+  String get composeBrandUniquePerUserDesc => _t({
+    'ko': '같은 사용자에게 중복 발송되지 않습니다', 'en': 'Same user won\'t receive duplicate letters', 'ja': '同じユーザーに重複送信されません', 'zh': '同一用户不会收到重复信件',
+    'fr': 'L\'utilisateur ne recevra pas de doublons', 'de': 'Benutzer erhält keine Duplikate', 'es': 'El usuario no recibirá duplicados',
+    'pt': 'Usuário não receberá duplicatas', 'ru': 'Пользователь не получит дублей', 'tr': 'Kullanıcı mükerrer almaz',
+    'ar': 'لن يتلقى المستخدم نسخاً مكررة', 'it': 'L\'utente non riceverà duplicati', 'hi': 'उपयोगकर्ता को डुप्लिकेट नहीं मिलेगा', 'th': 'ผู้ใช้จะไม่ได้รับซ้ำ',
+  });
+
+  String get composeBrandAutoExpire => _t({
+    'ko': '자동 삭제 기간', 'en': 'Auto-delete after', 'ja': '自動削除期間', 'zh': '自动删除时间',
+    'fr': 'Suppression auto après', 'de': 'Automatisch löschen nach', 'es': 'Eliminar auto después de',
+    'pt': 'Excluir auto após', 'ru': 'Авто-удаление через', 'tr': 'Otomatik silme süresi',
+    'ar': 'حذف تلقائي بعد', 'it': 'Elimina auto dopo', 'hi': 'स्वत: हटाने की अवधि', 'th': 'ลบอัตโนมัติหลัง',
+  });
+
+  String get composeBrandAutoExpireDesc => _t({
+    'ko': '설정 시간 후 편지가 자동으로 사라집니다', 'en': 'Letter will auto-disappear after the set time', 'ja': '設定時間後にレターが自動的に消えます', 'zh': '设定时间后信件将自动消失',
+    'fr': 'La lettre disparaîtra automatiquement', 'de': 'Brief verschwindet automatisch', 'es': 'La carta desaparecerá automáticamente',
+    'pt': 'A carta desaparecerá automaticamente', 'ru': 'Письмо автоудалится', 'tr': 'Mektup otomatik silinir',
+    'ar': 'ستختفي الرسالة تلقائياً', 'it': 'La lettera scomparirà automaticamente', 'hi': 'पत्र स्वतः गायब हो जाएगा', 'th': 'จดหมายจะหายไปโดยอัตโนมัติ',
+  });
+
+  String get composeBrandExpireOff => _t({
+    'ko': '없음', 'en': 'None', 'ja': 'なし', 'zh': '无',
+    'fr': 'Aucun', 'de': 'Keine', 'es': 'Ninguno',
+    'pt': 'Nenhum', 'ru': 'Нет', 'tr': 'Yok',
+    'ar': 'بلا', 'it': 'Nessuno', 'hi': 'कोई नहीं', 'th': 'ไม่มี',
+  });
+
+  String get composeBrandExpire12h => _t({
+    'ko': '12시간', 'en': '12 hours', 'ja': '12時間', 'zh': '12小时',
+    'fr': '12 heures', 'de': '12 Stunden', 'es': '12 horas',
+    'pt': '12 horas', 'ru': '12 часов', 'tr': '12 saat',
+    'ar': '12 ساعة', 'it': '12 ore', 'hi': '12 घंटे', 'th': '12 ชั่วโมง',
+  });
+
+  String get composeBrandExpire24h => _t({
+    'ko': '24시간', 'en': '24 hours', 'ja': '24時間', 'zh': '24小时',
+    'fr': '24 heures', 'de': '24 Stunden', 'es': '24 horas',
+    'pt': '24 horas', 'ru': '24 часа', 'tr': '24 saat',
+    'ar': '24 ساعة', 'it': '24 ore', 'hi': '24 घंटे', 'th': '24 ชั่วโมง',
+  });
+
+  String get composeBrandExpire2d => _t({
+    'ko': '2일', 'en': '2 days', 'ja': '2日', 'zh': '2天',
+    'fr': '2 jours', 'de': '2 Tage', 'es': '2 días',
+    'pt': '2 dias', 'ru': '2 дня', 'tr': '2 gün',
+    'ar': 'يومان', 'it': '2 giorni', 'hi': '2 दिन', 'th': '2 วัน',
+  });
+
+  String get composeBrandExpire3d => _t({
+    'ko': '3일', 'en': '3 days', 'ja': '3日', 'zh': '3天',
+    'fr': '3 jours', 'de': '3 Tage', 'es': '3 días',
+    'pt': '3 dias', 'ru': '3 дня', 'tr': '3 gün',
+    'ar': '3 أيام', 'it': '3 giorni', 'hi': '3 दिन', 'th': '3 วัน',
+  });
+
   String get composeWithin5Min => _t({
     'ko': '5분 내 발송',
     'en': 'Sent within 5 min',
@@ -4127,7 +4198,7 @@ class AppL10n {
 
   String get composeAddressPerCountry => _t({
     'ko': '나라당 발송 수',
-    'en': 'Addresses per country',
+    'en': 'Sends per country',
     'ja': '国ごとの送信先アドレス数',
     'zh': '每个国家的地址数',
     'fr': 'Adresses par pays',
@@ -4140,6 +4211,27 @@ class AppL10n {
     'it': 'Indirizzi per paese',
     'hi': 'प्रति देश पते',
     'th': 'ที่อยู่ต่อประเทศ',
+  });
+
+  String get composeBulkRandomCountry => _t({
+    'ko': '랜덤 국가로 발송',
+    'en': 'Send to random countries',
+    'ja': 'ランダムな国に送信',
+    'zh': '随机国家发送',
+  });
+
+  String get composeBulkRandomDesc => _t({
+    'ko': '198개국 중 랜덤으로 선택하여 발송합니다',
+    'en': 'Letters sent to random countries from 198 nations',
+    'ja': '198カ国からランダムに選んで送信します',
+    'zh': '从198个国家中随机选择发送',
+  });
+
+  String composeBulkRandomSummary(int count) => _t({
+    'ko': '랜덤 국가 ${count}통 발송',
+    'en': '$count letters to random countries',
+    'ja': 'ランダム国 ${count}通送信',
+    'zh': '随机国家 $count封',
   });
 
   String get composeSelectTargetCountry => _t({
@@ -7721,6 +7813,23 @@ class AppL10n {
     'th': 'ชั้น',
   });
 
+  String mapNearbyTowers(int count) => _t({
+    'ko': '근처 타워 $count개',
+    'en': '$count Nearby Towers',
+    'ja': '近くのタワー ${count}個',
+    'zh': '附近 $count 个塔',
+    'fr': '$count tours à proximité',
+    'de': '$count Türme in der Nähe',
+    'es': '$count torres cercanas',
+    'pt': '$count torres próximas',
+    'ru': '$count ближайших башен',
+    'tr': '$count yakın kule',
+    'ar': '$count أبراج قريبة',
+    'it': '$count torri vicine',
+    'hi': '$count पास के टॉवर',
+    'th': '$count หอคอยใกล้เคียง',
+  });
+
   String mapLetterFrom(String country) => _t({
     'ko': '${country}에서 온 편지',
     'en': 'Letter from $country',
@@ -8214,6 +8323,82 @@ class AppL10n {
     'th': 'จดหมาย $count ฉบับมาถึงใกล้ๆ แล้ว! แตะเพื่อดู',
   });
 
+  /// 인앱 배너 다양한 문구 (이모지 + 텍스트)
+  List<({String emoji, String text})> mapNearbyBannerVariants(int count) => [
+    (
+      emoji: '📩',
+      text: _t({
+        'ko': '편지 ${count}개가 근처에 도착했어요! 탭해서 확인',
+        'en': '$count letter(s) arrived nearby! Tap to check',
+        'ja': '${count}通の手紙が近くに届きました！タップして確認',
+        'zh': '${count}封信已到达附近！点击查看',
+      }),
+    ),
+    (
+      emoji: '🌊',
+      text: _t({
+        'ko': '파도가 편지 ${count}개를 해변에 밀어줬어요',
+        'en': 'Waves washed $count letter(s) ashore',
+        'ja': '波が${count}通の手紙を浜辺に運びました',
+        'zh': '海浪把${count}封信冲上了岸',
+      }),
+    ),
+    (
+      emoji: '🎐',
+      text: _t({
+        'ko': '바람을 타고 편지 ${count}개가 날아왔어요',
+        'en': '$count letter(s) blew in on the wind',
+        'ja': '風に乗って${count}通の手紙が飛んできました',
+        'zh': '${count}封信随风飘来了',
+      }),
+    ),
+    (
+      emoji: '🕊️',
+      text: _t({
+        'ko': '비둘기가 편지 ${count}개를 물고 왔어요',
+        'en': 'A dove brought $count letter(s) to you',
+        'ja': '鳩が${count}通の手紙を持ってきました',
+        'zh': '鸽子带来了${count}封信',
+      }),
+    ),
+    (
+      emoji: '✨',
+      text: _t({
+        'ko': '근처에서 편지 ${count}개가 반짝이고 있어요',
+        'en': '$count letter(s) are sparkling nearby',
+        'ja': '近くで${count}通の手紙がキラキラ光っています',
+        'zh': '附近有${count}封信在闪闪发光',
+      }),
+    ),
+    (
+      emoji: '🍃',
+      text: _t({
+        'ko': '어디선가 편지 ${count}개가 날아왔어요',
+        'en': '$count letter(s) drifted in from afar',
+        'ja': 'どこかから${count}通の手紙が舞い込みました',
+        'zh': '${count}封信从远方飘来',
+      }),
+    ),
+    (
+      emoji: '💌',
+      text: _t({
+        'ko': '소중한 편지 ${count}개가 기다리고 있어요',
+        'en': '$count precious letter(s) await you',
+        'ja': '大切な手紙が${count}通待っています',
+        'zh': '${count}封珍贵的信在等你',
+      }),
+    ),
+    (
+      emoji: '🏖️',
+      text: _t({
+        'ko': '해변에 편지병 ${count}개가 떠밀려 왔어요',
+        'en': '$count bottle(s) washed up on shore',
+        'ja': '浜辺にボトルが${count}本漂着しました',
+        'zh': '${count}个漂流瓶被冲上了岸',
+      }),
+    ),
+  ];
+
   String get mapNearby => _t({
     'ko': '근처',
     'en': 'Nearby',
@@ -8659,6 +8844,121 @@ class AppL10n {
     'th': 'จดหมายจาก $flag $country มาถึงในระยะ 2 กม.',
   });
 
+  // ── 랜덤 편지 도착 알림 문구 풀 ─────────────────────────────────────────────
+  List<String> get stateNearbyNotifTitles => [
+    _t({
+      'ko': '💌 랜덤 편지가 도착했어요!',
+      'en': '💌 A random letter has arrived!',
+      'ja': '💌 ランダムレターが届きました！',
+      'zh': '💌 随机信件到了！',
+    }),
+    _t({
+      'ko': '🌏 세계 어딘가에서 편지가 왔어요!',
+      'en': '🌏 A letter came from somewhere in the world!',
+      'ja': '🌏 世界のどこかから手紙が来ました！',
+      'zh': '🌏 世界某处寄来了一封信！',
+    }),
+    _t({
+      'ko': '🎐 바람을 타고 편지가 날아왔어요',
+      'en': '🎐 A letter drifted in on the wind',
+      'ja': '🎐 風に乗って手紙が届きました',
+      'zh': '🎐 一封信随风飘来',
+    }),
+    _t({
+      'ko': '✨ 누군가의 마음이 도착했어요',
+      'en': '✨ Someone\'s heart has arrived',
+      'ja': '✨ 誰かの想いが届きました',
+      'zh': '✨ 某人的心意到了',
+    }),
+    _t({
+      'ko': '📬 편지함에 새 편지가 왔어요!',
+      'en': '📬 New letter in your mailbox!',
+      'ja': '📬 新しい手紙が届きました！',
+      'zh': '📬 信箱里有新信！',
+    }),
+    _t({
+      'ko': '🌊 바다를 건너 편지가 도착했어요',
+      'en': '🌊 A letter crossed the ocean to reach you',
+      'ja': '🌊 海を越えて手紙が届きました',
+      'zh': '🌊 一封信漂洋过海到达了',
+    }),
+    _t({
+      'ko': '🕊️ 비둘기가 편지를 물고 왔어요',
+      'en': '🕊️ A dove brought you a letter',
+      'ja': '🕊️ 鳩が手紙を届けてくれました',
+      'zh': '🕊️ 鸽子带来了一封信',
+    }),
+    _t({
+      'ko': '🌟 새로운 이야기가 도착했어요',
+      'en': '🌟 A new story has arrived',
+      'ja': '🌟 新しい物語が届きました',
+      'zh': '🌟 一个新故事到了',
+    }),
+    _t({
+      'ko': '📮 랜덤 편지가 배달 완료!',
+      'en': '📮 Random letter delivered!',
+      'ja': '📮 ランダムレター配達完了！',
+      'zh': '📮 随机信件已送达！',
+    }),
+    _t({
+      'ko': '🗺️ 먼 나라에서 편지가 도착했어요',
+      'en': '🗺️ A letter arrived from a distant land',
+      'ja': '🗺️ 遠い国から手紙が届きました',
+      'zh': '🗺️ 远方来信了',
+    }),
+  ];
+
+  List<String> stateNearbyNotifBodies(String flag, String country) => [
+    _t({
+      'ko': '$flag $country에서 보낸 편지가 도착했어요',
+      'en': 'A letter from $flag $country has arrived',
+      'ja': '$flag ${country}からの手紙が届きました',
+      'zh': '来自$flag $country的信到了',
+    }),
+    _t({
+      'ko': '$flag $country 누군가가 당신에게 마음을 보냈어요',
+      'en': 'Someone in $flag $country sent you their heart',
+      'ja': '$flag ${country}の誰かがあなたに想いを送りました',
+      'zh': '$flag $country有人给你寄了心意',
+    }),
+    _t({
+      'ko': '$flag $country에서 출발한 편지가 드디어 도착!',
+      'en': 'A letter from $flag $country finally arrived!',
+      'ja': '$flag ${country}から出発した手紙がついに到着！',
+      'zh': '从$flag $country出发的信终于到了！',
+    }),
+    _t({
+      'ko': '$flag $country의 마음이 담긴 편지가 왔어요',
+      'en': 'A heartfelt letter from $flag $country is here',
+      'ja': '$flag ${country}の気持ちが込められた手紙が来ました',
+      'zh': '来自$flag $country的真挚信件到了',
+    }),
+    _t({
+      'ko': '$flag $country에서 온 편지를 지금 열어보세요',
+      'en': 'Open the letter from $flag $country now',
+      'ja': '$flag ${country}からの手紙を今すぐ開きましょう',
+      'zh': '快打开来自$flag $country的信吧',
+    }),
+    _t({
+      'ko': '바다를 건너온 $flag $country의 진심을 확인하세요',
+      'en': 'Check the heartfelt message from $flag $country',
+      'ja': '海を渡ってきた$flag ${country}の真心を確認しましょう',
+      'zh': '查看漂洋过海来自$flag $country的真心',
+    }),
+    _t({
+      'ko': '$flag $country에서 온 편지병이 도착했어요 🏖️',
+      'en': 'A bottle letter from $flag $country arrived 🏖️',
+      'ja': '$flag ${country}からのボトルレターが届きました 🏖️',
+      'zh': '来自$flag $country的漂流瓶到了 🏖️',
+    }),
+    _t({
+      'ko': '$flag $country 편지가 긴 여행을 마치고 도착했어요',
+      'en': 'A $flag $country letter finished its long journey',
+      'ja': '$flag ${country}の手紙が長い旅を終えて届きました',
+      'zh': '$flag $country的信完成了漫长旅程',
+    }),
+  ];
+
   String stateMinSec(int min, int sec) => _t({
     'ko': '${min}분 ${sec}초',
     'en': '${min}m ${sec}s',
@@ -8742,6 +9042,76 @@ class AppL10n {
     'it': '⏳ Ritiro disponibile tra $timeStr (cooldown $tier)',
     'hi': '⏳ $timeStr में उठा सकते हैं ($tier कूलडाउन)',
     'th': '⏳ เก็บได้ใน $timeStr (คูลดาวน์ $tier)',
+  });
+
+  // ── 쿨다운 중 근처 편지 알림 ──────────────────────────────────────────────
+  String get stateCooldownNearbyTitle => _t({
+    'ko': '⏳ 편지가 근처에 있어요!',
+    'en': '⏳ A letter is nearby!',
+    'ja': '⏳ 手紙が近くにあります！',
+    'zh': '⏳ 附近有一封信！',
+    'fr': '⏳ Une lettre est à proximité !',
+    'de': '⏳ Ein Brief ist in der Nähe!',
+    'es': '⏳ ¡Hay una carta cerca!',
+    'pt': '⏳ Uma carta está por perto!',
+    'ru': '⏳ Рядом есть письмо!',
+    'tr': '⏳ Yakınında bir mektup var!',
+    'ar': '⏳ هناك رسالة بالقرب منك!',
+    'it': '⏳ Una lettera è nelle vicinanze!',
+    'hi': '⏳ आपके पास एक पत्र है!',
+    'th': '⏳ มีจดหมายอยู่ใกล้ๆ!',
+  });
+
+  String stateCooldownNearbyBody(String flag, String country, String timeStr) => _t({
+    'ko': '$flag $country에서 온 편지가 근처에 있지만, $timeStr 후에 수령할 수 있어요',
+    'en': 'A letter from $flag $country is nearby, but you can pick it up in $timeStr',
+    'ja': '$flag ${country}からの手紙が近くにありますが、${timeStr}後に受け取れます',
+    'zh': '来自$flag $country的信在附近，但$timeStr后才能领取',
+    'fr': 'Une lettre de $flag $country est proche, ramassage dans $timeStr',
+    'de': 'Ein Brief aus $flag $country ist in der Nähe, abholbar in $timeStr',
+    'es': 'Una carta de $flag $country está cerca, recógela en $timeStr',
+    'pt': 'Uma carta de $flag $country está por perto, colete em $timeStr',
+    'ru': 'Письмо из $flag $country рядом, можно забрать через $timeStr',
+    'tr': '$flag $country\'den bir mektup yakınında, $timeStr sonra alabilirsiniz',
+    'ar': 'رسالة من $flag $country بالقرب منك، يمكنك استلامها بعد $timeStr',
+    'it': 'Una lettera da $flag $country è vicina, ritiro tra $timeStr',
+    'hi': '$flag $country से एक पत्र पास में है, $timeStr बाद उठा सकते हैं',
+    'th': 'จดหมายจาก $flag $country อยู่ใกล้ แต่เก็บได้ใน $timeStr',
+  });
+
+  // ── 신고 임시 차단 알림 (발송자에게) ───────────────────────────────────────
+  String get stateReportBlockTitle => _t({
+    'ko': '⚠️ 편지가 신고되었습니다',
+    'en': '⚠️ Your letter has been reported',
+    'ja': '⚠️ あなたの手紙が通報されました',
+    'zh': '⚠️ 您的信件被举报了',
+    'fr': '⚠️ Votre lettre a été signalée',
+    'de': '⚠️ Ihr Brief wurde gemeldet',
+    'es': '⚠️ Tu carta ha sido reportada',
+    'pt': '⚠️ Sua carta foi denunciada',
+    'ru': '⚠️ На ваше письмо пожаловались',
+    'tr': '⚠️ Mektubunuz bildirildi',
+    'ar': '⚠️ تم الإبلاغ عن رسالتك',
+    'it': '⚠️ La tua lettera è stata segnalata',
+    'hi': '⚠️ आपका पत्र रिपोर्ट किया गया',
+    'th': '⚠️ จดหมายของคุณถูกรายงาน',
+  });
+
+  String get stateReportBlockBody => _t({
+    'ko': '신고 접수로 편지 발송이 일시 제한됩니다. 관리자 검토 후 조치됩니다.',
+    'en': 'Your letter sending is temporarily restricted due to a report. An admin will review shortly.',
+    'ja': '通報により手紙の送信が一時制限されています。管理者が確認後、対応します。',
+    'zh': '由于举报，您的信件发送已暂时限制。管理员将尽快审核。',
+    'fr': 'L\'envoi de lettres est temporairement restreint suite à un signalement. Un administrateur examinera sous peu.',
+    'de': 'Ihr Briefversand ist vorübergehend eingeschränkt. Ein Administrator wird dies überprüfen.',
+    'es': 'El envío de cartas está temporalmente restringido por un reporte. Un administrador lo revisará pronto.',
+    'pt': 'O envio de cartas está temporariamente restrito. Um administrador revisará em breve.',
+    'ru': 'Отправка писем временно ограничена из-за жалобы. Администратор скоро проверит.',
+    'tr': 'Bir bildirim nedeniyle mektup gönderimi geçici olarak kısıtlandı. Yönetici yakında inceleyecek.',
+    'ar': 'تم تقييد إرسال الرسائل مؤقتاً بسبب بلاغ. سيقوم المسؤول بالمراجعة قريباً.',
+    'it': 'L\'invio di lettere è temporaneamente limitato. Un amministratore esaminerà a breve.',
+    'hi': 'रिपोर्ट के कारण पत्र भेजना अस्थायी रूप से प्रतिबंधित है। व्यवस्थापक जल्द समीक्षा करेगा।',
+    'th': 'การส่งจดหมายถูกจำกัดชั่วคราว ผู้ดูแลระบบจะตรวจสอบเร็วๆ นี้',
   });
 
   String get stateAlreadyRead => _t({
@@ -9947,6 +10317,40 @@ class AppL10n {
     'th': 'จดหมายทั้งหมด',
   });
 
+  String get onboardingStatBrandPartners => _t({
+    'ko': '브랜드 파트너',
+    'en': 'Brand partners',
+    'ja': 'ブランドパートナー',
+    'zh': '品牌合作伙伴',
+    'fr': 'Partenaires de marque',
+    'de': 'Markenpartner',
+    'es': 'Socios de marca',
+    'pt': 'Parceiros de marca',
+    'ru': 'Бренд-партнёры',
+    'tr': 'Marka ortakları',
+    'ar': 'شركاء العلامة التجارية',
+    'it': 'Partner di marca',
+    'hi': 'ब्रांड पार्टनर',
+    'th': 'พาร์ทเนอร์แบรนด์',
+  });
+
+  String get onboardingStatDeliveryRate => _t({
+    'ko': '편지 전달률',
+    'en': 'Delivery rate',
+    'ja': '配達率',
+    'zh': '投递率',
+    'fr': 'Taux de livraison',
+    'de': 'Zustellrate',
+    'es': 'Tasa de entrega',
+    'pt': 'Taxa de entrega',
+    'ru': 'Доставляемость',
+    'tr': 'Teslimat oranı',
+    'ar': 'معدل التسليم',
+    'it': 'Tasso di consegna',
+    'hi': 'डिलीवरी दर',
+    'th': 'อัตราการจัดส่ง',
+  });
+
   String get onboardingStatCountries => _t({
     'ko': '연결 국가',
     'en': 'Connected countries',
@@ -9982,37 +10386,208 @@ class AppL10n {
   });
 
   String get onboardingReview1 => _t({
-    'ko': '"일주일 만에 11개국에서 답장을 받았어요."',
-    'en': '"I received replies from 11 countries in one week."',
-    'ja': '"1週間で11カ国から返信がもらえました。"',
-    'zh': '"一周内就收到了来自11个国家的回信。"',
-    'fr': '"J\'ai reçu des réponses de 11 pays en une semaine."',
-    'de': '"Ich erhielt innerhalb einer Woche Antworten aus 11 Ländern."',
-    'es': '"Recibí respuestas de 11 países en una semana."',
-    'pt': '"Recebi respostas de 11 países em uma semana."',
-    'ru': '"Получил ответы из 11 стран за неделю."',
-    'tr': '"Bir haftada 11 ülkeden yanıt aldım."',
-    'ar': '"تلقيت ردودًا من 11 دولة في أسبوع واحد."',
-    'it': '"Ho ricevuto risposte da 11 paesi in una settimana."',
-    'hi': '"एक सप्ताह में 11 देशों से जवाब मिले।"',
-    'th': '"ได้รับจดหมายตอบจาก 11 ประเทศภายในหนึ่งสัปดาห์"',
+    'ko': '"브랜드 편지가 일반 광고보다 훨씬 따뜻하게 느껴져요."',
+    'en': '"Brand letters feel much warmer than regular ads."',
+    'ja': '"ブランドレターは普通の広告よりずっと温かみがあります。"',
+    'zh': '"品牌信件比普通广告感觉温暖得多。"',
+    'fr': '"Les lettres de marque semblent bien plus chaleureuses que les publicités."',
+    'de': '"Markenbriefe fühlen sich viel wärmer an als normale Werbung."',
+    'es': '"Las cartas de marca se sienten mucho más cálidas que los anuncios."',
+    'pt': '"As cartas de marca parecem muito mais acolhedoras que anúncios."',
+    'ru': '"Брендовые письма ощущаются гораздо теплее обычной рекламы."',
+    'tr': '"Marka mektupları normal reklamlardan çok daha sıcak hissettiriyor."',
+    'ar': '"رسائل العلامة التجارية تبدو أكثر دفئًا من الإعلانات العادية."',
+    'it': '"Le lettere di marca sembrano molto più calde della pubblicità."',
+    'hi': '"ब्रांड पत्र सामान्य विज्ञापनों से बहुत गर्म महसूस होते हैं।"',
+    'th': '"จดหมายแบรนด์ให้ความรู้สึกอบอุ่นกว่าโฆษณาทั่วไปมาก"',
   });
 
   String get onboardingReview2 => _t({
-    'ko': '"사진 편지 기능 덕분에 답장률이 확실히 올라갔어요."',
-    'en': '"The photo letter feature definitely increased my reply rate."',
-    'ja': '"写真レター機能のおかげで返信率が確実に上がりました。"',
-    'zh': '"照片信件功能确实提高了我的回复率。"',
-    'fr': '"La fonction photo a clairement augmenté mon taux de réponse."',
-    'de': '"Die Fotobrieffunktion hat meine Antwortrate deutlich erhöht."',
-    'es': '"La función de foto cartas aumentó mi tasa de respuesta."',
-    'pt': '"A função de carta com foto aumentou minha taxa de resposta."',
-    'ru': '"Функция фотописем заметно повысила процент ответов."',
-    'tr': '"Fotoğraf mektup özelliği yanıt oranımı kesinlikle artırdı."',
-    'ar': '"ميزة الرسائل المصورة زادت بالتأكيد من معدل الردود."',
-    'it': '"La funzione foto lettere ha aumentato il mio tasso di risposta."',
-    'hi': '"फ़ोटो पत्र सुविधा ने मेरी जवाब दर बढ़ा दी।"',
-    'th': '"ฟีเจอร์จดหมายรูปภาพทำให้อัตราการตอบกลับเพิ่มขึ้นจริงๆ"',
+    'ko': '"프리미엄으로 올리니 편지 무제한에 우선 배달까지, 완전 만족!"',
+    'en': '"Upgrading to Premium gave me unlimited letters and priority delivery!"',
+    'ja': '"プレミアムにしたら手紙無制限＋優先配達で大満足！"',
+    'zh': '"升级到高级版后，信件无限+优先配送，超级满意！"',
+    'fr': '"Passer en Premium m\'a donné des lettres illimitées et la livraison prioritaire !"',
+    'de': '"Premium-Upgrade: unbegrenzte Briefe und Prioritätszustellung!"',
+    'es': '"Al pasar a Premium obtuve cartas ilimitadas y entrega prioritaria."',
+    'pt': '"Ao atualizar para Premium, ganhei cartas ilimitadas e entrega prioritária!"',
+    'ru': '"Премиум дал безлимитные письма и приоритетную доставку!"',
+    'tr': '"Premium\'a geçince sınırsız mektup ve öncelikli teslimat!"',
+    'ar': '"الترقية إلى المميز أعطتني رسائل غير محدودة وتسليم أولوي!"',
+    'it': '"Passando a Premium ho ottenuto lettere illimitate e consegna prioritaria!"',
+    'hi': '"प्रीमियम में अपग्रेड से असीमित पत्र और प्राथमिकता डिलीवरी मिली!"',
+    'th': '"อัปเกรดเป็นพรีเมียมได้จดหมายไม่จำกัดและจัดส่งลำดับแรก!"',
+  });
+
+  // ── 온보딩 타임라인 ───────────────────────────────────────────────────────
+  String get onboardingTimelineTitle => _t({
+    'ko': '당신의 하루가 달라져요',
+    'en': 'Your day, transformed',
+    'ja': 'あなたの一日が変わります',
+    'zh': '你的一天将会改变',
+    'fr': 'Votre journée, transformée',
+    'de': 'Ihr Tag, verwandelt',
+    'es': 'Tu día, transformado',
+    'pt': 'Seu dia, transformado',
+    'ru': 'Ваш день преобразится',
+    'tr': 'Gününüz değişecek',
+    'ar': 'يومك سيتغير',
+    'it': 'La tua giornata, trasformata',
+    'hi': 'आपका दिन बदल जाएगा',
+    'th': 'วันของคุณจะเปลี่ยนไป',
+  });
+
+  String get onboardingTimelineMorning => _t({
+    'ko': '아침',
+    'en': 'MORNING',
+    'ja': '朝',
+    'zh': '早晨',
+    'fr': 'MATIN',
+    'de': 'MORGEN',
+    'es': 'MAÑANA',
+    'pt': 'MANHÃ',
+    'ru': 'УТРО',
+    'tr': 'SABAH',
+    'ar': 'الصباح',
+    'it': 'MATTINA',
+    'hi': 'सुबह',
+    'th': 'เช้า',
+  });
+
+  String get onboardingTimelineMorningFree => _t({
+    'ko': '편지 1통 발송',
+    'en': 'Send 1 letter',
+    'ja': '手紙1通送信',
+    'zh': '发送1封信',
+    'fr': 'Envoyer 1 lettre',
+    'de': '1 Brief senden',
+    'es': 'Enviar 1 carta',
+    'pt': 'Enviar 1 carta',
+    'ru': 'Отправить 1 письмо',
+    'tr': '1 mektup gönder',
+    'ar': 'إرسال رسالة واحدة',
+    'it': 'Invia 1 lettera',
+    'hi': '1 पत्र भेजें',
+    'th': 'ส่งจดหมาย 1 ฉบับ',
+  });
+
+  String get onboardingTimelineMorningPremium => _t({
+    'ko': '인연의 기회 10배, 사진과 함께',
+    'en': '10x more connections, with photos',
+    'ja': '出会いの機会10倍、写真付き',
+    'zh': '10倍缘分机会，附带照片',
+    'fr': '10x plus de connexions, avec photos',
+    'de': '10x mehr Verbindungen, mit Fotos',
+    'es': '10x más conexiones, con fotos',
+    'pt': '10x mais conexões, com fotos',
+    'ru': 'В 10 раз больше связей, с фото',
+    'tr': '10 kat daha fazla bağlantı, fotoğraflarla',
+    'ar': 'اتصالات أكثر 10 مرات، مع صور',
+    'it': '10x più connessioni, con foto',
+    'hi': '10 गुना अधिक कनेक्शन, फोटो के साथ',
+    'th': 'การเชื่อมต่อมากขึ้น 10 เท่า พร้อมรูปภาพ',
+  });
+
+  String get onboardingTimelineAfternoon => _t({
+    'ko': '오후',
+    'en': 'AFTERNOON',
+    'ja': '午後',
+    'zh': '下午',
+    'fr': 'APRÈS-MIDI',
+    'de': 'NACHMITTAG',
+    'es': 'TARDE',
+    'pt': 'TARDE',
+    'ru': 'ДЕНЬ',
+    'tr': 'ÖĞLEDEN SONRA',
+    'ar': 'بعد الظهر',
+    'it': 'POMERIGGIO',
+    'hi': 'दोपहर',
+    'th': 'บ่าย',
+  });
+
+  String get onboardingTimelineAfternoonFree => _t({
+    'ko': '답장을 기다리는 중...',
+    'en': 'Waiting for replies...',
+    'ja': '返信を待っている...',
+    'zh': '等待回信中...',
+    'fr': 'En attente de réponses...',
+    'de': 'Warten auf Antworten...',
+    'es': 'Esperando respuestas...',
+    'pt': 'Aguardando respostas...',
+    'ru': 'Ожидание ответов...',
+    'tr': 'Yanıtlar bekleniyor...',
+    'ar': 'في انتظار الردود...',
+    'it': 'In attesa di risposte...',
+    'hi': 'जवाब का इंतज़ार...',
+    'th': 'รอการตอบกลับ...',
+  });
+
+  String get onboardingTimelineAfternoonPremium => _t({
+    'ko': '특송 배달로 이미 3통 도착',
+    'en': '3 letters already arrived via express',
+    'ja': '特急便で既に3通到着',
+    'zh': '特快配送已收到3封',
+    'fr': '3 lettres déjà arrivées par express',
+    'de': '3 Briefe bereits per Express angekommen',
+    'es': '3 cartas ya llegaron por exprés',
+    'pt': '3 cartas já chegaram via expresso',
+    'ru': '3 письма уже доставлены экспрессом',
+    'tr': 'Ekspresle zaten 3 mektup geldi',
+    'ar': '3 رسائل وصلت بالفعل عبر البريد السريع',
+    'it': '3 lettere già arrivate via express',
+    'hi': 'एक्सप्रेस से पहले ही 3 पत्र आ चुके',
+    'th': 'จดหมาย 3 ฉบับมาถึงแล้วทางด่วน',
+  });
+
+  String get onboardingTimelineEvening => _t({
+    'ko': '저녁',
+    'en': 'EVENING',
+    'ja': '夜',
+    'zh': '晚上',
+    'fr': 'SOIR',
+    'de': 'ABEND',
+    'es': 'NOCHE',
+    'pt': 'NOITE',
+    'ru': 'ВЕЧЕР',
+    'tr': 'AKŞAM',
+    'ar': 'المساء',
+    'it': 'SERA',
+    'hi': 'शाम',
+    'th': 'เย็น',
+  });
+
+  String get onboardingTimelineEveningFree => _t({
+    'ko': '오늘은 여기까지',
+    'en': "That's it for today",
+    'ja': '今日はここまで',
+    'zh': '今天就到这里',
+    'fr': "C'est tout pour aujourd'hui",
+    'de': 'Das war es für heute',
+    'es': 'Eso es todo por hoy',
+    'pt': 'Isso é tudo por hoje',
+    'ru': 'На сегодня всё',
+    'tr': 'Bugünlük bu kadar',
+    'ar': 'هذا كل شيء لليوم',
+    'it': 'Per oggi è tutto',
+    'hi': 'आज के लिए बस इतना',
+    'th': 'วันนี้แค่นี้',
+  });
+
+  String get onboardingTimelineEveningBrand => _t({
+    'ko': '월 10,000명에게 내 브랜드 전달 완료',
+    'en': 'Brand delivered to 10,000 people/month',
+    'ja': '月10,000人にブランドを届け完了',
+    'zh': '每月向10,000人传递我的品牌',
+    'fr': 'Marque diffusée à 10 000 personnes/mois',
+    'de': 'Marke an 10.000 Menschen/Monat geliefert',
+    'es': 'Marca entregada a 10.000 personas/mes',
+    'pt': 'Marca entregue a 10.000 pessoas/mês',
+    'ru': 'Бренд доставлен 10 000 людям в месяц',
+    'tr': 'Marka ayda 10.000 kişiye ulaştırıldı',
+    'ar': 'العلامة التجارية وصلت إلى 10,000 شخص/شهر',
+    'it': 'Brand consegnato a 10.000 persone/mese',
+    'hi': 'ब्रांड 10,000 लोगों/माह तक पहुंचाया गया',
+    'th': 'แบรนด์ส่งถึง 10,000 คน/เดือน',
   });
 
   String get onboardingLiveStats => _t({
@@ -11553,6 +12128,13 @@ class AppL10n {
     'ar': 'إحصائيات النشاط', 'it': 'Statistiche attività', 'hi': 'गतिविधि आँकड़े', 'th': 'สถิติกิจกรรม',
   });
 
+  String towerTierProgress(int current, int total) => _t({
+    'ko': '$current단계 / $total단계', 'en': 'Tier $current / $total', 'ja': 'ステージ$current / $total', 'zh': '第$current阶 / $total阶',
+    'fr': 'Étape $current / $total', 'de': 'Stufe $current / $total', 'es': 'Nivel $current / $total',
+    'pt': 'Nível $current / $total', 'ru': 'Уровень $current / $total', 'tr': 'Aşama $current / $total',
+    'ar': 'المرحلة $current / $total', 'it': 'Livello $current / $total', 'hi': 'चरण $current / $total', 'th': 'ระดับ $current / $total',
+  });
+
   String get towerActivityScore => _t({
     'ko': '활동 점수', 'en': 'Activity Score', 'ja': 'アクティビティスコア', 'zh': '活动分数',
     'fr': 'Score d\'activité', 'de': 'Aktivitätspunktzahl', 'es': 'Puntuación de actividad',
@@ -12273,6 +12855,1268 @@ class AppL10n {
     'fr': 'Votre lettre voyage vers sa destination', 'de': 'Ihr Brief reist zu seinem Ziel', 'es': 'Tu carta viaja a su destino',
     'pt': 'Sua carta viaja até seu destino', 'ru': 'Ваше письмо путешествует к месту назначения', 'tr': 'Mektubunuz hedefine doğru yol alıyor',
     'ar': 'رسالتك تسافر إلى وجهتها', 'it': 'La tua lettera viaggia verso la sua destinazione', 'hi': 'आपका पत्र अपने गंतव्य तक पहुँचता है', 'th': 'จดหมายของคุณเดินทางไปยังจุดหมาย',
+  });
+
+  // ── Hardcoded string l10n (formerly hardcoded) ─────────────────────────
+
+  String get labelLetterGoPremium => _t({
+    'ko': 'LETTER GO PREMIUM', 'en': 'LETTER GO PREMIUM', 'ja': 'LETTER GO PREMIUM', 'zh': 'LETTER GO PREMIUM',
+    'fr': 'LETTER GO PREMIUM', 'de': 'LETTER GO PREMIUM', 'es': 'LETTER GO PREMIUM',
+    'pt': 'LETTER GO PREMIUM', 'ru': 'LETTER GO PREMIUM', 'tr': 'LETTER GO PREMIUM',
+    'ar': 'LETTER GO PREMIUM', 'it': 'LETTER GO PREMIUM', 'hi': 'LETTER GO PREMIUM', 'th': 'LETTER GO PREMIUM',
+  });
+
+  String get tierFree => _t({
+    'ko': 'FREE', 'en': 'FREE', 'ja': '無料', 'zh': '免费',
+    'fr': 'GRATUIT', 'de': 'KOSTENLOS', 'es': 'GRATIS',
+    'pt': 'GRÁTIS', 'ru': 'БЕСПЛАТНО', 'tr': 'ÜCRETSİZ',
+    'ar': 'مجاني', 'it': 'GRATIS', 'hi': 'मुफ़्त', 'th': 'ฟรี',
+  });
+
+  String get tierPremium => _t({
+    'ko': 'PREMIUM', 'en': 'PREMIUM', 'ja': 'プレミアム', 'zh': '高级版',
+    'fr': 'PREMIUM', 'de': 'PREMIUM', 'es': 'PREMIUM',
+    'pt': 'PREMIUM', 'ru': 'ПРЕМИУМ', 'tr': 'PREMİUM',
+    'ar': 'مميز', 'it': 'PREMIUM', 'hi': 'प्रीमियम', 'th': 'พรีเมียม',
+  });
+
+  String get tierBest => _t({
+    'ko': 'BEST', 'en': 'BEST', 'ja': 'おすすめ', 'zh': '最佳',
+    'fr': 'MEILLEUR', 'de': 'BESTE', 'es': 'MEJOR',
+    'pt': 'MELHOR', 'ru': 'ЛУЧШИЙ', 'tr': 'EN İYİ',
+    'ar': 'الأفضل', 'it': 'MIGLIORE', 'hi': 'सर्वश्रेष्ठ', 'th': 'ดีที่สุด',
+  });
+
+  String get labelStampAlbum => _t({
+    'ko': '스탬프 앨범', 'en': 'STAMP ALBUM', 'ja': 'スタンプアルバム', 'zh': '邮票册',
+    'fr': 'ALBUM DE TIMBRES', 'de': 'STEMPELALBUM', 'es': 'ÁLBUM DE SELLOS',
+    'pt': 'ÁLBUM DE SELOS', 'ru': 'АЛЬБОМ МАРОК', 'tr': 'PUL ALBÜmü',
+    'ar': 'ألبوم الطوابع', 'it': 'ALBUM DI FRANCOBOLLI', 'hi': 'स्टाम्प एल्बम', 'th': 'อัลบั้มแสตมป์',
+  });
+
+  String get labelReputationScore => _t({
+    'ko': '평판 점수', 'en': 'REPUTATION SCORE', 'ja': '評価スコア', 'zh': '声望分数',
+    'fr': 'SCORE DE RÉPUTATION', 'de': 'REPUTATIONSPUNKTE', 'es': 'PUNTUACIÓN',
+    'pt': 'PONTUAÇÃO', 'ru': 'РЕЙТИНГ', 'tr': 'İTİBAR PUANI',
+    'ar': 'نقاط السمعة', 'it': 'PUNTEGGIO', 'hi': 'प्रतिष्ठा स्कोर', 'th': 'คะแนนชื่อเสียง',
+  });
+
+  String get unitPts => _t({
+    'ko': 'pts', 'en': 'pts', 'ja': 'pt', 'zh': '分',
+    'fr': 'pts', 'de': 'Pkt', 'es': 'pts',
+    'pt': 'pts', 'ru': 'очк', 'tr': 'puan',
+    'ar': 'نقطة', 'it': 'pts', 'hi': 'अंक', 'th': 'คะแนน',
+  });
+
+  String get labelPassport => _t({
+    'ko': '여권', 'en': 'PASSPORT', 'ja': 'パスポート', 'zh': '护照',
+    'fr': 'PASSEPORT', 'de': 'REISEPASS', 'es': 'PASAPORTE',
+    'pt': 'PASSAPORTE', 'ru': 'ПАСПОРТ', 'tr': 'PASAPORT',
+    'ar': 'جواز سفر', 'it': 'PASSAPORTO', 'hi': 'पासपोर्ट', 'th': 'หนังสือเดินทาง',
+  });
+
+  String get inboxSubtitle => _t({
+    'ko': '바다 건너 속삭임', 'en': 'WHISPERS FROM ACROSS THE TIDES', 'ja': '海を越えたささやき', 'zh': '跨越潮汐的耳语',
+    'fr': 'MURMURES D\'OUTRE-MER', 'de': 'FLÜSTERN VON JENSEITS DER GEZEITEN', 'es': 'SUSURROS DEL OTRO LADO',
+    'pt': 'SUSSURROS DO ALÉM-MAR', 'ru': 'ШЁПОТ ИЗДАЛЕКА', 'tr': 'DENİZLER ÖTESİNDEN FISILDAMALAR',
+    'ar': 'همسات عبر المد', 'it': 'SUSSURRI D\'OLTREMARE', 'hi': 'समुद्र पार की फुसफुसाहट', 'th': 'เสียงกระซิบจากอีกฝั่ง',
+  });
+
+  String get labelBrand => _t({
+    'ko': '브랜드', 'en': 'BRAND', 'ja': 'ブランド', 'zh': '品牌',
+    'fr': 'MARQUE', 'de': 'MARKE', 'es': 'MARCA',
+    'pt': 'MARCA', 'ru': 'БРЕНД', 'tr': 'MARKA',
+    'ar': 'علامة تجارية', 'it': 'BRAND', 'hi': 'ब्रांड', 'th': 'แบรนด์',
+  });
+
+  String get labelBrandLetter => _t({
+    'ko': '브랜드 레터', 'en': 'BRAND LETTER', 'ja': 'ブランドレター', 'zh': '品牌信件',
+    'fr': 'LETTRE DE MARQUE', 'de': 'MARKENBRIEF', 'es': 'CARTA DE MARCA',
+    'pt': 'CARTA DA MARCA', 'ru': 'ПИСЬМО БРЕНДА', 'tr': 'MARKA MEKTUP',
+    'ar': 'رسالة العلامة التجارية', 'it': 'LETTERA BRAND', 'hi': 'ब्रांड पत्र', 'th': 'จดหมายแบรนด์',
+  });
+
+  String get labelAdmin => _t({
+    'ko': 'ADMIN', 'en': 'ADMIN', 'ja': '管理者', 'zh': '管理员',
+    'fr': 'ADMIN', 'de': 'ADMIN', 'es': 'ADMIN',
+    'pt': 'ADMIN', 'ru': 'АДМИН', 'tr': 'YÖNETİCİ',
+    'ar': 'المسؤول', 'it': 'ADMIN', 'hi': 'व्यवस्थापक', 'th': 'ผู้ดูแล',
+  });
+
+  String get labelGlobalFlow => _t({
+    'ko': '글로벌 흐름', 'en': 'GLOBAL FLOW', 'ja': 'グローバルフロー', 'zh': '全球流量',
+    'fr': 'FLUX GLOBAL', 'de': 'GLOBALER FLUSS', 'es': 'FLUJO GLOBAL',
+    'pt': 'FLUXO GLOBAL', 'ru': 'ГЛОБАЛЬНЫЙ ПОТОК', 'tr': 'KÜRESEL AKIŞ',
+    'ar': 'التدفق العالمي', 'it': 'FLUSSO GLOBALE', 'hi': 'वैश्विक प्रवाह', 'th': 'กระแสโลก',
+  });
+
+  // ══════════════════════════════════════════════════════════════════════════
+  // ── Terms of Service & Content Moderation Consent (Auth) ─────────────────
+  // ══════════════════════════════════════════════════════════════════════════
+
+  String get authTermsRequired => _t({
+    'ko': '(필수) 서비스 이용약관 및 커뮤니티 가이드라인',
+    'en': '(Required) Terms of Service & Community Guidelines',
+    'ja': '（必須）利用規約とコミュニティガイドライン',
+    'zh': '（必填）服务条款和社区准则',
+    'fr': '(Obligatoire) Conditions d\'utilisation et règles communautaires',
+    'de': '(Erforderlich) Nutzungsbedingungen und Community-Richtlinien',
+    'es': '(Obligatorio) Términos de servicio y normas de la comunidad',
+    'pt': '(Obrigatório) Termos de Serviço e Diretrizes da Comunidade',
+    'ru': '(Обязательно) Условия использования и правила сообщества',
+    'tr': '(Zorunlu) Kullanım Koşulları ve Topluluk Kuralları',
+    'ar': '(مطلوب) شروط الخدمة وإرشادات المجتمع',
+    'it': '(Obbligatorio) Termini di servizio e linee guida della comunità',
+    'hi': '(आवश्यक) सेवा की शर्तें और सामुदायिक दिशानिर्देश',
+    'th': '(จำเป็น) ข้อกำหนดการใช้งานและแนวทางชุมชน',
+  });
+
+  String get authTermsDesc => _t({
+    'ko': '편지 내용은 신고 접수 시에만 관리자가 검토할 수 있습니다.\n부적절한 콘텐츠 게시 시 서비스 이용이 제한될 수 있습니다.',
+    'en': 'Letter content may only be reviewed by administrators upon receiving a report.\nPosting inappropriate content may result in service restrictions.',
+    'ja': '手紙の内容は、報告を受けた場合にのみ管理者が確認できます。\n不適切なコンテンツの投稿はサービス制限の対象となります。',
+    'zh': '信件内容仅在收到举报时由管理员审查。\n发布不当内容可能导致服务限制。',
+    'fr': 'Le contenu des lettres ne peut être examiné par les administrateurs que sur signalement.\nLa publication de contenu inapproprié peut entraîner des restrictions de service.',
+    'de': 'Briefinhalte werden nur bei einer Meldung von Administratoren überprüft.\nDas Veröffentlichen unangemessener Inhalte kann zu Diensteinschränkungen führen.',
+    'es': 'El contenido de las cartas solo puede ser revisado por administradores al recibir un reporte.\nPublicar contenido inapropiado puede resultar en restricciones del servicio.',
+    'pt': 'O conteúdo das cartas só pode ser revisado por administradores mediante denúncia.\nA publicação de conteúdo inadequado pode resultar em restrições de serviço.',
+    'ru': 'Содержание писем проверяется администраторами только при получении жалобы.\nПубликация неприемлемого контента может привести к ограничению сервиса.',
+    'tr': 'Mektup içeriği yalnızca şikayet alındığında yöneticiler tarafından incelenebilir.\nUygunsuz içerik yayınlamak hizmet kısıtlamalarına yol açabilir.',
+    'ar': 'يمكن مراجعة محتوى الرسائل من قبل المسؤولين فقط عند تلقي بلاغ.\nنشر محتوى غير لائق قد يؤدي إلى تقييد الخدمة.',
+    'it': 'Il contenuto delle lettere può essere esaminato dagli amministratori solo in caso di segnalazione.\nLa pubblicazione di contenuti inappropriati può comportare restrizioni del servizio.',
+    'hi': 'पत्र सामग्री की समीक्षा प्रशासकों द्वारा केवल शिकायत प्राप्त होने पर की जा सकती है।\nअनुचित सामग्री पोस्ट करने पर सेवा प्रतिबंध हो सकते हैं।',
+    'th': 'เนื้อหาจดหมายจะถูกตรวจสอบโดยผู้ดูแลเฉพาะเมื่อได้รับการรายงานเท่านั้น\nการโพสต์เนื้อหาที่ไม่เหมาะสมอาจส่งผลให้ถูกจำกัดการใช้บริการ',
+  });
+
+  // ── Privacy Policy expanded sections (5-7) ──────────────────────────────
+
+  String get authPrivacySec5Title => _t({
+    'ko': '5. 콘텐츠 열람 및 관리',
+    'en': '5. Content Review & Moderation',
+    'ja': '5. コンテンツの閲覧と管理',
+    'zh': '5. 内容审查与管理',
+    'fr': '5. Examen et modération du contenu',
+    'de': '5. Inhaltsüberprüfung und Moderation',
+    'es': '5. Revisión y moderación de contenido',
+    'pt': '5. Revisão e Moderação de Conteúdo',
+    'ru': '5. Проверка и модерация контента',
+    'tr': '5. İçerik İnceleme ve Denetim',
+    'ar': '5. مراجعة المحتوى والإشراف',
+    'it': '5. Revisione e moderazione dei contenuti',
+    'hi': '5. सामग्री समीक्षा और मॉडरेशन',
+    'th': '5. การตรวจสอบและจัดการเนื้อหา',
+  });
+
+  String get authPrivacySec5Body => _t({
+    'ko': '관리자는 사용자의 편지 내용을 일상적으로 열람하지 않습니다. '
+        '편지 내용은 다른 사용자로부터 신고가 접수된 경우에 한하여 검토됩니다. '
+        '검토는 커뮤니티 가이드라인 위반 여부를 판단하기 위한 목적으로만 수행되며, '
+        '위반이 확인되면 해당 콘텐츠의 차단 및 계정 제한 조치가 이루어질 수 있습니다.',
+    'en': 'Administrators do not routinely access your letter content. '
+        'Letters are reviewed only when a report is filed by another user. '
+        'Reviews are conducted solely to determine violations of community guidelines. '
+        'If a violation is confirmed, content may be blocked and account restrictions may apply.',
+    'ja': '管理者は日常的にあなたの手紙の内容を閲覧しません。'
+        '手紙の内容は、他のユーザーから報告があった場合にのみ確認されます。'
+        '確認はコミュニティガイドライン違反の判断のためにのみ行われ、'
+        '違反が確認された場合、コンテンツのブロックやアカウント制限が行われることがあります。',
+    'zh': '管理员不会日常访问您的信件内容。'
+        '仅在其他用户提交举报时才会审查信件。'
+        '审查仅用于判断是否违反社区准则。'
+        '如确认违规，相关内容可能被屏蔽，账号可能受到限制。',
+    'fr': 'Les administrateurs n\'accèdent pas régulièrement au contenu de vos lettres. '
+        'Les lettres ne sont examinées que lorsqu\'un signalement est déposé par un autre utilisateur. '
+        'Les examens sont effectués uniquement pour déterminer les violations des règles communautaires. '
+        'Si une violation est confirmée, le contenu peut être bloqué et des restrictions de compte peuvent s\'appliquer.',
+    'de': 'Administratoren greifen nicht routinemäßig auf Ihre Briefinhalte zu. '
+        'Briefe werden nur überprüft, wenn eine Meldung von einem anderen Benutzer eingeht. '
+        'Überprüfungen dienen ausschließlich der Feststellung von Verstößen gegen Community-Richtlinien. '
+        'Bei bestätigten Verstößen können Inhalte gesperrt und Kontoeinschränkungen verhängt werden.',
+    'es': 'Los administradores no acceden rutinariamente al contenido de sus cartas. '
+        'Las cartas se revisan solo cuando otro usuario presenta un reporte. '
+        'Las revisiones se realizan únicamente para determinar violaciones de las normas de la comunidad. '
+        'Si se confirma una violación, el contenido puede ser bloqueado y se pueden aplicar restricciones de cuenta.',
+    'pt': 'Os administradores não acessam rotineiramente o conteúdo de suas cartas. '
+        'As cartas são revisadas apenas quando uma denúncia é feita por outro usuário. '
+        'As revisões são realizadas exclusivamente para determinar violações das diretrizes da comunidade. '
+        'Se uma violação for confirmada, o conteúdo pode ser bloqueado e restrições de conta podem ser aplicadas.',
+    'ru': 'Администраторы не просматривают содержание ваших писем на регулярной основе. '
+        'Письма проверяются только при поступлении жалобы от другого пользователя. '
+        'Проверки проводятся исключительно для выявления нарушений правил сообщества. '
+        'При подтверждении нарушения контент может быть заблокирован, а на аккаунт наложены ограничения.',
+    'tr': 'Yöneticiler mektup içeriğinize rutin olarak erişmez. '
+        'Mektuplar yalnızca başka bir kullanıcı tarafından şikayet edildiğinde incelenir. '
+        'İncelemeler yalnızca topluluk kurallarının ihlal edilip edilmediğini belirlemek için yapılır. '
+        'İhlal tespit edilirse içerik engellenebilir ve hesap kısıtlamaları uygulanabilir.',
+    'ar': 'لا يصل المسؤولون بشكل روتيني إلى محتوى رسائلك. '
+        'تتم مراجعة الرسائل فقط عند تقديم بلاغ من مستخدم آخر. '
+        'تُجرى المراجعات فقط لتحديد انتهاكات إرشادات المجتمع. '
+        'إذا تم تأكيد الانتهاك، قد يتم حظر المحتوى وتطبيق قيود على الحساب.',
+    'it': 'Gli amministratori non accedono regolarmente al contenuto delle tue lettere. '
+        'Le lettere vengono esaminate solo quando viene presentata una segnalazione da un altro utente. '
+        'Le revisioni vengono effettuate esclusivamente per determinare violazioni delle linee guida della comunità. '
+        'Se viene confermata una violazione, il contenuto può essere bloccato e possono essere applicate restrizioni all\'account.',
+    'hi': 'प्रशासक आपके पत्र सामग्री को नियमित रूप से नहीं देखते। '
+        'पत्रों की समीक्षा केवल तब की जाती है जब किसी अन्य उपयोगकर्ता द्वारा शिकायत दर्ज की जाती है। '
+        'समीक्षा केवल सामुदायिक दिशानिर्देशों के उल्लंघन का पता लगाने के लिए की जाती है। '
+        'यदि उल्लंघन की पुष्टि होती है, तो सामग्री को अवरुद्ध किया जा सकता है और खाता प्रतिबंध लागू हो सकते हैं।',
+    'th': 'ผู้ดูแลระบบไม่เข้าถึงเนื้อหาจดหมายของคุณเป็นประจำ '
+        'จดหมายจะถูกตรวจสอบเฉพาะเมื่อมีการรายงานจากผู้ใช้รายอื่นเท่านั้น '
+        'การตรวจสอบดำเนินการเพื่อตรวจสอบการละเมิดแนวทางชุมชนเท่านั้น '
+        'หากยืนยันการละเมิด เนื้อหาอาจถูกบล็อกและอาจมีการจำกัดบัญชี',
+  });
+
+  String get authPrivacySec6Title => _t({
+    'ko': '6. 이용자 권리 (GDPR/개인정보 보호법)',
+    'en': '6. Your Rights (GDPR / Data Protection)',
+    'ja': '6. ユーザーの権利（GDPR/データ保護）',
+    'zh': '6. 您的权利（GDPR/数据保护）',
+    'fr': '6. Vos droits (RGPD / Protection des données)',
+    'de': '6. Ihre Rechte (DSGVO / Datenschutz)',
+    'es': '6. Sus derechos (RGPD / Protección de datos)',
+    'pt': '6. Seus Direitos (LGPD / Proteção de Dados)',
+    'ru': '6. Ваши права (GDPR / Защита данных)',
+    'tr': '6. Haklarınız (KVKK / Veri Koruma)',
+    'ar': '6. حقوقك (GDPR / حماية البيانات)',
+    'it': '6. I tuoi diritti (GDPR / Protezione dati)',
+    'hi': '6. आपके अधिकार (GDPR / डेटा संरक्षण)',
+    'th': '6. สิทธิ์ของคุณ (GDPR / การคุ้มครองข้อมูล)',
+  });
+
+  String get authPrivacySec6Body => _t({
+    'ko': '• 열람권: 수집된 개인정보 열람을 요청할 수 있습니다\n'
+        '• 정정권: 부정확한 정보의 수정을 요청할 수 있습니다\n'
+        '• 삭제권: 계정 삭제 시 모든 데이터가 즉시 삭제됩니다\n'
+        '• 이동권: 본인의 데이터 사본을 요청할 수 있습니다\n'
+        '• 철회권: 동의를 언제든 철회할 수 있습니다\n'
+        '문의: ceo@airony.xyz',
+    'en': '• Right to Access: You may request access to your personal data\n'
+        '• Right to Rectification: You may request correction of inaccurate data\n'
+        '• Right to Erasure: All data is deleted immediately upon account deletion\n'
+        '• Right to Portability: You may request a copy of your data\n'
+        '• Right to Withdraw Consent: You may withdraw consent at any time\n'
+        'Contact: ceo@airony.xyz',
+    'ja': '• アクセス権: 収集された個人情報の閲覧を要求できます\n'
+        '• 訂正権: 不正確な情報の修正を要求できます\n'
+        '• 削除権: アカウント削除時にすべてのデータが即座に削除されます\n'
+        '• データポータビリティ権: データのコピーを要求できます\n'
+        '• 同意撤回権: いつでも同意を撤回できます\n'
+        'お問い合わせ: ceo@airony.xyz',
+    'zh': '• 访问权: 您可以请求访问收集的个人信息\n'
+        '• 更正权: 您可以请求更正不准确的信息\n'
+        '• 删除权: 删除账号时所有数据将立即删除\n'
+        '• 可携带权: 您可以请求数据副本\n'
+        '• 撤回同意权: 您可以随时撤回同意\n'
+        '联系方式: ceo@airony.xyz',
+    'fr': '• Droit d\'accès : Vous pouvez demander l\'accès à vos données personnelles\n'
+        '• Droit de rectification : Vous pouvez demander la correction des données inexactes\n'
+        '• Droit à l\'effacement : Toutes les données sont supprimées lors de la suppression du compte\n'
+        '• Droit à la portabilité : Vous pouvez demander une copie de vos données\n'
+        '• Droit de retrait : Vous pouvez retirer votre consentement à tout moment\n'
+        'Contact : ceo@airony.xyz',
+    'de': '• Auskunftsrecht: Sie können Zugang zu Ihren personenbezogenen Daten anfordern\n'
+        '• Berichtigungsrecht: Sie können die Korrektur ungenauer Daten anfordern\n'
+        '• Löschungsrecht: Alle Daten werden bei Kontolöschung sofort gelöscht\n'
+        '• Recht auf Datenübertragbarkeit: Sie können eine Kopie Ihrer Daten anfordern\n'
+        '• Widerrufsrecht: Sie können Ihre Einwilligung jederzeit widerrufen\n'
+        'Kontakt: ceo@airony.xyz',
+    'es': '• Derecho de acceso: Puede solicitar acceso a sus datos personales\n'
+        '• Derecho de rectificación: Puede solicitar la corrección de datos inexactos\n'
+        '• Derecho de supresión: Todos los datos se eliminan al eliminar la cuenta\n'
+        '• Derecho de portabilidad: Puede solicitar una copia de sus datos\n'
+        '• Derecho de revocación: Puede retirar su consentimiento en cualquier momento\n'
+        'Contacto: ceo@airony.xyz',
+    'pt': '• Direito de acesso: Você pode solicitar acesso aos seus dados pessoais\n'
+        '• Direito de retificação: Você pode solicitar a correção de dados imprecisos\n'
+        '• Direito de exclusão: Todos os dados são excluídos ao deletar a conta\n'
+        '• Direito de portabilidade: Você pode solicitar uma cópia dos seus dados\n'
+        '• Direito de revogação: Você pode retirar seu consentimento a qualquer momento\n'
+        'Contato: ceo@airony.xyz',
+    'ru': '• Право на доступ: Вы можете запросить доступ к своим персональным данным\n'
+        '• Право на исправление: Вы можете запросить исправление неточных данных\n'
+        '• Право на удаление: Все данные удаляются при удалении аккаунта\n'
+        '• Право на переносимость: Вы можете запросить копию своих данных\n'
+        '• Право на отзыв: Вы можете отозвать согласие в любое время\n'
+        'Контакт: ceo@airony.xyz',
+    'tr': '• Erişim hakkı: Kişisel verilerinize erişim talep edebilirsiniz\n'
+        '• Düzeltme hakkı: Yanlış verilerin düzeltilmesini talep edebilirsiniz\n'
+        '• Silme hakkı: Hesap silindiğinde tüm veriler hemen silinir\n'
+        '• Taşınabilirlik hakkı: Verilerinizin bir kopyasını talep edebilirsiniz\n'
+        '• Geri çekme hakkı: Onayınızı istediğiniz zaman geri çekebilirsiniz\n'
+        'İletişim: ceo@airony.xyz',
+    'ar': '• حق الوصول: يمكنك طلب الوصول إلى بياناتك الشخصية\n'
+        '• حق التصحيح: يمكنك طلب تصحيح البيانات غير الدقيقة\n'
+        '• حق الحذف: يتم حذف جميع البيانات فور حذف الحساب\n'
+        '• حق النقل: يمكنك طلب نسخة من بياناتك\n'
+        '• حق السحب: يمكنك سحب موافقتك في أي وقت\n'
+        'التواصل: ceo@airony.xyz',
+    'it': '• Diritto di accesso: Puoi richiedere l\'accesso ai tuoi dati personali\n'
+        '• Diritto di rettifica: Puoi richiedere la correzione di dati inesatti\n'
+        '• Diritto alla cancellazione: Tutti i dati vengono eliminati alla cancellazione dell\'account\n'
+        '• Diritto alla portabilità: Puoi richiedere una copia dei tuoi dati\n'
+        '• Diritto di revoca: Puoi revocare il consenso in qualsiasi momento\n'
+        'Contatto: ceo@airony.xyz',
+    'hi': '• पहुँच का अधिकार: आप अपने व्यक्तिगत डेटा तक पहुँच का अनुरोध कर सकते हैं\n'
+        '• सुधार का अधिकार: आप गलत डेटा में सुधार का अनुरोध कर सकते हैं\n'
+        '• मिटाने का अधिकार: खाता हटाने पर सभी डेटा तुरंत हटा दिया जाता है\n'
+        '• पोर्टेबिलिटी का अधिकार: आप अपने डेटा की प्रति का अनुरोध कर सकते हैं\n'
+        '• सहमति वापसी का अधिकार: आप किसी भी समय सहमति वापस ले सकते हैं\n'
+        'संपर्क: ceo@airony.xyz',
+    'th': '• สิทธิ์ในการเข้าถึง: คุณสามารถขอเข้าถึงข้อมูลส่วนบุคคลของคุณ\n'
+        '• สิทธิ์ในการแก้ไข: คุณสามารถขอแก้ไขข้อมูลที่ไม่ถูกต้อง\n'
+        '• สิทธิ์ในการลบ: ข้อมูลทั้งหมดจะถูกลบเมื่อลบบัญชี\n'
+        '• สิทธิ์ในการเคลื่อนย้าย: คุณสามารถขอสำเนาข้อมูลของคุณ\n'
+        '• สิทธิ์ในการถอน: คุณสามารถถอนความยินยอมได้ตลอดเวลา\n'
+        'ติดต่อ: ceo@airony.xyz',
+  });
+
+  String get authPrivacySec7Title => _t({
+    'ko': '7. 커뮤니티 가이드라인',
+    'en': '7. Community Guidelines',
+    'ja': '7. コミュニティガイドライン',
+    'zh': '7. 社区准则',
+    'fr': '7. Règles communautaires',
+    'de': '7. Community-Richtlinien',
+    'es': '7. Normas de la comunidad',
+    'pt': '7. Diretrizes da Comunidade',
+    'ru': '7. Правила сообщества',
+    'tr': '7. Topluluk Kuralları',
+    'ar': '7. إرشادات المجتمع',
+    'it': '7. Linee guida della comunità',
+    'hi': '7. सामुदायिक दिशानिर्देश',
+    'th': '7. แนวทางชุมชน',
+  });
+
+  String get authPrivacySec7Body => _t({
+    'ko': '• 혐오 발언, 차별, 괴롭힘 금지\n'
+        '• 음란물 또는 폭력적 콘텐츠 금지\n'
+        '• 스팸, 사기, 피싱 금지\n'
+        '• 타인의 개인정보 무단 공유 금지\n'
+        '• 3회 이상 신고 시 자동 차단됩니다',
+    'en': '• No hate speech, discrimination, or harassment\n'
+        '• No explicit sexual or violent content\n'
+        '• No spam, scams, or phishing\n'
+        '• Do not share others\' personal information without consent\n'
+        '• Accounts with 3+ reports may be automatically blocked',
+    'ja': '• ヘイトスピーチ、差別、嫌がらせの禁止\n'
+        '• わいせつまたは暴力的なコンテンツの禁止\n'
+        '• スパム、詐欺、フィッシングの禁止\n'
+        '• 他人の個人情報を無断で共有しないでください\n'
+        '• 3回以上の報告で自動ブロックされます',
+    'zh': '• 禁止仇恨言论、歧视或骚扰\n'
+        '• 禁止色情或暴力内容\n'
+        '• 禁止垃圾邮件、欺诈或钓鱼\n'
+        '• 不要未经同意分享他人个人信息\n'
+        '• 被举报3次以上可能自动封禁',
+    'fr': '• Pas de discours haineux, de discrimination ou de harcèlement\n'
+        '• Pas de contenu sexuel explicite ou violent\n'
+        '• Pas de spam, d\'escroquerie ou de phishing\n'
+        '• Ne partagez pas les informations personnelles d\'autrui sans consentement\n'
+        '• Les comptes avec 3+ signalements peuvent être automatiquement bloqués',
+    'de': '• Keine Hassrede, Diskriminierung oder Belästigung\n'
+        '• Keine explizit sexuellen oder gewalttätigen Inhalte\n'
+        '• Kein Spam, Betrug oder Phishing\n'
+        '• Teilen Sie keine persönlichen Daten anderer ohne Zustimmung\n'
+        '• Konten mit 3+ Meldungen können automatisch gesperrt werden',
+    'es': '• Prohibido el discurso de odio, discriminación o acoso\n'
+        '• Prohibido el contenido sexual explícito o violento\n'
+        '• Prohibido el spam, estafas o phishing\n'
+        '• No comparta información personal de otros sin consentimiento\n'
+        '• Cuentas con 3+ reportes pueden ser bloqueadas automáticamente',
+    'pt': '• Proibido discurso de ódio, discriminação ou assédio\n'
+        '• Proibido conteúdo sexual explícito ou violento\n'
+        '• Proibido spam, fraudes ou phishing\n'
+        '• Não compartilhe informações pessoais de outros sem consentimento\n'
+        '• Contas com 3+ denúncias podem ser bloqueadas automaticamente',
+    'ru': '• Запрещены ненавистнические высказывания, дискриминация или преследование\n'
+        '• Запрещён откровенный сексуальный или насильственный контент\n'
+        '• Запрещены спам, мошенничество или фишинг\n'
+        '• Не делитесь личной информацией других без согласия\n'
+        '• Аккаунты с 3+ жалобами могут быть автоматически заблокированы',
+    'tr': '• Nefret söylemi, ayrımcılık veya taciz yasaktır\n'
+        '• Cinsel veya şiddet içerikli içerik yasaktır\n'
+        '• Spam, dolandırıcılık veya kimlik avı yasaktır\n'
+        '• Başkalarının kişisel bilgilerini izinsiz paylaşmayın\n'
+        '• 3+ şikayet alan hesaplar otomatik olarak engellenebilir',
+    'ar': '• يحظر خطاب الكراهية والتمييز والمضايقة\n'
+        '• يحظر المحتوى الجنسي الصريح أو العنيف\n'
+        '• يحظر البريد العشوائي والاحتيال والتصيد\n'
+        '• لا تشارك المعلومات الشخصية للآخرين بدون موافقة\n'
+        '• قد يتم حظر الحسابات التي تتلقى 3+ بلاغات تلقائياً',
+    'it': '• Vietati discorsi d\'odio, discriminazione o molestie\n'
+        '• Vietati contenuti sessuali espliciti o violenti\n'
+        '• Vietati spam, truffe o phishing\n'
+        '• Non condividere informazioni personali altrui senza consenso\n'
+        '• Gli account con 3+ segnalazioni possono essere bloccati automaticamente',
+    'hi': '• नफ़रत भरे भाषण, भेदभाव या उत्पीड़न की मनाही\n'
+        '• स्पष्ट यौन या हिंसक सामग्री की मनाही\n'
+        '• स्पैम, धोखाधड़ी या फ़िशिंग की मनाही\n'
+        '• बिना सहमति दूसरों की व्यक्तिगत जानकारी साझा न करें\n'
+        '• 3+ शिकायतों वाले खाते स्वचालित रूप से अवरुद्ध हो सकते हैं',
+    'th': '• ห้ามพูดจาเกลียดชัง เลือกปฏิบัติ หรือคุกคาม\n'
+        '• ห้ามเนื้อหาทางเพศหรือความรุนแรง\n'
+        '• ห้ามสแปม การฉ้อโกง หรือฟิชชิ่ง\n'
+        '• ห้ามแชร์ข้อมูลส่วนบุคคลของผู้อื่นโดยไม่ได้รับความยินยอม\n'
+        '• บัญชีที่ถูกรายงาน 3+ ครั้งอาจถูกบล็อกโดยอัตโนมัติ',
+  });
+
+  // ── Settings: Data & Privacy section ────────────────────────────────────
+
+  String get settingsDataPrivacy => _t({
+    'ko': '데이터 및 개인정보',
+    'en': 'Data & Privacy',
+    'ja': 'データとプライバシー',
+    'zh': '数据与隐私',
+    'fr': 'Données et confidentialité',
+    'de': 'Daten & Datenschutz',
+    'es': 'Datos y privacidad',
+    'pt': 'Dados e Privacidade',
+    'ru': 'Данные и конфиденциальность',
+    'tr': 'Veri ve Gizlilik',
+    'ar': 'البيانات والخصوصية',
+    'it': 'Dati e Privacy',
+    'hi': 'डेटा और गोपनीयता',
+    'th': 'ข้อมูลและความเป็นส่วนตัว',
+  });
+
+  String get settingsContentPolicy => _t({
+    'ko': '콘텐츠 열람 정책',
+    'en': 'Content Review Policy',
+    'ja': 'コンテンツ閲覧ポリシー',
+    'zh': '内容审查政策',
+    'fr': 'Politique d\'examen du contenu',
+    'de': 'Inhaltsüberprüfungsrichtlinie',
+    'es': 'Política de revisión de contenido',
+    'pt': 'Política de Revisão de Conteúdo',
+    'ru': 'Политика проверки контента',
+    'tr': 'İçerik İnceleme Politikası',
+    'ar': 'سياسة مراجعة المحتوى',
+    'it': 'Politica di revisione dei contenuti',
+    'hi': 'सामग्री समीक्षा नीति',
+    'th': 'นโยบายตรวจสอบเนื้อหา',
+  });
+
+  String get settingsCommunityGuidelines => _t({
+    'ko': '커뮤니티 가이드라인',
+    'en': 'Community Guidelines',
+    'ja': 'コミュニティガイドライン',
+    'zh': '社区准则',
+    'fr': 'Règles communautaires',
+    'de': 'Community-Richtlinien',
+    'es': 'Normas de la comunidad',
+    'pt': 'Diretrizes da Comunidade',
+    'ru': 'Правила сообщества',
+    'tr': 'Topluluk Kuralları',
+    'ar': 'إرشادات المجتمع',
+    'it': 'Linee guida della comunità',
+    'hi': 'सामुदायिक दिशानिर्देश',
+    'th': 'แนวทางชุมชน',
+  });
+
+  String get settingsRequestData => _t({
+    'ko': '내 데이터 요청',
+    'en': 'Request My Data',
+    'ja': 'データのリクエスト',
+    'zh': '请求我的数据',
+    'fr': 'Demander mes données',
+    'de': 'Meine Daten anfordern',
+    'es': 'Solicitar mis datos',
+    'pt': 'Solicitar Meus Dados',
+    'ru': 'Запросить мои данные',
+    'tr': 'Verilerimi talep et',
+    'ar': 'طلب بياناتي',
+    'it': 'Richiedi i miei dati',
+    'hi': 'मेरा डेटा अनुरोध करें',
+    'th': 'ขอข้อมูลของฉัน',
+  });
+
+  String get settingsRequestDataDesc => _t({
+    'ko': 'ceo@airony.xyz로 이메일을 보내 데이터 사본을 요청하세요',
+    'en': 'Email ceo@airony.xyz to request a copy of your data',
+    'ja': 'ceo@airony.xyzにメールでデータのコピーをリクエストしてください',
+    'zh': '发送邮件至ceo@airony.xyz请求数据副本',
+    'fr': 'Envoyez un email à ceo@airony.xyz pour demander une copie de vos données',
+    'de': 'Senden Sie eine E-Mail an ceo@airony.xyz, um eine Kopie Ihrer Daten anzufordern',
+    'es': 'Envíe un correo a ceo@airony.xyz para solicitar una copia de sus datos',
+    'pt': 'Envie um email para ceo@airony.xyz para solicitar uma cópia dos seus dados',
+    'ru': 'Отправьте email на ceo@airony.xyz для запроса копии ваших данных',
+    'tr': 'Verilerinizin bir kopyasını talep etmek için ceo@airony.xyz adresine e-posta gönderin',
+    'ar': 'أرسل بريداً إلكترونياً إلى ceo@airony.xyz لطلب نسخة من بياناتك',
+    'it': 'Invia un\'email a ceo@airony.xyz per richiedere una copia dei tuoi dati',
+    'hi': 'अपने डेटा की प्रति का अनुरोध करने के लिए ceo@airony.xyz पर ईमेल करें',
+    'th': 'ส่งอีเมลไปที่ ceo@airony.xyz เพื่อขอสำเนาข้อมูลของคุณ',
+  });
+
+  // ── Content Policy Dialog ───────────────────────────────────────────────
+
+  String get contentPolicyTitle => _t({
+    'ko': '콘텐츠 열람 정책',
+    'en': 'Content Review Policy',
+    'ja': 'コンテンツ閲覧ポリシー',
+    'zh': '内容审查政策',
+    'fr': 'Politique d\'examen du contenu',
+    'de': 'Inhaltsüberprüfungsrichtlinie',
+    'es': 'Política de revisión de contenido',
+    'pt': 'Política de Revisão de Conteúdo',
+    'ru': 'Политика проверки контента',
+    'tr': 'İçerik İnceleme Politikası',
+    'ar': 'سياسة مراجعة المحتوى',
+    'it': 'Politica di revisione dei contenuti',
+    'hi': 'सामग्री समीक्षा नीति',
+    'th': 'นโยบายตรวจสอบเนื้อหา',
+  });
+
+  String get contentPolicyBody => _t({
+    'ko': 'Letter Go는 사용자의 프라이버시를 존중합니다.\n\n'
+        '📋 기본 원칙\n'
+        '관리자는 사용자의 편지 내용을 일상적으로 열람하지 않습니다.\n\n'
+        '🔍 열람이 이루어지는 경우\n'
+        '• 다른 사용자가 해당 편지를 신고한 경우\n'
+        '• 법적 요청이 있는 경우\n'
+        '• 서비스 안전에 중대한 위협이 있는 경우\n\n'
+        '⚖️ 열람 절차\n'
+        '1. 신고 접수 후 관리자가 해당 편지만 확인\n'
+        '2. 커뮤니티 가이드라인 위반 여부 판단\n'
+        '3. 위반 시: 콘텐츠 차단 + 발신자에게 경고\n'
+        '4. 3회 이상 위반 시: 계정 영구 차단\n\n'
+        '🔒 투명성\n'
+        '열람 사유와 조치 결과를 기록하며, 사용자는 자신의 콘텐츠에 대한 조치 사유를 문의할 수 있습니다.',
+    'en': 'Letter Go respects your privacy.\n\n'
+        '📋 Core Principle\n'
+        'Administrators do not routinely access your letter content.\n\n'
+        '🔍 When Review Occurs\n'
+        '• When another user reports the letter\n'
+        '• When required by law\n'
+        '• When there is a serious threat to service safety\n\n'
+        '⚖️ Review Process\n'
+        '1. Upon receiving a report, only the reported letter is reviewed\n'
+        '2. Determination of community guidelines violation\n'
+        '3. If violation found: content blocked + warning to sender\n'
+        '4. 3+ violations: permanent account suspension\n\n'
+        '🔒 Transparency\n'
+        'Review reasons and outcomes are logged. Users may inquire about actions taken on their content.',
+    'ja': 'Letter Goはあなたのプライバシーを尊重します。\n\n'
+        '📋 基本原則\n'
+        '管理者はあなたの手紙の内容を日常的に閲覧しません。\n\n'
+        '🔍 閲覧が行われる場合\n'
+        '• 他のユーザーがその手紙を報告した場合\n'
+        '• 法的要請がある場合\n'
+        '• サービスの安全に重大な脅威がある場合\n\n'
+        '⚖️ 閲覧手順\n'
+        '1. 報告受理後、該当の手紙のみ確認\n'
+        '2. コミュニティガイドライン違反の判断\n'
+        '3. 違反の場合：コンテンツブロック＋送信者への警告\n'
+        '4. 3回以上の違反：アカウント永久停止\n\n'
+        '🔒 透明性\n'
+        '閲覧理由と措置結果を記録し、ユーザーは自身のコンテンツに対する措置理由を問い合わせできます。',
+    'zh': 'Letter Go 尊重您的隐私。\n\n'
+        '📋 核心原则\n'
+        '管理员不会日常访问您的信件内容。\n\n'
+        '🔍 审查发生的情况\n'
+        '• 当其他用户举报该信件时\n'
+        '• 当法律要求时\n'
+        '• 当服务安全面临严重威胁时\n\n'
+        '⚖️ 审查流程\n'
+        '1. 收到举报后，仅审查被举报的信件\n'
+        '2. 判断是否违反社区准则\n'
+        '3. 如确认违规：屏蔽内容 + 警告发件人\n'
+        '4. 违规3次以上：永久封禁账号\n\n'
+        '🔒 透明度\n'
+        '审查原因和结果会被记录，用户可以查询对其内容采取的措施原因。',
+    'fr': 'Letter Go respecte votre vie privée.\n\n'
+        '📋 Principe fondamental\n'
+        'Les administrateurs n\'accèdent pas régulièrement au contenu de vos lettres.\n\n'
+        '🔍 Quand un examen a lieu\n'
+        '• Lorsqu\'un autre utilisateur signale la lettre\n'
+        '• Lorsque la loi l\'exige\n'
+        '• Lorsqu\'il y a une menace grave pour la sécurité du service\n\n'
+        '⚖️ Processus d\'examen\n'
+        '1. Après signalement, seule la lettre signalée est examinée\n'
+        '2. Détermination de la violation des règles\n'
+        '3. Si violation : contenu bloqué + avertissement\n'
+        '4. 3+ violations : suspension permanente du compte\n\n'
+        '🔒 Transparence\n'
+        'Les raisons et résultats sont enregistrés. Les utilisateurs peuvent demander des explications.',
+    'de': 'Letter Go respektiert Ihre Privatsphäre.\n\n'
+        '📋 Grundprinzip\n'
+        'Administratoren greifen nicht routinemäßig auf Ihre Briefinhalte zu.\n\n'
+        '🔍 Wann eine Überprüfung stattfindet\n'
+        '• Wenn ein anderer Benutzer den Brief meldet\n'
+        '• Wenn gesetzlich vorgeschrieben\n'
+        '• Bei ernsthafter Bedrohung der Dienstsicherheit\n\n'
+        '⚖️ Überprüfungsprozess\n'
+        '1. Nach Meldung wird nur der gemeldete Brief geprüft\n'
+        '2. Feststellung eines Richtlinienverstoßes\n'
+        '3. Bei Verstoß: Inhalt gesperrt + Warnung\n'
+        '4. 3+ Verstöße: dauerhafte Kontosperrung\n\n'
+        '🔒 Transparenz\n'
+        'Gründe und Ergebnisse werden protokolliert. Benutzer können Erklärungen anfordern.',
+    'es': 'Letter Go respeta su privacidad.\n\n'
+        '📋 Principio fundamental\n'
+        'Los administradores no acceden rutinariamente al contenido de sus cartas.\n\n'
+        '🔍 Cuándo se realiza una revisión\n'
+        '• Cuando otro usuario reporta la carta\n'
+        '• Cuando la ley lo requiere\n'
+        '• Cuando hay una amenaza grave para la seguridad del servicio\n\n'
+        '⚖️ Proceso de revisión\n'
+        '1. Tras un reporte, solo se revisa la carta reportada\n'
+        '2. Determinación de violación de normas\n'
+        '3. Si hay violación: contenido bloqueado + advertencia\n'
+        '4. 3+ violaciones: suspensión permanente\n\n'
+        '🔒 Transparencia\n'
+        'Las razones y resultados se registran. Los usuarios pueden consultar las acciones tomadas.',
+    'pt': 'Letter Go respeita sua privacidade.\n\n'
+        '📋 Princípio fundamental\n'
+        'Administradores não acessam rotineiramente o conteúdo de suas cartas.\n\n'
+        '🔍 Quando ocorre revisão\n'
+        '• Quando outro usuário denuncia a carta\n'
+        '• Quando exigido por lei\n'
+        '• Quando há ameaça grave à segurança do serviço\n\n'
+        '⚖️ Processo de revisão\n'
+        '1. Após denúncia, apenas a carta denunciada é revisada\n'
+        '2. Determinação de violação das diretrizes\n'
+        '3. Se violação confirmada: conteúdo bloqueado + aviso\n'
+        '4. 3+ violações: suspensão permanente\n\n'
+        '🔒 Transparência\n'
+        'Razões e resultados são registrados. Usuários podem consultar ações tomadas.',
+    'ru': 'Letter Go уважает вашу конфиденциальность.\n\n'
+        '📋 Основной принцип\n'
+        'Администраторы не просматривают содержание ваших писем на регулярной основе.\n\n'
+        '🔍 Когда проводится проверка\n'
+        '• Когда другой пользователь подаёт жалобу\n'
+        '• Когда этого требует закон\n'
+        '• При серьёзной угрозе безопасности сервиса\n\n'
+        '⚖️ Процесс проверки\n'
+        '1. После жалобы проверяется только обжалованное письмо\n'
+        '2. Определение нарушения правил\n'
+        '3. При нарушении: блокировка контента + предупреждение\n'
+        '4. 3+ нарушений: постоянная блокировка аккаунта\n\n'
+        '🔒 Прозрачность\n'
+        'Причины и результаты проверок фиксируются. Пользователи могут запросить информацию.',
+    'tr': 'Letter Go gizliliğinize saygı duyar.\n\n'
+        '📋 Temel İlke\n'
+        'Yöneticiler mektup içeriğinize rutin olarak erişmez.\n\n'
+        '🔍 İnceleme Ne Zaman Yapılır\n'
+        '• Başka bir kullanıcı mektubu şikayet ettiğinde\n'
+        '• Yasal gereklilik olduğunda\n'
+        '• Hizmet güvenliğine ciddi tehdit olduğunda\n\n'
+        '⚖️ İnceleme Süreci\n'
+        '1. Şikayet sonrası yalnızca ilgili mektup incelenir\n'
+        '2. Kural ihlali tespiti\n'
+        '3. İhlal varsa: içerik engellenir + uyarı\n'
+        '4. 3+ ihlal: kalıcı hesap askıya alma\n\n'
+        '🔒 Şeffaflık\n'
+        'İnceleme nedenleri ve sonuçları kaydedilir. Kullanıcılar bilgi talep edebilir.',
+    'ar': 'Letter Go يحترم خصوصيتك.\n\n'
+        '📋 المبدأ الأساسي\n'
+        'لا يصل المسؤولون بشكل روتيني إلى محتوى رسائلك.\n\n'
+        '🔍 متى تتم المراجعة\n'
+        '• عندما يبلغ مستخدم آخر عن الرسالة\n'
+        '• عندما يتطلب القانون ذلك\n'
+        '• عند وجود تهديد خطير لأمان الخدمة\n\n'
+        '⚖️ عملية المراجعة\n'
+        '1. بعد البلاغ، يتم مراجعة الرسالة المبلغ عنها فقط\n'
+        '2. تحديد مخالفة الإرشادات\n'
+        '3. في حالة المخالفة: حظر المحتوى + تحذير\n'
+        '4. 3+ مخالفات: تعليق دائم للحساب\n\n'
+        '🔒 الشفافية\n'
+        'يتم تسجيل الأسباب والنتائج. يمكن للمستخدمين الاستفسار عن الإجراءات المتخذة.',
+    'it': 'Letter Go rispetta la tua privacy.\n\n'
+        '📋 Principio fondamentale\n'
+        'Gli amministratori non accedono regolarmente al contenuto delle tue lettere.\n\n'
+        '🔍 Quando avviene la revisione\n'
+        '• Quando un altro utente segnala la lettera\n'
+        '• Quando richiesto dalla legge\n'
+        '• Quando c\'è una grave minaccia alla sicurezza del servizio\n\n'
+        '⚖️ Processo di revisione\n'
+        '1. Dopo la segnalazione, viene esaminata solo la lettera segnalata\n'
+        '2. Determinazione della violazione delle linee guida\n'
+        '3. Se violazione confermata: contenuto bloccato + avvertimento\n'
+        '4. 3+ violazioni: sospensione permanente dell\'account\n\n'
+        '🔒 Trasparenza\n'
+        'Motivazioni e risultati vengono registrati. Gli utenti possono richiedere informazioni.',
+    'hi': 'Letter Go आपकी गोपनीयता का सम्मान करता है।\n\n'
+        '📋 मूल सिद्धांत\n'
+        'प्रशासक आपके पत्र सामग्री को नियमित रूप से नहीं देखते।\n\n'
+        '🔍 समीक्षा कब होती है\n'
+        '• जब कोई अन्य उपयोगकर्ता पत्र की शिकायत करता है\n'
+        '• जब कानून द्वारा आवश्यक हो\n'
+        '• जब सेवा सुरक्षा को गंभीर खतरा हो\n\n'
+        '⚖️ समीक्षा प्रक्रिया\n'
+        '1. शिकायत के बाद, केवल शिकायत किए गए पत्र की समीक्षा\n'
+        '2. दिशानिर्देश उल्लंघन का निर्धारण\n'
+        '3. उल्लंघन पर: सामग्री अवरुद्ध + चेतावनी\n'
+        '4. 3+ उल्लंघन: स्थायी खाता निलंबन\n\n'
+        '🔒 पारदर्शिता\n'
+        'कारण और परिणाम दर्ज किए जाते हैं। उपयोगकर्ता कार्रवाई के बारे में पूछ सकते हैं।',
+    'th': 'Letter Go เคารพความเป็นส่วนตัวของคุณ\n\n'
+        '📋 หลักการพื้นฐาน\n'
+        'ผู้ดูแลระบบไม่เข้าถึงเนื้อหาจดหมายของคุณเป็นประจำ\n\n'
+        '🔍 เมื่อใดที่มีการตรวจสอบ\n'
+        '• เมื่อผู้ใช้รายอื่นรายงานจดหมาย\n'
+        '• เมื่อกฎหมายกำหนด\n'
+        '• เมื่อมีภัยคุกคามร้ายแรงต่อความปลอดภัยของบริการ\n\n'
+        '⚖️ กระบวนการตรวจสอบ\n'
+        '1. หลังรับรายงาน ตรวจสอบเฉพาะจดหมายที่ถูกรายงาน\n'
+        '2. พิจารณาว่าละเมิดแนวทางชุมชนหรือไม่\n'
+        '3. หากละเมิด: บล็อกเนื้อหา + แจ้งเตือน\n'
+        '4. ละเมิด 3+ ครั้ง: ระงับบัญชีถาวร\n\n'
+        '🔒 ความโปร่งใส\n'
+        'เหตุผลและผลลัพธ์จะถูกบันทึก ผู้ใช้สามารถสอบถามเกี่ยวกับมาตรการที่ดำเนินการ',
+  });
+
+  String get communityGuidelinesTitle => _t({
+    'ko': '커뮤니티 가이드라인',
+    'en': 'Community Guidelines',
+    'ja': 'コミュニティガイドライン',
+    'zh': '社区准则',
+    'fr': 'Règles communautaires',
+    'de': 'Community-Richtlinien',
+    'es': 'Normas de la comunidad',
+    'pt': 'Diretrizes da Comunidade',
+    'ru': 'Правила сообщества',
+    'tr': 'Topluluk Kuralları',
+    'ar': 'إرشادات المجتمع',
+    'it': 'Linee guida della comunità',
+    'hi': 'सामुदायिक दिशानिर्देश',
+    'th': 'แนวทางชุมชน',
+  });
+
+  String get communityGuidelinesBody => _t({
+    'ko': 'Letter Go는 전 세계 사용자가 편지를 통해 따뜻한 소통을 나누는 공간입니다.\n'
+        '모든 사용자가 안전하고 즐거운 경험을 할 수 있도록 다음 규칙을 지켜주세요.\n\n'
+        '✅ 권장 사항\n'
+        '• 정중하고 친근한 톤으로 편지를 쓰세요\n'
+        '• 다양한 문화와 언어를 존중하세요\n'
+        '• 긍정적이고 건설적인 내용을 공유하세요\n\n'
+        '❌ 금지 사항\n'
+        '• 혐오 발언, 차별, 인종차별적 표현\n'
+        '• 성적으로 노골적인 콘텐츠\n'
+        '• 폭력을 조장하거나 위협하는 내용\n'
+        '• 스팸, 광고, 사기, 피싱\n'
+        '• 타인의 개인정보 무단 공유\n'
+        '• 저작권 침해 콘텐츠\n\n'
+        '⚠️ 위반 시 조치\n'
+        '• 1회: 해당 콘텐츠 차단 + 경고\n'
+        '• 2회: 일시적 서비스 제한\n'
+        '• 3회 이상: 영구 계정 차단\n\n'
+        '부적절한 편지를 받으면 편지 읽기 화면에서 🚩 버튼으로 신고해 주세요.',
+    'en': 'Letter Go is a space where users worldwide connect through letters.\n'
+        'Please follow these rules so everyone can have a safe, enjoyable experience.\n\n'
+        '✅ Encouraged\n'
+        '• Write letters with a polite, friendly tone\n'
+        '• Respect diverse cultures and languages\n'
+        '• Share positive, constructive content\n\n'
+        '❌ Prohibited\n'
+        '• Hate speech, discrimination, racism\n'
+        '• Sexually explicit content\n'
+        '• Violence promotion or threats\n'
+        '• Spam, advertising, scams, phishing\n'
+        '• Sharing others\' personal information without consent\n'
+        '• Copyright-infringing content\n\n'
+        '⚠️ Enforcement\n'
+        '• 1st offense: Content blocked + warning\n'
+        '• 2nd offense: Temporary service restriction\n'
+        '• 3+ offenses: Permanent account suspension\n\n'
+        'If you receive an inappropriate letter, please report it using the 🚩 button on the letter screen.',
+    'ja': 'Letter Goは世界中のユーザーが手紙でつながる場所です。\n'
+        '安全で楽しい体験のために、以下のルールを守ってください。\n\n'
+        '✅ 推奨事項\n'
+        '• 丁寧で親しみやすいトーンで手紙を書いてください\n'
+        '• 多様な文化と言語を尊重してください\n'
+        '• ポジティブで建設的な内容を共有してください\n\n'
+        '❌ 禁止事項\n'
+        '• ヘイトスピーチ、差別、人種差別\n'
+        '• 性的に露骨なコンテンツ\n'
+        '• 暴力の助長や脅迫\n'
+        '• スパム、広告、詐欺、フィッシング\n'
+        '• 他人の個人情報の無断共有\n'
+        '• 著作権侵害コンテンツ\n\n'
+        '⚠️ 違反時の措置\n'
+        '• 1回目：コンテンツブロック＋警告\n'
+        '• 2回目：一時的なサービス制限\n'
+        '• 3回以上：アカウント永久停止\n\n'
+        '不適切な手紙を受け取った場合は、手紙画面の🚩ボタンで報告してください。',
+    'zh': 'Letter Go 是全球用户通过信件连接的空间。\n'
+        '请遵守以下规则，让每个人都能有安全、愉快的体验。\n\n'
+        '✅ 鼓励的行为\n'
+        '• 用礼貌、友好的语气写信\n'
+        '• 尊重不同的文化和语言\n'
+        '• 分享积极、建设性的内容\n\n'
+        '❌ 禁止的行为\n'
+        '• 仇恨言论、歧视、种族主义\n'
+        '• 色情内容\n'
+        '• 宣扬暴力或威胁\n'
+        '• 垃圾邮件、广告、欺诈、钓鱼\n'
+        '• 未经同意分享他人个人信息\n'
+        '• 侵犯版权的内容\n\n'
+        '⚠️ 处罚措施\n'
+        '• 第1次：屏蔽内容 + 警告\n'
+        '• 第2次：暂时限制服务\n'
+        '• 3次以上：永久封禁账号\n\n'
+        '如收到不当信件，请在信件页面点击🚩按钮举报。',
+    'fr': 'Letter Go est un espace où les utilisateurs du monde entier communiquent par lettres.\n'
+        'Suivez ces règles pour que chacun puisse vivre une expérience sûre et agréable.\n\n'
+        '✅ Recommandé\n'
+        '• Écrivez avec un ton poli et amical\n'
+        '• Respectez les cultures et langues diverses\n'
+        '• Partagez du contenu positif et constructif\n\n'
+        '❌ Interdit\n'
+        '• Discours haineux, discrimination, racisme\n'
+        '• Contenu sexuellement explicite\n'
+        '• Promotion de la violence ou menaces\n'
+        '• Spam, publicité, escroqueries, phishing\n'
+        '• Partage d\'informations personnelles sans consentement\n'
+        '• Contenu violant les droits d\'auteur\n\n'
+        '⚠️ Sanctions\n'
+        '• 1ère infraction : Contenu bloqué + avertissement\n'
+        '• 2e infraction : Restriction temporaire\n'
+        '• 3+ infractions : Suspension permanente\n\n'
+        'Si vous recevez une lettre inappropriée, signalez-la avec le bouton 🚩.',
+    'de': 'Letter Go ist ein Raum, in dem Benutzer weltweit durch Briefe verbunden sind.\n'
+        'Bitte befolgen Sie diese Regeln für eine sichere, angenehme Erfahrung.\n\n'
+        '✅ Empfohlen\n'
+        '• Schreiben Sie höflich und freundlich\n'
+        '• Respektieren Sie verschiedene Kulturen und Sprachen\n'
+        '• Teilen Sie positive, konstruktive Inhalte\n\n'
+        '❌ Verboten\n'
+        '• Hassrede, Diskriminierung, Rassismus\n'
+        '• Sexuell explizite Inhalte\n'
+        '• Gewaltverherrlichung oder Drohungen\n'
+        '• Spam, Werbung, Betrug, Phishing\n'
+        '• Unbefugte Weitergabe persönlicher Daten\n'
+        '• Urheberrechtsverletzende Inhalte\n\n'
+        '⚠️ Maßnahmen\n'
+        '• 1. Verstoß: Inhalt gesperrt + Warnung\n'
+        '• 2. Verstoß: Vorübergehende Einschränkung\n'
+        '• 3+ Verstöße: Dauerhafte Kontosperrung\n\n'
+        'Melden Sie unangemessene Briefe mit der 🚩-Taste.',
+    'es': 'Letter Go es un espacio donde usuarios de todo el mundo se conectan a través de cartas.\n'
+        'Siga estas reglas para que todos tengan una experiencia segura y agradable.\n\n'
+        '✅ Recomendado\n'
+        '• Escriba con un tono educado y amigable\n'
+        '• Respete las diversas culturas e idiomas\n'
+        '• Comparta contenido positivo y constructivo\n\n'
+        '❌ Prohibido\n'
+        '• Discurso de odio, discriminación, racismo\n'
+        '• Contenido sexualmente explícito\n'
+        '• Promoción de violencia o amenazas\n'
+        '• Spam, publicidad, estafas, phishing\n'
+        '• Compartir información personal sin consentimiento\n'
+        '• Contenido que viola derechos de autor\n\n'
+        '⚠️ Sanciones\n'
+        '• 1ª infracción: Contenido bloqueado + advertencia\n'
+        '• 2ª infracción: Restricción temporal\n'
+        '• 3+ infracciones: Suspensión permanente\n\n'
+        'Si recibe una carta inapropiada, repórtela con el botón 🚩.',
+    'pt': 'Letter Go é um espaço onde usuários do mundo todo se conectam por cartas.\n'
+        'Siga estas regras para que todos tenham uma experiência segura e agradável.\n\n'
+        '✅ Recomendado\n'
+        '• Escreva com um tom educado e amigável\n'
+        '• Respeite culturas e idiomas diversos\n'
+        '• Compartilhe conteúdo positivo e construtivo\n\n'
+        '❌ Proibido\n'
+        '• Discurso de ódio, discriminação, racismo\n'
+        '• Conteúdo sexualmente explícito\n'
+        '• Promoção de violência ou ameaças\n'
+        '• Spam, publicidade, fraudes, phishing\n'
+        '• Compartilhar informações pessoais sem consentimento\n'
+        '• Conteúdo que viola direitos autorais\n\n'
+        '⚠️ Sanções\n'
+        '• 1ª infração: Conteúdo bloqueado + aviso\n'
+        '• 2ª infração: Restrição temporária\n'
+        '• 3+ infrações: Suspensão permanente\n\n'
+        'Se receber uma carta inadequada, denuncie com o botão 🚩.',
+    'ru': 'Letter Go — пространство, где пользователи со всего мира общаются через письма.\n'
+        'Соблюдайте эти правила для безопасного и приятного опыта.\n\n'
+        '✅ Рекомендуется\n'
+        '• Пишите вежливым и дружелюбным тоном\n'
+        '• Уважайте разные культуры и языки\n'
+        '• Делитесь позитивным и конструктивным контентом\n\n'
+        '❌ Запрещено\n'
+        '• Ненавистнические высказывания, дискриминация, расизм\n'
+        '• Откровенно сексуальный контент\n'
+        '• Пропаганда насилия или угрозы\n'
+        '• Спам, реклама, мошенничество, фишинг\n'
+        '• Распространение личных данных без согласия\n'
+        '• Контент, нарушающий авторские права\n\n'
+        '⚠️ Меры\n'
+        '• 1-е нарушение: Блокировка контента + предупреждение\n'
+        '• 2-е нарушение: Временное ограничение\n'
+        '• 3+ нарушений: Постоянная блокировка аккаунта\n\n'
+        'Если получите неприемлемое письмо, пожалуйтесь через кнопку 🚩.',
+    'tr': 'Letter Go, dünya genelinde kullanıcıların mektuplarla bağlandığı bir alandır.\n'
+        'Herkesin güvenli ve keyifli bir deneyim yaşaması için bu kurallara uyun.\n\n'
+        '✅ Önerilen\n'
+        '• Kibar ve samimi bir tonla yazın\n'
+        '• Farklı kültürlere ve dillere saygı gösterin\n'
+        '• Olumlu ve yapıcı içerik paylaşın\n\n'
+        '❌ Yasak\n'
+        '• Nefret söylemi, ayrımcılık, ırkçılık\n'
+        '• Cinsel açıdan müstehcen içerik\n'
+        '• Şiddet teşviki veya tehditler\n'
+        '• Spam, reklam, dolandırıcılık, kimlik avı\n'
+        '• İzinsiz kişisel bilgi paylaşımı\n'
+        '• Telif hakkı ihlali içerik\n\n'
+        '⚠️ Yaptırımlar\n'
+        '• 1. ihlal: İçerik engelleme + uyarı\n'
+        '• 2. ihlal: Geçici kısıtlama\n'
+        '• 3+ ihlal: Kalıcı hesap askıya alma\n\n'
+        'Uygunsuz bir mektup alırsanız 🚩 düğmesiyle bildirin.',
+    'ar': 'Letter Go مساحة يتواصل فيها المستخدمون حول العالم عبر الرسائل.\n'
+        'يرجى اتباع هذه القواعد ليحظى الجميع بتجربة آمنة وممتعة.\n\n'
+        '✅ مُشجع\n'
+        '• اكتب بنبرة مهذبة وودية\n'
+        '• احترم الثقافات واللغات المتنوعة\n'
+        '• شارك محتوى إيجابياً وبناءً\n\n'
+        '❌ محظور\n'
+        '• خطاب الكراهية والتمييز والعنصرية\n'
+        '• المحتوى الجنسي الصريح\n'
+        '• الترويج للعنف أو التهديدات\n'
+        '• البريد العشوائي والإعلانات والاحتيال\n'
+        '• مشاركة معلومات الآخرين الشخصية بدون موافقة\n'
+        '• المحتوى المنتهك لحقوق النشر\n\n'
+        '⚠️ الإجراءات\n'
+        '• المخالفة الأولى: حظر المحتوى + تحذير\n'
+        '• المخالفة الثانية: تقييد مؤقت\n'
+        '• 3+ مخالفات: تعليق دائم للحساب\n\n'
+        'إذا تلقيت رسالة غير لائقة، أبلغ عنها باستخدام زر 🚩.',
+    'it': 'Letter Go è uno spazio dove utenti di tutto il mondo si connettono tramite lettere.\n'
+        'Segui queste regole per un\'esperienza sicura e piacevole per tutti.\n\n'
+        '✅ Consigliato\n'
+        '• Scrivi con un tono educato e amichevole\n'
+        '• Rispetta culture e lingue diverse\n'
+        '• Condividi contenuti positivi e costruttivi\n\n'
+        '❌ Vietato\n'
+        '• Discorsi d\'odio, discriminazione, razzismo\n'
+        '• Contenuti sessualmente espliciti\n'
+        '• Promozione della violenza o minacce\n'
+        '• Spam, pubblicità, truffe, phishing\n'
+        '• Condivisione di informazioni personali senza consenso\n'
+        '• Contenuti che violano il diritto d\'autore\n\n'
+        '⚠️ Sanzioni\n'
+        '• 1ª violazione: Contenuto bloccato + avvertimento\n'
+        '• 2ª violazione: Restrizione temporanea\n'
+        '• 3+ violazioni: Sospensione permanente\n\n'
+        'Se ricevi una lettera inappropriata, segnalala con il pulsante 🚩.',
+    'hi': 'Letter Go एक ऐसा स्थान है जहां दुनिया भर के उपयोगकर्ता पत्रों के माध्यम से जुड़ते हैं।\n'
+        'कृपया इन नियमों का पालन करें ताकि सभी को सुरक्षित, आनंददायक अनुभव मिले।\n\n'
+        '✅ प्रोत्साहित\n'
+        '• विनम्र, मैत्रीपूर्ण स्वर में लिखें\n'
+        '• विविध संस्कृतियों और भाषाओं का सम्मान करें\n'
+        '• सकारात्मक, रचनात्मक सामग्री साझा करें\n\n'
+        '❌ निषिद्ध\n'
+        '• नफ़रत भरा भाषण, भेदभाव, नस्लवाद\n'
+        '• यौन रूप से स्पष्ट सामग्री\n'
+        '• हिंसा को बढ़ावा या धमकी\n'
+        '• स्पैम, विज्ञापन, धोखाधड़ी, फ़िशिंग\n'
+        '• बिना सहमति दूसरों की व्यक्तिगत जानकारी साझा करना\n'
+        '• कॉपीराइट उल्लंघन सामग्री\n\n'
+        '⚠️ कार्रवाई\n'
+        '• पहला उल्लंघन: सामग्री अवरुद्ध + चेतावनी\n'
+        '• दूसरा उल्लंघन: अस्थायी प्रतिबंध\n'
+        '• 3+ उल्लंघन: स्थायी खाता निलंबन\n\n'
+        'अनुचित पत्र मिलने पर 🚩 बटन से रिपोर्ट करें।',
+    'th': 'Letter Go เป็นพื้นที่ที่ผู้ใช้ทั่วโลกเชื่อมต่อกันผ่านจดหมาย\n'
+        'กรุณาปฏิบัติตามกฎเหล่านี้เพื่อให้ทุกคนมีประสบการณ์ที่ปลอดภัยและสนุกสนาน\n\n'
+        '✅ แนะนำ\n'
+        '• เขียนด้วยน้ำเสียงที่สุภาพและเป็นมิตร\n'
+        '• เคารพวัฒนธรรมและภาษาที่หลากหลาย\n'
+        '• แบ่งปันเนื้อหาเชิงบวกและสร้างสรรค์\n\n'
+        '❌ ห้าม\n'
+        '• คำพูดแสดงความเกลียดชัง เลือกปฏิบัติ เหยียดเชื้อชาติ\n'
+        '• เนื้อหาทางเพศที่ชัดเจน\n'
+        '• ส่งเสริมความรุนแรงหรือข่มขู่\n'
+        '• สแปม โฆษณา การฉ้อโกง ฟิชชิ่ง\n'
+        '• แชร์ข้อมูลส่วนบุคคลโดยไม่ได้รับความยินยอม\n'
+        '• เนื้อหาละเมิดลิขสิทธิ์\n\n'
+        '⚠️ บทลงโทษ\n'
+        '• ครั้งที่ 1: บล็อกเนื้อหา + แจ้งเตือน\n'
+        '• ครั้งที่ 2: จำกัดบริการชั่วคราว\n'
+        '• 3+ ครั้ง: ระงับบัญชีถาวร\n\n'
+        'หากได้รับจดหมายที่ไม่เหมาะสม กรุณารายงานด้วยปุ่ม 🚩',
+  });
+
+  String get authMustAgreeTerms => _t({
+    'ko': '서비스 이용약관에 동의해주세요',
+    'en': 'Please agree to the Terms of Service',
+    'ja': '利用規約に同意してください',
+    'zh': '请同意服务条款',
+    'fr': 'Veuillez accepter les conditions d\'utilisation',
+    'de': 'Bitte stimmen Sie den Nutzungsbedingungen zu',
+    'es': 'Por favor acepte los términos de servicio',
+    'pt': 'Por favor, concorde com os Termos de Serviço',
+    'ru': 'Пожалуйста, примите условия использования',
+    'tr': 'Lütfen kullanım koşullarını kabul edin',
+    'ar': 'يرجى الموافقة على شروط الخدمة',
+    'it': 'Accetta i termini di servizio',
+    'hi': 'कृपया सेवा की शर्तों से सहमत हों',
+    'th': 'กรุณายอมรับข้อกำหนดการใช้งาน',
+  });
+
+  // ══════════════════════════════════════════════════════════════════════════
+  // ── Compose: Recall Last Letter ─────────────────────────────────────────
+  // ══════════════════════════════════════════════════════════════════════════
+
+  String get composeRecallLast => _t({
+    'ko': '마지막 보낸 편지 내용 불러오기',
+    'en': 'Load last sent letter content',
+    'ja': '最後に送った手紙の内容を読み込む',
+    'zh': '加载上次发送的信件内容',
+    'fr': 'Charger le contenu de la dernière lettre envoyée',
+    'de': 'Inhalt des letzten gesendeten Briefes laden',
+    'es': 'Cargar el contenido de la última carta enviada',
+    'pt': 'Carregar conteúdo da última carta enviada',
+    'ru': 'Загрузить содержание последнего письма',
+    'tr': 'Son gönderilen mektup içeriğini yükle',
+    'ar': 'تحميل محتوى آخر رسالة مرسلة',
+    'it': 'Carica contenuto dell\'ultima lettera inviata',
+    'hi': 'अंतिम भेजे गए पत्र की सामग्री लोड करें',
+    'th': 'โหลดเนื้อหาจดหมายที่ส่งล่าสุด',
+  });
+
+  String get composeNoLastLetter => _t({
+    'ko': '이전에 보낸 편지가 없습니다',
+    'en': 'No previously sent letter found',
+    'ja': '以前送った手紙がありません',
+    'zh': '没有找到之前发送的信件',
+    'fr': 'Aucune lettre précédemment envoyée trouvée',
+    'de': 'Kein zuvor gesendeter Brief gefunden',
+    'es': 'No se encontró carta enviada anteriormente',
+    'pt': 'Nenhuma carta enviada anteriormente encontrada',
+    'ru': 'Ранее отправленных писем не найдено',
+    'tr': 'Daha önce gönderilen mektup bulunamadı',
+    'ar': 'لم يتم العثور على رسائل مرسلة سابقاً',
+    'it': 'Nessuna lettera inviata in precedenza trovata',
+    'hi': 'पहले भेजा गया कोई पत्र नहीं मिला',
+    'th': 'ไม่พบจดหมายที่ส่งก่อนหน้านี้',
+  });
+
+  String get composeLoadLastTitle => _t({
+    'ko': '마지막 보낸 편지',
+    'en': 'Last Sent Letter',
+    'ja': '最後に送った手紙',
+    'zh': '上次发送的信件',
+    'fr': 'Dernière lettre envoyée',
+    'de': 'Zuletzt gesendeter Brief',
+    'es': 'Última carta enviada',
+    'pt': 'Última carta enviada',
+    'ru': 'Последнее отправленное письмо',
+    'tr': 'Son gönderilen mektup',
+    'ar': 'آخر رسالة مرسلة',
+    'it': 'Ultima lettera inviata',
+    'hi': 'अंतिम भेजा गया पत्र',
+    'th': 'จดหมายที่ส่งล่าสุด',
+  });
+
+  String get composeLoadLastConfirm => _t({
+    'ko': '불러오기',
+    'en': 'Load',
+    'ja': '読み込む',
+    'zh': '加载',
+    'fr': 'Charger',
+    'de': 'Laden',
+    'es': 'Cargar',
+    'pt': 'Carregar',
+    'ru': 'Загрузить',
+    'tr': 'Yükle',
+    'ar': 'تحميل',
+    'it': 'Carica',
+    'hi': 'लोड करें',
+    'th': 'โหลด',
+  });
+
+  // ══════════════════════════════════════════════════════════════════════════
+  // ── Auth: Phone Number & Verify Method ──────────────────────────────────
+  // ══════════════════════════════════════════════════════════════════════════
+
+  String get authPhoneOptional => authPhoneRequired; // backward compat
+
+  String get authPhoneRequired => _t({
+    'ko': '핸드폰 번호 (필수)',
+    'en': 'Phone Number (Required)',
+    'ja': '電話番号（必須）',
+    'zh': '手机号码（必填）',
+    'fr': 'Numéro de téléphone (obligatoire)',
+    'de': 'Telefonnummer (erforderlich)',
+    'es': 'Número de teléfono (obligatorio)',
+    'pt': 'Número de telefone (obrigatório)',
+    'ru': 'Номер телефона (обязательно)',
+    'tr': 'Telefon numarası (zorunlu)',
+    'ar': 'رقم الهاتف (مطلوب)',
+    'it': 'Numero di telefono (obbligatorio)',
+    'hi': 'फ़ोन नंबर (आवश्यक)',
+    'th': 'หมายเลขโทรศัพท์ (จำเป็น)',
+  });
+
+  String get authPhoneHint => _t({
+    'ko': '국가코드가 자동으로 추가됩니다',
+    'en': 'Country code is added automatically',
+    'ja': '国番号は自動的に追加されます',
+    'zh': '国家代码会自动添加',
+    'fr': 'L\'indicatif pays est ajouté automatiquement',
+    'de': 'Landesvorwahl wird automatisch hinzugefügt',
+    'es': 'El código de país se agrega automáticamente',
+    'pt': 'O código do país é adicionado automaticamente',
+    'ru': 'Код страны добавляется автоматически',
+    'tr': 'Ülke kodu otomatik olarak eklenir',
+    'ar': 'يتم إضافة رمز الدولة تلقائيًا',
+    'it': 'Il prefisso internazionale viene aggiunto automaticamente',
+    'hi': 'देश कोड स्वचालित रूप से जोड़ा जाता है',
+    'th': 'รหัสประเทศจะถูกเพิ่มโดยอัตโนมัติ',
+  });
+
+  String get authPhoneRequiredMsg => _t({
+    'ko': '핸드폰 번호를 입력해주세요',
+    'en': 'Please enter your phone number',
+    'ja': '電話番号を入力してください',
+    'zh': '请输入手机号码',
+    'fr': 'Veuillez entrer votre numéro de téléphone',
+    'de': 'Bitte geben Sie Ihre Telefonnummer ein',
+    'es': 'Ingrese su número de teléfono',
+    'pt': 'Insira seu número de telefone',
+    'ru': 'Введите номер телефона',
+    'tr': 'Lütfen telefon numaranızı girin',
+    'ar': 'يرجى إدخال رقم هاتفك',
+    'it': 'Inserisci il tuo numero di telefono',
+    'hi': 'कृपया अपना फ़ोन नंबर दर्ज करें',
+    'th': 'กรุณากรอกหมายเลขโทรศัพท์',
+  });
+
+  String get authPhoneInvalid => _t({
+    'ko': '올바른 전화번호를 입력해주세요',
+    'en': 'Please enter a valid phone number',
+    'ja': '有効な電話番号を入力してください',
+    'zh': '请输入有效的手机号码',
+    'fr': 'Veuillez entrer un numéro valide',
+    'de': 'Bitte geben Sie eine gültige Nummer ein',
+    'es': 'Ingrese un número de teléfono válido',
+    'pt': 'Insira um número de telefone válido',
+    'ru': 'Введите правильный номер телефона',
+    'tr': 'Geçerli bir telefon numarası girin',
+    'ar': 'يرجى إدخال رقم هاتف صالح',
+    'it': 'Inserisci un numero di telefono valido',
+    'hi': 'कृपया एक वैध फ़ोन नंबर दर्ज करें',
+    'th': 'กรุณากรอกหมายเลขโทรศัพท์ที่ถูกต้อง',
+  });
+
+  String get authSelectCountryCode => _t({
+    'ko': '국가코드 선택',
+    'en': 'Select Country Code',
+    'ja': '国番号を選択',
+    'zh': '选择国家代码',
+    'fr': 'Sélectionner l\'indicatif',
+    'de': 'Landesvorwahl wählen',
+    'es': 'Seleccionar código de país',
+    'pt': 'Selecionar código do país',
+    'ru': 'Выберите код страны',
+    'tr': 'Ülke kodu seçin',
+    'ar': 'اختر رمز الدولة',
+    'it': 'Seleziona prefisso',
+    'hi': 'देश कोड चुनें',
+    'th': 'เลือกรหัสประเทศ',
+  });
+
+  String get authVerifyViaEmail => _t({
+    'ko': '본인 인증은 이메일로 진행됩니다',
+    'en': 'Verification will be done via email',
+    'ja': '本人確認はメールで行われます',
+    'zh': '身份验证将通过邮箱进行',
+    'fr': 'La vérification se fera par e-mail',
+    'de': 'Die Verifizierung erfolgt per E-Mail',
+    'es': 'La verificación se realizará por correo electrónico',
+    'pt': 'A verificação será feita por e-mail',
+    'ru': 'Верификация будет выполнена по электронной почте',
+    'tr': 'Doğrulama e-posta ile yapılacaktır',
+    'ar': 'سيتم التحقق عبر البريد الإلكتروني',
+    'it': 'La verifica avverrà tramite e-mail',
+    'hi': 'सत्यापन ईमेल के माध्यम से किया जाएगा',
+    'th': 'การยืนยันจะดำเนินการผ่านอีเมล',
+  });
+
+  String get authSmsVerification => _t({
+    'ko': 'SMS 인증',
+    'en': 'SMS Verification',
+    'ja': 'SMS認証',
+    'zh': '短信验证',
+    'fr': 'Vérification SMS',
+    'de': 'SMS-Verifizierung',
+    'es': 'Verificación SMS',
+    'pt': 'Verificação SMS',
+    'ru': 'SMS-верификация',
+    'tr': 'SMS Doğrulama',
+    'ar': 'التحقق عبر SMS',
+    'it': 'Verifica SMS',
+    'hi': 'SMS सत्यापन',
+    'th': 'ยืนยันทาง SMS',
+  });
+
+  String authOtpSentSms(String phone) => _t({
+    'ko': '$phone 으로 인증번호가 발송되었습니다',
+    'en': 'A verification code has been sent to $phone',
+    'ja': '$phone に認証コードを送信しました',
+    'zh': '验证码已发送至 $phone',
+    'fr': 'Un code a été envoyé au $phone',
+    'de': 'Ein Code wurde an $phone gesendet',
+    'es': 'Se envió un código a $phone',
+    'pt': 'Um código foi enviado para $phone',
+    'ru': 'Код отправлен на $phone',
+    'tr': '$phone numarasına kod gönderildi',
+    'ar': 'تم إرسال رمز التحقق إلى $phone',
+    'it': 'Un codice è stato inviato a $phone',
+    'hi': '$phone पर सत्यापन कोड भेजा गया है',
+    'th': 'รหัสยืนยันถูกส่งไปที่ $phone',
+  });
+
+  String get authVerifyMethodTitle => _t({
+    'ko': '인증 수단 선택',
+    'en': 'Verification Method',
+    'ja': '認証方法の選択',
+    'zh': '验证方式选择',
+    'fr': 'Méthode de vérification',
+    'de': 'Verifizierungsmethode',
+    'es': 'Método de verificación',
+    'pt': 'Método de Verificação',
+    'ru': 'Способ верификации',
+    'tr': 'Doğrulama yöntemi',
+    'ar': 'طريقة التحقق',
+    'it': 'Metodo di verifica',
+    'hi': 'सत्यापन विधि',
+    'th': 'วิธีการยืนยัน',
+  });
+
+  String get authVerifyMethodDesc => _t({
+    'ko': '회원가입 확인, 비밀번호 재설정 시 사용됩니다',
+    'en': 'Used for signup verification and password reset',
+    'ja': '会員登録確認やパスワードリセット時に使用されます',
+    'zh': '用于注册验证和密码重置',
+    'fr': 'Utilisé pour la vérification d\'inscription et la réinitialisation du mot de passe',
+    'de': 'Wird für Registrierungsverifizierung und Passwort-Zurücksetzung verwendet',
+    'es': 'Usado para verificación de registro y restablecimiento de contraseña',
+    'pt': 'Usado para verificação de cadastro e redefinição de senha',
+    'ru': 'Используется для подтверждения регистрации и сброса пароля',
+    'tr': 'Kayıt doğrulama ve şifre sıfırlama için kullanılır',
+    'ar': 'يُستخدم لتأكيد التسجيل وإعادة تعيين كلمة المرور',
+    'it': 'Utilizzato per la verifica della registrazione e il ripristino della password',
+    'hi': 'साइनअप सत्यापन और पासवर्ड रीसेट के लिए उपयोग किया जाता है',
+    'th': 'ใช้สำหรับยืนยันการสมัครและรีเซ็ตรหัสผ่าน',
+  });
+
+  String get authPhoneRequiredForSms => _t({
+    'ko': 'SMS 인증을 사용하려면 핸드폰 번호를 먼저 입력해주세요',
+    'en': 'Please enter your phone number first to use SMS verification',
+    'ja': 'SMS認証を使用するには、まず電話番号を入力してください',
+    'zh': '请先输入手机号码才能使用短信验证',
+    'fr': 'Veuillez d\'abord entrer votre numéro de téléphone pour utiliser la vérification SMS',
+    'de': 'Bitte geben Sie zuerst Ihre Telefonnummer ein, um die SMS-Verifizierung zu nutzen',
+    'es': 'Ingrese su número de teléfono primero para usar la verificación por SMS',
+    'pt': 'Insira seu número de telefone primeiro para usar a verificação por SMS',
+    'ru': 'Сначала введите номер телефона для использования SMS-верификации',
+    'tr': 'SMS doğrulama için lütfen önce telefon numaranızı girin',
+    'ar': 'يرجى إدخال رقم هاتفك أولاً لاستخدام التحقق عبر SMS',
+    'it': 'Inserisci prima il tuo numero di telefono per usare la verifica SMS',
+    'hi': 'SMS सत्यापन उपयोग करने के लिए कृपया पहले अपना फ़ोन नंबर दर्ज करें',
+    'th': 'กรุณากรอกหมายเลขโทรศัพท์ก่อนเพื่อใช้การยืนยันทาง SMS',
   });
 
 }

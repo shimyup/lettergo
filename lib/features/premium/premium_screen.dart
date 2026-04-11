@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../core/config/app_keys.dart';
@@ -15,11 +16,8 @@ class PremiumScreen extends StatelessWidget {
   final bool isWelcomeMode;
   const PremiumScreen({super.key, this.isWelcomeMode = false});
 
-  String _formatDate(DateTime date) {
-    final y = date.year.toString();
-    final m = date.month.toString().padLeft(2, '0');
-    final d = date.day.toString().padLeft(2, '0');
-    return '$y.$m.$d';
+  String _formatDate(DateTime date, String langCode) {
+    return DateFormat.yMd(langCode).format(date);
   }
 
   void _showPurchaseResultToast(
@@ -58,8 +56,9 @@ class PremiumScreen extends StatelessWidget {
         final isRestoring = purchase.isOperationInProgress(
           PurchaseOperation.restore,
         );
+        final langCode = state.currentUser.languageCode;
         final autoRenewDateText = purchase.nextBillingDate != null
-            ? _formatDate(purchase.nextBillingDate!)
+            ? _formatDate(purchase.nextBillingDate!, langCode)
             : null;
         final premiumFeatures = state.useValueBasedPremiumCopy
             ? [
@@ -272,58 +271,76 @@ class PremiumScreen extends StatelessWidget {
                   actionLabel: isBrand ? l.premiumNoDowngrade : l.premiumSubscribeBtn,
                 ),
                 const SizedBox(height: 16),
-                _PlanCard(
-                  emoji: '🏷️',
-                  name: 'Brand / Creator',
-                  price: '₩99,000',
-                  period: l.premiumPerMonth,
-                  badge: isBrand ? l.premiumCurrentPlan : '',
-                  badgeColor: const Color(0xFFFF8A5C),
-                  features: [
-                    '✉️  ${l.premiumBrandFeature1}',
-                    '💳  ${l.premiumBrandFeature2}',
-                    '🌍  ${l.premiumBrandFeature3}',
-                    '✅  ${l.premiumBrandFeature4}',
-                    '🚫  ${l.premiumBrandFeature5}',
-                    '⭐  ${l.premiumBrandFeature6}',
-                  ],
-                  isActive: isBrand,
-                  onTap: (isBrand || purchase.loading)
-                      ? null
-                      : isPremium
-                      ? () {
-                          final userEmail =
-                              state.currentUser.email?.toLowerCase() ?? '';
-                          _showBrandUpgradeDialog(
-                            context: context,
-                            purchase: purchase,
-                            userEmail: userEmail,
-                          );
-                        }
-                      : () async {
-                          if (purchase.isTestMode) {
-                            final ok = await _confirmTestPurchase(
-                              context,
-                              emoji: '🏷️',
-                              productName: 'Brand / Creator',
-                              price: '₩99,000${l.premiumPerMonth}',
-                              description:
-                                  l.premiumBrandTestDesc,
+                Builder(builder: (_) {
+                  final brandEmail = state.currentUser.email?.toLowerCase() ?? '';
+                  final isAdminBrand = brandEmail == DebugConstants.testBrandEmail;
+                  // 테스터는 브랜드 구매 비활성화 (보이기만 함)
+                  final brandDisabled = kDebugMode && !isAdminBrand && !isBrand;
+                  return _PlanCard(
+                    emoji: '🏷️',
+                    name: 'Brand / Creator',
+                    price: '₩99,000',
+                    period: l.premiumPerMonth,
+                    badge: isBrand
+                        ? l.premiumCurrentPlan
+                        : brandDisabled
+                            ? l.koEn('관리자 전용', 'Admin Only')
+                            : '',
+                    badgeColor: isBrand
+                        ? const Color(0xFFFF8A5C)
+                        : AppColors.textMuted,
+                    features: [
+                      '✉️  ${l.premiumBrandFeature1}',
+                      '💳  ${l.premiumBrandFeature2}',
+                      '🌍  ${l.premiumBrandFeature3}',
+                      '✅  ${l.premiumBrandFeature4}',
+                      '🚫  ${l.premiumBrandFeature5}',
+                      '⭐  ${l.premiumBrandFeature6}',
+                    ],
+                    isActive: isBrand,
+                    onTap: (isBrand || purchase.loading || brandDisabled)
+                        ? null
+                        : isPremium
+                        ? () {
+                            _showBrandUpgradeDialog(
+                              context: context,
+                              purchase: purchase,
+                              userEmail: brandEmail,
                             );
-                            if (!ok || !context.mounted) return;
                           }
-                          final bought = await purchase.buyBrand();
-                          if (!context.mounted) return;
-                          _showPurchaseResultToast(
-                            context,
-                            success: bought,
-                            message: bought ? null : purchase.errorMessage,
-                          );
-                        },
-                  loading: isBuyingBrand,
-                  color: const Color(0xFFFF8A5C),
-                  actionLabel: isPremium ? l.premiumBrandSchedule : l.premiumSubscribeBtn,
-                ),
+                        : () async {
+                            if (purchase.isTestMode) {
+                              final ok = await _confirmTestPurchase(
+                                context,
+                                emoji: '🏷️',
+                                productName: 'Brand / Creator',
+                                price: '₩99,000${l.premiumPerMonth}',
+                                description:
+                                    l.premiumBrandTestDesc,
+                              );
+                              if (!ok || !context.mounted) return;
+                            }
+                            final bought = await purchase.buyBrand();
+                            if (!context.mounted) return;
+                            _showPurchaseResultToast(
+                              context,
+                              success: bought,
+                              message: bought ? null : purchase.errorMessage,
+                            );
+                          },
+                    loading: isBuyingBrand,
+                    color: brandDisabled
+                        ? AppColors.textMuted
+                        : const Color(0xFFFF8A5C),
+                    actionLabel: isBrand
+                        ? l.premiumNoDowngrade
+                        : brandDisabled
+                            ? l.koEn('관리자 승급 필요', 'Admin Promotion Required')
+                            : isPremium
+                                ? l.premiumBrandSchedule
+                                : l.premiumSubscribeBtn,
+                  );
+                }),
                 const SizedBox(height: 24),
 
                 // 브랜드 추가 발송권 (브랜드 회원만 표시)
@@ -1669,9 +1686,9 @@ class _PendingPlanChangeBanner extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final l = AppL10n.of(context.read<AppState>().currentUser.languageCode);
-    final formatted =
-        '${changeDate.year}.${changeDate.month.toString().padLeft(2, '0')}.${changeDate.day.toString().padLeft(2, '0')}';
+    final langCode = context.read<AppState>().currentUser.languageCode;
+    final l = AppL10n.of(langCode);
+    final formatted = DateFormat.yMd(langCode).format(changeDate);
     final isFreeTarget = target == ScheduledPlanTarget.free;
     return Container(
       padding: const EdgeInsets.all(16),
@@ -1874,7 +1891,7 @@ class _BrandExtraTileState extends State<_BrandExtraTile> {
                   Expanded(
                     child: _QuotaStat(
                       label: l10n.premiumQuotaMonthlyLimit,
-                      value: '${_formatNum(monthlyTotal)}',
+                      value: _formatNum(monthlyTotal),
                       sub: extraPacks > 0
                           ? '${l10n.premiumQuotaBase} 10,000 + ${l10n.premiumQuotaExtra} ${_formatNum(appState.brandExtraMonthlyQuota)}'
                           : l10n.premiumQuotaBaseLimit,
@@ -1884,7 +1901,7 @@ class _BrandExtraTileState extends State<_BrandExtraTile> {
                   Expanded(
                     child: _QuotaStat(
                       label: l10n.premiumQuotaRemaining,
-                      value: '${_formatNum(remaining)}',
+                      value: _formatNum(remaining),
                       sub: l10n.premiumQuotaThisMonth,
                       highlight: remaining < 2000,
                     ),
@@ -2136,6 +2153,27 @@ class _DebugPremiumToggle extends StatelessWidget {
                         ),
                       ),
                     ),
+                  ] else ...[
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: OutlinedButton(
+                        onPressed: null,
+                        style: OutlinedButton.styleFrom(
+                          foregroundColor: AppColors.textMuted,
+                          side: BorderSide(
+                            color: AppColors.textMuted.withValues(alpha: 0.2),
+                          ),
+                          padding: const EdgeInsets.symmetric(vertical: 6),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                        ),
+                        child: const Text(
+                          '🏷️ Brand 🔒',
+                          style: TextStyle(fontSize: 11),
+                        ),
+                      ),
+                    ),
                   ],
                   const SizedBox(width: 8),
                   Expanded(
@@ -2300,11 +2338,11 @@ void _showBrandUpgradeDialog({
   required PurchaseService purchase,
   required String userEmail,
 }) {
-  final l10n = AppL10n.of(context.read<AppState>().currentUser.languageCode);
+  final langCode = context.read<AppState>().currentUser.languageCode;
+  final l10n = AppL10n.of(langCode);
   final effectiveDate =
       purchase.nextBillingDate ?? DateTime.now().add(const Duration(days: 30));
-  final formatted =
-      '${effectiveDate.year}.${effectiveDate.month.toString().padLeft(2, '0')}.${effectiveDate.day.toString().padLeft(2, '0')}';
+  final formatted = DateFormat.yMd(langCode).format(effectiveDate);
 
   showDialog<bool>(
     context: context,

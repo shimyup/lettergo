@@ -1,11 +1,11 @@
 {
-    "name": "message_in_a_bottle",
-    "short_name": "message_in_a_bottle",
+    "name": "Letter Go",
+    "short_name": "Letter Go",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",
     "theme_color": "#0175C2",
-    "description": "A new Flutter project.",
+    "description": "Send letters to strangers around the world. A global pen-pal experience.",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [

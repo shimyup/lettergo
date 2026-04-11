@@ -43,7 +43,7 @@ Source checklist reference: attached thread screenshots (`IMG_4544~4546`)
 |---|---|---|
 | Apple Developer 계정 | 콘솔 확인 필요 | 스레드 체크리스트 기준 유료 계정 필수 |
 | 인증서/프로비저닝 | 콘솔 확인 필요 | Xcode/ASC에서 최신 상태 확인 필요 |
-| Bundle/Application ID 일관성 | 확인 필요(중요) | iOS: `com.lettergo.messageInABottle`, Android: `com.globaldrift.message_in_a_bottle` |
+| Bundle/Application ID 일관성 | 확인 필요(중요) | iOS/Android 통일: `com.globaldrift.lettergo` |
 
 ## 5) 자주 발생 실수 기준 점검
 

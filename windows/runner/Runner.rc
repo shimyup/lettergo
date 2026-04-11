@@ -90,12 +90,12 @@ BEGIN
         BLOCK "040904e4"
         BEGIN
             VALUE "CompanyName", "com.globaldrift" "\0"
-            VALUE "FileDescription", "message_in_a_bottle" "\0"
+            VALUE "FileDescription", "lettergo" "\0"
             VALUE "FileVersion", VERSION_AS_STRING "\0"
-            VALUE "InternalName", "message_in_a_bottle" "\0"
+            VALUE "InternalName", "lettergo" "\0"
             VALUE "LegalCopyright", "Copyright (C) 2026 com.globaldrift. All rights reserved." "\0"
-            VALUE "OriginalFilename", "message_in_a_bottle.exe" "\0"
-            VALUE "ProductName", "message_in_a_bottle" "\0"
+            VALUE "OriginalFilename", "lettergo.exe" "\0"
+            VALUE "ProductName", "lettergo" "\0"
             VALUE "ProductVersion", VERSION_AS_STRING "\0"
         END
     END

@@ -39,7 +39,7 @@ class AppTimeColors extends ThemeExtension<AppTimeColors> {
           bgSurface: Color(0xFF101826),
           accent: Color(0xFF8B65FF),
           periodEmoji: '🌙',
-          periodLabel: '밤',
+          periodLabel: 'Night',
         );
   }
 

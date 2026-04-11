@@ -65,3 +65,8 @@ scripts/*.zip
 
 # Local screenshot captures (keep only curated ready assets in git)
 docs/marketing/screenshots/raw/
+
+# Local release bundle output
+dist/
+docs/marketing/videos/
+screenshots/
