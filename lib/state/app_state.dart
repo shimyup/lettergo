@@ -1741,6 +1741,145 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
   // ║ 서버 동기화 (수신 편지 + 다른 온라인 사용자)                         ║
   // ╚══════════════════════════════════════════════════════════════════════╝
 
+  /// 앱 시작 / 로그인 직후 한 번 호출.
+  /// 로컬에 없거나 손실된 데이터를 Firestore 에서 복원한다.
+  ///
+  /// 보존 대상:
+  /// - 내 프로필·타워 커스터마이징 (users/{myId})
+  /// - 내가 보낸 편지 (letters where senderId == myId)
+  /// - 활동 점수 (users/{myId} 의 *Count 필드)
+  ///
+  /// 복원 정책:
+  /// - 로컬 > 서버. 즉 로컬에 동일 ID 편지가 있으면 서버 버전으로 덮어쓰지 않음
+  /// - 로컬에 아예 없는 항목만 추가 → 오프라인 편집 내역 보호
+  Future<void> restoreFromServerIfMissing() async {
+    if (!FirebaseConfig.kFirebaseEnabled) return;
+    if (_currentUser.id.isEmpty || _currentUser.id == 'guest') return;
+    try {
+      await Future.wait([
+        _restoreProfileFromServer(),
+        _restoreSentLettersFromServer(),
+      ]);
+    } catch (e) {
+      if (kDebugMode) debugPrint('[Restore] 실패: $e');
+    }
+  }
+
+  /// 내 유저 문서(타워 커스텀·활동 점수)를 로컬에 병합.
+  /// 로컬 값이 더 최신(서버보다 activityScore 합이 더 큼)이면 유지.
+  Future<void> _restoreProfileFromServer() async {
+    try {
+      final doc = await FirestoreService.getDocument(
+        'users/${_currentUser.id}',
+      );
+      if (doc == null) return;
+      final map = FirestoreService.fromFirestoreDoc(doc);
+
+      final serverTower = map['customTowerName'] as String?;
+      final serverColor = map['towerColor'] as String?;
+      final serverAccent = map['towerAccentEmoji'] as String?;
+      final serverRoof = (map['towerRoofStyle'] as num?)?.toInt();
+      final serverWindow = (map['towerWindowStyle'] as num?)?.toInt();
+
+      bool updated = false;
+      // 로컬에 비어 있으면 서버 값으로 채우기
+      if ((_currentUser.customTowerName ?? '').isEmpty &&
+          serverTower != null &&
+          serverTower.isNotEmpty) {
+        _currentUser.customTowerName = serverTower;
+        updated = true;
+      }
+      if (_currentUser.towerColor == '#FFD700' &&
+          serverColor != null &&
+          serverColor.isNotEmpty &&
+          serverColor != '#FFD700') {
+        _currentUser.towerColor = serverColor;
+        updated = true;
+      }
+      if (_currentUser.towerAccentEmoji == null &&
+          serverAccent != null &&
+          serverAccent.isNotEmpty) {
+        _currentUser.towerAccentEmoji = serverAccent;
+        updated = true;
+      }
+      if (_currentUser.towerRoofStyle == 0 &&
+          serverRoof != null &&
+          serverRoof > 0) {
+        _currentUser.towerRoofStyle = serverRoof;
+        updated = true;
+      }
+      if (_currentUser.towerWindowStyle == 0 &&
+          serverWindow != null &&
+          serverWindow > 0) {
+        _currentUser.towerWindowStyle = serverWindow;
+        updated = true;
+      }
+
+      // 활동 점수 — 서버가 더 크면 그 값 채택 (편지 발송 기록 손실 방지)
+      final serverReceived = (map['receivedCount'] as num?)?.toInt() ?? 0;
+      final serverReply = (map['replyCount'] as num?)?.toInt() ?? 0;
+      final serverSent = (map['sentCount'] as num?)?.toInt() ?? 0;
+      final serverLike = (map['likeCount'] as num?)?.toInt() ?? 0;
+      if (serverReceived > _currentUser.activityScore.receivedCount) {
+        _currentUser.activityScore.receivedCount = serverReceived;
+        updated = true;
+      }
+      if (serverReply > _currentUser.activityScore.replyCount) {
+        _currentUser.activityScore.replyCount = serverReply;
+        updated = true;
+      }
+      if (serverSent > _currentUser.activityScore.sentCount) {
+        _currentUser.activityScore.sentCount = serverSent;
+        updated = true;
+      }
+      if (serverLike > _currentUser.activityScore.likeCount) {
+        _currentUser.activityScore.likeCount = serverLike;
+        updated = true;
+      }
+
+      if (updated) {
+        notifyListeners();
+        _saveToPrefs();
+      }
+    } catch (e) {
+      if (kDebugMode) debugPrint('[Restore] 프로필 실패: $e');
+    }
+  }
+
+  /// 내가 보낸 편지를 Firestore 에서 조회해 _sent 에 보충.
+  /// 이미 로컬에 있는 ID 는 건너뛴다.
+  Future<void> _restoreSentLettersFromServer() async {
+    try {
+      final docs = await FirestoreService.queryWhereEquals(
+        collectionId: 'letters',
+        field: 'senderId',
+        value: _currentUser.id,
+        limit: 100,
+      );
+      if (docs.isEmpty) return;
+      int added = 0;
+      for (final doc in docs) {
+        final map = FirestoreService.fromFirestoreDoc(doc);
+        final letter = _letterFromFirestore(map);
+        if (letter == null) continue;
+        if (_sent.any((l) => l.id == letter.id)) continue;
+        if (_worldLetters.any((l) => l.id == letter.id)) continue;
+        _sent.add(letter);
+        // 아직 배송 중이면 worldLetters 에도 추가 (지도에 궤적 표시)
+        if (letter.status != DeliveryStatus.delivered) {
+          _worldLetters.add(letter);
+        }
+        added++;
+      }
+      if (added > 0) {
+        notifyListeners();
+        _saveToPrefs();
+      }
+    } catch (e) {
+      if (kDebugMode) debugPrint('[Restore] 보낸 편지 실패: $e');
+    }
+  }
+
   /// 앱 시작 직후 호출. 주기적으로 서버에서 편지 수신 + 다른 사용자 정보를
   /// 가져와 로컬 상태와 병합. 사용자가 설정되지 않았거나 Firebase 가 꺼져
   /// 있으면 아무 것도 하지 않는다.
@@ -1940,31 +2079,112 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
     }
   }
 
-  /// 관리자: 서버의 모든 편지 목록 조회
+  /// 관리자: 서버의 모든 편지 목록 조회. API key 기반 REST 리스트로
+  /// 통일 (adminFetchAllUsers 와 동일 이유).
   Future<List<Map<String, dynamic>>> adminFetchAllLetters() async {
     if (!FirebaseConfig.kFirebaseEnabled) return [];
-    if (!FirebaseAuthService.isSignedIn) {
-      await FirebaseAuthService.signInAnonymously();
+    final results = <Map<String, dynamic>>[];
+    String? pageToken;
+    const int pageSize = 100;
+    const int maxPages = 3; // 최대 300 통
+    int pagesFetched = 0;
+    while (pagesFetched < maxPages) {
+      try {
+        final params = <String>[
+          'key=${Uri.encodeQueryComponent(FirebaseConfig.apiKey)}',
+          'pageSize=$pageSize',
+          'orderBy=sentAt desc',
+        ];
+        if (pageToken != null && pageToken.isNotEmpty) {
+          params.add('pageToken=${Uri.encodeQueryComponent(pageToken)}');
+        }
+        final url = Uri.parse(
+          '${FirebaseConfig.firestoreBase}/letters?${params.join('&')}',
+        );
+        final res = await http.get(url).timeout(const Duration(seconds: 15));
+        if (res.statusCode != 200) {
+          if (kDebugMode) {
+            debugPrint(
+              '[adminFetchAllLetters] http ${res.statusCode} ${res.body}',
+            );
+          }
+          throw Exception('HTTP ${res.statusCode}');
+        }
+        final body = jsonDecode(res.body) as Map<String, dynamic>;
+        final docs = (body['documents'] as List?) ?? const [];
+        for (final raw in docs.whereType<Map>()) {
+          try {
+            final doc = Map<String, dynamic>.from(raw);
+            results.add(FirestoreService.fromFirestoreDoc(doc));
+          } catch (_) {}
+        }
+        pageToken = (body['nextPageToken'] as String?)?.trim();
+        pagesFetched++;
+        if (pageToken == null || pageToken.isEmpty) break;
+      } catch (e) {
+        if (kDebugMode) debugPrint('[adminFetchAllLetters] $e');
+        if (results.isNotEmpty) return results;
+        rethrow;
+      }
     }
-    final docs = await FirestoreService.queryCollection(
-      'letters',
-      orderBy: 'sentAt desc',
-      limit: 100,
-    );
-    return docs.map((d) => FirestoreService.fromFirestoreDoc(d)).toList();
+    return results;
   }
 
-  /// 관리자: 서버의 모든 유저 목록 조회
+  /// 관리자: 서버의 모든 유저 목록 조회.
+  ///
+  /// `fetchMapUsers` 와 동일한 `?key=API_KEY` 방식으로 REST 리스트를
+  /// 호출한다. Bearer 토큰 경로(`queryCollection`)가 Firestore 규칙에
+  /// 의해 403 을 반환하는 경우가 있어 이 경로로 통일. 응답 포맷은
+  /// fromFirestoreDoc 으로 평면화해 UI 레이어에서 바로 사용 가능하게
+  /// 반환한다.
   Future<List<Map<String, dynamic>>> adminFetchAllUsers() async {
     if (!FirebaseConfig.kFirebaseEnabled) return [];
-    if (!FirebaseAuthService.isSignedIn) {
-      await FirebaseAuthService.signInAnonymously();
+    final results = <Map<String, dynamic>>[];
+    String? pageToken;
+    const int pageSize = 100;
+    const int maxPages = 5; // 최대 500 명
+    int pagesFetched = 0;
+    while (pagesFetched < maxPages) {
+      try {
+        final params = <String>[
+          'key=${Uri.encodeQueryComponent(FirebaseConfig.apiKey)}',
+          'pageSize=$pageSize',
+        ];
+        if (pageToken != null && pageToken.isNotEmpty) {
+          params.add('pageToken=${Uri.encodeQueryComponent(pageToken)}');
+        }
+        final url = Uri.parse(
+          '${FirebaseConfig.firestoreBase}/users?${params.join('&')}',
+        );
+        final res = await http.get(url).timeout(const Duration(seconds: 15));
+        if (res.statusCode != 200) {
+          if (kDebugMode) {
+            debugPrint(
+              '[adminFetchAllUsers] http ${res.statusCode} ${res.body}',
+            );
+          }
+          // 권한 에러는 상위에서 감지할 수 있게 예외 전파
+          throw Exception('HTTP ${res.statusCode}');
+        }
+        final body = jsonDecode(res.body) as Map<String, dynamic>;
+        final docs = (body['documents'] as List?) ?? const [];
+        for (final raw in docs.whereType<Map>()) {
+          try {
+            final doc = Map<String, dynamic>.from(raw);
+            results.add(FirestoreService.fromFirestoreDoc(doc));
+          } catch (_) {}
+        }
+        pageToken = (body['nextPageToken'] as String?)?.trim();
+        pagesFetched++;
+        if (pageToken == null || pageToken.isEmpty) break;
+      } catch (e) {
+        if (kDebugMode) debugPrint('[adminFetchAllUsers] $e');
+        // 이미 받은 결과가 있으면 그대로 반환, 없으면 에러 전파
+        if (results.isNotEmpty) return results;
+        rethrow;
+      }
     }
-    final docs = await FirestoreService.queryCollection(
-      'users',
-      limit: 100,
-    );
-    return docs.map((d) => FirestoreService.fromFirestoreDoc(d)).toList();
+    return results;
   }
 
   /// 관리자: 특정 편지 삭제
@@ -2018,6 +2238,9 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
     fetchMapUsers(force: true);
     // AI 자동 편지 생성 (하루 5통)
     _generateDailyAiLetters();
+    // 서버 복원: 앱 업데이트/재설치로 로컬 데이터가 비어 있어도
+    // 서버에서 내 편지·타워·활동점수 자동 복구
+    unawaited(restoreFromServerIfMissing());
     // 서버 동기화 시작 (편지 수신 + 다른 온라인 사용자 타워)
     startServerSync();
   }

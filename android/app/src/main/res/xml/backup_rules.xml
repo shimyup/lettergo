@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Android 11 이하의 Auto Backup 규칙.
+  Google Drive 로 백업되어 앱 재설치 시 자동 복원.
+  편지·타워·활동 점수가 담긴 SharedPreferences 만 포함.
+  secure storage 와 캐시는 include 하지 않음 → 자동 제외됨.
+-->
+<full-backup-content>
+    <include domain="sharedpref" path="."/>
+    <!-- secure storage 는 민감 정보라 백업에서 제외 -->
+    <exclude domain="sharedpref" path="FlutterSecureStorage"/>
+</full-backup-content>
