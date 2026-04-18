@@ -15,21 +15,29 @@ class EmailService {
 
   static const String _sendgridUrl =
       'https://api.sendgrid.com/v3/mail/send';
+  static const String _resendUrl = 'https://api.resend.com/emails';
 
-  /// SendGrid 설정이 유효한지 확인
-  static bool get isConfigured => FirebaseConfig.isSendgridEnabled;
+  /// 이메일 발송 프로바이더가 하나라도 설정되어 있는지.
+  /// Resend 우선, SendGrid 폴백.
+  static bool get isConfigured => FirebaseConfig.isEmailProviderEnabled;
 
   /// OTP 인증 이메일 발송.
   /// 성공 시 null 반환, 실패 시 에러 메시지 반환.
+  ///
+  /// 프로바이더 선택 우선순위:
+  ///   1) Resend  (RESEND_API_KEY + RESEND_FROM_EMAIL)
+  ///   2) SendGrid (SENDGRID_API_KEY + SENDGRID_FROM_EMAIL)
+  ///   3) 미설정 — null 반환 (auth_screen 에서 on-screen OTP fallback)
   static Future<String?> sendOtp({
     required String to,
     required String code,
     String langCode = 'en',
   }) async {
     if (!isConfigured) {
-      // 개발 환경: SendGrid 미설정 시 성공 처리 (OTP는 디버그 화면에 표시)
+      // 개발/베타 환경: 이메일 프로바이더 미설정 시 성공 처리
+      // (OTP 는 auth_screen 의 on-screen fallback 으로 표시됨)
       assert(() {
-        debugPrint('[EmailService] SendGrid 미설정 — 이메일 발송 스킵 (디버그 코드 화면 참고)');
+        debugPrint('[EmailService] 이메일 프로바이더 미설정 — 발송 스킵 (화면 노출 fallback)');
         return true;
       }());
       return null;
@@ -39,6 +47,100 @@ class EmailService {
     final htmlBody = _otpHtmlBody(code, langCode);
     final textBody = _otpTextBody(code, langCode);
 
+    // Resend 우선 시도
+    if (FirebaseConfig.isResendEnabled) {
+      final err = await _sendViaResend(
+        to: to,
+        subject: subject,
+        htmlBody: htmlBody,
+        textBody: textBody,
+        langCode: langCode,
+      );
+      if (err == null) return null; // 성공
+      // Resend 가 실패했고 SendGrid 가 설정되어 있으면 폴백
+      if (!FirebaseConfig.isSendgridEnabled) return err;
+      assert(() {
+        debugPrint('[EmailService] Resend 실패 → SendGrid 폴백');
+        return true;
+      }());
+    }
+
+    // SendGrid 경로
+    return _sendViaSendgrid(
+      to: to,
+      subject: subject,
+      htmlBody: htmlBody,
+      textBody: textBody,
+      langCode: langCode,
+    );
+  }
+
+  /// Resend API 로 발송.
+  static Future<String?> _sendViaResend({
+    required String to,
+    required String subject,
+    required String htmlBody,
+    required String textBody,
+    required String langCode,
+  }) async {
+    try {
+      final response = await http
+          .post(
+            Uri.parse(_resendUrl),
+            headers: {
+              'Authorization': 'Bearer ${FirebaseConfig.resendApiKey}',
+              'Content-Type': 'application/json',
+            },
+            body: jsonEncode({
+              'from': 'Letter Go <${FirebaseConfig.resendFromEmail}>',
+              'to': [to],
+              'subject': subject,
+              'html': htmlBody,
+              'text': textBody,
+            }),
+          )
+          .timeout(const Duration(seconds: 15));
+
+      if (response.statusCode >= 200 && response.statusCode < 300) {
+        assert(() {
+          debugPrint('[EmailService] Resend 발송 성공: $to');
+          return true;
+        }());
+        return null; // 성공
+      }
+
+      // Resend 에러 파싱
+      String errorMsg = '이메일 발송에 실패했습니다.';
+      try {
+        final body = jsonDecode(response.body) as Map<String, dynamic>;
+        errorMsg = (body['message'] as String?) ?? errorMsg;
+      } catch (_) {}
+      assert(() {
+        debugPrint('[EmailService] Resend 실패 (${response.statusCode}): $errorMsg');
+        return true;
+      }());
+      return _networkErrorMsg(langCode);
+    } on SocketException {
+      return _networkErrorMsg(langCode);
+    } on TimeoutException {
+      return _networkErrorMsg(langCode);
+    } catch (e) {
+      assert(() {
+        debugPrint('[EmailService] Resend 예외: $e');
+        return true;
+      }());
+      return _networkErrorMsg(langCode);
+    }
+  }
+
+  /// SendGrid API 로 발송 (폴백).
+  static Future<String?> _sendViaSendgrid({
+    required String to,
+    required String subject,
+    required String htmlBody,
+    required String textBody,
+    required String langCode,
+  }) async {
     try {
       final response = await http
           .post(
@@ -65,7 +167,7 @@ class EmailService {
 
       if (response.statusCode == 202) {
         assert(() {
-          debugPrint('[EmailService] 이메일 발송 성공: $to');
+          debugPrint('[EmailService] SendGrid 발송 성공: $to');
           return true;
         }());
         return null; // 성공
@@ -81,7 +183,7 @@ class EmailService {
         }
       } catch (_) {}
       assert(() {
-        debugPrint('[EmailService] 발송 실패 (${response.statusCode}): $errorMsg');
+        debugPrint('[EmailService] SendGrid 실패 (${response.statusCode}): $errorMsg');
         return true;
       }());
       return _networkErrorMsg(langCode);
@@ -91,7 +193,7 @@ class EmailService {
       return _networkErrorMsg(langCode);
     } catch (e) {
       assert(() {
-        debugPrint('[EmailService] 예외: $e');
+        debugPrint('[EmailService] SendGrid 예외: $e');
         return true;
       }());
       return _networkErrorMsg(langCode);

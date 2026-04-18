@@ -88,4 +88,31 @@ class FirebaseConfig {
   /// SendGrid 설정 여부
   static bool get isSendgridEnabled =>
       sendgridApiKey.isNotEmpty && sendgridFromEmail.isNotEmpty;
+
+  // ── Resend 이메일 설정 ───────────────────────────────────────────────────────
+  // SendGrid 대안 — 현재 프로젝트의 기본 이메일 발송 경로.
+  // 빌드 시 dart-define 으로 주입:
+  //   --dart-define=RESEND_API_KEY=re_xxxxxxxxxxxx
+  //   --dart-define=RESEND_FROM_EMAIL=noreply@yourdomain.com
+
+  /// Resend API Key
+  static const String resendApiKey = String.fromEnvironment(
+    'RESEND_API_KEY',
+    defaultValue: '',
+  );
+
+  /// Resend 발신 이메일 주소. 도메인이 Resend 에 검증되어 있어야 하며
+  /// 그렇지 않으면 `onboarding@resend.dev` 를 사용할 것.
+  static const String resendFromEmail = String.fromEnvironment(
+    'RESEND_FROM_EMAIL',
+    defaultValue: '',
+  );
+
+  /// Resend 설정 여부
+  static bool get isResendEnabled =>
+      resendApiKey.isNotEmpty && resendFromEmail.isNotEmpty;
+
+  /// 활성화된 이메일 발송 프로바이더가 하나라도 있는지
+  static bool get isEmailProviderEnabled =>
+      isResendEnabled || isSendgridEnabled;
 }

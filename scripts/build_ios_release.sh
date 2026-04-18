@@ -76,6 +76,22 @@ if [[ -n "${BETA_ADMIN_EMAIL:-}" ]]; then
   DART_DEFINES+=("--dart-define=BETA_ADMIN_EMAIL=${BETA_ADMIN_EMAIL}")
 fi
 
+# Resend 이메일 프로바이더 (OTP 실제 발송).
+# 설정되면 EmailService.isConfigured=true → auth_screen 의 on-screen OTP
+# fallback 이 자동으로 숨겨지고 실제 이메일이 발송됨.
+if [[ -n "${RESEND_API_KEY:-}" && -n "${RESEND_FROM_EMAIL:-}" ]]; then
+  echo "[ios] RESEND configured: ${RESEND_FROM_EMAIL}"
+  DART_DEFINES+=("--dart-define=RESEND_API_KEY=${RESEND_API_KEY}")
+  DART_DEFINES+=("--dart-define=RESEND_FROM_EMAIL=${RESEND_FROM_EMAIL}")
+fi
+
+# SendGrid 이메일 프로바이더 (폴백).
+if [[ -n "${SENDGRID_API_KEY:-}" && -n "${SENDGRID_FROM_EMAIL:-}" ]]; then
+  echo "[ios] SENDGRID configured: ${SENDGRID_FROM_EMAIL}"
+  DART_DEFINES+=("--dart-define=SENDGRID_API_KEY=${SENDGRID_API_KEY}")
+  DART_DEFINES+=("--dart-define=SENDGRID_FROM_EMAIL=${SENDGRID_FROM_EMAIL}")
+fi
+
 cd "$ROOT_DIR"
 
 IOS_BUILD_MODE="${IOS_BUILD_MODE:-app}"
