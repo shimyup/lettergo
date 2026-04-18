@@ -1,0 +1,59 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ── 관리자 UID 목록 ─────────────────────────────────────────────────
+    // Firebase Console → Authentication → Users 에서 shimyup@gmail.com 의
+    // User UID 를 복사해 아래 목록의 'REPLACE_WITH_YOUR_UID_HERE' 자리에
+    // 붙여넣으세요. 이후 `firebase deploy --only firestore:rules` 실행.
+    function isAdmin() {
+      return request.auth != null &&
+             request.auth.uid in [
+               'REPLACE_WITH_YOUR_UID_HERE'
+             ];
+    }
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return request.auth != null && request.auth.uid == userId;
+    }
+
+    // ── users 컬렉션 ──────────────────────────────────────────────────
+    match /users/{userId} {
+      // 공개 타워만 누구나 조회, 본인 문서는 본인, 관리자는 전부
+      allow read: if resource.data.isMapPublic == true
+                  || isAdmin()
+                  || isOwner(userId);
+      // 지도·관리자 조회를 위해 list 는 공개. 스팸 우려 시 isSignedIn() 로 교체
+      allow list: if true;
+      allow write: if isOwner(userId) || isAdmin();
+    }
+
+    // ── letters 컬렉션 ────────────────────────────────────────────────
+    match /letters/{letterId} {
+      allow read: if true;
+      allow list: if true;
+      allow create: if isSignedIn()
+                    && request.resource.data.senderId == request.auth.uid;
+      // 수신 체크 / 신고 / 상태 변경은 서버 규칙으로 세밀하게 잡기 어려워
+      // 인증된 사용자면 허용. 관리자는 언제나 허용.
+      allow update: if isSignedIn() || isAdmin();
+      allow delete: if resource.data.senderId == request.auth.uid
+                    || isAdmin();
+    }
+
+    // ── reports 컬렉션 ────────────────────────────────────────────────
+    match /reports/{reportId} {
+      allow create: if isSignedIn();
+      allow read, list, update, delete: if isAdmin();
+    }
+
+    // ── 기타 경로는 관리자 전용 ──────────────────────────────────────
+    match /{document=**} {
+      allow read, write: if isAdmin();
+    }
+  }
+}

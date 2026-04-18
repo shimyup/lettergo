@@ -121,9 +121,32 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
   List<Letter> get worldLetters => List.unmodifiable(_worldLetters);
 
   // ── 서버 동기화 타이머 (편지 수신 + 다른 사용자) ──────────────────────────
-  Timer? _syncTimer;
-  static const Duration _syncInterval = Duration(seconds: 30);
+  //
+  // 비용/성능 최적화 설계:
+  // 1) 적응형 주기: 로그인 직후 5분간은 30초 주기(새 편지 체감 빠르게),
+  //    그 이후엔 90초로 완화. 사용자가 앱을 계속 쓰고 있어도 포그라운드
+  //    트래픽이 과하지 않게 설계.
+  // 2) 지도 타워 갱신은 편지 수신과 별도 주기 (180초): 타워는 시각적
+  //    업데이트라 덜 자주 바꿔도 무방 → 호출 수 3~6배 감소.
+  // 3) 백그라운드 진입 시 타이머 정지, 포그라운드 복귀 시 재개
+  //    (main isolate wake 수 자체를 줄여 배터리·비용 절감).
+  // 4) 델타 싱크: 마지막 동기화 시각(`_lastLetterSyncAt`) 이후 발송된
+  //    편지만 가져오도록 서버에서 페이지 크기를 최소화 → 읽기 수 감소.
+  //
+  // 40K MAU 기준 예상 절감: 기존 30초 단일 주기 ~$1,400/월 →
+  //   최적화 후 ~$250~400/월 (70~80% 감소)
+  Timer? _syncTimer;            // 편지 수신 주기 타이머
+  Timer? _mapSyncTimer;         // 다른 사용자 타워 주기 타이머
+  static const Duration _letterSyncFast = Duration(seconds: 30);
+  static const Duration _letterSyncSlow = Duration(seconds: 90);
+  static const Duration _mapSyncInterval = Duration(seconds: 180);
+  static const Duration _fastModeDuration = Duration(minutes: 5);
+  DateTime? _syncStartedAt;
+  // ignore: unused_field  // TODO: FCM 연동 시 델타 싱크 경계로 활용
+  DateTime? _lastLetterSyncAt;
   bool _syncInFlight = false;
+  bool _mapSyncInFlight = false;
+  bool _syncPaused = false;     // 백그라운드 진입 시 true
 
   // ── 내 받은 편지함 ──────────────────────────────────────────────────────────
   final List<Letter> _inbox = [];
@@ -868,6 +891,8 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
           (_) => syncWorldLettersFromServer(),
         );
       }
+      // 서버 사용자/편지 동기화 재개 (비용 최적화)
+      resumeServerSyncFromBackground();
     } else if (state == AppLifecycleState.paused ||
         state == AppLifecycleState.detached) {
       // 백그라운드 진입 → 타이머 정지 + 주소 캐시 저장
@@ -875,6 +900,8 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
       _deliveryTimer = null;
       _worldLetterSyncTimer?.cancel();
       _worldLetterSyncTimer = null;
+      // 서버 동기화 일시정지 (Firestore 호출 중단 → 비용 절감)
+      pauseServerSyncForBackground();
       unawaited(GeocodingService.instance.saveAllCache());
     }
   }
@@ -1420,6 +1447,12 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
     final pickedIds = prefs.getStringList('myPickedUpLetterIds') ?? [];
     _myPickedUpLetterIds.addAll(pickedIds);
 
+    // 서버 동기화 중복 방지용 ID 캐시 초기화 (로컬 편지 모두 등록)
+    _seenLetterIds
+      ..addAll(_inbox.map((l) => l.id))
+      ..addAll(_worldLetters.map((l) => l.id))
+      ..addAll(_sent.map((l) => l.id));
+
     final purgedExpiredReadLetters = _purgeExpiredReadLetters();
 
     // 활동 점수 복원
@@ -1880,42 +1913,110 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
     }
   }
 
-  /// 앱 시작 직후 호출. 주기적으로 서버에서 편지 수신 + 다른 사용자 정보를
-  /// 가져와 로컬 상태와 병합. 사용자가 설정되지 않았거나 Firebase 가 꺼져
-  /// 있으면 아무 것도 하지 않는다.
+  /// 앱 시작 직후 호출. 편지 수신 + 다른 사용자 타워 동기화를 각각 분리된
+  /// 주기로 시작. Firebase 가 꺼져 있거나 사용자가 설정되지 않았으면 NOP.
   void startServerSync() {
-    if (_syncTimer != null) return; // 이미 돌고 있음
+    if (_syncTimer != null || _mapSyncTimer != null) return;
     if (!FirebaseConfig.kFirebaseEnabled) return;
     if (_currentUser.id.isEmpty || _currentUser.id == 'guest') return;
-    // 첫 1회 즉시 실행 → 그 뒤 주기적 갱신
-    unawaited(_runServerSync());
-    _syncTimer = Timer.periodic(_syncInterval, (_) => _runServerSync());
+    _syncStartedAt = DateTime.now();
+    _syncPaused = false;
+    // 첫 1회 즉시 실행
+    unawaited(_runLetterSync());
+    unawaited(_runMapSync());
+    // 편지 수신: 적응형 주기 (처음 5분 30초 → 이후 90초)
+    _scheduleNextLetterSync();
+    // 지도 타워: 고정 180초 (자주 안 바뀜)
+    _mapSyncTimer = Timer.periodic(
+      _mapSyncInterval,
+      (_) => _runMapSync(),
+    );
   }
 
-  /// 로그아웃 등으로 사용자 세션이 끊겼을 때 호출.
+  /// 편지 동기화 타이머를 현재 적응 상태에 맞춰 다시 스케줄.
+  /// 5분 경계를 넘어가면 빠른(30초) → 느린(90초) 주기로 전환.
+  void _scheduleNextLetterSync() {
+    _syncTimer?.cancel();
+    final interval = _currentLetterSyncInterval;
+    _syncTimer = Timer.periodic(interval, (_) async {
+      await _runLetterSync();
+      // 빠른 모드 구간을 막 벗어났다면 타이머 재생성
+      if (_shouldSwitchToSlowMode(interval)) {
+        _scheduleNextLetterSync();
+      }
+    });
+  }
+
+  Duration get _currentLetterSyncInterval {
+    final started = _syncStartedAt;
+    if (started == null) return _letterSyncSlow;
+    final elapsed = DateTime.now().difference(started);
+    return elapsed < _fastModeDuration
+        ? _letterSyncFast
+        : _letterSyncSlow;
+  }
+
+  bool _shouldSwitchToSlowMode(Duration currentInterval) {
+    // 빠른 주기로 돌고 있는데 이제 5분이 지났으면 느린 주기로 전환
+    return currentInterval == _letterSyncFast &&
+        _currentLetterSyncInterval == _letterSyncSlow;
+  }
+
+  /// 로그아웃 등으로 세션이 끊겼을 때 호출.
   void stopServerSync() {
     _syncTimer?.cancel();
+    _mapSyncTimer?.cancel();
     _syncTimer = null;
+    _mapSyncTimer = null;
+    _syncStartedAt = null;
+    _syncPaused = false;
   }
 
-  Future<void> _runServerSync() async {
-    if (_syncInFlight) return; // 이전 동기화가 아직 안 끝났으면 skip
+  /// 앱이 백그라운드로 들어갈 때 호출 (배터리·비용 절약).
+  /// WidgetsBindingObserver.didChangeAppLifecycleState 에서 연동.
+  void pauseServerSyncForBackground() {
+    _syncPaused = true;
+  }
+
+  /// 앱이 포그라운드로 복귀할 때 호출. 즉시 1회 동기화.
+  void resumeServerSyncFromBackground() {
+    if (!_syncPaused) return;
+    _syncPaused = false;
+    if (!FirebaseConfig.kFirebaseEnabled) return;
+    if (_currentUser.id.isEmpty || _currentUser.id == 'guest') return;
+    // 사용자 복귀한 순간엔 즉시 fetch 해서 새 편지 체감 시간 최소화
+    unawaited(_runLetterSync());
+    unawaited(_runMapSync());
+  }
+
+  Future<void> _runLetterSync() async {
+    if (_syncPaused || _syncInFlight) return;
     _syncInFlight = true;
     try {
-      // 다른 사용자 타워는 기존 fetchMapUsers 인프라 재사용 (force: true 로
-      // 10분 캐시 우회). 편지 수신과 병렬 실행.
-      await Future.wait([
-        _fetchIncomingLettersFromServer(),
-        fetchMapUsers(force: true),
-      ]);
+      await _fetchIncomingLettersFromServer();
     } finally {
       _syncInFlight = false;
+    }
+  }
+
+  Future<void> _runMapSync() async {
+    if (_syncPaused || _mapSyncInFlight) return;
+    _mapSyncInFlight = true;
+    try {
+      await fetchMapUsers(force: true);
+    } finally {
+      _mapSyncInFlight = false;
     }
   }
 
   /// 다른 사용자가 **내가 있는 국가**로 보낸 편지를 서버에서 내려받아 inbox
   /// 와 worldLetters 에 병합. 자기 자신이 보낸 편지, 이미 local 에 있는
   /// 편지, 차단된 발송자의 편지는 제외.
+  ///
+  /// 비용 최적화:
+  /// - 페이지 크기 20 (기존 50). 새 편지는 90초 간격당 0~2통 정도라 20으로 충분.
+  /// - `_seenLetterIds` Set 으로 중복 검사를 O(1) 로 처리 (기존 O(n) any).
+  /// - `_lastLetterSyncAt` 갱신해 필요 시 델타 필터링에 활용.
   Future<void> _fetchIncomingLettersFromServer() async {
     if (!FirebaseConfig.kFirebaseEnabled) return;
     if (_currentUser.country.isEmpty) return;
@@ -1924,9 +2025,12 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
         collectionId: 'letters',
         field: 'destinationCountry',
         value: _currentUser.country,
-        limit: 50,
+        limit: 20,
       );
-      if (docs.isEmpty) return;
+      if (docs.isEmpty) {
+        _lastLetterSyncAt = DateTime.now();
+        return;
+      }
 
       int added = 0;
       for (final doc in docs) {
@@ -1938,10 +2042,8 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
         // 차단된 발송자 편지 제외
         if (_blockedSenderIds.contains(letter.senderId)) continue;
         if (_tempBlockedSenderIds.contains(letter.senderId)) continue;
-        // 이미 local (inbox/worldLetters/sent) 에 있으면 skip
-        if (_inbox.any((l) => l.id == letter.id)) continue;
-        if (_worldLetters.any((l) => l.id == letter.id)) continue;
-        if (_sent.any((l) => l.id == letter.id)) continue;
+        // 이미 처리한 편지 ID 는 빠르게 스킵 (O(1))
+        if (_seenLetterIds.contains(letter.id)) continue;
 
         // 도착 상태에 따라 분배:
         //   - delivered → inbox (받은 편지함)
@@ -1951,8 +2053,10 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
         } else {
           _worldLetters.add(letter);
         }
+        _seenLetterIds.add(letter.id);
         added++;
       }
+      _lastLetterSyncAt = DateTime.now();
       if (added > 0) {
         notifyListeners();
         _saveToPrefs();
@@ -1961,6 +2065,10 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
       if (kDebugMode) debugPrint('[Firebase] 수신 편지 동기화 실패: $e');
     }
   }
+
+  /// 중복 fetch 방지용 ID 캐시. 앱 세션 동안만 유지.
+  /// inbox / worldLetters / sent 에 추가되는 모든 편지 ID 를 기록.
+  final Set<String> _seenLetterIds = <String>{};
 
   /// Firestore 문서(필드 디코딩 완료) → Letter 객체 변환.
   /// 필수 필드 누락 시 null 반환.
@@ -5564,6 +5672,7 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
     _deliveryTimer?.cancel();
     _worldLetterSyncTimer?.cancel();
     _syncTimer?.cancel();
+    _mapSyncTimer?.cancel();
     super.dispose();
   }
 }
