@@ -222,6 +222,67 @@ class _LetterReadScreenState extends State<LetterReadScreen>
     );
   }
 
+  void _showBlockDialog(BuildContext ctx, Letter letter, AppState state) {
+    final l10n = AppL10n.of(state.currentUser.languageCode);
+    showDialog(
+      context: ctx,
+      builder: (dialogCtx) => AlertDialog(
+        backgroundColor: AppColors.bgCard,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: Row(
+          children: [
+            const Icon(Icons.block_rounded, color: AppColors.textMuted, size: 20),
+            const SizedBox(width: 8),
+            Expanded(
+              child: Text(
+                l10n.dmBlockUser,
+                style: const TextStyle(
+                  color: AppColors.textPrimary,
+                  fontSize: 16,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+            ),
+          ],
+        ),
+        content: Text(
+          l10n.dmBlockConfirm(letter.senderName),
+          style: const TextStyle(color: AppColors.textSecondary, fontSize: 13, height: 1.5),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogCtx),
+            child: Text(
+              l10n.letterReadCancel,
+              style: const TextStyle(color: AppColors.textMuted),
+            ),
+          ),
+          TextButton(
+            onPressed: () {
+              state.blockLetterSender(letter.senderId);
+              Navigator.pop(dialogCtx);
+              Navigator.pop(ctx); // 편지 화면 닫기
+              ScaffoldMessenger.of(ctx).showSnackBar(
+                SnackBar(
+                  content: Text(l10n.dmBlocked(letter.senderName)),
+                  backgroundColor: const Color(0xFF1F2D44),
+                  behavior: SnackBarBehavior.floating,
+                ),
+              );
+            },
+            child: Text(
+              l10n.dmBlockAction,
+              style: const TextStyle(
+                color: AppColors.error,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   void _showReportDialog(BuildContext ctx, Letter letter, AppState state) {
     final l10n = AppL10n.of(state.currentUser.languageCode);
     final _reasons = [l10n.letterReadReportReasonAbuse, l10n.letterReadReportReasonSpam, l10n.letterReadReportReasonPrivacy];
@@ -593,7 +654,31 @@ class _LetterReadScreenState extends State<LetterReadScreen>
                       ),
                     ),
                   )
-                else
+                else ...[
+                  // 차단 버튼
+                  GestureDetector(
+                    onTap: () => _showBlockDialog(ctx2, letter, state),
+                    child: Tooltip(
+                      message: l10n.dmBlockAction,
+                      child: Container(
+                        padding: const EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          color: AppColors.textMuted.withValues(alpha: 0.10),
+                          borderRadius: BorderRadius.circular(8),
+                          border: Border.all(
+                            color: AppColors.textMuted.withValues(alpha: 0.30),
+                          ),
+                        ),
+                        child: const Icon(
+                          Icons.block_rounded,
+                          color: AppColors.textMuted,
+                          size: 18,
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 6),
+                  // 신고 버튼
                   GestureDetector(
                     onTap: () => _showReportDialog(ctx2, letter, state),
                     child: Tooltip(
@@ -615,6 +700,7 @@ class _LetterReadScreenState extends State<LetterReadScreen>
                       ),
                     ),
                   ),
+                ],
               ],
             ),
             if (_userRating > 0) ...[

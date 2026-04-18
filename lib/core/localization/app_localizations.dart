@@ -3514,37 +3514,37 @@ class AppL10n {
   });
 
   String get composeLuckyApplied => _t({
-    'ko': '행운의 편지 적용됨 · 탭하면 다른 글귀로',
-    'en': 'Lucky letter applied · Tap for another quote',
-    'ja': '幸運の手紙適用済み · タップで別の文章へ',
-    'zh': '幸运信已应用 · 点击更换',
-    'fr': 'Lettre porte-bonheur appliquée · Tapez pour changer',
-    'de': 'Glücksbrief angewendet · Tippen für anderes Zitat',
-    'es': 'Carta de la suerte aplicada · Toca para otra frase',
-    'pt': 'Carta da sorte aplicada · Toque para outra frase',
-    'ru': 'Письмо удачи применено · Нажмите для другой цитаты',
-    'tr': 'Şans mektubu uygulandı · Başka alıntı için dokun',
-    'ar': 'تم تطبيق رسالة الحظ · انقر لعبارة أخرى',
-    'it': 'Lettera fortunata applicata · Tocca per un\'altra citazione',
-    'hi': 'भाग्यशाली पत्र लागू · दूसरे उद्धरण के लिए टैप करें',
-    'th': 'จดหมายนำโชคถูกใช้แล้ว · แตะเพื่อเปลี่ยนข้อความ',
+    'ko': '오늘의 편지 적용됨 · 탭하면 다른 글귀로',
+    'en': 'Today\'s letter applied · Tap for another quote',
+    'ja': '今日の手紙適用済み · タップで別の文章へ',
+    'zh': '今日之信已应用 · 点击更换',
+    'fr': 'Lettre du jour appliquée · Tapez pour changer',
+    'de': 'Brief des Tages angewendet · Tippen für anderes Zitat',
+    'es': 'Carta del día aplicada · Toca para otra frase',
+    'pt': 'Carta do dia aplicada · Toque para outra frase',
+    'ru': 'Письмо дня применено · Нажмите для другой цитаты',
+    'tr': 'Günün mektubu uygulandı · Başka alıntı için dokun',
+    'ar': 'تم تطبيق رسالة اليوم · انقر لعبارة أخرى',
+    'it': 'Lettera del giorno applicata · Tocca per un\'altra citazione',
+    'hi': 'आज का पत्र लागू · दूसरे उद्धरण के लिए टैप करें',
+    'th': 'จดหมายวันนี้ถูกใช้แล้ว · แตะเพื่อเปลี่ยนข้อความ',
   });
 
   String get composeLuckySend => _t({
-    'ko': '행운의 편지로 보내기',
-    'en': 'Send as lucky letter',
-    'ja': '幸運の手紙として送る',
-    'zh': '发送幸运信',
-    'fr': 'Envoyer comme lettre porte-bonheur',
-    'de': 'Als Glücksbrief senden',
-    'es': 'Enviar como carta de la suerte',
-    'pt': 'Enviar como carta da sorte',
-    'ru': 'Отправить как письмо удачи',
-    'tr': 'Şans mektubu olarak gönder',
-    'ar': 'أرسل كرسالة حظ',
-    'it': 'Invia come lettera fortunata',
-    'hi': 'भाग्यशाली पत्र के रूप में भेजें',
-    'th': 'ส่งเป็นจดหมายนำโชค',
+    'ko': '오늘의 편지로 보내기',
+    'en': 'Send as today\'s letter',
+    'ja': '今日の手紙として送る',
+    'zh': '发送今日之信',
+    'fr': 'Envoyer comme lettre du jour',
+    'de': 'Als Brief des Tages senden',
+    'es': 'Enviar como carta del día',
+    'pt': 'Enviar como carta do dia',
+    'ru': 'Отправить как письмо дня',
+    'tr': 'Günün mektubu olarak gönder',
+    'ar': 'أرسل كرسالة اليوم',
+    'it': 'Invia come lettera del giorno',
+    'hi': 'आज के पत्र के रूप में भेजें',
+    'th': 'ส่งเป็นจดหมายวันนี้',
   });
 
   String get composeLuckyAppliedSub => _t({
@@ -13930,7 +13930,22 @@ class AppL10n {
   // ── Auth: Phone Number & Verify Method ──────────────────────────────────
   // ══════════════════════════════════════════════════════════════════════════
 
-  String get authPhoneOptional => authPhoneRequired; // backward compat
+  String get authPhoneOptional => _t({
+    'ko': '핸드폰 번호 (선택)',
+    'en': 'Phone Number (Optional)',
+    'ja': '電話番号（任意）',
+    'zh': '手机号码（可选）',
+    'fr': 'Numéro de téléphone (facultatif)',
+    'de': 'Telefonnummer (optional)',
+    'es': 'Número de teléfono (opcional)',
+    'pt': 'Número de telefone (opcional)',
+    'ru': 'Номер телефона (необязательно)',
+    'tr': 'Telefon numarası (isteğe bağlı)',
+    'ar': 'رقم الهاتف (اختياري)',
+    'it': 'Numero di telefono (facoltativo)',
+    'hi': 'फ़ोन नंबर (वैकल्पिक)',
+    'th': 'หมายเลขโทรศัพท์ (ไม่บังคับ)',
+  });
 
   String get authPhoneRequired => _t({
     'ko': '핸드폰 번호 (필수)',

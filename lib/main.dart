@@ -6,6 +6,7 @@ import 'package:geolocator/geolocator.dart';
 import 'core/theme/app_theme.dart';
 import 'core/theme/time_theme.dart';
 import 'core/data/country_cities.dart';
+import 'core/localization/language_config.dart';
 import 'core/services/auth_service.dart';
 import 'core/services/geocoding_service.dart';
 import 'core/services/notification_service.dart';
@@ -19,17 +20,17 @@ import 'features/onboarding/onboarding_screen.dart';
 import 'features/premium/premium_screen.dart';
 import 'widgets/main_scaffold.dart';
 
+/// 앱 시작 시 위치를 조용히 조회합니다.
+/// 권한을 새로 요청하지 않고 이미 허용된 경우에만 사용합니다.
+/// 권한 요청은 온보딩 화면에서 맥락과 함께 처리됩니다.
 Future<Position?> _getLocation() async {
   try {
     final permission = await Geolocator.checkPermission();
-    if (permission == LocationPermission.denied) {
-      final req = await Geolocator.requestPermission();
-      if (req == LocationPermission.denied ||
-          req == LocationPermission.deniedForever) {
-        return null;
-      }
+    // 이미 허용된 경우에만 위치 조회 (denied / deniedForever 시 요청 안 함)
+    if (permission == LocationPermission.denied ||
+        permission == LocationPermission.deniedForever) {
+      return null;
     }
-    if (permission == LocationPermission.deniedForever) return null;
     return await Geolocator.getCurrentPosition(
       locationSettings: const LocationSettings(accuracy: LocationAccuracy.low),
     ).timeout(const Duration(seconds: 5));
@@ -251,10 +252,31 @@ class _GlobalDriftAppState extends State<GlobalDriftApp> {
       ],
       child: Consumer<AppState>(
         builder: (context, state, _) {
+          // 현재 사용자 언어 → Locale 변환 (언어 변경 즉시 반영 + RTL 자동 처리)
+          final langCode = state.currentUser.languageCode.isNotEmpty
+              ? state.currentUser.languageCode
+              : 'en';
+          final appLocale = Locale(langCode);
+          final isRtl = LanguageConfig.isRtl(langCode);
           return MaterialApp(
             title: 'Letter Go',
             debugShowCheckedModeBanner: false,
             theme: _buildTheme(state),
+            locale: appLocale,
+            supportedLocales: const [
+              Locale('ko'), Locale('en'), Locale('ja'), Locale('zh'),
+              Locale('fr'), Locale('de'), Locale('es'), Locale('pt'),
+              Locale('ru'), Locale('tr'), Locale('ar'), Locale('it'),
+              Locale('hi'), Locale('th'),
+            ],
+            // RTL 언어(아랍어 등) 자동 우→좌 방향 처리
+            builder: (context, child) {
+              if (child == null) return const SizedBox.shrink();
+              return Directionality(
+                textDirection: isRtl ? TextDirection.rtl : TextDirection.ltr,
+                child: child,
+              );
+            },
             initialRoute: _getInitialRoute(),
             routes: {
               '/onboarding': (_) => const OnboardingScreen(),

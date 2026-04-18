@@ -15,6 +15,8 @@ import '../../../core/localization/language_config.dart';
 import '../../../core/localization/app_localizations.dart';
 import '../../../core/localization/country_names.dart';
 import '../../../core/config/app_links.dart';
+import '../../../core/services/connectivity_service.dart';
+import '../../../core/services/email_service.dart';
 import '../../../state/app_state.dart';
 import '../../../core/services/purchase_service.dart';
 import 'package:provider/provider.dart';
@@ -332,7 +334,7 @@ class _LoginTabState extends State<_LoginTab> {
   final _passCtrl = TextEditingController();
   bool _obscurePass = true;
   bool _isLoading = false;
-  bool _rememberMe = true; // 기본 활성 — 테스터/유저 편의
+  bool _rememberMe = false; // 기본 비활성 — 개인정보 보호 (사용자가 명시적으로 선택)
   String? _error;
 
   static const _kRememberMe = 'login_remember_me';
@@ -1116,9 +1118,10 @@ class _SignupTabState extends State<_SignupTab> {
   int _otpCountdown = 0; // 남은 시간 (초)
   Timer? _otpTimer; // 타이머
 
-  // 가입 버튼 활성화 조건 (개인정보 동의 + 이용약관 동의 + 전화번호 입력)
+  // 가입 버튼 활성화 조건 (개인정보 동의 + 이용약관 동의)
+  // 전화번호는 선택 사항 — SMS 인증 미사용 중
   bool get _canSignUp =>
-      _agreePrivacy && _agreeTerms && _phoneCtrl.text.trim().isNotEmpty && !_isLoading;
+      _agreePrivacy && _agreeTerms && !_isLoading;
 
   @override
   void initState() {
@@ -1146,9 +1149,28 @@ class _SignupTabState extends State<_SignupTab> {
     }
   }
 
+  Timer? _usernameCheckDebounce;
+
   void _validateUsername() {
     final err = AuthService.validateUsername(_usernameCtrl.text, langCode: _langCode);
     if (_usernameError != err) setState(() => _usernameError = err);
+
+    // 포맷 오류 있으면 중복 체크 스킵
+    if (err != null) {
+      if (_usernameTaken) setState(() => _usernameTaken = false);
+      return;
+    }
+    // 디바운스 중복 체크 (입력 멈춘 후 400ms)
+    _usernameCheckDebounce?.cancel();
+    final candidate = _usernameCtrl.text.trim();
+    if (candidate.isEmpty) return;
+    _usernameCheckDebounce = Timer(const Duration(milliseconds: 400), () async {
+      final taken = await AuthService.isUsernameTaken(candidate);
+      if (!mounted) return;
+      // 입력값이 디바운스 도중 바뀌었으면 결과 무시
+      if (_usernameCtrl.text.trim() != candidate) return;
+      if (_usernameTaken != taken) setState(() => _usernameTaken = taken);
+    });
   }
 
   void _validatePassword() {
@@ -1181,18 +1203,18 @@ class _SignupTabState extends State<_SignupTab> {
     _phoneCtrl.dispose();
     _otpCtrl.dispose();
     _otpTimer?.cancel();
+    _usernameCheckDebounce?.cancel();
     super.dispose();
   }
 
   String get _langCode => LanguageConfig.getLanguageCode(_selectedCountry);
   AppL10n get _l10n => AppL10n.of(_langCode);
 
-  /// 전체 전화번호 (E.164 형식) 생성
+  /// 전체 전화번호 (E.164 형식) 생성. 입력이 비어 있으면 빈 문자열 반환.
   String get _fullPhoneNumber {
-    return SmsService.normalizePhoneNumber(
-      _phoneCtrl.text.trim(),
-      _selectedCountryCode,
-    );
+    final raw = _phoneCtrl.text.trim();
+    if (raw.isEmpty) return '';
+    return SmsService.normalizePhoneNumber(raw, _selectedCountryCode);
   }
 
   /// Step 1: 폼 검증 후 OTP 발송 화면으로 전환
@@ -1217,17 +1239,14 @@ class _SignupTabState extends State<_SignupTab> {
       setState(() => _error = emailErr);
       return;
     }
-    // 전화번호 필수 검증
+    // 전화번호는 선택 사항 (SMS 인증 미사용). 입력된 경우에만 형식 검증.
     final phoneVal = _phoneCtrl.text.trim();
-    if (phoneVal.isEmpty) {
-      setState(() => _error = l10n.authPhoneRequiredMsg);
-      return;
-    }
-    // 최소 자릿수 검증 (국가코드 제외 6자리 이상)
-    final digitsOnly = phoneVal.replaceAll(RegExp(r'[^\d]'), '');
-    if (digitsOnly.length < 6) {
-      setState(() => _error = l10n.authPhoneInvalid);
-      return;
+    if (phoneVal.isNotEmpty) {
+      final digitsOnly = phoneVal.replaceAll(RegExp(r'[^\d]'), '');
+      if (digitsOnly.length < 6) {
+        setState(() => _error = l10n.authPhoneInvalid);
+        return;
+      }
     }
 
     final taken = await AuthService.isEmailTaken(emailVal);
@@ -1236,12 +1255,18 @@ class _SignupTabState extends State<_SignupTab> {
       return;
     }
 
+    // 네트워크 연결 확인 (이메일 발송 전)
+    if (!ConnectivityService.instance.isOnline) {
+      setState(() => _error = l10n.offlineDisconnected);
+      return;
+    }
+
     setState(() {
       _isLoading = true;
       _error = null;
     });
 
-    // 이메일 OTP 발송 (전화번호는 형식 검증만, 실제 인증은 이메일로)
+    // 이메일 OTP 생성 (Rate limit 초과 시 null)
     final code = AuthService.generateEmailOtp(emailVal);
 
     if (!mounted) return;
@@ -1256,10 +1281,25 @@ class _SignupTabState extends State<_SignupTab> {
       return;
     }
 
+    // 이메일로 OTP 발송 (SendGrid — 미설정 시 디버그 화면에만 표시)
+    final sendErr = await EmailService.sendOtp(
+      to: emailVal,
+      code: code,
+      langCode: _langCode,
+    );
+    if (!mounted) return;
+    if (sendErr != null) {
+      setState(() {
+        _isLoading = false;
+        _error = sendErr;
+      });
+      return;
+    }
+
     setState(() {
       _isLoading = false;
       _showOtpScreen = true;
-      _devOtpCode = code; // 개발용 표시 (배포시 제거)
+      _devOtpCode = code; // DEBUG 빌드에서만 화면에 표시됨
       _otpError = null;
       _otpCountdown = AuthService.otpRemainingSeconds;
     });
@@ -1312,6 +1352,14 @@ class _SignupTabState extends State<_SignupTab> {
       });
       return;
     }
+
+    // 동의 타임스탬프 저장 (GDPR/개인정보보호법 대응)
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final ts = DateTime.now().toIso8601String();
+      await prefs.setString('consent_privacy_ts', ts);
+      await prefs.setString('consent_terms_ts', ts);
+    } catch (_) {}
 
     final user = await AuthService.getCurrentUser();
     if (user != null) await widget.onSignupSuccess(user);
@@ -1608,12 +1656,12 @@ class _SignupTabState extends State<_SignupTab> {
           ),
           const SizedBox(height: 12),
 
-          // ── 5-1. 핸드폰 번호 (필수, 국가코드 포함) ─────────────────────────
+          // ── 5-1. 핸드폰 번호 (선택, 국가코드 포함) — SMS 인증 미사용 ───────
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                l10n.authPhoneRequired,
+                l10n.authPhoneOptional,
                 style: const TextStyle(
                   color: AppColors.textSecondary,
                   fontSize: 12,
@@ -1908,8 +1956,8 @@ class _SignupTabState extends State<_SignupTab> {
           ),
           const SizedBox(height: 32),
 
-          // OTP 코드 표시 (테스트 기간용 — 정식 출시 시 이메일 발송 연동 후 제거)
-          if (_devOtpCode != null) ...[
+          // OTP 코드 표시 (DEBUG 빌드 전용 — release 빌드에는 노출되지 않음)
+          if (kDebugMode && _devOtpCode != null) ...[
             Container(
               width: double.infinity,
               padding: const EdgeInsets.all(12),

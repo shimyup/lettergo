@@ -76,7 +76,7 @@ class _ComposeScreenState extends State<ComposeScreen>
   bool _isCompressingImage = false;
   static const int _maxChars = 1000;
 
-  // ── 행운의 편지 ──────────────────────────────────────────────────────────
+  // ── 오늘의 편지 (Today's Letter) ─────────────────────────────────────────
   bool _isLuckyLetter = false;
 
   static const Map<String, List<String>> _luckyQuotesByLang = {
@@ -173,10 +173,18 @@ class _ComposeScreenState extends State<ComposeScreen>
     return _luckyQuotesByLang[langCode] ?? _luckyQuotesByLang['en']!;
   }
 
+  /// 직전에 적용된 영감 편지 글귀 (같은 글귀 반복 방지용)
+  String? _lastLuckyQuote;
+
   void _applyLuckyLetter() {
     final langCode = context.read<AppState>().currentUser.languageCode;
     final quotes = _luckyQuotesForLang(langCode).toList()..shuffle();
-    final quote = quotes.first;
+    // 직전 글귀와 다른 것을 선택 (2개 이상이면 보장)
+    String quote = quotes.first;
+    if (quotes.length > 1 && quote == _lastLuckyQuote) {
+      quote = quotes[1];
+    }
+    _lastLuckyQuote = quote;
     setState(() {
       _isLuckyLetter = true;
       _contentController.text = quote;
@@ -246,10 +254,11 @@ class _ComposeScreenState extends State<ComposeScreen>
     _sendAnim = CurvedAnimation(parent: _sendController, curve: Curves.easeOut);
     _contentController.addListener(() {
       final text = _contentController.text;
-      // 행운의 편지 글귀와 달라지면 플래그 해제 (직접 수정한 것으로 간주)
+      // 오늘의 편지 글귀와 달라지면 플래그 해제 (직접 수정한 것으로 간주).
+      // 앞뒤 공백 추가/제거는 사용자 편집으로 간주하지 않음 → trim 후 비교.
       final langCode = context.read<AppState>().currentUser.languageCode;
       final allQuotes = _luckyQuotesForLang(langCode);
-      final isStillLucky = allQuotes.contains(text);
+      final isStillLucky = allQuotes.contains(text.trim());
       setState(() {
         _charCount = text.length;
         if (_isLuckyLetter && !isStillLucky) _isLuckyLetter = false;

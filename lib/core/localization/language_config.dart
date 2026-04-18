@@ -74,6 +74,12 @@ class LanguageConfig {
 
   static String getLanguageName(String code) => languageNames[code] ?? code;
 
+  /// RTL (right-to-left) 언어 여부
+  /// Arabic, Hebrew, Persian (Farsi), Urdu 등 우→좌 언어 대응
+  static const Set<String> rtlLanguages = {'ar', 'he', 'fa', 'ur'};
+
+  static bool isRtl(String code) => rtlLanguages.contains(code);
+
   // Timezone offset in hours from UTC (approximate, for time-of-day theme)
   static const Map<String, double> countryTimezone = {
     '대한민국': 9.0,

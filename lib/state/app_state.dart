@@ -5010,6 +5010,22 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
       _blockedSenderIds.contains(senderId) ||
       _tempBlockedSenderIds.contains(senderId);
 
+  // ── 편지함에서 발송자 차단 ────────────────────────────────────────────────
+  /// 받은 편지 상세 화면에서 해당 편지 발송자를 차단.
+  /// 해당 사용자가 보낸 편지를 inbox / worldLetters 에서 모두 제거하고,
+  /// 이후 수신도 막음. DM 세션도 함께 정리.
+  void blockLetterSender(String senderId) {
+    if (senderId.isEmpty || senderId == _currentUser.id) return;
+    _blockedSenderIds.add(senderId);
+    _chatSessions.remove(senderId);
+    _dmMessages.remove(senderId);
+    _inbox.removeWhere((l) => l.senderId == senderId);
+    _worldLetters.removeWhere((l) => l.senderId == senderId);
+    notifyListeners();
+    _saveToPrefs();
+    _saveDMToPrefs();
+  }
+
   // ── DM 발송자 차단 ────────────────────────────────────────────────────────
   /// DM 화면에서 상대방을 차단. 해당 세션과 메시지를 모두 제거.
   void blockDMSender(String partnerId) {
