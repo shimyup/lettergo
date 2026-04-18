@@ -192,22 +192,52 @@ class PurchaseService extends ChangeNotifier {
     return _prefs!;
   }
 
+  // 베타 빌드에서 Premium을 부여했는지 여부를 표시하는 마커.
+  // 마커가 '1' 인데 현재 빌드에 BETA_FREE_PREMIUM 이 꺼져 있으면
+  // → "베타로 받은 무료 Premium" 이므로 정식 빌드에서는 무효 처리해야 함.
+  static const String _kBetaGrantedKey = 'ps_beta_granted';
+
   Future<void> _saveSecurePremiumState({
     required bool isPremium,
     required bool isBrand,
   }) async {
     await _secure.write(key: 'ps_isPremium', value: isPremium ? '1' : '0');
     await _secure.write(key: 'ps_isBrand', value: isBrand ? '1' : '0');
+    // Premium 을 부여할 때만 베타 플래그 상태를 마킹. 해제 시에는 마커 유지
+    // 하여 "예전에 베타로 받았음" 기록을 남김 → 뒤에 정식 빌드에서 청소.
+    if (isPremium && _isBetaFreePremium) {
+      await _secure.write(key: _kBetaGrantedKey, value: '1');
+    }
   }
 
   Future<void> _loadSecurePremiumState() async {
     _isPremium = (await _secure.read(key: 'ps_isPremium')) == '1';
     _isBrand = (await _secure.read(key: 'ps_isBrand')) == '1';
+
+    // ── 베타→정식 전환 안전장치 ───────────────────────────────────────────
+    // 이전에 BETA_FREE_PREMIUM 로 받은 Premium 이 정식 빌드까지 유지되는
+    // 것을 방지. 현재 빌드가 BETA 가 아닌데 과거에 베타 마커가 찍혀 있으면
+    // 로컬 상태를 전부 무효화하고 RevenueCat 재검증을 유도.
+    final betaGranted =
+        (await _secure.read(key: _kBetaGrantedKey)) == '1';
+    if (betaGranted && !_isBetaFreePremium) {
+      _isPremium = false;
+      _isBrand = false;
+      await _secure.delete(key: 'ps_isPremium');
+      await _secure.delete(key: 'ps_isBrand');
+      await _secure.delete(key: _kBetaGrantedKey);
+      if (kDebugMode) {
+        debugPrint(
+          '[PurchaseService] beta-granted premium cleared on non-beta build',
+        );
+      }
+    }
   }
 
   Future<void> _clearSecurePremiumState() async {
     await _secure.delete(key: 'ps_isPremium');
     await _secure.delete(key: 'ps_isBrand');
+    await _secure.delete(key: _kBetaGrantedKey);
   }
 
   // 플랜 변경 예약 (다음 결제일부터 반영)
