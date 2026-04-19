@@ -867,6 +867,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           // ② 구독 + 잔여발송 빠른카드 (B+C)
                           _buildQuickCardsRow(ctx, state, user, purchase),
                           const SizedBox(height: 10),
+                          // ②-2 게임 레벨 바 (Free · Premium 만 표시. Brand 는 👑 고정)
+                          _buildXpLevelCard(ctx, state),
+                          const SizedBox(height: 10),
                           // ③ 타워 등급 + 프로그레스바 (A+B)
                           _buildTowerProgressCard(ctx, user),
                           const SizedBox(height: 10),
@@ -1529,6 +1532,121 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   ),
                 ],
               ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // ── ②-2 게임 레벨 바 — Free · Premium 전용 ───────────────────────────────
+  //
+  // Brand 계정은 `levelLabel` 이 "👑 공식 발송인" 으로 고정되고 currentLevel 이
+  // 0 이라 진행 바 대신 단순 배지로 렌더한다. 내부 XP 필드는 누적되고 있으니
+  // 계정 등급이 다시 Free 로 바뀌면 바로 정상 표시.
+  Widget _buildXpLevelCard(BuildContext ctx, AppState state) {
+    final user = state.currentUser;
+    final l = AppL10n.of(user.languageCode);
+    if (user.isBrand) {
+      return Container(
+        margin: const EdgeInsets.symmetric(horizontal: 16),
+        padding: const EdgeInsets.all(14),
+        decoration: BoxDecoration(
+          color: AppColors.bgCard,
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(
+            color: AppColors.gold.withValues(alpha: 0.35),
+          ),
+        ),
+        child: Row(
+          children: [
+            const Text('👑', style: TextStyle(fontSize: 22)),
+            const SizedBox(width: 10),
+            Expanded(
+              child: Text(
+                state.levelLabel,
+                style: TextStyle(
+                  color: AppColors.gold,
+                  fontSize: 14,
+                  fontWeight: FontWeight.w800,
+                  letterSpacing: 0.4,
+                ),
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+
+    final level = state.currentLevel;
+    final xp = state.currentXp;
+    final progress = state.levelProgress;
+    final remaining = state.xpToNextLevel;
+
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 16),
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: AppColors.bgCard,
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(
+          color: AppColors.teal.withValues(alpha: 0.25),
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Expanded(
+                child: Text(
+                  state.levelLabel,
+                  style: const TextStyle(
+                    color: AppColors.textPrimary,
+                    fontSize: 14,
+                    fontWeight: FontWeight.w800,
+                    letterSpacing: 0.3,
+                  ),
+                ),
+              ),
+              Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 8,
+                  vertical: 3,
+                ),
+                decoration: BoxDecoration(
+                  color: AppColors.teal.withValues(alpha: 0.15),
+                  borderRadius: BorderRadius.circular(6),
+                ),
+                child: Text(
+                  l.xpLevelBadge(level),
+                  style: const TextStyle(
+                    color: AppColors.teal,
+                    fontSize: 11,
+                    fontWeight: FontWeight.w800,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 10),
+          ClipRRect(
+            borderRadius: BorderRadius.circular(4),
+            child: LinearProgressIndicator(
+              value: progress,
+              minHeight: 6,
+              backgroundColor: AppColors.bgSurface,
+              valueColor: const AlwaysStoppedAnimation(AppColors.teal),
+            ),
+          ),
+          const SizedBox(height: 6),
+          Text(
+            remaining == null
+                ? l.xpLevelMaxed(xp)
+                : l.xpLevelNextIn(xp, remaining),
+            style: const TextStyle(
+              color: AppColors.textMuted,
+              fontSize: 11,
             ),
           ),
         ],

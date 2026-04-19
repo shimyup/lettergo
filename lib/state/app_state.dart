@@ -9,6 +9,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import '../features/progression/user_level.dart';
+import '../features/progression/user_progress.dart';
 import '../features/welcome/welcome_letter.dart';
 import '../models/letter.dart';
 import '../models/user_profile.dart';
@@ -340,6 +341,61 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
   UserLevel? _previousUserLevel;
   bool _justLeveledUp = false;
 
+  // ── XP / 레벨 1~50 시스템 (Free · Premium 전용) ──────────────────────────
+  //
+  // Brand 계정은 "공식 발송인(Postmaster)" 으로 레벨 시스템에서 완전히 제외.
+  // `currentLevel` getter 에서 Brand 분기로 0 (= 레벨 없음) 을 반환한다.
+  //
+  // XP 공식 (사용자 지시, `UserProgress.calcXp` 참조):
+  //   picked_count * 10
+  // + sent_count   * 5
+  // + sum_pickup_km * 0.1
+  // + sum_sent_km   * 0.05
+  //
+  // picked_count / sent_count 는 기존 `ActivityScore` 를 재활용. 거리 합계
+  // 두 개만 새 누적 필드로 관리하며 SharedPreferences 에 영속화한다.
+  double _sumPickupKm = 0.0;
+  double _sumSentKm = 0.0;
+  int _previousXpLevel = 1;
+
+  double get sumPickupKm => _sumPickupKm;
+  double get sumSentKm => _sumSentKm;
+
+  /// 현재 XP — Brand 계정은 0 반환 (레벨 시스템 외).
+  int get currentXp {
+    if (_currentUser.isBrand) return 0;
+    return UserProgress.calcXp(
+      pickedCount: _currentUser.activityScore.receivedCount,
+      sentCount: _currentUser.activityScore.sentCount,
+      sumPickupKm: _sumPickupKm,
+      sumSentKm: _sumSentKm,
+    );
+  }
+
+  /// 현재 레벨. Brand 는 0 (표시는 👑 배지로 대체).
+  int get currentLevel {
+    if (_currentUser.isBrand) return 0;
+    return UserProgress.calcLevel(currentXp);
+  }
+
+  /// 다음 레벨 도달까지 남은 XP. 50 레벨 또는 Brand 는 null.
+  int? get xpToNextLevel {
+    if (_currentUser.isBrand) return null;
+    return UserProgress.xpToNextLevel(currentXp);
+  }
+
+  /// 현재 레벨 내 진척도 (0.0 ~ 1.0). 진행 바에 사용. Brand 는 1.0.
+  double get levelProgress {
+    if (_currentUser.isBrand) return 1.0;
+    return UserProgress.levelProgress(currentXp);
+  }
+
+  /// 레벨 라벨 — UI 에서 직접 이 문자열만 렌더.
+  String get levelLabel {
+    if (_currentUser.isBrand) return '👑 공식 발송인';
+    return xpLevelLabel(currentLevel);
+  }
+
   /// 레벨업 일회성 플래그를 소비. UI 에서 축하 배너 표시 후 호출.
   /// 반환: 방금 달성한 레벨 (레벨업 아니면 null).
   UserLevel? consumeLevelUpFlag() {
@@ -348,15 +404,23 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
     return userLevel;
   }
 
-  /// 레벨 변화 감지 — `sendLetter` 성공, 답장 수신, 체크인 등 주요 이벤트
-  /// 이후 호출. 실제 변화가 있으면 `_justLeveledUp = true`.
+  /// 레벨 변화 감지 — `sendLetter` 성공, 답장 수신, 체크인, 픽업 등 주요 이벤트
+  /// 이후 호출. UserLevel (5단계 호환) 또는 XP 레벨 (1~50) 중 어느 쪽이든
+  /// 올랐으면 `_justLeveledUp = true`.
   void _detectLevelUp() {
+    // 기존 UserLevel 5단계 진급
     final current = userLevel;
     if (_previousUserLevel != null &&
         current.rank > _previousUserLevel!.rank) {
       _justLeveledUp = true;
     }
     _previousUserLevel = current;
+    // XP 기반 1~50 레벨 진급 (Brand 는 currentLevel 이 항상 0 이라 트리거 안 됨)
+    final xpLevel = currentLevel;
+    if (xpLevel > 0 && xpLevel > _previousXpLevel) {
+      _justLeveledUp = true;
+    }
+    _previousXpLevel = xpLevel;
   }
 
   /// 앱 진입 / 첫 액티비티 시 호출. 하루 1회만 실제 증가, 중복 호출 안전.
@@ -1431,6 +1495,9 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
       // 스트릭 방어권 (30일마다 1회 충전, 1일 공백 구제)
       prefs.setInt('streak_freeze_tokens', _streakFreezeTokens);
       prefs.setString('streak_freeze_last_refill', _streakFreezeLastRefill);
+      // XP 거리 누적 (Brand 계정도 필드는 보존해 다시 Free 로 전환 시 유지)
+      prefs.setDouble('sum_pickup_km', _sumPickupKm);
+      prefs.setDouble('sum_sent_km', _sumSentKm);
       // 주간 챌린지
       prefs.setStringList(
         'challenge_week_countries',
@@ -1631,6 +1698,18 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
     _streakFreezeTokens = prefs.getInt('streak_freeze_tokens') ?? 0;
     _streakFreezeLastRefill =
         prefs.getString('streak_freeze_last_refill') ?? '';
+    _sumPickupKm = prefs.getDouble('sum_pickup_km') ?? 0.0;
+    _sumSentKm = prefs.getDouble('sum_sent_km') ?? 0.0;
+    // 레거시 테스터: 거리 기록이 없을 때, 기존 활동량 기반으로 초기 추정 XP 를
+    // 확보해 레벨 라벨이 신규 유저처럼 보이지 않도록 한다. 정확한 누적값은
+    // 앞으로의 픽업·발송부터 실측이 덮어쓴다.
+    if (_sumPickupKm == 0.0 && _currentUser.activityScore.receivedCount > 0) {
+      _sumPickupKm = _currentUser.activityScore.receivedCount * 4000.0;
+    }
+    if (_sumSentKm == 0.0 && _currentUser.activityScore.sentCount > 0) {
+      _sumSentKm = _currentUser.activityScore.sentCount * 6000.0;
+    }
+    _previousXpLevel = currentLevel;
 
     // 주간 챌린지 복원
     _weeklyChallengeCountries
@@ -5100,7 +5179,10 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
     _sentSinceLastUnlock++;
     // 주간 챌린지 진행도 갱신 (중복 국가는 자동으로 무시됨)
     _recordWeeklyChallengeSend(letter.destinationCountry);
-    // 레벨업 감지 (발송 수 증가로 레벨 바뀔 수 있음)
+    // 발송 거리 누적 — XP 공식의 "보낸 편지 거리" 원천
+    _sumSentKm += letter.originLocation.distanceTo(letter.destinationLocation) /
+        1000.0;
+    // 레벨업 감지 (발송 수 + 거리 증가로 레벨 바뀔 수 있음)
     _detectLevelUp();
     notifyListeners();
     _saveToPrefs();
@@ -5383,6 +5465,21 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
 
     _currentUser.activityScore.receivedCount++;
     _lastNearbyPickupAt = DateTime.now(); // 쿨다운 시작
+
+    // 픽업 모먼트 햅틱 — 포켓몬 고식 "편지 주움" 감각. Brand 발신 편지는
+    // 한 단계 더 무거운 시퀀스로 "공식 발송인" 체감 차별화.
+    FeedbackService.onLetterPickUp(isBrand: letter.senderIsBrand);
+
+    // 픽업 거리 누적 — XP 공식의 "편지 간 거리" 원천. Brand 계정은 레벨
+    // 시스템 밖이지만 필드 자체는 동일하게 축적해서 후일 Brand 전용 통계에
+    // 재활용할 수 있도록 한다.
+    final pickupKm = letter.originLocation.distanceTo(
+      LatLng(_currentUser.latitude, _currentUser.longitude),
+    ) /
+        1000.0;
+    _sumPickupKm += pickupKm;
+    _detectLevelUp();
+
     NotificationService.showLetterArrivedNotification(
       senderCountry: letter.senderCountry,
       senderFlag: letter.senderCountryFlag,

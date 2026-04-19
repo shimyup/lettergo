@@ -1626,6 +1626,55 @@ class AppL10n {
     }
   }
 
+  String xpLevelBadge(int level) {
+    switch (languageCode) {
+      case 'ko': return 'Lv. $level';
+      case 'ja': return 'Lv. $level';
+      case 'zh': return 'Lv. $level';
+      default: return 'Lv. $level';
+    }
+  }
+
+  String xpLevelNextIn(int currentXp, int remaining) {
+    switch (languageCode) {
+      case 'ko': return '현재 $currentXp XP · 다음 레벨까지 $remaining XP';
+      case 'ja': return '現在 $currentXp XP · 次のレベルまで $remaining XP';
+      case 'zh': return '当前 $currentXp XP · 距离下一级 $remaining XP';
+      case 'fr': return '$currentXp XP · $remaining XP jusqu\'au niveau suivant';
+      case 'de': return '$currentXp XP · $remaining XP bis zum nächsten Level';
+      case 'es': return '$currentXp XP · $remaining XP hasta el siguiente nivel';
+      case 'pt': return '$currentXp XP · $remaining XP até o próximo nível';
+      case 'ru': return '$currentXp XP · $remaining XP до следующего уровня';
+      case 'tr': return '$currentXp XP · sonraki seviyeye $remaining XP';
+      case 'ar': return '$currentXp XP · $remaining XP حتى المستوى التالي';
+      case 'it': return '$currentXp XP · $remaining XP al prossimo livello';
+      case 'hi': return '$currentXp XP · अगले स्तर तक $remaining XP';
+      case 'th': return '$currentXp XP · อีก $remaining XP ถึงเลเวลถัดไป';
+      case 'en':
+      default: return '$currentXp XP · $remaining XP to next level';
+    }
+  }
+
+  String xpLevelMaxed(int currentXp) {
+    switch (languageCode) {
+      case 'ko': return '$currentXp XP · 최고 레벨 도달 👑';
+      case 'ja': return '$currentXp XP · 最高レベル達成 👑';
+      case 'zh': return '$currentXp XP · 已达最高等级 👑';
+      case 'fr': return '$currentXp XP · niveau maximum atteint 👑';
+      case 'de': return '$currentXp XP · Höchstlevel erreicht 👑';
+      case 'es': return '$currentXp XP · nivel máximo alcanzado 👑';
+      case 'pt': return '$currentXp XP · nível máximo alcançado 👑';
+      case 'ru': return '$currentXp XP · достигнут высший уровень 👑';
+      case 'tr': return '$currentXp XP · en yüksek seviye 👑';
+      case 'ar': return '$currentXp XP · وصلت إلى أعلى مستوى 👑';
+      case 'it': return '$currentXp XP · livello massimo raggiunto 👑';
+      case 'hi': return '$currentXp XP · सर्वोच्च स्तर पर पहुँचे 👑';
+      case 'th': return '$currentXp XP · ถึงเลเวลสูงสุดแล้ว 👑';
+      case 'en':
+      default: return '$currentXp XP · max level reached 👑';
+    }
+  }
+
   String get premiumCollectionsHeader => _t({
     'ko': 'Air Mail Pass 컬렉션',
     'en': 'Air Mail Pass Collections',
@@ -4327,6 +4376,70 @@ class AppL10n {
     'th': 'ถึงจำนวนขั้นต่ำแล้ว',
   });
 
+  String get composeExactDropToggle => _t({
+    'ko': '🎯 정확한 위치 지정',
+    'en': '🎯 Exact location',
+    'ja': '🎯 正確な位置',
+    'zh': '🎯 精确位置',
+    'fr': '🎯 Emplacement précis',
+    'de': '🎯 Genauer Standort',
+    'es': '🎯 Ubicación exacta',
+    'pt': '🎯 Local exato',
+    'ru': '🎯 Точное место',
+    'tr': '🎯 Tam konum',
+    'ar': '🎯 موقع دقيق',
+    'it': '🎯 Posizione esatta',
+    'hi': '🎯 सटीक स्थान',
+    'th': '🎯 ตำแหน่งที่แม่นยำ',
+  });
+  String get composeExactDropHint => _t({
+    'ko': '지도를 움직여 편지를 떨어뜨릴 정확한 지점을 선택하세요',
+    'en': 'Move the map to the exact spot where this letter should drop',
+    'ja': '地図を動かして、手紙を落とす正確な地点を選んでください',
+    'zh': '移动地图以选择信件投放的精确位置',
+    'fr': "Déplacez la carte pour choisir l'endroit exact du dépôt",
+    'de': 'Verschieben Sie die Karte zum genauen Ablageort',
+    'es': 'Mueve el mapa para elegir el punto exacto de entrega',
+    'pt': 'Mova o mapa para escolher o ponto exato da entrega',
+    'ru': 'Переместите карту в точное место, куда упадёт письмо',
+    'tr': 'Haritayı mektubun düşeceği tam noktaya taşıyın',
+    'ar': 'حرّك الخريطة لاختيار النقطة الدقيقة لوضع الرسالة',
+    'it': 'Sposta la mappa sul punto esatto in cui far cadere la lettera',
+    'hi': 'पत्र गिराने के सटीक स्थान के लिए मानचित्र घुमाएँ',
+    'th': 'เลื่อนแผนที่เพื่อเลือกตำแหน่งที่แม่นยำในการวางจดหมาย',
+  });
+  String get composeExactDropTitle => _t({
+    'ko': '편지 떨어뜨릴 위치',
+    'en': 'Letter drop location',
+    'ja': '手紙を落とす場所',
+    'zh': '投放信件位置',
+    'fr': "Lieu du dépôt",
+    'de': 'Ablageort',
+    'es': 'Lugar de entrega',
+    'pt': 'Local de entrega',
+    'ru': 'Место доставки',
+    'tr': 'Teslim yeri',
+    'ar': 'مكان وضع الرسالة',
+    'it': 'Luogo del rilascio',
+    'hi': 'पत्र गिराने का स्थान',
+    'th': 'ตำแหน่งวางจดหมาย',
+  });
+  String get composeExactDropConfirm => _t({
+    'ko': '이 위치로 확정',
+    'en': 'Confirm this location',
+    'ja': 'この場所に確定',
+    'zh': '确认此位置',
+    'fr': 'Confirmer ce lieu',
+    'de': 'Diesen Ort bestätigen',
+    'es': 'Confirmar este lugar',
+    'pt': 'Confirmar este local',
+    'ru': 'Подтвердить место',
+    'tr': 'Bu konumu onayla',
+    'ar': 'تأكيد هذا الموقع',
+    'it': 'Conferma questa posizione',
+    'hi': 'इस स्थान की पुष्टि करें',
+    'th': 'ยืนยันตำแหน่งนี้',
+  });
   String get dayThemeBannerTitle => _t({
     'ko': '오늘의 테마',
     'en': "TODAY'S THEME",

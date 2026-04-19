@@ -56,4 +56,25 @@ class FeedbackService {
       await HapticFeedback.lightImpact();
     } catch (_) {}
   }
+
+  /// Fired when the user successfully picks up a scattered letter from the
+  /// map. The game-core moment of the pickup loop — deserves a distinct
+  /// feel that's not the same as opening an envelope (that's `onLetterOpen`
+  /// for previously-delivered mailbox items).
+  ///
+  /// Shape: a soft "reach-and-grab" sequence. Brand-sent letters get an
+  /// extra heavy tap so the user feels the weight of an official letter.
+  static Future<void> onLetterPickUp({bool isBrand = false}) async {
+    if (_muted) return;
+    try {
+      await HapticFeedback.lightImpact();
+      await Future.delayed(const Duration(milliseconds: 80));
+      await HapticFeedback.mediumImpact();
+      if (isBrand) {
+        await Future.delayed(const Duration(milliseconds: 120));
+        await HapticFeedback.heavyImpact();
+      }
+      await SystemSound.play(SystemSoundType.click);
+    } catch (_) {}
+  }
 }

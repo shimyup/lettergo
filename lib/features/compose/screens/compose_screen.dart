@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
+import 'package:latlong2/latlong.dart' as ll;
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../../core/localization/app_localizations.dart';
@@ -20,6 +21,7 @@ import '../../premium/premium_gate_sheet.dart';
 import '../compose_prompts.dart';
 import '../compose_quick_pick.dart';
 import '../day_theme.dart';
+import '../widgets/exact_drop_picker.dart';
 import '../../../core/services/feedback_service.dart';
 
 class ComposeScreen extends StatefulWidget {
@@ -942,6 +944,53 @@ class _ComposeScreenState extends State<ComposeScreen>
     );
   }
 
+  // Brand 전용 — 지도에서 정확한 좌표 핀을 찍어 편지를 떨어뜨린다.
+  // Free / Premium 은 이 진입점을 볼 수 없다.
+  Future<void> _selectExactDrop() async {
+    final state = context.read<AppState>();
+    final langCode = state.currentUser.languageCode;
+    final initial = ll.LatLng(
+      _destLat != 0.0 ? _destLat : state.currentUser.latitude,
+      _destLng != 0.0 ? _destLng : state.currentUser.longitude,
+    );
+    final picked = await Navigator.of(context).push<ll.LatLng>(
+      MaterialPageRoute(
+        fullscreenDialog: true,
+        builder: (_) => ExactDropPicker(initial: initial, langCode: langCode),
+      ),
+    );
+    if (!mounted || picked == null) return;
+
+    // 역조회로 국가·도시 이름을 채움. 실패 시 좌표만 세팅하고 국가는
+    // "Unknown" 으로 두어 발송 자체는 막지 않는다.
+    final geo = GeocodingService.instance;
+    String country = '';
+    String city = '';
+    String flag = '🎯';
+    try {
+      final addr = await geo.reverseLookup(
+        picked.latitude,
+        picked.longitude,
+        languageCode: langCode,
+      );
+      if (addr != null) {
+        country = addr['country'] ?? '';
+        city = addr['city'] ?? '';
+        final f = addr['flag'] ?? '';
+        if (f.isNotEmpty) flag = f;
+      }
+    } catch (_) {}
+
+    setState(() {
+      _destLat = picked.latitude;
+      _destLng = picked.longitude;
+      _selectedCountry = country;
+      _selectedCity = city;
+      _selectedFlag = flag;
+      _isRandom = false;
+    });
+  }
+
   void _selectCountry() {
     showModalBottomSheet(
       context: context,
@@ -1015,6 +1064,11 @@ class _ComposeScreenState extends State<ComposeScreen>
                             if (!_isReply && !_isBulkMode)
                               _buildDestinationCard(state, hasPremium),
                             if (!_isReply && !_isBulkMode)
+                              const SizedBox(height: 8),
+                            // Brand 전용 — 정확한 좌표 드롭 진입점
+                            if (!_isReply && !_isBulkMode && isBrand)
+                              _buildExactDropButton(state),
+                            if (!_isReply && !_isBulkMode && isBrand)
                               const SizedBox(height: 8),
                             // 오늘의 요일 테마 (요일별 지역 추천)
                             if (!_isReply && !_isBulkMode)
@@ -1704,6 +1758,61 @@ class _ComposeScreenState extends State<ComposeScreen>
               ),
             ],
           ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildExactDropButton(AppState state) {
+    final l = AppL10n.of(state.currentUser.languageCode);
+    return InkWell(
+      onTap: _selectExactDrop,
+      borderRadius: BorderRadius.circular(10),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+        decoration: BoxDecoration(
+          color: AppColors.gold.withValues(alpha: 0.1),
+          borderRadius: BorderRadius.circular(10),
+          border: Border.all(
+            color: AppColors.gold.withValues(alpha: 0.45),
+            width: 1,
+          ),
+        ),
+        child: Row(
+          children: [
+            const Text('🎯', style: TextStyle(fontSize: 18)),
+            const SizedBox(width: 10),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    l.composeExactDropToggle,
+                    style: TextStyle(
+                      color: AppColors.gold,
+                      fontSize: 13,
+                      fontWeight: FontWeight.w800,
+                      letterSpacing: 0.3,
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    l.composeExactDropHint,
+                    style: const TextStyle(
+                      color: AppColors.textMuted,
+                      fontSize: 11,
+                      height: 1.3,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Icon(
+              Icons.map_rounded,
+              size: 16,
+              color: AppColors.gold.withValues(alpha: 0.6),
+            ),
+          ],
         ),
       ),
     );
