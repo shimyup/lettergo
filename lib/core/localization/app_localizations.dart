@@ -12682,24 +12682,54 @@ class AppL10n {
   });
 
   String get statusNearby => _t({
-    'ko': '근처 도착', 'en': 'Nearby', 'ja': '近くに到着', 'zh': '已到附近',
-    'fr': 'À proximité', 'de': 'In der Nähe', 'es': 'Cerca',
-    'pt': 'Próximo', 'ru': 'Поблизости', 'tr': 'Yakınlarda',
-    'ar': 'بالقرب', 'it': 'Nelle vicinanze', 'hi': 'आस-पास', 'th': 'ใกล้ถึงแล้ว',
+    'ko': '마지막 배달 구간 🛵',
+    'en': 'Out for final delivery 🛵',
+    'ja': '最終配達区間 🛵',
+    'zh': '最后一公里 🛵',
+    'fr': 'En livraison finale 🛵',
+    'de': 'Letzte Zustellstrecke 🛵',
+    'es': 'En reparto final 🛵',
+    'pt': 'Entrega final 🛵',
+    'ru': 'Последняя миля 🛵',
+    'tr': 'Son teslim etabı 🛵',
+    'ar': 'المرحلة الأخيرة من التسليم 🛵',
+    'it': 'Ultimo tratto di consegna 🛵',
+    'hi': 'अंतिम वितरण चरण 🛵',
+    'th': 'ช่วงสุดท้ายก่อนส่งถึง 🛵',
   });
 
   String get statusArrivedPickup => _t({
-    'ko': '도착 - 수령 대기', 'en': 'Arrived - Pickup', 'ja': '到着 - 受取待ち', 'zh': '已到达 - 待取件',
-    'fr': 'Arrivé - Retrait', 'de': 'Angekommen - Abholung', 'es': 'Llegó - Recogida',
-    'pt': 'Chegou - Retirada', 'ru': 'Прибыло - Ожидает получения', 'tr': 'Ulaştı - Teslim alınacak',
-    'ar': 'وصلت - بانتظار الاستلام', 'it': 'Arrivata - Ritiro', 'hi': 'पहुँच गया - लेने की प्रतीक्षा', 'th': 'มาถึงแล้ว - รอรับ',
+    'ko': '우체국 도착 · 수령 대기 📬',
+    'en': 'Arrived at post office · Awaiting pickup 📬',
+    'ja': '郵便局到着・受取待ち 📬',
+    'zh': '已到邮局 · 等待取件 📬',
+    'fr': 'Arrivé au bureau de poste · En attente 📬',
+    'de': 'Im Postamt · Wartet auf Abholung 📬',
+    'es': 'En la oficina postal · Esperando recogida 📬',
+    'pt': 'Nos correios · Aguardando retirada 📬',
+    'ru': 'Прибыло в отделение · Ожидает получения 📬',
+    'tr': 'Postanede · Teslim alınmayı bekliyor 📬',
+    'ar': 'وصلت إلى مكتب البريد · بانتظار الاستلام 📬',
+    'it': 'All\'ufficio postale · In attesa di ritiro 📬',
+    'hi': 'डाकघर पहुँचा · लेने की प्रतीक्षा 📬',
+    'th': 'ถึงที่ทำการไปรษณีย์ · รอรับ 📬',
   });
 
   String get statusDelivered => _t({
-    'ko': '전달 완료', 'en': 'Delivered', 'ja': '配達完了', 'zh': '已送达',
-    'fr': 'Livré', 'de': 'Zugestellt', 'es': 'Entregado',
-    'pt': 'Entregue', 'ru': 'Доставлено', 'tr': 'Teslim edildi',
-    'ar': 'تم التسليم', 'it': 'Consegnata', 'hi': 'वितरित', 'th': 'ส่งแล้ว',
+    'ko': '우편함 도착 💌',
+    'en': 'In your mailbox 💌',
+    'ja': 'ポストに到着 💌',
+    'zh': '已投入信箱 💌',
+    'fr': 'Dans votre boîte aux lettres 💌',
+    'de': 'Im Briefkasten 💌',
+    'es': 'En tu buzón 💌',
+    'pt': 'Na sua caixa de correio 💌',
+    'ru': 'В вашем почтовом ящике 💌',
+    'tr': 'Posta kutunuzda 💌',
+    'ar': 'في صندوق بريدك 💌',
+    'it': 'Nella tua cassetta 💌',
+    'hi': 'आपके डाक-बक्से में 💌',
+    'th': 'ถึงตู้จดหมายแล้ว 💌',
   });
 
   String get statusRead => _t({
@@ -12844,17 +12874,73 @@ class AppL10n {
   // ── Delivery Intro ──────────────────────────────────────────────────────
 
   String get deliveryIntroTitle => _t({
-    'ko': '편지가 여행을 시작합니다', 'en': 'Your letter starts its journey', 'ja': '手紙が旅を始めます', 'zh': '您的信件开始旅程',
-    'fr': 'Votre lettre commence son voyage', 'de': 'Ihr Brief beginnt seine Reise', 'es': 'Tu carta comienza su viaje',
-    'pt': 'Sua carta inicia sua jornada', 'ru': 'Ваше письмо отправляется в путь', 'tr': 'Mektubunuz yolculuğuna başlıyor',
-    'ar': 'رسالتك تبدأ رحلتها', 'it': 'La tua lettera inizia il suo viaggio', 'hi': 'आपका पत्र अपनी यात्रा शुरू करता है', 'th': 'จดหมายของคุณเริ่มออกเดินทาง',
+    'ko': '편지가 배송을 시작했어요 🚚✈️🚢',
+    'en': 'Your letter is now in transit 🚚✈️🚢',
+    'ja': 'お手紙の配送が始まりました 🚚✈️🚢',
+    'zh': '您的信件已开始运送 🚚✈️🚢',
+    'fr': 'Votre lettre est en acheminement 🚚✈️🚢',
+    'de': 'Ihr Brief ist nun im Versand 🚚✈️🚢',
+    'es': 'Tu carta está ahora en tránsito 🚚✈️🚢',
+    'pt': 'Sua carta está em trânsito 🚚✈️🚢',
+    'ru': 'Ваше письмо в пути 🚚✈️🚢',
+    'tr': 'Mektubunuz şimdi yolda 🚚✈️🚢',
+    'ar': 'رسالتك الآن في الطريق 🚚✈️🚢',
+    'it': 'La tua lettera è in consegna 🚚✈️🚢',
+    'hi': 'आपका पत्र रास्ते में है 🚚✈️🚢',
+    'th': 'จดหมายของคุณกำลังถูกจัดส่ง 🚚✈️🚢',
   });
 
   String get deliveryIntroSubtitle => _t({
-    'ko': '편지가 목적지까지 이동합니다', 'en': 'Your letter travels to its destination', 'ja': '手紙が目的地まで移動します', 'zh': '您的信件正在前往目的地',
-    'fr': 'Votre lettre voyage vers sa destination', 'de': 'Ihr Brief reist zu seinem Ziel', 'es': 'Tu carta viaja a su destino',
-    'pt': 'Sua carta viaja até seu destino', 'ru': 'Ваше письмо путешествует к месту назначения', 'tr': 'Mektubunuz hedefine doğru yol alıyor',
-    'ar': 'رسالتك تسافر إلى وجهتها', 'it': 'La tua lettera viaggia verso la sua destinazione', 'hi': 'आपका पत्र अपने गंतव्य तक पहुँचता है', 'th': 'จดหมายของคุณเดินทางไปยังจุดหมาย',
+    'ko': '육로, 항공, 해운으로 목적지를 향해 천천히 이동합니다',
+    'en': 'Travelling slowly by land, air, and sea toward its destination',
+    'ja': '陸路、空路、海路でゆっくりと目的地へ向かいます',
+    'zh': '通过陆路、航空和海运缓缓抵达目的地',
+    'fr': 'Voyage lent par la terre, les airs et la mer vers sa destination',
+    'de': 'Reist langsam über Land, Luft und See zum Zielort',
+    'es': 'Viajando lentamente por tierra, aire y mar hasta su destino',
+    'pt': 'Viajando lentamente por terra, ar e mar até o destino',
+    'ru': 'Медленно путешествует по суше, воздуху и морю к месту назначения',
+    'tr': 'Karadan, havadan ve denizden yavaşça hedefine doğru ilerliyor',
+    'ar': 'تسافر ببطء برًا وجوًا وبحرًا إلى وجهتها',
+    'it': 'Viaggia lentamente via terra, aria e mare verso la sua destinazione',
+    'hi': 'ज़मीन, हवा और समुद्र से धीरे-धीरे अपने गंतव्य की ओर',
+    'th': 'เดินทางช้าๆ ทางบก ทางอากาศ และทางทะเล สู่ปลายทาง',
+  });
+
+  /// 앱의 핵심 포지셔닝 태그라인. 온보딩·공유 카드·마케팅에 사용.
+  String get appTagline => _t({
+    'ko': '편지는 천천히 여행합니다 — 육로, 항공, 해운으로',
+    'en': 'Letters travel at their own pace — by land, air, and sea',
+    'ja': 'お手紙はゆっくり旅をする — 陸路、空路、海路で',
+    'zh': '信件按自己的节奏旅行 — 经陆、空、海',
+    'fr': 'Les lettres voyagent à leur rythme — par terre, air et mer',
+    'de': 'Briefe reisen im eigenen Tempo — über Land, Luft und See',
+    'es': 'Las cartas viajan a su propio ritmo — por tierra, aire y mar',
+    'pt': 'As cartas viajam no seu próprio ritmo — por terra, ar e mar',
+    'ru': 'Письма путешествуют в своём ритме — по суше, воздуху и морю',
+    'tr': 'Mektuplar kendi hızında yolculuk eder — karadan, havadan, denizden',
+    'ar': 'تسافر الرسائل بإيقاعها الخاص — برًا وجوًا وبحرًا',
+    'it': 'Le lettere viaggiano con il proprio ritmo — per terra, aria e mare',
+    'hi': 'पत्र अपनी गति से चलते हैं — ज़मीन, हवा और समुद्र से',
+    'th': 'จดหมายเดินทางในจังหวะของตัวเอง — ทางบก ทางอากาศ ทางทะเล',
+  });
+
+  /// 앱의 핵심 가치 한 줄 — "시간이 느리게 흐르는 소셜"
+  String get appSubTagline => _t({
+    'ko': '시간이 느리게 흐르는 소셜',
+    'en': 'A social space where time slows down',
+    'ja': '時間がゆっくり流れるソーシャル',
+    'zh': '时间缓缓流淌的社交空间',
+    'fr': 'Un espace social où le temps ralentit',
+    'de': 'Ein sozialer Raum, in dem die Zeit langsamer fließt',
+    'es': 'Un espacio social donde el tiempo se ralentiza',
+    'pt': 'Um espaço social onde o tempo desacelera',
+    'ru': 'Социальное пространство, где время замедляется',
+    'tr': 'Zamanın yavaşladığı bir sosyal alan',
+    'ar': 'فضاء اجتماعي يتباطأ فيه الزمن',
+    'it': 'Uno spazio sociale dove il tempo rallenta',
+    'hi': 'एक सामाजिक जगह जहाँ समय धीमा हो जाता है',
+    'th': 'พื้นที่โซเชียลที่เวลาเดินช้าลง',
   });
 
   // ── Hardcoded string l10n (formerly hardcoded) ─────────────────────────
