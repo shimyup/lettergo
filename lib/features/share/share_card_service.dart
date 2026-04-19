@@ -10,6 +10,7 @@ import 'package:share_plus/share_plus.dart';
 
 import '../../core/localization/app_localizations.dart';
 import '../../models/letter.dart';
+import '../journey/journey_stats.dart';
 
 /// 받은 편지를 인스타그램 스토리·Twitter 등 SNS 에 공유하기 위한 이미지
 /// 카드 생성 서비스.
@@ -357,5 +358,203 @@ class ShareCardService {
       buffer.write(s[i]);
     }
     return buffer.toString();
+  }
+
+  // ╔══════════════════════════════════════════════════════════════════════╗
+  // ║ Journey Share Card — "나의 여정" 공유 카드                            ║
+  // ╚══════════════════════════════════════════════════════════════════════╝
+
+  /// 사용자의 누적 여정 통계를 1080×1920 공유 카드로 생성해 SNS 공유.
+  /// 개별 편지 공유와 구분되는 개인 회고 바이럴 루프.
+  static Future<bool> shareJourneyCard({
+    required JourneyStats stats,
+    required String langCode,
+    required String username,
+    String brandName = 'Letter Go',
+  }) async {
+    if (stats.isEmpty) return false;
+    try {
+      final bytes = await _renderJourneyCardBytes(
+        stats: stats,
+        langCode: langCode,
+        username: username,
+        brandName: brandName,
+      );
+      if (bytes == null) return false;
+
+      final dir = await getTemporaryDirectory();
+      final path =
+          '${dir.path}/lettergo_journey_${DateTime.now().millisecondsSinceEpoch}.png';
+      final file = await File(path).writeAsBytes(bytes);
+
+      final l10n = AppL10n.of(langCode);
+      await Share.shareXFiles(
+        [XFile(file.path, mimeType: 'image/png')],
+        text: '${l10n.journeyTitle} · $brandName',
+      );
+      return true;
+    } catch (e, st) {
+      if (kDebugMode) debugPrint('[ShareCardService/journey] $e\n$st');
+      return false;
+    }
+  }
+
+  static Future<Uint8List?> _renderJourneyCardBytes({
+    required JourneyStats stats,
+    required String langCode,
+    required String username,
+    required String brandName,
+  }) async {
+    final l10n = AppL10n.of(langCode);
+    final recorder = ui.PictureRecorder();
+    final canvas = Canvas(recorder);
+    final size = Size(_cardWidth.toDouble(), _cardHeight.toDouble());
+
+    // 배경: 재사용
+    _paintBackground(canvas, size);
+
+    // 상단 헤더
+    _drawText(
+      canvas,
+      '📬  ${l10n.journeyTitle}',
+      offset: const Offset(80, 180),
+      fontSize: 56,
+      color: const Color(0xFFF0C35A),
+      weight: FontWeight.w800,
+    );
+    _drawText(
+      canvas,
+      '@$username',
+      offset: const Offset(80, 260),
+      fontSize: 36,
+      color: const Color(0xFFE8E8E0).withValues(alpha: 0.8),
+      weight: FontWeight.w500,
+    );
+
+    // 중앙 카드: 3개 핵심 지표
+    final statCardRect = RRect.fromLTRBR(
+      80, 380, size.width - 80, 900,
+      const Radius.circular(28),
+    );
+    canvas.drawRRect(
+      statCardRect,
+      Paint()..color = const Color(0xFF1F2D44).withValues(alpha: 0.85),
+    );
+
+    // 3열 통계
+    _drawJourneyStatCell(
+      canvas,
+      x: 140, y: 440,
+      emoji: '✉️',
+      value: '${stats.totalSent}',
+      label: l10n.journeyStatSent,
+    );
+    _drawJourneyStatCell(
+      canvas,
+      x: 455, y: 440,
+      emoji: '🌍',
+      value: '${stats.countriesFrom + stats.countriesTo}',
+      label: l10n.journeyStatCountries,
+    );
+    _drawJourneyStatCell(
+      canvas,
+      x: 770, y: 440,
+      emoji: '💬',
+      value: '${stats.totalReplies}',
+      label: l10n.journeyStatReplies,
+    );
+
+    // 하단 카드 내부: 최장 거리 강조
+    if (stats.longestDistanceKm > 0) {
+      _drawText(
+        canvas,
+        '✈️  ${l10n.journeyLongestDistance}',
+        offset: const Offset(120, 720),
+        fontSize: 36,
+        color: const Color(0xFFF0C35A),
+        weight: FontWeight.w700,
+      );
+      _drawText(
+        canvas,
+        l10n.journeyLongestDistanceValue(
+          _formatKm(stats.longestDistanceKm),
+          stats.longestDistanceCountry,
+        ),
+        offset: const Offset(120, 780),
+        fontSize: 44,
+        color: const Color(0xFFE8E8E0),
+        weight: FontWeight.w800,
+        maxWidth: _cardWidth - 240.0,
+        maxLines: 2,
+      );
+    }
+
+    // 최장 스트릭
+    if (stats.longestStreak > 0) {
+      _drawText(
+        canvas,
+        '🔥  ${l10n.journeyLongestStreak(stats.longestStreak)}',
+        offset: const Offset(80, 1250),
+        fontSize: 40,
+        color: const Color(0xFFE8E8E0),
+        weight: FontWeight.w600,
+      );
+    }
+
+    // 하단 태그라인 + 브랜드
+    _drawText(
+      canvas,
+      l10n.appTagline,
+      offset: const Offset(80, 1660),
+      fontSize: 32,
+      color: const Color(0xFFE8E8E0).withValues(alpha: 0.75),
+      maxWidth: _cardWidth - 160.0,
+      maxLines: 2,
+    );
+    _drawText(
+      canvas,
+      '〰️  $brandName',
+      offset: const Offset(80, 1780),
+      fontSize: 44,
+      color: const Color(0xFFF0C35A),
+      weight: FontWeight.w700,
+    );
+
+    final picture = recorder.endRecording();
+    final image = await picture.toImage(_cardWidth, _cardHeight);
+    final byteData = await image.toByteData(format: ui.ImageByteFormat.png);
+    return byteData?.buffer.asUint8List();
+  }
+
+  static void _drawJourneyStatCell(
+    Canvas canvas, {
+    required double x,
+    required double y,
+    required String emoji,
+    required String value,
+    required String label,
+  }) {
+    _drawText(
+      canvas,
+      emoji,
+      offset: Offset(x, y),
+      fontSize: 56,
+    );
+    _drawText(
+      canvas,
+      value,
+      offset: Offset(x, y + 90),
+      fontSize: 64,
+      color: const Color(0xFFE8E8E0),
+      weight: FontWeight.w800,
+    );
+    _drawText(
+      canvas,
+      label,
+      offset: Offset(x, y + 180),
+      fontSize: 24,
+      color: const Color(0xFFE8E8E0).withValues(alpha: 0.6),
+      maxWidth: 220,
+    );
   }
 }

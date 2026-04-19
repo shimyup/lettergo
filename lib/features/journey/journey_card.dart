@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import '../../core/localization/app_localizations.dart';
 import '../../core/theme/app_theme.dart';
 import '../../state/app_state.dart';
+import '../share/share_card_service.dart';
 import 'journey_stats.dart';
 
 /// "나의 여정" 카드.
@@ -48,18 +49,45 @@ class JourneyCard extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // 헤더
+              // 헤더 + 공유 버튼
               Row(
                 children: [
                   const Text('📬', style: TextStyle(fontSize: 24)),
                   const SizedBox(width: 10),
-                  Text(
-                    l10n.journeyTitle,
-                    style: const TextStyle(
-                      color: AppColors.textPrimary,
-                      fontSize: 16,
-                      fontWeight: FontWeight.w800,
-                      letterSpacing: 0.3,
+                  Expanded(
+                    child: Text(
+                      l10n.journeyTitle,
+                      style: const TextStyle(
+                        color: AppColors.textPrimary,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w800,
+                        letterSpacing: 0.3,
+                      ),
+                    ),
+                  ),
+                  // 여정 공유 버튼
+                  GestureDetector(
+                    onTap: () async {
+                      await ShareCardService.shareJourneyCard(
+                        stats: stats,
+                        langCode: state.currentUser.languageCode,
+                        username: state.currentUser.username,
+                      );
+                    },
+                    child: Container(
+                      padding: const EdgeInsets.all(6),
+                      decoration: BoxDecoration(
+                        color: AppColors.teal.withValues(alpha: 0.1),
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(
+                          color: AppColors.teal.withValues(alpha: 0.3),
+                        ),
+                      ),
+                      child: Icon(
+                        Icons.ios_share_rounded,
+                        color: AppColors.teal,
+                        size: 14,
+                      ),
                     ),
                   ),
                 ],
