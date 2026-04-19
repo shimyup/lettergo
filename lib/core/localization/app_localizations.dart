@@ -1547,6 +1547,38 @@ class AppL10n {
     'hi': 'पास के पत्र की सूचना',
     'th': 'การแจ้งเตือนจดหมายใกล้เคียง',
   });
+  String get settingsNotifyDaily => _t({
+    'ko': '오늘의 편지 리마인더',
+    'en': "Today's Letter Reminder",
+    'ja': '今日の手紙リマインダー',
+    'zh': '今日信件提醒',
+    'fr': 'Rappel des lettres du jour',
+    'de': 'Tägliche Brief-Erinnerung',
+    'es': 'Recordatorio de cartas de hoy',
+    'pt': 'Lembrete das cartas de hoje',
+    'ru': 'Напоминание о сегодняшних письмах',
+    'tr': 'Bugünkü mektup hatırlatıcısı',
+    'ar': 'تذكير برسائل اليوم',
+    'it': 'Promemoria lettere di oggi',
+    'hi': 'आज के पत्र की याद',
+    'th': 'การเตือนจดหมายวันนี้',
+  });
+  String get settingsNotifyDailyDesc => _t({
+    'ko': '매일 오전 8시에 편지함을 열어보도록 알려드려요',
+    'en': 'A gentle 8:00 AM nudge to check your mailbox',
+    'ja': '毎朝8時に手紙を確認するようお知らせします',
+    'zh': '每天早上 8 点温柔提醒你查看信箱',
+    'fr': 'Un rappel doux à 8h00 pour ouvrir votre boîte',
+    'de': 'Ein sanfter Hinweis um 8:00 Uhr, den Briefkasten zu öffnen',
+    'es': 'Un suave aviso a las 8:00 para revisar tu buzón',
+    'pt': 'Um lembrete gentil às 8h para abrir sua caixa de cartas',
+    'ru': 'Лёгкое напоминание в 8:00 открыть почтовый ящик',
+    'tr': 'Sabah 8\'de posta kutunuza bakmanız için nazik bir hatırlatma',
+    'ar': 'تذكير لطيف الساعة 8:00 صباحاً لفتح صندوق رسائلك',
+    'it': 'Un gentile promemoria alle 8:00 per aprire la tua buca',
+    'hi': 'सुबह 8 बजे मेलबॉक्स खोलने की कोमल याद',
+    'th': 'การเตือนเบา ๆ เวลา 8:00 น. ให้เปิดกล่องจดหมาย',
+  });
   String get settingsLogout => _t({
     'ko': '로그아웃',
     'en': 'Logout',

@@ -14,6 +14,7 @@ import '../../../core/localization/country_names.dart';
 import '../../../core/localization/language_config.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/services/auth_service.dart';
+import '../../../core/services/notification_service.dart';
 import '../../../core/services/purchase_service.dart';
 import '../../../state/app_state.dart';
 import '../../../models/user_profile.dart';
@@ -37,6 +38,7 @@ class ProfileScreen extends StatefulWidget {
 
 class _ProfileScreenState extends State<ProfileScreen> {
   bool _notifyNearby = true;
+  bool _notifyDaily = false;
   bool _loading = true;
   final ImagePicker _picker = ImagePicker();
 
@@ -53,6 +55,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     final prefs = await SharedPreferences.getInstance();
     setState(() {
       _notifyNearby = prefs.getBool('notify_nearby') ?? true;
+      _notifyDaily = prefs.getBool('notify_daily_letter') ?? false;
       _loading = false;
     });
   }
@@ -61,6 +64,20 @@ class _ProfileScreenState extends State<ProfileScreen> {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool('notify_nearby', value);
     setState(() => _notifyNearby = value);
+  }
+
+  Future<void> _setNotifyDaily(bool value) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('notify_daily_letter', value);
+    setState(() => _notifyDaily = value);
+    if (!mounted) return;
+    final lang = context.read<AppState>().currentUser.languageCode;
+    if (value) {
+      await NotificationService.requestPermissions();
+      await NotificationService.scheduleDailyLetterReminder(langCode: lang);
+    } else {
+      await NotificationService.cancelDailyLetterReminder();
+    }
   }
 
   // ── 닉네임 수정 (shared_profile_dialogs.dart로 위임) ──────────────────────
@@ -949,6 +966,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               subtitle: _l.profileNearbyNotificationDesc,
                               value: _notifyNearby,
                               onChanged: _setNotifyNearby,
+                            ),
+                            _groupSwitchTile(
+                              icon: Icons.wb_sunny_rounded,
+                              label: _l.settingsNotifyDaily,
+                              subtitle: _l.settingsNotifyDailyDesc,
+                              value: _notifyDaily,
+                              onChanged: _setNotifyDaily,
                               isLast: true,
                             ),
                           ]),

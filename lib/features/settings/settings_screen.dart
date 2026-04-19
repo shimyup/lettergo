@@ -5,6 +5,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/services/auth_service.dart';
+import '../../../core/services/notification_service.dart';
 import '../../../core/services/purchase_service.dart';
 import '../../../core/localization/app_localizations.dart';
 import '../../../models/user_profile.dart';
@@ -28,6 +29,7 @@ class SettingsScreen extends StatefulWidget {
 
 class _SettingsScreenState extends State<SettingsScreen> {
   bool _notifyNearby = true;
+  bool _notifyDaily = false;
   bool _loading = true;
 
   @override
@@ -40,6 +42,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     final prefs = await SharedPreferences.getInstance();
     setState(() {
       _notifyNearby = prefs.getBool('notify_nearby') ?? true;
+      _notifyDaily = prefs.getBool('notify_daily_letter') ?? false;
       _loading = false;
     });
   }
@@ -48,6 +51,19 @@ class _SettingsScreenState extends State<SettingsScreen> {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool('notify_nearby', value);
     setState(() => _notifyNearby = value);
+  }
+
+  Future<void> _setNotifyDaily(bool value) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('notify_daily_letter', value);
+    setState(() => _notifyDaily = value);
+    final lang = context.read<AppState>().currentUser.languageCode;
+    if (value) {
+      await NotificationService.requestPermissions();
+      await NotificationService.scheduleDailyLetterReminder(langCode: lang);
+    } else {
+      await NotificationService.cancelDailyLetterReminder();
+    }
   }
 
   // ── 닉네임 수정 (shared_profile_dialogs.dart로 위임) ──────────────────────
@@ -663,6 +679,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       subtitle: l.settingsNotifyNearbyDesc,
                       value: _notifyNearby,
                       onChanged: _setNotifyNearby,
+                    ),
+                    _switchTile(
+                      icon: Icons.wb_sunny_rounded,
+                      label: l.settingsNotifyDaily,
+                      subtitle: l.settingsNotifyDailyDesc,
+                      value: _notifyDaily,
+                      onChanged: _setNotifyDaily,
                     ),
 
                     const SizedBox(height: 8),

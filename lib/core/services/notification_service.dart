@@ -1,6 +1,8 @@
 import 'dart:math';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter/foundation.dart';
+import 'package:timezone/data/latest_all.dart' as tz_data;
+import 'package:timezone/timezone.dart' as tz;
 
 /// Notification text localization helper
 String _notiMsg(String key, [String langCode = 'en']) {
@@ -211,13 +213,54 @@ Map<String, List<String> Function(String, String)> _arrivedBodiesByLang = {
   ],
 };
 
+// Daily "Today's Letter" reminder copy. One variant per language; the
+// notification repeats daily so rotating variants isn't worth the complexity
+// of re-scheduling per day.
+const Map<String, String> _dailyReminderTitles = {
+  'ko': '☀️ 오늘의 편지함을 열어보세요',
+  'en': "☀️ Today's letters are waiting",
+  'ja': '☀️ 今日の手紙を確認してみましょう',
+  'zh': '☀️ 今日的信件在等你',
+  'fr': "☀️ Vos lettres du jour vous attendent",
+  'de': '☀️ Heute warten neue Briefe',
+  'es': '☀️ Tus cartas de hoy te esperan',
+  'pt': '☀️ Suas cartas de hoje estão esperando',
+  'ru': '☀️ Сегодняшние письма ждут вас',
+  'tr': '☀️ Bugünkü mektuplarınız bekliyor',
+  'ar': '☀️ رسائل اليوم بانتظارك',
+  'it': '☀️ Le tue lettere di oggi ti aspettano',
+  'hi': '☀️ आज के पत्र आपका इंतज़ार कर रहे हैं',
+  'th': '☀️ จดหมายวันนี้กำลังรอคุณอยู่',
+};
+
+const Map<String, String> _dailyReminderBodies = {
+  'ko': '지구 어딘가에서 누군가 당신에게 편지를 보냈을지도 몰라요',
+  'en': 'Someone, somewhere on Earth, may have written you a letter',
+  'ja': '地球のどこかで、誰かがあなたに手紙を書いたかもしれません',
+  'zh': '地球上的某处，也许有人给你写了一封信',
+  'fr': "Quelqu'un, quelque part sur Terre, vous a peut-être écrit",
+  'de': 'Irgendwo auf der Welt hat dir vielleicht jemand geschrieben',
+  'es': 'Alguien, en algún lugar del mundo, tal vez te haya escrito',
+  'pt': 'Alguém, em algum lugar do mundo, pode ter lhe escrito',
+  'ru': 'Где-то на Земле кто-то, возможно, написал вам письмо',
+  'tr': 'Dünyanın bir yerinde biri sana mektup yazmış olabilir',
+  'ar': 'ربما كتب لك أحدهم رسالة من مكان ما حول العالم',
+  'it': 'Qualcuno, da qualche parte nel mondo, potrebbe averti scritto',
+  'hi': 'दुनिया के किसी कोने से किसी ने आपको पत्र लिखा हो सकता है',
+  'th': 'อาจมีใครบางคนจากมุมโลกนี้เขียนจดหมายถึงคุณ',
+};
+
 class NotificationService {
   static final FlutterLocalNotificationsPlugin _plugin =
       FlutterLocalNotificationsPlugin();
   static bool _initialized = false;
 
+  /// Notification ID reserved for the recurring daily letter reminder.
+  static const int _dailyReminderId = 10;
+
   static Future<void> initialize() async {
     if (_initialized) return;
+    _initLocalTimezone();
     const androidInit = AndroidInitializationSettings('@mipmap/ic_launcher');
     const iosInit = DarwinInitializationSettings(
       // Avoid showing the permission alert immediately at app launch.
@@ -232,6 +275,27 @@ class NotificationService {
     );
     await _plugin.initialize(initSettings);
     _initialized = true;
+  }
+
+  // IANA Etc/GMT uses sign-flipped hours (Etc/GMT-9 = UTC+9 = Seoul).
+  // Fractional offsets (India +5:30) round to the nearest whole hour — a
+  // daily reminder doesn't need minute precision and avoids the
+  // flutter_timezone plugin dependency.
+  static void _initLocalTimezone() {
+    try {
+      tz_data.initializeTimeZones();
+      final offset = DateTime.now().timeZoneOffset;
+      final hours = offset.inMinutes ~/ 60;
+      if (hours == 0) {
+        tz.setLocalLocation(tz.UTC);
+        return;
+      }
+      final sign = hours >= 0 ? '-' : '+';
+      final abs = hours.abs();
+      tz.setLocalLocation(tz.getLocation('Etc/GMT$sign$abs'));
+    } catch (e) {
+      debugPrint('Timezone init error: $e');
+    }
   }
 
   static Future<void> requestPermissions() async {
@@ -459,6 +523,78 @@ class NotificationService {
       await _plugin.show(4, title, body, details);
     } catch (e) {
       debugPrint('Report block notification error: $e');
+    }
+  }
+
+  /// Schedules a repeating local notification at `hour`:`minute` local time
+  /// each day. Re-scheduling replaces the previous one, so it's safe to call
+  /// on every app launch.
+  static Future<void> scheduleDailyLetterReminder({
+    int hour = 8,
+    int minute = 0,
+    String langCode = 'en',
+  }) async {
+    try {
+      await _plugin.cancel(_dailyReminderId);
+
+      final now = tz.TZDateTime.now(tz.local);
+      var first = tz.TZDateTime(
+        tz.local,
+        now.year,
+        now.month,
+        now.day,
+        hour,
+        minute,
+      );
+      if (!first.isAfter(now)) {
+        first = first.add(const Duration(days: 1));
+      }
+
+      final title =
+          _dailyReminderTitles[langCode] ?? _dailyReminderTitles['en']!;
+      final body =
+          _dailyReminderBodies[langCode] ?? _dailyReminderBodies['en']!;
+
+      const androidDetails = AndroidNotificationDetails(
+        'daily_letter_reminder',
+        'Daily Letter Reminder',
+        channelDescription:
+            'Daily nudge to open the mailbox and read today\'s letters',
+        importance: Importance.defaultImportance,
+        priority: Priority.defaultPriority,
+        icon: '@mipmap/ic_launcher',
+      );
+      const iosDetails = DarwinNotificationDetails(
+        presentAlert: true,
+        presentBadge: false,
+        presentSound: true,
+      );
+      const details = NotificationDetails(
+        android: androidDetails,
+        iOS: iosDetails,
+      );
+
+      await _plugin.zonedSchedule(
+        _dailyReminderId,
+        title,
+        body,
+        first,
+        details,
+        androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
+        uiLocalNotificationDateInterpretation:
+            UILocalNotificationDateInterpretation.absoluteTime,
+        matchDateTimeComponents: DateTimeComponents.time,
+      );
+    } catch (e) {
+      debugPrint('Daily reminder schedule error: $e');
+    }
+  }
+
+  static Future<void> cancelDailyLetterReminder() async {
+    try {
+      await _plugin.cancel(_dailyReminderId);
+    } catch (e) {
+      debugPrint('Daily reminder cancel error: $e');
     }
   }
 

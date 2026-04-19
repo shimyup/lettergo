@@ -1720,6 +1720,15 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
     // 앱이 꺼져 있던 동안 arrivalTime이 지난 편지를 즉시 도착 처리
     _reconcileLetterStatuses();
 
+    // ── 매일 오전 8시 "오늘의 편지" 리마인더 재예약 ─────────────────────────
+    // 사용자가 opt-in한 경우에만 예약. 재시작·시간대 변경·DST 보정을 겸해
+    // 매 앱 실행마다 다시 스케줄한다. (Opt-in 기본값은 false)
+    if (prefs.getBool('notify_daily_letter') ?? false) {
+      NotificationService.scheduleDailyLetterReminder(
+        langCode: _currentUser.languageCode,
+      );
+    }
+
     notifyListeners();
   }
 
