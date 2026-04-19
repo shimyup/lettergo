@@ -14876,6 +14876,43 @@ class AppL10n {
     'th': 'สตรีคที่ยาวที่สุด $days วัน',
   });
 
+  // ── Air Mail Pass 서브브랜드 ────────────────────────────────────────────
+  /// 사용자 노출 브랜드명. 내부 코드·결제 플로우는 여전히 "Premium" 유지
+  /// 하지만 UI 상단 타이틀은 "항공우편 패스 (Air Mail Pass)" 로 표기.
+  String get airMailPassLabel => _t({
+    'ko': '항공우편 패스',
+    'en': 'Air Mail Pass',
+    'ja': 'エアメールパス',
+    'zh': '航空邮件通',
+    'fr': 'Pass Courrier Aérien',
+    'de': 'Luftpost Pass',
+    'es': 'Pase de Correo Aéreo',
+    'pt': 'Passe de Correio Aéreo',
+    'ru': 'Авиапочтовый Пропуск',
+    'tr': 'Hava Posta Paso',
+    'ar': 'تذكرة البريد الجوي',
+    'it': 'Pass Posta Aerea',
+    'hi': 'एयर मेल पास',
+    'th': 'บัตรจดหมายทางอากาศ',
+  });
+
+  String get airMailPassTagline => _t({
+    'ko': '무제한 하늘길 · 이미지 편지 · 특급 배송',
+    'en': 'Unlimited sky · image letters · express delivery',
+    'ja': '無制限の空路・画像手紙・特急配達',
+    'zh': '无限航线 · 图片信件 · 特快配送',
+    'fr': 'Ciel illimité · lettres avec image · livraison express',
+    'de': 'Unbegrenzter Himmel · Bildbriefe · Express-Zustellung',
+    'es': 'Cielo ilimitado · cartas con imagen · entrega exprés',
+    'pt': 'Céu ilimitado · cartas com imagem · entrega expressa',
+    'ru': 'Безлимитное небо · письма с фото · экспресс-доставка',
+    'tr': 'Sınırsız gökyüzü · resimli mektuplar · hızlı teslimat',
+    'ar': 'سماء بلا حدود · رسائل مصوّرة · توصيل سريع',
+    'it': 'Cielo illimitato · lettere con immagine · consegna express',
+    'hi': 'असीम आकाश · चित्र सहित पत्र · एक्सप्रेस डिलीवरी',
+    'th': 'ท้องฟ้าไร้ขีดจำกัด · จดหมายมีภาพ · จัดส่งด่วน',
+  });
+
   // ── 편지 맥락 배지 ──────────────────────────────────────────────────────
   String letterContextReceivedOrdinal(int n) => _t({
     'ko': '당신이 받은 $n번째 편지',

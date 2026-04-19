@@ -99,13 +99,30 @@ class PremiumScreen extends StatelessWidget {
                     ),
                     onPressed: () => Navigator.pop(context),
                   ),
-            title: Text(
-              isWelcomeMode ? '🎉 ${l.premiumPlanTitle}' : 'Letter Go Premium',
-              style: const TextStyle(
-                color: AppColors.textPrimary,
-                fontSize: 17,
-                fontWeight: FontWeight.w700,
-              ),
+            title: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  isWelcomeMode
+                      ? '🎉 ${l.premiumPlanTitle}'
+                      : 'Letter Go Premium',
+                  style: const TextStyle(
+                    color: AppColors.textPrimary,
+                    fontSize: 17,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  '✈️  ${l.airMailPassLabel}',
+                  style: TextStyle(
+                    color: AppColors.gold.withValues(alpha: 0.9),
+                    fontSize: 11,
+                    fontWeight: FontWeight.w600,
+                    letterSpacing: 0.8,
+                  ),
+                ),
+              ],
             ),
             centerTitle: true,
           ),
