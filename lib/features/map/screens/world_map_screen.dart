@@ -295,6 +295,7 @@ class _WorldMapScreenState extends State<WorldMapScreen>
             ),
             // ── 근처 도착 배너 (experienced 레벨 이상에서만) ─────────────
             if (state.hasNearbyAlert &&
+                !state.currentUser.isBrand &&
                 state.isFeatureUnlocked(UnlockableFeature.nearbyPickup))
               Positioned(
                 top: 220,
@@ -314,6 +315,19 @@ class _WorldMapScreenState extends State<WorldMapScreen>
                     );
                     state.clearNearbyAlert();
                   },
+                ),
+              ),
+            // ── Brand 전용 안내 배너 — "발송 전용 계정" ─────────────────
+            // 브랜드 계정은 편지를 주울 수 없고 뿌리기만 가능. 유저가
+            // 지도에서 의아해하지 않도록 상단 위치에 은은하게 고지한다.
+            if (state.currentUser.isBrand)
+              Positioned(
+                top: 220,
+                left: 16,
+                right: 16,
+                child: _BrandOnlySendBanner(
+                  title: l10n.brandOnlySendTitle,
+                  body: l10n.brandOnlySendBody,
                 ),
               ),
             // ── 지도 퀵 액션 (전체보기/내 위치) ─────────────────────────────
@@ -2794,6 +2808,66 @@ class _StatChip extends StatelessWidget {
             fontWeight: active ? FontWeight.w700 : FontWeight.w500,
           ),
         ),
+      ),
+    );
+  }
+}
+
+// ── 브랜드 전용 "발송 전용 계정" 고지 배너 ─────────────────────────────────
+class _BrandOnlySendBanner extends StatelessWidget {
+  final String title;
+  final String body;
+  const _BrandOnlySendBanner({required this.title, required this.body});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+      decoration: BoxDecoration(
+        color: AppColors.bgCard.withValues(alpha: 0.92),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: const Color(0xFFFF8C00).withValues(alpha: 0.55),
+          width: 1,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.25),
+            blurRadius: 8,
+            offset: const Offset(0, 3),
+          ),
+        ],
+      ),
+      child: Row(
+        children: [
+          const Text('📣', style: TextStyle(fontSize: 18)),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: const TextStyle(
+                    color: Color(0xFFFFB347),
+                    fontSize: 12,
+                    fontWeight: FontWeight.w800,
+                    letterSpacing: 0.3,
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  body,
+                  style: const TextStyle(
+                    color: AppColors.textSecondary,
+                    fontSize: 11,
+                    height: 1.3,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }

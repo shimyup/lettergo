@@ -132,6 +132,41 @@ class _InboxScreenState extends State<InboxScreen>
             child: Column(
               children: [
                 _buildHeader(context, state),
+                // 포지셔닝 힌트 — Free/Premium 유저에게만 "주변에서 할인·
+                // 이벤트 편지를 주우면 혜택이 있어요" 메시지 한 줄. Brand 는
+                // 보이지 않음 (자기가 뿌리는 입장).
+                if (!state.currentUser.isBrand)
+                  Container(
+                    margin: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 14,
+                      vertical: 9,
+                    ),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF00BFA5).withValues(alpha: 0.1),
+                      borderRadius: BorderRadius.circular(10),
+                      border: Border.all(
+                        color: const Color(0xFF00BFA5).withValues(alpha: 0.3),
+                      ),
+                    ),
+                    child: Row(
+                      children: [
+                        const Text('🎟', style: TextStyle(fontSize: 15)),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: Text(
+                            AppL10n.of(state.currentUser.languageCode)
+                                .inboxHuntHint,
+                            style: const TextStyle(
+                              color: AppColors.textSecondary,
+                              fontSize: 11,
+                              height: 1.35,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
                 Builder(builder: (ctx) {
                   final newCount = state.inbox.where((l) => l.status == DeliveryStatus.delivered).length;
                   final transitCount = state.inbox.where((l) => l.status == DeliveryStatus.inTransit || l.status == DeliveryStatus.nearYou).length;

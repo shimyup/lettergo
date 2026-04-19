@@ -174,12 +174,13 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
   // ── 등급별 픽업 반경 ──────────────────────────────────────────────────
   // 무료: 200m — 주변을 진짜 걸어야 편지가 잡히는 보물찾기 느낌
   // 프리미엄: 1km — 여유 있게 탐험 가능
-  // 브랜드: 지구 전체 (매우 큰 값)
+  // 브랜드: 0m — 앱 포지셔닝상 Brand 는 발송 전용. 픽업 아예 금지
   //
   // `nearYou` / `deliveredFar` 상태 전환과 픽업 시 거리 검증 모두 이 한 곳을
-  // 통해 간다. 이 상수를 바꾸면 게임 난이도가 한 번에 조정된다.
+  // 통해 간다. Brand 가 0m 이면 상태 전환 시점에 편지가 nearYou 가 되지
+  // 못하고, pickUpLetter 도 이중 가드로 거부한다.
   double get pickupRadiusMeters {
-    if (_currentUser.isBrand) return 20000000; // 20,000km ≈ 전 지구
+    if (_currentUser.isBrand) return 0;
     if (_currentUser.isPremium) return 1000;
     return 200;
   }
@@ -5428,9 +5429,17 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
   }
 
   // ── 편지 습득 ─────────────────────────────────────────────────────────────
-  /// 반환값: null = 성공, 非null = 실패 사유 메시지
+  /// 반환값: null = 성공, 非non-null = 실패 사유 메시지
   /// [distanceCheck] false로 설정하면 거리 검증 없이 습득 (테스트/관리자용)
   String? pickUpLetter(String letterId, {bool distanceCheck = true}) {
+    // ⓪ Brand 계정은 편지 픽업 불가 — 앱의 핵심 포지셔닝 상 브랜드는
+    //   "홍보 편지를 뿌리는" 역할이고, 주워서 수집하는 건 일반 회원의
+    //   메리트로 분리한다. 브랜드에게 픽업을 허용하면 자기 뿌린 쿠폰을
+    //   자기가 회수하는 무한 루프가 가능해지는 운영 리스크도 있다.
+    if (_currentUser.isBrand) {
+      return _l10n.statePickupBrandBlocked;
+    }
+
     // ① 쿨다운 체크 (무료: 1시간, 프리미엄/브랜드: 10분)
     final remaining = nearbyPickupRemainingCooldown;
     if (remaining != null) {
@@ -5439,7 +5448,7 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
       final timeStr = mins > 0
           ? _l10n.stateMinSec(mins, secs)
           : _l10n.stateSec(secs);
-      final tier = (_currentUser.isPremium || _currentUser.isBrand)
+      final tier = _currentUser.isPremium
           ? _l10n.stateTierPremium10min
           : _l10n.stateTierFree1hour;
       return _l10n.statePickupCooldown(timeStr, tier);

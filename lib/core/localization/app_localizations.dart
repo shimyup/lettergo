@@ -10264,6 +10264,73 @@ class AppL10n {
     'th': 'อ่านจดหมายนี้แล้ว 📖',
   });
 
+  String get inboxHuntHint => _t({
+    'ko': '주변에 뿌려진 할인권·이벤트 편지를 주워 활용해보세요',
+    'en': 'Pick up discount and event letters dropped nearby to redeem',
+    'ja': '近くに落ちている割引券・イベントの手紙を拾って使ってみて',
+    'zh': '拾取附近的折扣券和活动信件即可兑换',
+    'fr': 'Ramassez les réductions et événements lâchés près de vous',
+    'de': 'Sammle Rabatt- und Event-Briefe in deiner Nähe',
+    'es': 'Recoge cartas de descuento y eventos cercanas para usarlas',
+    'pt': 'Pegue cartas de desconto e eventos próximas para resgatar',
+    'ru': 'Подбирайте скидки и анонсы событий поблизости',
+    'tr': 'Yakındaki indirim ve etkinlik mektuplarını topla ve kullan',
+    'ar': 'التقط رسائل الخصومات والفعاليات القريبة واستفد منها',
+    'it': 'Raccogli lettere di sconti ed eventi vicino a te',
+    'hi': 'आसपास गिरे छूट/इवेंट पत्र उठाएँ और उपयोग करें',
+    'th': 'เก็บจดหมายส่วนลด/กิจกรรมรอบตัวเพื่อใช้สิทธิ์',
+  });
+
+  String get brandOnlySendTitle => _t({
+    'ko': '📣 발송 전용 브랜드 계정',
+    'en': '📣 Broadcast-only Brand account',
+    'ja': '📣 発信専用ブランドアカウント',
+    'zh': '📣 仅发送的品牌账号',
+    'fr': '📣 Compte Marque — envoi uniquement',
+    'de': '📣 Marke: Nur Versand',
+    'es': '📣 Cuenta Marca — solo envío',
+    'pt': '📣 Conta Marca — apenas envio',
+    'ru': '📣 Бренд — только отправка',
+    'tr': '📣 Yalnızca gönderim — Marka',
+    'ar': '📣 حساب علامة — إرسال فقط',
+    'it': '📣 Brand — solo invio',
+    'hi': '📣 ब्रांड — केवल भेजें',
+    'th': '📣 แบรนด์ — ส่งเท่านั้น',
+  });
+  String get brandOnlySendBody => _t({
+    'ko': '홍보·이벤트·할인 편지를 지구 곳곳에 뿌려보세요. 편지 줍기는 일반·프리미엄 회원의 메리트예요.',
+    'en': 'Drop promos, events, and discounts around the world. Picking letters up is the Free/Premium member\'s perk.',
+    'ja': '告知・イベント・割引の手紙を世界に配ってください。拾うのは一般・プレミアム会員の特典です。',
+    'zh': '把宣传、活动和折扣信件撒到世界各地。收取是普通/高级会员的专属福利。',
+    'fr': 'Diffusez promos, événements et réductions dans le monde. Le ramassage est l\'avantage Free/Premium.',
+    'de': 'Verbreite Promos, Events und Rabatte weltweit. Abholen bleibt Free/Premium-Mitgliedern vorbehalten.',
+    'es': 'Lanza promociones, eventos y descuentos por el mundo. Recoger es el privilegio Free/Premium.',
+    'pt': 'Espalhe promos, eventos e descontos pelo mundo. Recolher é o benefício Free/Premium.',
+    'ru': 'Рассыпайте акции, события и скидки по миру. Подбирать могут только Free/Premium.',
+    'tr': 'Promosyon, etkinlik ve indirim mektuplarını dünyaya yayın. Toplamak Free/Premium ayrıcalığı.',
+    'ar': 'انشر العروض والفعاليات والخصومات حول العالم. الالتقاط ميزة Free/Premium.',
+    'it': 'Distribuisci promo, eventi e sconti nel mondo. Il ritiro è vantaggio Free/Premium.',
+    'hi': 'प्रचार/इवेंट/छूट पत्र दुनिया में बिखेरें। उठाना Free/Premium सदस्यों का लाभ है।',
+    'th': 'กระจายโปร, กิจกรรม, ส่วนลดไปทั่วโลก การเก็บเป็นสิทธิ์ของสมาชิก Free/Premium',
+  });
+
+  String get statePickupBrandBlocked => _t({
+    'ko': '브랜드 계정은 편지를 보내는 데만 사용돼요 · 픽업은 일반·프리미엄 회원 전용이에요',
+    'en': 'Brand accounts can only send letters — pickup is for Free / Premium members',
+    'ja': 'ブランドアカウントは送信専用です — 受け取りは一般・プレミアム会員のみ',
+    'zh': '品牌账号只能发送信件 · 收取仅限普通/高级会员',
+    'fr': 'Les comptes Marque ne peuvent qu\'envoyer — le ramassage est réservé aux membres Free/Premium',
+    'de': 'Markenkonten können nur senden — Abholung ist für Free/Premium-Mitglieder',
+    'es': 'Las cuentas Marca solo pueden enviar — la recogida es solo para Free/Premium',
+    'pt': 'Contas Marca só podem enviar — coleta é apenas para membros Free/Premium',
+    'ru': 'Аккаунты брендов только отправляют — подбирать могут только Free/Premium',
+    'tr': 'Marka hesapları yalnızca gönderebilir — toplama Free/Premium üyelere özel',
+    'ar': 'حسابات العلامات التجارية للإرسال فقط — الالتقاط لأعضاء مجاني/بريميوم',
+    'it': 'Gli account Brand possono solo inviare — il ritiro è per membri Free/Premium',
+    'hi': 'ब्रांड खाते केवल भेज सकते हैं — उठाना Free/Premium सदस्यों के लिए',
+    'th': 'บัญชีแบรนด์ใช้เพื่อส่งเท่านั้น · การเก็บเฉพาะสมาชิก Free/Premium',
+  });
+
   String get stateAlreadyTaken => _t({
     'ko': '누군가 이미 가져간 편지예요 😢',
     'en': 'Someone already took this letter 😢',
