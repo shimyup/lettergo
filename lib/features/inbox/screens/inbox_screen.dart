@@ -14,8 +14,8 @@ import '../../dm/dm_conversation_screen.dart';
 //   + coupon · voucher (브랜드 발송 편지의 카테고리별 쿠폰함 섹션용)
 enum LetterFilterType { all, read, inTransit, waitingPickup, brand, coupon, voucher }
 
-// 필터별 empty state 이모지. 수집첩이 비었을 때 어떤 종류의 편지를 찾고 있었는지
-// 시각적으로 힌트를 준다. (예: 할인권 필터에서 비면 🎟)
+// 필터별 empty state 이모지. 수집첩이 비었을 때 어떤 종류의 편지를 찾고
+// 있었는지 시각적으로 힌트를 준다. (예: 할인권 필터에서 비면 🎟)
 String _emptyEmojiForFilter(LetterFilterType f) {
   switch (f) {
     case LetterFilterType.coupon:
@@ -32,6 +32,27 @@ String _emptyEmojiForFilter(LetterFilterType f) {
       return '📬';
     case LetterFilterType.all:
       return '📭';
+  }
+}
+
+// 필터별 이름. inboxEmptyForFilter() 에 전달해 "아직 받은 할인권이 없어요"
+// 식으로 쓰인다. 사용자가 어떤 필터를 켜놨는지 empty state 제목에서 즉시 인지.
+String _filterName(LetterFilterType f, AppL10n l10n) {
+  switch (f) {
+    case LetterFilterType.coupon:
+      return l10n.inboxFilterCoupon;
+    case LetterFilterType.voucher:
+      return l10n.inboxFilterVoucher;
+    case LetterFilterType.brand:
+      return l10n.inboxFilterBrand;
+    case LetterFilterType.read:
+      return l10n.inboxRead;
+    case LetterFilterType.inTransit:
+      return l10n.inboxFilterInTransit;
+    case LetterFilterType.waitingPickup:
+      return l10n.inboxFilterWaiting;
+    case LetterFilterType.all:
+      return l10n.inboxFilterAll;
   }
 }
 
@@ -202,15 +223,27 @@ class _InboxScreenState extends State<InboxScreen>
                     ),
                     child: Row(
                       children: [
-                        _buildStatChip('새 편지', newCount.toString(), AppColors.gold),
+                        _buildStatChip(
+                          AppL10n.of(state.currentUser.languageCode).inboxStatNew,
+                          newCount.toString(),
+                          AppColors.gold,
+                        ),
                         const Expanded(child: SizedBox()),
                         Container(width: 1, height: 28, color: const Color(0xFF1F2D44)),
                         const Expanded(child: SizedBox()),
-                        _buildStatChip('배달중', transitCount.toString(), AppColors.teal),
+                        _buildStatChip(
+                          AppL10n.of(state.currentUser.languageCode).inboxStatTransit,
+                          transitCount.toString(),
+                          AppColors.teal,
+                        ),
                         const Expanded(child: SizedBox()),
                         Container(width: 1, height: 28, color: const Color(0xFF1F2D44)),
                         const Expanded(child: SizedBox()),
-                        _buildStatChip('총 수신', totalCount.toString(), AppColors.textSecondary),
+                        _buildStatChip(
+                          AppL10n.of(state.currentUser.languageCode).inboxStatTotal,
+                          totalCount.toString(),
+                          AppColors.textSecondary,
+                        ),
                       ],
                     ),
                   );
@@ -665,7 +698,7 @@ class _InboxTab extends StatelessWidget {
               emoji: _emptyEmojiForFilter(activeFilter),
               title: activeFilter == LetterFilterType.all
                   ? l10n.inboxEmptyReceived
-                  : l10n.inboxEmptyFilterGeneric,
+                  : l10n.inboxEmptyForFilter(_filterName(activeFilter, l10n)),
               subtitle: l10n.inboxEmptyReceivedSub,
               ctaLabel: l10n.emptyStateWriteCta,
               onCtaTap: () => Navigator.of(context).pushNamed('/compose'),
@@ -869,7 +902,7 @@ class _SentTab extends StatelessWidget {
                   : _emptyEmojiForFilter(activeFilter),
               title: activeFilter == LetterFilterType.all
                   ? l10n.inboxEmptySent
-                  : l10n.inboxEmptyFilterGeneric,
+                  : l10n.inboxEmptyForFilter(_filterName(activeFilter, l10n)),
               subtitle: l10n.inboxEmptySentSub,
               ctaLabel: l10n.emptyStateWriteCta,
               onCtaTap: () => Navigator.of(context).pushNamed('/compose'),

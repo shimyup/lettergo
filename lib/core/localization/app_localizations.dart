@@ -6324,21 +6324,247 @@ class AppL10n {
     'th': 'ลองเปลี่ยนตัวกรองหรือค้นหาจดหมายใหม่บนแผนที่!',
   });
 
-  String get inboxEmptyFilterGeneric => _t({
-    'ko': '아직 이 종류의 편지가 없어요',
-    'en': 'No letters of this type yet',
-    'ja': 'この種類の手紙はまだありません',
-    'zh': '暂无此类信件',
-    'fr': 'Aucune lettre de ce type pour l’instant',
-    'de': 'Noch keine Briefe dieser Art',
-    'es': 'Aún no hay cartas de este tipo',
-    'pt': 'Ainda não há cartas deste tipo',
-    'ru': 'Писем этого типа пока нет',
-    'tr': 'Henüz bu türde mektup yok',
-    'ar': 'لا توجد رسائل من هذا النوع بعد',
-    'it': 'Nessuna lettera di questo tipo',
-    'hi': 'अभी इस प्रकार का कोई पत्र नहीं',
-    'th': 'ยังไม่มีจดหมายประเภทนี้',
+  /// 필터명을 받아 "아직 X 편지가 없어요" 식으로 조합. 빈 수집첩에서
+  /// 어떤 필터가 걸렸는지 명시적으로 알려준다.
+  String inboxEmptyForFilter(String filterName) {
+    switch (languageCode) {
+      case 'ko':
+        return '아직 받은 $filterName(이)가 없어요';
+      case 'en':
+        return 'No $filterName yet';
+      case 'ja':
+        return 'まだ$filterNameがありません';
+      case 'zh':
+        return '暂无$filterName';
+      case 'fr':
+        return 'Pas encore de $filterName';
+      case 'de':
+        return 'Noch keine $filterName';
+      case 'es':
+        return 'Aún no hay $filterName';
+      case 'pt':
+        return 'Ainda não há $filterName';
+      case 'ru':
+        return 'Пока нет $filterName';
+      case 'tr':
+        return 'Henüz $filterName yok';
+      case 'ar':
+        return 'لا يوجد $filterName بعد';
+      case 'it':
+        return 'Ancora nessun $filterName';
+      case 'hi':
+        return 'अभी कोई $filterName नहीं';
+      case 'th':
+        return 'ยังไม่มี$filterName';
+      default:
+        return 'No $filterName yet';
+    }
+  }
+
+  // 회원탈퇴 다이얼로그 — 삭제되는 항목 헤더 · 항목 리스트 · 유저명 입력 안내
+  String get settingsWithdrawItemsHeader => _t({
+    'ko': '⚠️ 삭제되는 항목',
+    'en': '⚠️ What will be deleted',
+    'ja': '⚠️ 削除される項目',
+    'zh': '⚠️ 将被删除的内容',
+    'fr': '⚠️ Éléments supprimés',
+    'de': '⚠️ Was gelöscht wird',
+    'es': '⚠️ Qué se eliminará',
+    'pt': '⚠️ O que será apagado',
+    'ru': '⚠️ Что будет удалено',
+    'tr': '⚠️ Silinecekler',
+    'ar': '⚠️ ما الذي سيتم حذفه',
+    'it': '⚠️ Cosa verrà eliminato',
+    'hi': '⚠️ क्या हटाया जाएगा',
+    'th': '⚠️ สิ่งที่จะถูกลบ',
+  });
+
+  String get settingsWithdrawItemsList => _t({
+    'ko': '• 모든 편지 및 DM 기록\n• 타워 및 활동 점수\n• 스탬프 앨범\n• 계정 정보',
+    'en': '• All letters and DM history\n• Tower and activity score\n• Stamp album\n• Account info',
+    'ja': '• すべての手紙とDM履歴\n• タワーとアクティビティスコア\n• スタンプアルバム\n• アカウント情報',
+    'zh': '• 所有信件和私信记录\n• 塔和活跃度分数\n• 邮票收集册\n• 账号信息',
+    'fr': '• Toutes les lettres et DM\n• Tour et score d’activité\n• Album de timbres\n• Info du compte',
+    'de': '• Alle Briefe und DMs\n• Turm und Aktivitätsscore\n• Briefmarkenalbum\n• Kontodaten',
+    'es': '• Todas las cartas y DMs\n• Torre y puntuación\n• Álbum de sellos\n• Datos de cuenta',
+    'pt': '• Todas as cartas e DMs\n• Torre e pontuação\n• Álbum de selos\n• Dados da conta',
+    'ru': '• Все письма и ЛС\n• Башня и очки активности\n• Альбом марок\n• Данные аккаунта',
+    'tr': '• Tüm mektuplar ve DM\n• Kule ve etkinlik puanı\n• Pul albümü\n• Hesap bilgileri',
+    'ar': '• كل الرسائل والمحادثات الخاصة\n• البرج ونقاط النشاط\n• ألبوم الطوابع\n• بيانات الحساب',
+    'it': '• Tutte le lettere e DM\n• Torre e punteggio\n• Album dei francobolli\n• Dati account',
+    'hi': '• सभी पत्र और DM\n• टावर और गतिविधि स्कोर\n• स्टैम्प एल्बम\n• खाता जानकारी',
+    'th': '• จดหมายและ DM ทั้งหมด\n• หอและคะแนนกิจกรรม\n• อัลบั้มแสตมป์\n• ข้อมูลบัญชี',
+  });
+
+  String settingsWithdrawTypeUsernameToConfirm(String username) {
+    switch (languageCode) {
+      case 'ko':
+        return '확인을 위해 아이디 "$username"를 입력하세요:';
+      case 'ja':
+        return '確認のためユーザー名 "$username" を入力してください:';
+      case 'zh':
+        return '请输入用户名 "$username" 以确认：';
+      case 'fr':
+        return 'Saisissez "$username" pour confirmer :';
+      case 'de':
+        return 'Gib "$username" ein, um zu bestätigen:';
+      case 'es':
+        return 'Escribe "$username" para confirmar:';
+      case 'pt':
+        return 'Digite "$username" para confirmar:';
+      case 'ru':
+        return 'Введите "$username" для подтверждения:';
+      case 'tr':
+        return 'Onaylamak için "$username" yazın:';
+      case 'ar':
+        return 'اكتب "$username" للتأكيد:';
+      case 'it':
+        return 'Digita "$username" per confermare:';
+      case 'hi':
+        return 'पुष्टि करने के लिए "$username" टाइप करें:';
+      case 'th':
+        return 'พิมพ์ "$username" เพื่อยืนยัน:';
+      default:
+        return 'Type "$username" to confirm:';
+    }
+  }
+
+  // 설정 · 고객 지원 섹션
+  String get settingsSupport => _t({
+    'ko': '고객 지원',
+    'en': 'Support',
+    'ja': 'サポート',
+    'zh': '客户支持',
+    'fr': 'Assistance',
+    'de': 'Support',
+    'es': 'Soporte',
+    'pt': 'Suporte',
+    'ru': 'Поддержка',
+    'tr': 'Destek',
+    'ar': 'الدعم',
+    'it': 'Assistenza',
+    'hi': 'सहायता',
+    'th': 'ฝ่ายช่วยเหลือ',
+  });
+
+  String get settingsContactUs => _t({
+    'ko': '문의하기',
+    'en': 'Contact us',
+    'ja': 'お問い合わせ',
+    'zh': '联系我们',
+    'fr': 'Nous contacter',
+    'de': 'Kontakt',
+    'es': 'Contáctanos',
+    'pt': 'Fale conosco',
+    'ru': 'Связаться с нами',
+    'tr': 'Bize ulaşın',
+    'ar': 'تواصل معنا',
+    'it': 'Contattaci',
+    'hi': 'संपर्क करें',
+    'th': 'ติดต่อเรา',
+  });
+
+  String get settingsContactUsDesc => _t({
+    'ko': '오류 신고 · 기능 제안 · 기타 문의',
+    'en': 'Report a bug · Suggest a feature · Other',
+    'ja': '不具合報告・機能提案・その他',
+    'zh': '反馈问题 · 功能建议 · 其他',
+    'fr': 'Bug · Suggestion · Autre',
+    'de': 'Fehler · Vorschlag · Sonstiges',
+    'es': 'Error · Sugerencia · Otro',
+    'pt': 'Erro · Sugestão · Outro',
+    'ru': 'Ошибка · Предложение · Другое',
+    'tr': 'Hata · Öneri · Diğer',
+    'ar': 'إبلاغ عن خطأ · اقتراح · أخرى',
+    'it': 'Bug · Suggerimento · Altro',
+    'hi': 'बग · सुझाव · अन्य',
+    'th': 'แจ้งบัก · เสนอฟีเจอร์ · อื่น ๆ',
+  });
+
+  String get settingsManageSubscription => _t({
+    'ko': '구독 관리',
+    'en': 'Manage subscription',
+    'ja': 'サブスクリプション管理',
+    'zh': '管理订阅',
+    'fr': 'Gérer l\'abonnement',
+    'de': 'Abo verwalten',
+    'es': 'Gestionar suscripción',
+    'pt': 'Gerir subscrição',
+    'ru': 'Управление подпиской',
+    'tr': 'Aboneliği yönet',
+    'ar': 'إدارة الاشتراك',
+    'it': 'Gestisci abbonamento',
+    'hi': 'सदस्यता प्रबंधित करें',
+    'th': 'จัดการการสมัคร',
+  });
+
+  String get settingsManageSubscriptionDesc => _t({
+    'ko': 'App Store / Google Play에서 구독 변경',
+    'en': 'Change your plan in App Store / Google Play',
+    'ja': 'App Store / Google Playでプラン変更',
+    'zh': '在 App Store / Google Play 更改订阅',
+    'fr': 'Modifier dans App Store / Google Play',
+    'de': 'Im App Store / Google Play ändern',
+    'es': 'Cambiar en App Store / Google Play',
+    'pt': 'Alterar em App Store / Google Play',
+    'ru': 'Изменить в App Store / Google Play',
+    'tr': 'App Store / Google Play üzerinden değiştir',
+    'ar': 'تغيير عبر App Store / Google Play',
+    'it': 'Modifica in App Store / Google Play',
+    'hi': 'App Store / Google Play से बदलें',
+    'th': 'เปลี่ยนใน App Store / Google Play',
+  });
+
+  // 수집첩 상단의 숫자 칩 3개 — 새 편지 / 배달중 / 총 수신
+  String get inboxStatNew => _t({
+    'ko': '새 편지',
+    'en': 'New',
+    'ja': '新着',
+    'zh': '新信件',
+    'fr': 'Nouveau',
+    'de': 'Neu',
+    'es': 'Nuevo',
+    'pt': 'Novo',
+    'ru': 'Новые',
+    'tr': 'Yeni',
+    'ar': 'جديد',
+    'it': 'Nuovo',
+    'hi': 'नया',
+    'th': 'ใหม่',
+  });
+
+  String get inboxStatTransit => _t({
+    'ko': '배달중',
+    'en': 'In transit',
+    'ja': '配達中',
+    'zh': '投递中',
+    'fr': 'En route',
+    'de': 'Unterwegs',
+    'es': 'En camino',
+    'pt': 'A caminho',
+    'ru': 'В пути',
+    'tr': 'Yolda',
+    'ar': 'قيد التوصيل',
+    'it': 'In viaggio',
+    'hi': 'रास्ते में',
+    'th': 'กำลังจัดส่ง',
+  });
+
+  String get inboxStatTotal => _t({
+    'ko': '총 수신',
+    'en': 'Total received',
+    'ja': '総受信',
+    'zh': '累计收件',
+    'fr': 'Total reçu',
+    'de': 'Gesamt erhalten',
+    'es': 'Total recibidas',
+    'pt': 'Total recebidas',
+    'ru': 'Всего получено',
+    'tr': 'Toplam alınan',
+    'ar': 'إجمالي المستلم',
+    'it': 'Totale ricevute',
+    'hi': 'कुल प्राप्त',
+    'th': 'รับทั้งหมด',
   });
 
   String get inboxEmptySent => _t({
