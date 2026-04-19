@@ -48,6 +48,15 @@ class FirestoreService {
   }
 
   // ── 문서 쓰기/업데이트 ───────────────────────────────────────────────────────
+  //
+  // Firestore REST API 의 PATCH 는 updateMask 를 명시하지 않으면 요청 body 에
+  // 없는 기존 필드들을 "삭제" 처리한다. 이 서비스의 caller 들은 모두 "부분
+  // 업데이트" 를 기대하므로, 전달받은 필드만 updateMask 로 지정해
+  // 다른 필드가 동시에 살아남도록 한다.
+  //
+  // 이 가드가 없으면 위도/경도 저장과 초대코드 저장이 병렬로 날아가 서로의
+  // 필드를 덮어 쓰는 경쟁 상태가 발생, 지도에서 좌표가 0,0 으로 보이는
+  // 문제가 재현된다.
   static Future<bool> setDocument(
     String path,
     Map<String, dynamic> data,
@@ -56,9 +65,15 @@ class FirestoreService {
     await FirebaseAuthService.ensureValidToken();
     try {
       final body = jsonEncode({'fields': _toFirestoreFields(data)});
+      final maskParams = data.keys
+          .map((k) => 'updateMask.fieldPaths=${Uri.encodeQueryComponent(k)}')
+          .join('&');
+      final separator = maskParams.isEmpty ? '' : '?$maskParams';
       final res = await http
           .patch(
-            Uri.parse('${FirebaseConfig.firestoreBase}/$path'),
+            Uri.parse(
+              '${FirebaseConfig.firestoreBase}/$path$separator',
+            ),
             headers: _headers,
             body: body,
           )

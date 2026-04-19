@@ -2793,64 +2793,67 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
     if (_currentUser.id == 'guest') return;
     if (!FirebaseConfig.kFirebaseEnabled) return;
     try {
-      final url = Uri.parse(
-        '${FirebaseConfig.firestoreBase}/users/${_currentUser.id}'
-        '?key=${FirebaseConfig.apiKey}',
-      );
-      final body = jsonEncode({
-        'fields': {
-          'id': {'stringValue': _currentUser.id},
-          'username': {'stringValue': _currentUser.username},
-          'countryFlag': {'stringValue': _currentUser.countryFlag},
-          'country': {'stringValue': _currentUser.country},
-          'latitude': {'doubleValue': _currentUser.latitude},
-          'longitude': {'doubleValue': _currentUser.longitude},
-          'isUsernamePublic': {'booleanValue': _currentUser.isUsernamePublic},
-          // 지도 노출은 명시적 opt-in 필드로 관리
-          'isMapPublic': {'booleanValue': _currentUser.isUsernamePublic},
-          // 로그아웃 스냅샷: 다른 회원 지도에서 "최근에 접속했던 테스터"를
-          // 구분하는 데 사용. 현재 fetchMapUsers 는 이 필드를 읽지 않지만
-          // 나중에 "최근 활동" 필터 추가 시 활용 가능.
-          'lastSeenAt': {
+      final fields = <String, Map<String, dynamic>>{
+        'id': {'stringValue': _currentUser.id},
+        'username': {'stringValue': _currentUser.username},
+        'countryFlag': {'stringValue': _currentUser.countryFlag},
+        'country': {'stringValue': _currentUser.country},
+        'latitude': {'doubleValue': _currentUser.latitude},
+        'longitude': {'doubleValue': _currentUser.longitude},
+        'isUsernamePublic': {'booleanValue': _currentUser.isUsernamePublic},
+        // 지도 노출은 명시적 opt-in 필드로 관리
+        'isMapPublic': {'booleanValue': _currentUser.isUsernamePublic},
+        // 로그아웃 스냅샷 + 최근 활동 타임스탬프
+        'lastSeenAt': {
+          'timestampValue': DateTime.now().toUtc().toIso8601String(),
+        },
+        if (markLoggedOut)
+          'loggedOutAt': {
             'timestampValue': DateTime.now().toUtc().toIso8601String(),
           },
-          if (markLoggedOut)
-            'loggedOutAt': {
-              'timestampValue': DateTime.now().toUtc().toIso8601String(),
-            },
-          'receivedCount': {
-            'integerValue': '${_currentUser.activityScore.receivedCount}',
-          },
-          'replyCount': {
-            'integerValue': '${_currentUser.activityScore.replyCount}',
-          },
-          'sentCount': {
-            'integerValue': '${_currentUser.activityScore.sentCount}',
-          },
-          'likeCount': {
-            'integerValue': '${_currentUser.activityScore.likeCount}',
-          },
-          'inviteCode': {'stringValue': myInviteCode},
-          'inviteRewardCredits': {'integerValue': '$_inviteRewardCredits'},
-          'brandExtraMonthlyQuota': {
-            'integerValue': '$_brandExtraMonthlyQuota',
-          },
-          if (_appliedInviteCode != null)
-            'inviteAppliedCode': {'stringValue': _appliedInviteCode!},
-          if (_lastInviteRewardAt != null)
-            'inviteRewardAt': {
-              'timestampValue': _lastInviteRewardAt!.toUtc().toIso8601String(),
-            },
-          'updatedAt': {'stringValue': DateTime.now().toIso8601String()},
-          if (_currentUser.customTowerName != null)
-            'customTowerName': {'stringValue': _currentUser.customTowerName!},
-          'towerColor': {'stringValue': _currentUser.towerColor},
-          if (_currentUser.towerAccentEmoji != null)
-            'towerAccentEmoji': {'stringValue': _currentUser.towerAccentEmoji!},
-          'towerRoofStyle': {'integerValue': '${_currentUser.towerRoofStyle}'},
-          'towerWindowStyle': {'integerValue': '${_currentUser.towerWindowStyle}'},
+        'receivedCount': {
+          'integerValue': '${_currentUser.activityScore.receivedCount}',
         },
-      });
+        'replyCount': {
+          'integerValue': '${_currentUser.activityScore.replyCount}',
+        },
+        'sentCount': {
+          'integerValue': '${_currentUser.activityScore.sentCount}',
+        },
+        'likeCount': {
+          'integerValue': '${_currentUser.activityScore.likeCount}',
+        },
+        'inviteCode': {'stringValue': myInviteCode},
+        'inviteRewardCredits': {'integerValue': '$_inviteRewardCredits'},
+        'brandExtraMonthlyQuota': {
+          'integerValue': '$_brandExtraMonthlyQuota',
+        },
+        if (_appliedInviteCode != null)
+          'inviteAppliedCode': {'stringValue': _appliedInviteCode!},
+        if (_lastInviteRewardAt != null)
+          'inviteRewardAt': {
+            'timestampValue': _lastInviteRewardAt!.toUtc().toIso8601String(),
+          },
+        'updatedAt': {'stringValue': DateTime.now().toIso8601String()},
+        if (_currentUser.customTowerName != null)
+          'customTowerName': {'stringValue': _currentUser.customTowerName!},
+        'towerColor': {'stringValue': _currentUser.towerColor},
+        if (_currentUser.towerAccentEmoji != null)
+          'towerAccentEmoji': {'stringValue': _currentUser.towerAccentEmoji!},
+        'towerRoofStyle': {'integerValue': '${_currentUser.towerRoofStyle}'},
+        'towerWindowStyle': {'integerValue': '${_currentUser.towerWindowStyle}'},
+      };
+      // updateMask 를 명시해야 PATCH 가 다른 필드(예: 병렬로 쓰는 invite 정보)를
+      // 삭제하지 않는다. 이걸 빼면 병렬 쓰기가 서로의 필드를 밀어내 0,0 좌표가
+      // 남는 버그가 재현된다.
+      final maskParams = fields.keys
+          .map((k) => 'updateMask.fieldPaths=${Uri.encodeQueryComponent(k)}')
+          .join('&');
+      final url = Uri.parse(
+        '${FirebaseConfig.firestoreBase}/users/${_currentUser.id}'
+        '?key=${FirebaseConfig.apiKey}&$maskParams',
+      );
+      final body = jsonEncode({'fields': fields});
       for (int attempt = 0; attempt < 3; attempt++) {
         try {
           await http.patch(
