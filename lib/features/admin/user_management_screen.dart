@@ -657,21 +657,27 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
   }
 
   // ── 회원 삭제 ───────────────────────────────────────────────────────────────
+  //
+  // Firestore 보안 규칙이 /users/{id} 삭제 시 `isSignedIn()` 을 요구하므로
+  // API key 만으로는 401/403 으로 실패한다. FirestoreService.deleteDocument
+  // 가 anonymous 인증 토큰을 Authorization 헤더에 자동으로 실어주므로,
+  // 이쪽 경로로 호출한다. (차단/등급 변경은 이미 setDocument 를 쓰므로
+  // 동일한 토큰 경로로 동작 중이다.)
   Future<void> _deleteUser(AdminUser user) async {
     final l = _l10n(context);
-    final url = Uri.parse(
-      '${FirebaseConfig.firestoreBase}/users/${user.id}?key=${Uri.encodeQueryComponent(FirebaseConfig.apiKey)}',
-    );
     try {
-      final res = await http.delete(url).timeout(const Duration(seconds: 10));
+      final ok = await FirestoreService.deleteDocument('users/${user.id}');
       if (!mounted) return;
-      if (res.statusCode == 200 || res.statusCode == 204) {
+      if (ok) {
         _users.removeWhere((u) => u.id == user.id);
         _applyFilter();
         _showSnack(l.koEn('🗑️ ${user.username} 삭제 완료', '🗑️ ${user.username} deleted'));
       } else {
         _showSnack(
-          l.koEn('삭제 실패 (HTTP ${res.statusCode})', 'Delete failed (HTTP ${res.statusCode})'),
+          l.koEn(
+            '삭제 실패 — Firebase 인증·규칙을 확인하세요',
+            'Delete failed — check Firebase auth and rules',
+          ),
           isError: true,
         );
       }

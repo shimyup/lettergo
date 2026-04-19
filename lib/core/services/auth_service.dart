@@ -3,11 +3,11 @@ import 'dart:math';
 import 'package:flutter/foundation.dart';
 import 'package:crypto/crypto.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uuid/uuid.dart';
 import '../config/firebase_config.dart';
 import '../localization/language_config.dart';
+import 'firestore_service.dart';
 import 'firebase_auth_service.dart';
 import 'purchase_service.dart';
 import 'sms_service.dart';
@@ -1090,16 +1090,18 @@ class AuthService {
   }
 
   // 회원탈퇴 시 원격 사용자 문서 정리 (실패해도 로컬 탈퇴는 진행)
+  //
+  // FirestoreService.deleteDocument 를 사용하면 Firebase Auth anonymous 토큰이
+  // Authorization 헤더에 자동 포함된다. API key 만 있는 요청은 보안 규칙의
+  // `isSignedIn()` 체크를 통과하지 못해 401/403 으로 실패하므로 여기서 직접
+  // http.delete 를 쓰면 안 된다.
   static Future<void> _deleteRemoteAccountDataBestEffort() async {
     final userId = (await _readSecure(_keyUserId))?.trim() ?? '';
     if (userId.isEmpty) return;
     if (!FirebaseConfig.kFirebaseEnabled) return;
 
     try {
-      final userDocUri = Uri.parse(
-        '${FirebaseConfig.firestoreBase}/users/$userId',
-      ).replace(queryParameters: {'key': FirebaseConfig.apiKey});
-      await http.delete(userDocUri).timeout(const Duration(seconds: 8));
+      await FirestoreService.deleteDocument('users/$userId');
     } catch (e, st) {
       debugPrint('[AuthService] remote delete warning: $e\n$st');
     }
