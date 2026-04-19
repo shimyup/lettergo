@@ -278,6 +278,21 @@ class _SplashScreenState extends State<SplashScreen>
                                 ),
                               ),
                             ],
+                            // 브랜드 포지셔닝 보조 태그라인 (Build 79)
+                            const SizedBox(height: 10),
+                            Text(
+                              l.appSubTagline,
+                              textAlign: TextAlign.center,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: TextStyle(
+                                fontSize: 11,
+                                color: AppColors.gold.withValues(alpha: 0.7),
+                                letterSpacing: 1.2,
+                                fontWeight: FontWeight.w500,
+                                height: 1.5,
+                              ),
+                            ),
                           ],
                         ),
                       ),
