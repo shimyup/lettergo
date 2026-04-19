@@ -375,12 +375,8 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
     _maybeRefillStreakFreeze(today);
 
     if (_lastStreakCheckinDate.isEmpty) {
-      // 첫 접속 + 방어권 첫 지급
+      // 첫 접속 — 방어권은 _maybeRefillStreakFreeze가 이미 지급했다
       _currentStreak = 1;
-      if (_streakFreezeTokens < _streakFreezeMax) {
-        _streakFreezeTokens = _streakFreezeMax;
-        _streakFreezeLastRefill = todayKey;
-      }
     } else {
       final lastDate = _parseDateKey(_lastStreakCheckinDate);
       final gapDays = lastDate == null
@@ -410,8 +406,12 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
 
   void _maybeRefillStreakFreeze(DateTime today) {
     if (_streakFreezeTokens >= _streakFreezeMax) return;
+    // 최초 1회 지급 — 신규 유저와 Build 95 이전부터 쓰던 기존 유저(마이그레이션)
+    // 모두 여기에서 토큰을 받는다. lastRefill이 비어 있으면 "지금 충전 기준선을
+    // 오늘로 설정"한다.
     if (_streakFreezeLastRefill.isEmpty) {
-      // 아직 한 번도 충전되지 않은 계정 — 최초 지급은 첫 체크인 로직에서 처리
+      _streakFreezeTokens = _streakFreezeMax;
+      _streakFreezeLastRefill = _dateKey(today);
       return;
     }
     final lastRefill = _parseDateKey(_streakFreezeLastRefill);
@@ -1815,7 +1815,9 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
       // 2시간 이상 여유가 있는 편지만 — 리드타임이 너무 짧으면 무의미
       Letter? next;
       for (final l in [..._worldLetters, ..._inbox]) {
-        // 내게 오는 편지가 아니면 스킵 (destination으로 체크)
+        // 내가 보낸 편지는 제외 — 국내 근거리 발송(예: 서울→인천)이 목적지
+        // 100km 필터를 통과해 "도착 예정" 푸시로 잘못 걸리는 문제 방지
+        if (l.senderId == _currentUser.id) continue;
         if (l.status != DeliveryStatus.inTransit) continue;
         final at = l.arrivalTime;
         if (at == null) continue;
