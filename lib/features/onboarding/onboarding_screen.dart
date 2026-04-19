@@ -295,7 +295,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 gradient: const [Color(0xFF0A1628), Color(0xFF0D2040)],
               ),
               _IntroPage(
-                emoji: '📬',
+                // Build 103 의 헌트/줍기 메커니즘 — 지도에서 편지 주워 모으기
+                emoji: '🗺',
                 title: _l.onboarding3Title,
                 body: _l.onboarding3Body,
                 gradient: const [Color(0xFF0F1A30), Color(0xFF1A2A50)],

@@ -641,48 +641,52 @@ class AppL10n {
     'th': 'จดหมายเดินทาง 🚚→✈️→🚚 บนแผนที่โลก สะท้อนเวลาส่งไปรษณีย์จริง',
   });
 
+  // Build 103 에서 "3개 보내야 받은 편지 읽음" 룰이 제거되면서 이 페이지는
+  // 헌트/줍기 메커니즘 소개로 재구성됨. (Free 200m · Premium 1km)
   String get onboarding3Title => _t({
-    'ko': '📬 편지 교환 규칙',
-    'en': '📬 Letter Exchange Rules',
-    'ja': '📬 手紙交換ルール',
-    'zh': '📬 信件交换规则',
-    'fr': '📬 Règles d\'échange de lettres',
-    'de': '📬 Briefaustauschregeln',
-    'es': '📬 Reglas de intercambio de cartas',
-    'pt': '📬 Regras de troca de cartas',
-    'ru': '📬 Правила обмена письмами',
-    'tr': '📬 Mektup alışverişi kuralları',
-    'ar': '📬 قواعد تبادل الرسائل',
-    'it': '📬 Regole di scambio lettere',
-    'hi': '📬 पत्र विनिमय नियम',
-    'th': '📬 กฎการแลกจดหมาย',
+    'ko': '🗺 편지를 주워요',
+    'en': '🗺 Pick Up Letters',
+    'ja': '🗺 手紙を拾おう',
+    'zh': '🗺 拾起信件',
+    'fr': '🗺 Ramasse les lettres',
+    'de': '🗺 Briefe aufsammeln',
+    'es': '🗺 Recoge cartas',
+    'pt': '🗺 Apanhe cartas',
+    'ru': '🗺 Подбирайте письма',
+    'tr': '🗺 Mektupları topla',
+    'ar': '🗺 التقط الرسائل',
+    'it': '🗺 Raccogli lettere',
+    'hi': '🗺 पत्र उठाएँ',
+    'th': '🗺 เก็บจดหมาย',
   });
   String get onboarding3Body => _t({
-    'ko': '편지를 3개 보내야 다음 받은 편지를 읽을 수 있어요. 공정한 교환을 통해 모두가 편지를 받을 수 있습니다!',
+    'ko': '세계 곳곳에 흩어진 할인권·이벤트 편지를 가까이 다가가서 주워 보세요. Free는 200m, Premium은 1km 반경에서 주울 수 있어요.',
     'en':
-        'You must send 3 letters before reading the next received one. Fair exchange keeps letters flowing for everyone!',
-    'ja': '次の受信した手紙を読む前に3通送る必要があります。公平な交換でみんなに手紙が届きます！',
-    'zh': '阅读下一封收到的信件前，必须发送3封信。公平交换，让每个人都能收到信！',
+        'Walk close to coupon and event letters scattered across the map to pick them up. Free: 200m radius · Premium: 1km.',
+    'ja':
+        '世界に散らばる割引券・イベント手紙に近づいて拾いましょう。Free は 200m、Premium は 1km の範囲で拾えます。',
+    'zh':
+        '走近散落世界各地的优惠券和活动信件就能拾起它们。Free：200米半径，Premium：1公里。',
     'fr':
-        'Vous devez envoyer 3 lettres avant de lire la suivante. L\'échange équitable garde les lettres en circulation!',
+        'Approchez-vous des coupons et lettres d\'événement sur la carte pour les ramasser. Free : 200 m · Premium : 1 km.',
     'de':
-        'Sie müssen 3 Briefe senden, bevor Sie den nächsten lesen. Fairer Austausch hält Briefe für alle fließen!',
+        'Geh nah an Gutschein- und Event-Briefe auf der Karte heran, um sie aufzusammeln. Free: 200 m · Premium: 1 km.',
     'es':
-        'Debes enviar 3 cartas antes de leer la siguiente recibida. ¡El intercambio justo mantiene las cartas fluyendo para todos!',
+        'Acércate a los cupones y cartas de eventos en el mapa para recogerlos. Free: 200 m · Premium: 1 km.',
     'pt':
-        'Você deve enviar 3 cartas antes de ler a próxima recebida. Troca justa mantém as cartas fluindo para todos!',
+        'Aproxime-se de cupões e cartas de eventos no mapa para apanhá-los. Free: 200 m · Premium: 1 km.',
     'ru':
-        'Вы должны отправить 3 письма, прежде чем прочитать следующее. Справедливый обмен держит письма в движении!',
+        'Подойдите ближе к купонам и событийным письмам на карте, чтобы подобрать их. Free — 200 м, Premium — 1 км.',
     'tr':
-        'Bir sonrakini okumadan önce 3 mektup göndermeniz gerekiyor. Adil değişim mektupları herkes için akıyor tutar!',
+        'Haritaya dağılmış kupon ve etkinlik mektuplarına yaklaşarak onları topla. Free: 200 m · Premium: 1 km.',
     'ar':
-        'يجب عليك إرسال 3 رسائل قبل قراءة التالية. التبادل العادل يبقي الرسائل تتدفق للجميع!',
+        'اقترب من قسائم الخصم ورسائل الأحداث المنتشرة على الخريطة لالتقاطها. Free: 200 م · Premium: 1 كم.',
     'it':
-        'Devi inviare 3 lettere prima di leggere la prossima ricevuta. Lo scambio equo mantiene le lettere in circolazione per tutti!',
+        'Avvicinati ai coupon e alle lettere evento sparsi sulla mappa per raccoglierli. Free: 200 m · Premium: 1 km.',
     'hi':
-        'अगली प्राप्त पत्र पढ़ने से पहले 3 पत्र भेजने होंगे। उचित विनिमय सभी के लिए पत्र प्रवाहित रखता है!',
+        'मानचित्र पर बिखरे कूपन और इवेंट पत्रों के पास जाकर उन्हें उठाएँ. Free: 200 मी · Premium: 1 किमी.',
     'th':
-        'คุณต้องส่งจดหมาย 3 ฉบับก่อนอ่านฉบับถัดไปที่ได้รับ การแลกเปลี่ยนที่เป็นธรรมทำให้จดหมายไหลเวียนสำหรับทุกคน!',
+        'เข้าใกล้คูปองและจดหมายกิจกรรมที่กระจายอยู่บนแผนที่เพื่อเก็บ Free: 200 ม. · Premium: 1 กม.',
   });
 
   String get onboarding4Title => _t({
@@ -746,29 +750,35 @@ class AppL10n {
     'th': '🚀 เริ่มต้น',
   });
   String get onboarding5Body => _t({
-    'ko': '지금 바로 가입하고 세계 어딘가의 누군가와 특별한 편지를 교환해 보세요!',
+    // Build 103 의 5탭 네비(탐험 · 수집첩 · 보내기 · 타워 · 프로필) 와
+    // 헌트 루프를 한 줄로 요약. 가입 CTA 는 유지.
+    'ko': '탐험 · 수집첩 · 보내기 · 타워 · 프로필 5개 탭으로 편지를 보내고, 지도를 돌아다니며 할인권과 이벤트 편지를 주워보세요.',
     'en':
-        'Sign up now and start exchanging special letters with someone, somewhere in the world!',
-    'ja': '今すぐ登録して、世界のどこかにいる誰かと特別な手紙を交換しましょう！',
-    'zh': '立即注册，开始与世界某处的某人交换特别的信件！',
+        'Explore, Collect, Send, Tower, Profile — five tabs to send letters and roam the map picking up coupons and event letters.',
+    'ja':
+        '探検・コレクション・送信・タワー・プロフィールの5タブで手紙を送り、地図を歩きながら割引券とイベント手紙を拾おう。',
+    'zh':
+        '探索·收集·发送·塔·个人，五个标签页寄信并在地图上拾取优惠券和活动信件。',
     'fr':
-        'Inscrivez-vous maintenant et commencez à échanger des lettres avec quelqu\'un dans le monde!',
+        'Explorer · Collection · Envoyer · Tour · Profil — cinq onglets pour envoyer des lettres et parcourir la carte pour ramasser des coupons.',
     'de':
-        'Registrieren Sie sich jetzt und tauschen Sie besondere Briefe mit jemandem auf der Welt aus!',
+        'Entdecken · Sammlung · Senden · Turm · Profil — fünf Tabs zum Briefeversenden und Gutschein-Sammeln auf der Karte.',
     'es':
-        '¡Regístrate ahora y empieza a intercambiar cartas especiales con alguien en el mundo!',
+        'Explorar · Colección · Enviar · Torre · Perfil: cinco pestañas para enviar cartas y recorrer el mapa recogiendo cupones.',
     'pt':
-        'Cadastre-se agora e comece a trocar cartas especiais com alguém no mundo!',
+        'Explorar · Coleção · Enviar · Torre · Perfil — cinco separadores para enviar cartas e apanhar cupões no mapa.',
     'ru':
-        'Зарегистрируйтесь сейчас и начните обмениваться особыми письмами с кем-то в мире!',
+        'Исследовать · Коллекция · Отправить · Башня · Профиль — пять вкладок для писем и сбора купонов на карте.',
     'tr':
-        'Şimdi kaydolun ve dünyadaki biriyle özel mektuplar alışverişi yapmaya başlayın!',
-    'ar': 'سجّل الآن وابدأ تبادل رسائل خاصة مع شخص ما في العالم!',
+        'Keşfet · Koleksiyon · Gönder · Kule · Profil — beş sekmeyle mektup gönder ve haritada kupon topla.',
+    'ar':
+        'استكشاف · مجموعة · إرسال · برج · ملف — خمسة تبويبات لإرسال الرسائل والتجوّل في الخريطة لالتقاط القسائم.',
     'it':
-        'Registrati ora e inizia a scambiare lettere speciali con qualcuno nel mondo!',
+        'Esplora · Collezione · Invia · Torre · Profilo — cinque schede per inviare lettere e raccogliere coupon sulla mappa.',
     'hi':
-        'अभी साइन अप करें और दुनिया में किसी के साथ विशेष पत्र आदान-प्रदान शुरू करें!',
-    'th': 'สมัครเดี๋ยวนี้และเริ่มแลกจดหมายพิเศษกับใครบางคนในโลก!',
+        'एक्सप्लोर · कलेक्शन · भेजें · टावर · प्रोफ़ाइल — पाँच टैब से पत्र भेजें और मानचित्र पर कूपन उठाएँ.',
+    'th':
+        'สำรวจ · คอลเลคชัน · ส่ง · หอ · โปรไฟล์ — 5 แท็บส่งจดหมายและเก็บคูปองบนแผนที่.',
   });
 
   String get getStarted => _t({
@@ -4376,6 +4386,24 @@ class AppL10n {
     'it': 'Risposta a $name',
     'hi': '$name को जवाब',
     'th': 'ตอบ $name',
+  });
+
+  // 컴포즈 "더 많은 옵션" 접이식 섹션 헤더 (본문 아래 부가 옵션 묶음)
+  String get composeOptionsSectionTitle => _t({
+    'ko': '더 많은 옵션',
+    'en': 'More options',
+    'ja': 'さらにオプション',
+    'zh': '更多选项',
+    'fr': 'Plus d\'options',
+    'de': 'Weitere Optionen',
+    'es': 'Más opciones',
+    'pt': 'Mais opções',
+    'ru': 'Дополнительно',
+    'tr': 'Daha fazla seçenek',
+    'ar': 'المزيد من الخيارات',
+    'it': 'Altre opzioni',
+    'hi': 'और विकल्प',
+    'th': 'ตัวเลือกเพิ่มเติม',
   });
 
   String get composeLetterFlows => _t({

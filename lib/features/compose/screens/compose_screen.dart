@@ -1045,6 +1045,7 @@ class _ComposeScreenState extends State<ComposeScreen>
             purchase.isBrand ||
             state.currentUser.isPremium ||
             state.currentUser.isBrand;
+        final l10n = AppL10n.of(state.currentUser.languageCode);
         return Scaffold(
           backgroundColor: AppColors.bgDeep,
           body: Stack(
@@ -1060,15 +1061,14 @@ class _ComposeScreenState extends State<ComposeScreen>
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             const SizedBox(height: 14),
+                            // ── STEP 1: 목적지 선택 (brand 는 대량 모드도 가능) ──
                             if (!_isReply && isBrand) _buildBulkModeToggle(),
                             if (!_isReply && isBrand)
                               const SizedBox(height: 10),
-                            // 대량 패널 (대량 ON) — 특송 토글 포함
                             if (!_isReply && isBrand && _isBulkMode)
                               _buildBulkSendPanel(state),
                             if (!_isReply && isBrand && _isBulkMode)
                               const SizedBox(height: 10),
-                            // 일반 목적지 카드 (대량 OFF일 때만)
                             if (!_isReply && !_isBulkMode)
                               _buildDestinationCard(state, hasPremium),
                             if (!_isReply && !_isBulkMode)
@@ -1078,50 +1078,62 @@ class _ComposeScreenState extends State<ComposeScreen>
                               _buildExactDropButton(state),
                             if (!_isReply && !_isBulkMode && isBrand)
                               const SizedBox(height: 8),
-                            // 오늘의 요일 테마 (요일별 지역 추천)
-                            if (!_isReply && !_isBulkMode)
-                              _buildDayThemeBanner(state),
-                            if (!_isReply && !_isBulkMode)
-                              const SizedBox(height: 8),
-                            // 원클릭 목적지 제안 (랜덤/반대편/아침/미방문 대륙)
-                            if (!_isReply && !_isBulkMode)
-                              _buildQuickPickRow(state),
-                            if (!_isReply && !_isBulkMode)
-                              const SizedBox(height: 10),
-                            if (!_isReply)
-                              _buildSocialToggle(hasPremium: hasPremium),
-                            if (!_isReply && _attachSocial && hasPremium) ...[
-                              const SizedBox(height: 10),
-                              _buildSocialInput(),
-                            ],
-                            if (!_isReply) const SizedBox(height: 10),
-                            if (!_isReply) _buildAnonymousToggle(state),
-                            if (!_isReply && isBrand) const SizedBox(height: 10),
-                            if (!_isReply && isBrand) _buildBrandOptions(state),
-                            const SizedBox(height: 10),
-                            _buildStyleBar(),
-                            const SizedBox(height: 10),
-                            // 📸 이미지 첨부 버튼
-                            _buildImageAttachButton(
-                              state,
-                              hasPremium: hasPremium,
-                              purchase: purchase,
-                            ),
-                            // 📸 이미지 미리보기
-                            if (_imageFilePath != null) ...[
-                              const SizedBox(height: 10),
-                              _buildImagePreview(),
-                            ],
-                            const SizedBox(height: 16),
-                            _buildLuckyLetterButton(),
-                            if (!_isReply) ...[
-                              const SizedBox(height: 8),
-                              _buildRecallLastLetterButton(),
-                              const SizedBox(height: 8),
-                              _buildCityOfMonthHint(state),
-                            ],
-                            const SizedBox(height: 10),
+
+                            // ── STEP 2: 편지 본문 (destination 직하) ──────────
+                            // 보내기 모달을 열자마자 사용자가 "어디에 쓰지?" 혼동하지
+                            // 않도록 편지지 영역을 destination 바로 아래로 끌어올린다.
+                            // 기존에는 10+ 개 옵션을 스크롤해야 본문에 도달했다.
+                            const SizedBox(height: 4),
                             _buildLetterBody(),
+                            const SizedBox(height: 16),
+
+                            // ── STEP 3: 부가 옵션 (접히는 섹션) ─────────────
+                            // 목적지 + 본문이 가장 중요한 결정이므로 나머지
+                            // 보조 옵션(테마·퀵픽·SNS·익명·스타일·이미지 등)은
+                            // 하나의 ExpansionTile로 묶어 스크롤 부담을 줄인다.
+                            _ComposeOptionsSection(
+                              title: l10n.composeOptionsSectionTitle,
+                              children: [
+                                if (!_isReply && !_isBulkMode)
+                                  _buildDayThemeBanner(state),
+                                if (!_isReply && !_isBulkMode)
+                                  const SizedBox(height: 8),
+                                if (!_isReply && !_isBulkMode)
+                                  _buildQuickPickRow(state),
+                                if (!_isReply && !_isBulkMode)
+                                  const SizedBox(height: 10),
+                                if (!_isReply)
+                                  _buildSocialToggle(hasPremium: hasPremium),
+                                if (!_isReply && _attachSocial && hasPremium) ...[
+                                  const SizedBox(height: 10),
+                                  _buildSocialInput(),
+                                ],
+                                if (!_isReply) const SizedBox(height: 10),
+                                if (!_isReply) _buildAnonymousToggle(state),
+                                if (!_isReply && isBrand) const SizedBox(height: 10),
+                                if (!_isReply && isBrand) _buildBrandOptions(state),
+                                const SizedBox(height: 10),
+                                _buildStyleBar(),
+                                const SizedBox(height: 10),
+                                _buildImageAttachButton(
+                                  state,
+                                  hasPremium: hasPremium,
+                                  purchase: purchase,
+                                ),
+                                if (_imageFilePath != null) ...[
+                                  const SizedBox(height: 10),
+                                  _buildImagePreview(),
+                                ],
+                                const SizedBox(height: 16),
+                                _buildLuckyLetterButton(),
+                                if (!_isReply) ...[
+                                  const SizedBox(height: 8),
+                                  _buildRecallLastLetterButton(),
+                                  const SizedBox(height: 8),
+                                  _buildCityOfMonthHint(state),
+                                ],
+                              ],
+                            ),
                             const SizedBox(height: 40),
                           ],
                         ),
@@ -4330,6 +4342,88 @@ class _PaperPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(_) => false;
+}
+
+// ── 부가 옵션 섹션 (접이식) ──────────────────────────────────────────────────
+// Compose 모달에서 편지 본문 아래에 두는 보조 옵션(테마·퀵픽·SNS·익명·스타일·
+// 이미지·운세·최근·4월의 도시) 을 하나의 ExpansionTile 로 묶는다. 기본은 접힘
+// 상태로 보이므로 사용자는 "목적지 → 본문 → 보내기" 기본 플로우만 인지하면
+// 된다. 옵션이 필요한 사용자는 한 번만 펼치면 전부 볼 수 있다.
+class _ComposeOptionsSection extends StatefulWidget {
+  final String title;
+  final List<Widget> children;
+
+  const _ComposeOptionsSection({required this.title, required this.children});
+
+  @override
+  State<_ComposeOptionsSection> createState() => _ComposeOptionsSectionState();
+}
+
+class _ComposeOptionsSectionState extends State<_ComposeOptionsSection> {
+  bool _expanded = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        color: AppColors.bgCard,
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: const Color(0xFF1F2D44)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // 헤더 (탭하면 펼침/접힘 토글)
+          InkWell(
+            borderRadius: BorderRadius.circular(14),
+            onTap: () => setState(() => _expanded = !_expanded),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+              child: Row(
+                children: [
+                  const Text('⚙️', style: TextStyle(fontSize: 14)),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: Text(
+                      widget.title,
+                      style: const TextStyle(
+                        color: AppColors.textPrimary,
+                        fontSize: 13,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ),
+                  AnimatedRotation(
+                    duration: const Duration(milliseconds: 200),
+                    turns: _expanded ? 0.5 : 0,
+                    child: const Icon(
+                      Icons.expand_more_rounded,
+                      color: AppColors.textMuted,
+                      size: 22,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          // 컨텐츠 (펼쳐진 상태에서만 렌더)
+          if (_expanded) ...[
+            Container(
+              height: 1,
+              color: const Color(0xFF1F2D44),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(14),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: widget.children,
+              ),
+            ),
+          ],
+        ],
+      ),
+    );
+  }
 }
 
 // ── 발송 오버레이 ─────────────────────────────────────────────────────────────
