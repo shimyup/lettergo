@@ -4,6 +4,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
 import '../city_of_month/city_of_month_card.dart';
+import '../journey/journey_card.dart';
 import '../progression/user_level.dart';
 import '../streak/streak_badge.dart';
 import '../streak/weekly_challenge_card.dart';
@@ -833,6 +834,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             onWriteTap: () {
                               Navigator.of(ctx).pushNamed('/compose');
                             },
+                          ),
+                          const SizedBox(height: 10),
+                          // ①-3 나의 여정 카드 — 누적 지표가 있을 때만 표시
+                          const JourneyCard(
+                            margin: EdgeInsets.symmetric(horizontal: 16),
                           ),
                           const SizedBox(height: 10),
                           // ② 구독 + 잔여발송 빠른카드 (B+C)

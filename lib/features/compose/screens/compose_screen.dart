@@ -15,6 +15,7 @@ import '../../../core/data/country_cities.dart';
 import '../../../core/services/geocoding_service.dart';
 import '../../../state/app_state.dart';
 import '../../../core/services/purchase_service.dart';
+import '../../city_of_month/city_of_month.dart';
 import '../../premium/premium_gate_sheet.dart';
 
 class ComposeScreen extends StatefulWidget {
@@ -1040,6 +1041,8 @@ class _ComposeScreenState extends State<ComposeScreen>
                             if (!_isReply) ...[
                               const SizedBox(height: 8),
                               _buildRecallLastLetterButton(),
+                              const SizedBox(height: 8),
+                              _buildCityOfMonthHint(state),
                             ],
                             const SizedBox(height: 10),
                             _buildLetterBody(),
@@ -1423,6 +1426,89 @@ class _ComposeScreenState extends State<ComposeScreen>
                   ? const Color(0xFFFFD700)
                   : AppColors.textMuted,
               size: 18,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  /// "이번 달의 도시" 소프트 프로모션 배너 — 탭 시 해당 국가로 목적지 변경.
+  Widget _buildCityOfMonthHint(AppState state) {
+    final city = CityOfMonth.forThisMonth();
+    final accent = Color(city.accentColor);
+    final l10n = AppL10n.of(state.currentUser.languageCode);
+    // 이미 해당 국가로 설정되어 있으면 배너 숨김 (노이즈 방지)
+    if (_selectedCountry == city.country) return const SizedBox.shrink();
+    return GestureDetector(
+      onTap: () {
+        setState(() {
+          _selectedCountry = city.country;
+          _selectedFlag = city.countryFlag;
+        });
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              '${city.themeEmoji}  ${city.cityName} · ${city.country}',
+              style: const TextStyle(color: Colors.white),
+            ),
+            backgroundColor: accent.withValues(alpha: 0.9),
+            behavior: SnackBarBehavior.floating,
+            duration: const Duration(seconds: 2),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
+          ),
+        );
+      },
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [
+              accent.withValues(alpha: 0.12),
+              AppColors.bgCard,
+            ],
+          ),
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(
+            color: accent.withValues(alpha: 0.35),
+            width: 1,
+          ),
+        ),
+        child: Row(
+          children: [
+            Text(city.themeEmoji, style: const TextStyle(fontSize: 20)),
+            const SizedBox(width: 10),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    l10n.cityOfMonthBadge(city.month),
+                    style: TextStyle(
+                      color: accent,
+                      fontSize: 10,
+                      fontWeight: FontWeight.w700,
+                      letterSpacing: 0.3,
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    '${city.cityName} · ${city.country}',
+                    style: const TextStyle(
+                      color: AppColors.textPrimary,
+                      fontSize: 13,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Icon(
+              Icons.arrow_forward_rounded,
+              size: 16,
+              color: accent,
             ),
           ],
         ),

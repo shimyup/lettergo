@@ -14776,4 +14776,104 @@ class AppL10n {
     'ar': 'مشاركة', 'it': 'Condividi', 'hi': 'शेयर', 'th': 'แชร์',
   });
 
+  // ── 나의 여정 (Journey) ──────────────────────────────────────────────────
+  String get journeyTitle => _t({
+    'ko': '나의 여정',
+    'en': 'My Journey',
+    'ja': '私の旅',
+    'zh': '我的旅程',
+    'fr': 'Mon voyage',
+    'de': 'Meine Reise',
+    'es': 'Mi viaje',
+    'pt': 'Minha jornada',
+    'ru': 'Моё путешествие',
+    'tr': 'Yolculuğum',
+    'ar': 'رحلتي',
+    'it': 'Il mio viaggio',
+    'hi': 'मेरी यात्रा',
+    'th': 'การเดินทางของฉัน',
+  });
+
+  String get journeyStatSent => _t({
+    'ko': '보낸 편지', 'en': 'Sent', 'ja': '送信', 'zh': '发送',
+    'fr': 'Envoyées', 'de': 'Gesendet', 'es': 'Enviadas',
+    'pt': 'Enviadas', 'ru': 'Отправлено', 'tr': 'Gönderilen',
+    'ar': 'مُرسلة', 'it': 'Inviate', 'hi': 'भेजे', 'th': 'ส่งแล้ว',
+  });
+
+  String get journeyStatCountries => _t({
+    'ko': '방문 나라',
+    'en': 'Countries',
+    'ja': '訪れた国',
+    'zh': '到过的国家',
+    'fr': 'Pays',
+    'de': 'Länder',
+    'es': 'Países',
+    'pt': 'Países',
+    'ru': 'Страны',
+    'tr': 'Ülkeler',
+    'ar': 'الدول',
+    'it': 'Paesi',
+    'hi': 'देश',
+    'th': 'ประเทศ',
+  });
+
+  String get journeyStatReplies => _t({
+    'ko': '답장', 'en': 'Replies', 'ja': '返信', 'zh': '回信',
+    'fr': 'Réponses', 'de': 'Antworten', 'es': 'Respuestas',
+    'pt': 'Respostas', 'ru': 'Ответы', 'tr': 'Yanıtlar',
+    'ar': 'الردود', 'it': 'Risposte', 'hi': 'जवाब', 'th': 'ตอบกลับ',
+  });
+
+  String get journeyLongestDistance => _t({
+    'ko': '가장 멀리 떠난 편지',
+    'en': 'Farthest letter sent',
+    'ja': '最も遠くまで届いた手紙',
+    'zh': '最远抵达的信件',
+    'fr': 'Lettre la plus lointaine',
+    'de': 'Weitester Brief',
+    'es': 'Carta más lejana',
+    'pt': 'Carta mais distante',
+    'ru': 'Самое дальнее письмо',
+    'tr': 'En uzak mektup',
+    'ar': 'الرسالة الأبعد',
+    'it': 'Lettera più lontana',
+    'hi': 'सबसे दूर पहुँचा पत्र',
+    'th': 'จดหมายที่ไกลที่สุด',
+  });
+
+  String journeyLongestDistanceValue(String km, String country) => _t({
+    'ko': '$country까지 $km km',
+    'en': '$km km to $country',
+    'ja': '$countryまで$km km',
+    'zh': '到$country $km km',
+    'fr': '$km km jusqu\'à $country',
+    'de': '$km km nach $country',
+    'es': '$km km hasta $country',
+    'pt': '$km km até $country',
+    'ru': '$km км до $country',
+    'tr': '$country\'a $km km',
+    'ar': '$km كم إلى $country',
+    'it': '$km km fino a $country',
+    'hi': '$country तक $km km',
+    'th': 'ถึง$country $km กม.',
+  });
+
+  String journeyLongestStreak(int days) => _t({
+    'ko': '최장 연속 접속 $days일',
+    'en': 'Longest streak: $days days',
+    'ja': '最長連続アクセス $days日',
+    'zh': '最长连续签到 $days 天',
+    'fr': 'Plus longue série : $days jours',
+    'de': 'Längste Serie: $days Tage',
+    'es': 'Racha más larga: $days días',
+    'pt': 'Sequência mais longa: $days dias',
+    'ru': 'Самая долгая серия: $days дней',
+    'tr': 'En uzun seri: $days gün',
+    'ar': 'أطول سلسلة: $days يومًا',
+    'it': 'Serie più lunga: $days giorni',
+    'hi': 'सबसे लंबा सिलसिला: $days दिन',
+    'th': 'สตรีคที่ยาวที่สุด $days วัน',
+  });
+
 }
