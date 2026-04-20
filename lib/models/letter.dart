@@ -35,9 +35,14 @@ extension LetterCategoryExt on LetterCategory {
   /// 지도 마커·도착 다이얼로그·인박스 오버레이에서 "이게 어떤 편지인지"를
   /// 한 눈에 알려준다. 비브랜드 편지는 호출 측에서 기존 기본값(📬/📮/📩)
   /// 을 그대로 쓰고, `senderIsBrand` 일 때만 이 getter 를 사용한다.
+  ///
+  /// 값은 브랜드 compose 화면의 카테고리 칩
+  /// (`compose_screen.dart:2625-2629`) 과 반드시 동일해야 한다 — 보낸 쪽이
+  /// 고른 이모지와 받는 쪽이 보는 이모지가 매칭되어야 "같은 편지"라는 감각이
+  /// 끊기지 않음.
   ///   coupon  → 🎟 (할인권)
   ///   voucher → 🎁 (교환권)
-  ///   general → 📪 (일반 브랜드 발송)
+  ///   general → ✉️ (일반 브랜드 발송)
   String get brandEmoji {
     switch (this) {
       case LetterCategory.coupon:
@@ -45,7 +50,7 @@ extension LetterCategoryExt on LetterCategory {
       case LetterCategory.voucher:
         return '🎁';
       case LetterCategory.general:
-        return '📪';
+        return '✉️';
     }
   }
 
