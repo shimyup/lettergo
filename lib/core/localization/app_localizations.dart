@@ -16701,6 +16701,175 @@ class AppL10n {
     'th': 'เขียนจดหมายฉบับแรก',
   });
 
+  // 🎯 오늘의 영감 통합 카드 헤더 — 요일 테마 + 퀵픽 + 월별 도시를 한 카드로
+  String get composeInspirationHeader => _t({
+    'ko': '오늘의 영감',
+    'en': "Today's inspiration",
+    'ja': '今日のインスピレーション',
+    'zh': '今日灵感',
+    'fr': 'Inspiration du jour',
+    'de': 'Inspiration des Tages',
+    'es': 'Inspiración de hoy',
+    'pt': 'Inspiração de hoje',
+    'ru': 'Сегодняшнее вдохновение',
+    'tr': 'Bugünün ilhamı',
+    'ar': 'إلهام اليوم',
+    'it': "Ispirazione di oggi",
+    'hi': 'आज की प्रेरणा',
+    'th': 'แรงบันดาลใจวันนี้',
+  });
+
+  // 레벨 마일스톤 바텀시트 — 프로필의 🏆 버튼으로 열림
+  String get xpMilestonesSheetOpen => _t({
+    'ko': '레벨 마일스톤 보기',
+    'en': 'View level milestones',
+    'ja': 'レベルマイルストーンを見る',
+    'zh': '查看等级里程碑',
+    'fr': 'Voir les paliers de niveau',
+    'de': 'Level-Meilensteine ansehen',
+    'es': 'Ver hitos de nivel',
+    'pt': 'Ver marcos de nível',
+    'ru': 'Посмотреть вехи уровней',
+    'tr': 'Seviye kilometre taşlarını gör',
+    'ar': 'عرض محطات المستوى',
+    'it': 'Vedi traguardi di livello',
+    'hi': 'स्तर मील के पत्थर देखें',
+    'th': 'ดูเป้าหมายระดับ',
+  });
+
+  String get xpMilestonesTitle => _t({
+    'ko': '레벨 1 → 50 여정',
+    'en': 'Level 1 → 50 Journey',
+    'ja': 'レベル 1 → 50 の旅',
+    'zh': '等级 1 → 50 之旅',
+    'fr': 'Voyage niveau 1 → 50',
+    'de': 'Reise: Level 1 → 50',
+    'es': 'Viaje Nivel 1 → 50',
+    'pt': 'Jornada Nível 1 → 50',
+    'ru': 'Путь Уровень 1 → 50',
+    'tr': 'Seviye 1 → 50 Yolculuğu',
+    'ar': 'رحلة المستوى 1 → 50',
+    'it': 'Viaggio Livello 1 → 50',
+    'hi': 'स्तर 1 → 50 यात्रा',
+    'th': 'การเดินทางเลเวล 1 → 50',
+  });
+
+  String get xpMilestonesSubtitle => _t({
+    'ko': '5 레벨마다 등급이 진화해요. 편지를 더 많이 주울수록, 멀리 보낼수록 빨라져요.',
+    'en': 'Your tier evolves every 5 levels. Pick up more, send further — climb faster.',
+    'ja': '5レベルごとに称号が進化します。多く拾い、遠くへ送るほど早く上がります。',
+    'zh': '每 5 级称号进化。拾得越多、送得越远，晋升越快。',
+    'fr': 'Votre rang évolue tous les 5 niveaux. Plus vous ramassez et envoyez loin, plus vite vous montez.',
+    'de': 'Dein Rang entwickelt sich alle 5 Level. Mehr sammeln und weiter senden lässt dich schneller aufsteigen.',
+    'es': 'Tu rango evoluciona cada 5 niveles. Recoger más y enviar más lejos acelera tu ascenso.',
+    'pt': 'O teu nível evolui a cada 5 níveis. Apanhar mais e enviar mais longe acelera a subida.',
+    'ru': 'Титул повышается каждые 5 уровней. Собирайте больше, отправляйте дальше — растите быстрее.',
+    'tr': 'Rütbe her 5 seviyede evrilir. Daha çok topla, daha uzağa gönder, daha hızlı yüksel.',
+    'ar': 'تتطور رتبتك كل 5 مستويات. التقط أكثر وأرسل أبعد لترتفع أسرع.',
+    'it': 'Il tuo grado evolve ogni 5 livelli. Raccogli di più e invia più lontano per salire più veloce.',
+    'hi': 'हर 5 स्तर पर आपका रैंक विकसित होता है. अधिक उठाएँ और दूर भेजें — तेज़ी से बढ़ें.',
+    'th': 'ยศจะพัฒนาทุก 5 ระดับ ยิ่งเก็บและส่งไกล ยิ่งไปเร็ว',
+  });
+
+  String xpMilestoneTierLabel(int fromLevel, int toLevel) {
+    switch (languageCode) {
+      case 'ko':
+        return 'Lv $fromLevel–$toLevel';
+      case 'ja':
+      case 'zh':
+        return 'Lv $fromLevel–$toLevel';
+      default:
+        return 'Lv $fromLevel–$toLevel';
+    }
+  }
+
+  String xpMilestoneXpReq(int xp) {
+    switch (languageCode) {
+      case 'ko':
+        return '필요 XP · $xp+';
+      case 'en':
+        return 'Required XP · $xp+';
+      case 'ja':
+        return '必要 XP · $xp+';
+      case 'zh':
+        return '所需 XP · $xp+';
+      case 'fr':
+        return 'XP requis · $xp+';
+      case 'de':
+        return 'Benötigte XP · $xp+';
+      case 'es':
+        return 'XP requerida · $xp+';
+      case 'pt':
+        return 'XP necessário · $xp+';
+      case 'ru':
+        return 'Нужно XP · $xp+';
+      case 'tr':
+        return 'Gerekli XP · $xp+';
+      case 'ar':
+        return 'XP المطلوب · $xp+';
+      case 'it':
+        return 'XP richiesti · $xp+';
+      case 'hi':
+        return 'आवश्यक XP · $xp+';
+      case 'th':
+        return 'XP ที่ต้องการ · $xp+';
+      default:
+        return 'Required XP · $xp+';
+    }
+  }
+
+  String get xpMilestoneCurrent => _t({
+    'ko': '지금 여기',
+    'en': 'You are here',
+    'ja': '現在',
+    'zh': '当前',
+    'fr': 'Vous êtes ici',
+    'de': 'Du bist hier',
+    'es': 'Estás aquí',
+    'pt': 'Está aqui',
+    'ru': 'Вы здесь',
+    'tr': 'Buradasın',
+    'ar': 'أنت هنا',
+    'it': 'Sei qui',
+    'hi': 'आप यहाँ हैं',
+    'th': 'คุณอยู่ที่นี่',
+  });
+
+  String xpMilestonesFootnote(int currentXp) {
+    switch (languageCode) {
+      case 'ko':
+        return '현재 XP · $currentXp · 편지 줍기 +10, 발송 +5, 거리 보너스.';
+      case 'en':
+        return 'Current XP · $currentXp · Pick up +10, send +5, distance bonus.';
+      case 'ja':
+        return '現在のXP · $currentXp · 拾う+10、送信+5、距離ボーナス。';
+      case 'zh':
+        return '当前 XP · $currentXp · 拾起+10、发送+5、距离奖励。';
+      case 'fr':
+        return 'XP actuel · $currentXp · Ramasser +10, envoyer +5, bonus distance.';
+      case 'de':
+        return 'Aktuelle XP · $currentXp · Aufheben +10, Senden +5, Distanz-Bonus.';
+      case 'es':
+        return 'XP actual · $currentXp · Recoger +10, enviar +5, bono distancia.';
+      case 'pt':
+        return 'XP atual · $currentXp · Apanhar +10, enviar +5, bónus distância.';
+      case 'ru':
+        return 'Текущий XP · $currentXp · Подбор +10, отправка +5, бонус за расстояние.';
+      case 'tr':
+        return 'Mevcut XP · $currentXp · Topla +10, gönder +5, mesafe bonusu.';
+      case 'ar':
+        return 'XP الحالي · $currentXp · التقاط +10، إرسال +5، مكافأة مسافة.';
+      case 'it':
+        return 'XP attuali · $currentXp · Raccogli +10, invia +5, bonus distanza.';
+      case 'hi':
+        return 'वर्तमान XP · $currentXp · उठाएँ +10, भेजें +5, दूरी बोनस.';
+      case 'th':
+        return 'XP ปัจจุบัน · $currentXp · เก็บ +10, ส่ง +5, โบนัสระยะทาง.';
+      default:
+        return 'Current XP · $currentXp · Pick up +10, send +5, distance bonus.';
+    }
+  }
+
   // 헌트 모드 필터(할인권·교환권·브랜드)에서 편지 쓰기 대신 탐험 탭으로 유도
   String get emptyStateExploreCta => _t({
     'ko': '지도에서 찾아보기',

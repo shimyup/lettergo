@@ -1114,12 +1114,12 @@ class _ComposeScreenState extends State<ComposeScreen>
                             _ComposeOptionsSection(
                               title: l10n.composeOptionsSectionTitle,
                               children: [
+                                // 🎯 오늘의 영감 통합 카드 — 기존 3개 (요일 테마·
+                                // 퀵픽 목적지·월별 도시) 가 세로로 흩어져있던 것을
+                                // 하나의 골드-테두리 박스로 묶어 "오늘 뭘 쓸까?" 의사
+                                // 결정을 한 카드 안에서 완결되게 함.
                                 if (!_isReply && !_isBulkMode)
-                                  _buildDayThemeBanner(state),
-                                if (!_isReply && !_isBulkMode)
-                                  const SizedBox(height: 8),
-                                if (!_isReply && !_isBulkMode)
-                                  _buildQuickPickRow(state),
+                                  _buildInspirationCard(state),
                                 if (!_isReply && !_isBulkMode)
                                   const SizedBox(height: 10),
                                 if (!_isReply)
@@ -1149,8 +1149,6 @@ class _ComposeScreenState extends State<ComposeScreen>
                                 if (!_isReply) ...[
                                   const SizedBox(height: 8),
                                   _buildRecallLastLetterButton(),
-                                  const SizedBox(height: 8),
-                                  _buildCityOfMonthHint(state),
                                 ],
                               ],
                             ),
@@ -1871,6 +1869,58 @@ class _ComposeScreenState extends State<ComposeScreen>
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  /// 🎯 오늘의 영감 통합 카드 — 요일 테마 + 퀵픽 목적지 + 월별 도시 힌트를
+  /// 하나의 골드 테두리 Container 로 묶어 제공. 기존 3개 카드로 흩어져있던
+  /// "어디로 쓰지?" 의사결정을 한 화면 블록 안에서 완료.
+  Widget _buildInspirationCard(AppState state) {
+    final l10n = AppL10n.of(state.currentUser.languageCode);
+    return Container(
+      padding: const EdgeInsets.all(13),
+      decoration: BoxDecoration(
+        color: AppColors.bgCard,
+        borderRadius: BorderRadius.circular(13),
+        border: Border.all(
+          color: AppColors.gold.withValues(alpha: 0.25),
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              const Text('🎯', style: TextStyle(fontSize: 14)),
+              const SizedBox(width: 8),
+              Text(
+                l10n.composeInspirationHeader,
+                style: const TextStyle(
+                  color: AppColors.gold,
+                  fontSize: 12,
+                  fontWeight: FontWeight.w800,
+                  letterSpacing: 0.4,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 10),
+          // 3 요소를 하나의 카드 안에 수직 스택. 구분자는 얇은 라인 하나만.
+          _buildDayThemeBanner(state),
+          const Divider(
+            height: 18,
+            thickness: 0.6,
+            color: Color(0xFF1F2D44),
+          ),
+          _buildQuickPickRow(state),
+          const Divider(
+            height: 18,
+            thickness: 0.6,
+            color: Color(0xFF1F2D44),
+          ),
+          _buildCityOfMonthHint(state),
+        ],
       ),
     );
   }

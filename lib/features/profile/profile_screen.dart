@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
+
+import '../progression/user_progress.dart';
 import '../city_of_month/city_of_month_card.dart';
 import '../journey/journey_card.dart';
 import '../reflection/weekly_reflection_card.dart';
@@ -1649,8 +1651,243 @@ class _ProfileScreenState extends State<ProfileScreen> {
               fontSize: 11,
             ),
           ),
+          const SizedBox(height: 10),
+          // 🏆 전체 10 tier 마일스톤 보기 — 바텀시트로 레벨 1–50 구간 시각화
+          InkWell(
+            onTap: () => _showLevelMilestones(ctx, level, xp),
+            borderRadius: BorderRadius.circular(8),
+            child: Container(
+              width: double.infinity,
+              padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 10),
+              decoration: BoxDecoration(
+                color: AppColors.teal.withValues(alpha: 0.06),
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(
+                  color: AppColors.teal.withValues(alpha: 0.2),
+                ),
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Text('🏆', style: TextStyle(fontSize: 13)),
+                  const SizedBox(width: 6),
+                  Text(
+                    l.xpMilestonesSheetOpen,
+                    style: const TextStyle(
+                      color: AppColors.teal,
+                      fontSize: 12,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                  const SizedBox(width: 4),
+                  const Icon(
+                    Icons.chevron_right_rounded,
+                    color: AppColors.teal,
+                    size: 16,
+                  ),
+                ],
+              ),
+            ),
+          ),
         ],
       ),
+    );
+  }
+
+  /// 레벨 1–50 구간 전체 마일스톤 바텀시트. 10 tier (5 레벨 단위) 를
+  /// 세로 리스트로 나열하고 현재 레벨이 속한 tier 는 골드 강조.
+  void _showLevelMilestones(BuildContext ctx, int currentLevel, int currentXp) {
+    final l = AppL10n.of(ctx.read<AppState>().currentUser.languageCode);
+    // 10 tiers — 5 레벨 간격. (level floor, emoji + label key)
+    const tiers = [
+      (1, '🏠'),
+      (5, '🏡'),
+      (10, '📬'),
+      (15, '📮'),
+      (20, '🏢'),
+      (25, '🏬'),
+      (30, '🏙'),
+      (35, '🛰'),
+      (40, '🌍'),
+      (45, '👑'),
+    ];
+
+    showModalBottomSheet(
+      context: ctx,
+      backgroundColor: AppColors.bgCard,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (sheetCtx) {
+        return SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(20, 16, 20, 24),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    const Text('🏆', style: TextStyle(fontSize: 18)),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        l.xpMilestonesTitle,
+                        style: const TextStyle(
+                          color: AppColors.textPrimary,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w800,
+                        ),
+                      ),
+                    ),
+                    IconButton(
+                      onPressed: () => Navigator.pop(sheetCtx),
+                      icon: const Icon(Icons.close_rounded),
+                      color: AppColors.textMuted,
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 6),
+                Text(
+                  l.xpMilestonesSubtitle,
+                  style: const TextStyle(
+                    color: AppColors.textSecondary,
+                    fontSize: 12,
+                    height: 1.4,
+                  ),
+                ),
+                const SizedBox(height: 14),
+                ConstrainedBox(
+                  constraints: const BoxConstraints(maxHeight: 420),
+                  child: ListView.separated(
+                    shrinkWrap: true,
+                    itemCount: tiers.length,
+                    separatorBuilder: (_, __) => const SizedBox(height: 8),
+                    itemBuilder: (_, i) {
+                      final (floor, emoji) = tiers[i];
+                      final nextFloor = i + 1 < tiers.length ? tiers[i + 1].$1 : 51;
+                      final isCurrent =
+                          currentLevel >= floor && currentLevel < nextFloor;
+                      final isPassed = currentLevel >= nextFloor;
+                      final xpReq = UserProgress.xpThresholdForLevel(floor == 0 ? 1 : floor);
+                      return Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 10,
+                        ),
+                        decoration: BoxDecoration(
+                          color: isCurrent
+                              ? AppColors.gold.withValues(alpha: 0.12)
+                              : AppColors.bgSurface,
+                          borderRadius: BorderRadius.circular(10),
+                          border: Border.all(
+                            color: isCurrent
+                                ? AppColors.gold.withValues(alpha: 0.6)
+                                : const Color(0xFF1F2D44),
+                            width: isCurrent ? 1.3 : 1,
+                          ),
+                        ),
+                        child: Row(
+                          children: [
+                            Opacity(
+                              opacity: isPassed ? 0.55 : 1.0,
+                              child: Text(
+                                emoji,
+                                style: const TextStyle(fontSize: 22),
+                              ),
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    l.xpMilestoneTierLabel(floor == 0 ? 1 : floor, nextFloor - 1),
+                                    style: TextStyle(
+                                      color: isCurrent
+                                          ? AppColors.gold
+                                          : isPassed
+                                              ? AppColors.textMuted
+                                              : AppColors.textPrimary,
+                                      fontSize: 13,
+                                      fontWeight: FontWeight.w800,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 2),
+                                  Text(
+                                    xpLevelLabel(floor == 0 ? 1 : floor),
+                                    style: TextStyle(
+                                      color: isCurrent
+                                          ? AppColors.gold.withValues(alpha: 0.85)
+                                          : isPassed
+                                              ? AppColors.textMuted
+                                              : AppColors.textSecondary,
+                                      fontSize: 12,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 2),
+                                  Text(
+                                    l.xpMilestoneXpReq(xpReq),
+                                    style: const TextStyle(
+                                      color: AppColors.textMuted,
+                                      fontSize: 10,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            if (isCurrent)
+                              Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 7,
+                                  vertical: 3,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: AppColors.gold.withValues(alpha: 0.2),
+                                  borderRadius: BorderRadius.circular(6),
+                                ),
+                                child: Text(
+                                  l.xpMilestoneCurrent,
+                                  style: const TextStyle(
+                                    color: AppColors.gold,
+                                    fontSize: 10,
+                                    fontWeight: FontWeight.w800,
+                                  ),
+                                ),
+                              )
+                            else if (isPassed)
+                              const Icon(
+                                Icons.check_circle,
+                                color: AppColors.teal,
+                                size: 18,
+                              )
+                            else
+                              Icon(
+                                Icons.lock_outline_rounded,
+                                color: AppColors.textMuted.withValues(alpha: 0.5),
+                                size: 16,
+                              ),
+                          ],
+                        ),
+                      );
+                    },
+                  ),
+                ),
+                const SizedBox(height: 10),
+                Text(
+                  l.xpMilestonesFootnote(currentXp),
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(
+                    color: AppColors.textMuted,
+                    fontSize: 11,
+                    fontStyle: FontStyle.italic,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 
