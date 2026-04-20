@@ -31,6 +31,24 @@ extension LetterCategoryExt on LetterCategory {
     }
   }
 
+  /// 브랜드 발송 편지의 카테고리별 시각 구분 이모지.
+  /// 지도 마커·도착 다이얼로그·인박스 오버레이에서 "이게 어떤 편지인지"를
+  /// 한 눈에 알려준다. 비브랜드 편지는 호출 측에서 기존 기본값(📬/📮/📩)
+  /// 을 그대로 쓰고, `senderIsBrand` 일 때만 이 getter 를 사용한다.
+  ///   coupon  → 🎟 (할인권)
+  ///   voucher → 🎁 (교환권)
+  ///   general → 📪 (일반 브랜드 발송)
+  String get brandEmoji {
+    switch (this) {
+      case LetterCategory.coupon:
+        return '🎟';
+      case LetterCategory.voucher:
+        return '🎁';
+      case LetterCategory.general:
+        return '📪';
+    }
+  }
+
   static LetterCategory fromKey(String? s) {
     switch (s) {
       case 'coupon':

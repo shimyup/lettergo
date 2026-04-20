@@ -1231,7 +1231,8 @@ class _WorldMapScreenState extends State<WorldMapScreen>
               (l) => Padding(
                 padding: const EdgeInsets.only(bottom: 8),
                 child: _DisambiguationTile(
-                  icon: '📮',
+                  // 브랜드 편지는 카테고리 맞춤 이모지 (할인권 🎟 / 교환권 🎁 / 일반 📪)
+                  icon: l.senderIsBrand ? l.category.brandEmoji : '📮',
                   title: '${l.senderCountryFlag} ${l10n.mapLetterFrom(CountryL10n.localizedName(l.senderCountry, langCode))}',
                   subtitle: l10n.mapReadCountTapToPickUp(l.readCount, l.maxReaders),
                   onTap: () {
@@ -1673,13 +1674,15 @@ class _WorldMapScreenState extends State<WorldMapScreen>
   }
 
   void _showDeliveredFarDialog(BuildContext ctx, Letter letter, AppL10n l10n) {
+    // 브랜드 편지는 카테고리 맞춤 이모지로 도착 상태를 알림.
+    final arrivalEmoji = letter.senderIsBrand ? letter.category.brandEmoji : '📬';
     showDialog(
       context: ctx,
       builder: (_) => AlertDialog(
         backgroundColor: AppColors.bgCard,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         content: Text(
-          '📬 ${l10n.mapLetterArrivedVisitToOpen}',
+          '$arrivalEmoji ${l10n.mapLetterArrivedVisitToOpen}',
           style: const TextStyle(
             color: AppColors.textPrimary,
             fontSize: 15,
@@ -2078,8 +2081,12 @@ class _TransportMarker extends StatelessWidget {
           return raw.isNotEmpty ? raw : letter.currentTransport.emoji;
         }
 
-        // nearYou: 📩, deliveredFar: 📬 (도착 대기), inTransit: 운송수단 이모티콘
-        final emoji = isNearby
+        // nearYou: 📩 (브랜드는 카테고리 맞춤), deliveredFar: 📬 (브랜드는 카테고리
+        // 맞춤), inTransit: 운송수단 이모티콘
+        final isBrandArrival = letter.senderIsBrand && (isNearby || isDeliveredFar);
+        final emoji = isBrandArrival
+            ? letter.category.brandEmoji
+            : isNearby
             ? '📩'
             : isDeliveredFar
             ? '📬'
@@ -2312,9 +2319,10 @@ class _UnreadDeliveredMarker extends StatelessWidget {
             ? const Color(0xFF2A2108).withValues(alpha: 0.95)
             : AppColors.bgCard.withValues(alpha: 0.92);
 
-        // 이모지: 브랜드(프리미엄 뷰어)=📪, 프리미엄/브랜드(무료뷰어)=💌, 일반=📮
+        // 이모지: 브랜드(프리미엄 뷰어)=카테고리 맞춤(🎟/🎁/📪),
+        //         프리미엄/브랜드(무료뷰어)=💌, 일반=📮
         final mailEmoji = showAsBrand
-            ? '📪'
+            ? letter.category.brandEmoji
             : showAsPremium
             ? '💌'
             : '📮';

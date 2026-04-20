@@ -413,10 +413,10 @@ class ShareCardService {
     // 배경: 재사용
     _paintBackground(canvas, size);
 
-    // 상단 헤더
+    // 상단 헤더 — 헌트 포지셔닝에 맞춰 📬(우편함) → 🗺(지도/여정).
     _drawText(
       canvas,
-      '📬  ${l10n.journeyTitle}',
+      '🗺  ${l10n.journeyTitle}',
       offset: const Offset(80, 180),
       fontSize: 56,
       color: const Color(0xFFF0C35A),

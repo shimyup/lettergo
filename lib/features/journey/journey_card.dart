@@ -49,10 +49,10 @@ class JourneyCard extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // 헤더 + 공유 버튼
+              // 헤더 + 공유 버튼 — 헌트 포지셔닝에 맞춰 📬(우편함) → 🗺(지도/여정).
               Row(
                 children: [
-                  const Text('📬', style: TextStyle(fontSize: 24)),
+                  const Text('🗺', style: TextStyle(fontSize: 24)),
                   const SizedBox(width: 10),
                   Expanded(
                     child: Text(
