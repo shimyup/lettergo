@@ -260,6 +260,12 @@ class Letter {
   /// 안내만 받도록 처리.)
   final bool acceptsReplies;
 
+  /// 쿠폰/교환권 사용 안내 (브랜드 발송 시만 채움).
+  /// 예: "LETTERGO20 결제 시 입력", "매장 방문 시 이 화면 제시", "https://..."
+  /// 수신자가 편지를 열면 본문 아래에 🎁 박스로 강조 렌더. URL·코드·설명 무엇이든
+  /// 자유 텍스트로 허용. 최대 200자.
+  final String? redemptionInfo;
+
   Letter({
     required this.id,
     required this.senderId,
@@ -303,6 +309,7 @@ class Letter {
     this.expiresAt,
     this.category = LetterCategory.general,
     this.acceptsReplies = true,
+    this.redemptionInfo,
   }) : reportedBy = reportedBy ?? {};
 
   /// 인박스용 독립 복사본 (worldLetters에서 제거 전 inbox에 추가할 때 사용)
@@ -347,6 +354,7 @@ class Letter {
     expiresAt: expiresAt,
     category: category,
     acceptsReplies: acceptsReplies,
+    redemptionInfo: redemptionInfo,
     readCount: readCount,
     maxReaders: maxReaders,
   );
@@ -553,6 +561,7 @@ class Letter {
     if (expiresAt != null) 'expiresAt': expiresAt!.millisecondsSinceEpoch,
     'category': category.key,
     'acceptsReplies': acceptsReplies,
+    if (redemptionInfo != null) 'redemptionInfo': redemptionInfo,
     'readCount': readCount,
     'maxReaders': maxReaders,
   };
@@ -609,6 +618,7 @@ class Letter {
     brandUniquePerUser: j['brandUniquePerUser'] as bool? ?? false,
     category: LetterCategoryExt.fromKey(j['category'] as String?),
     acceptsReplies: j['acceptsReplies'] as bool? ?? true,
+    redemptionInfo: j['redemptionInfo'] as String?,
     expiresAt: j['expiresAt'] != null
         ? DateTime.fromMillisecondsSinceEpoch(j['expiresAt'] as int)
         : null,

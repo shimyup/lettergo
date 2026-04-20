@@ -39,6 +39,8 @@ class _ComposeScreenState extends State<ComposeScreen>
     with SingleTickerProviderStateMixin {
   final _contentController = TextEditingController();
   final _socialLinkController = TextEditingController();
+  // 브랜드 쿠폰/교환권 사용 안내 (자유 텍스트, 최대 200자)
+  final _redemptionInfoController = TextEditingController();
   final _contentFocus = FocusNode();
 
   late AnimationController _sendController;
@@ -522,6 +524,7 @@ class _ComposeScreenState extends State<ComposeScreen>
     }
     _contentController.dispose();
     _socialLinkController.dispose();
+    _redemptionInfoController.dispose();
     _contentFocus.dispose();
     _sendController.dispose();
     super.dispose();
@@ -678,6 +681,9 @@ class _ComposeScreenState extends State<ComposeScreen>
             imageUrl: _imageFilePath,
             category: _brandCategory,
             acceptsReplies: _brandAcceptsReplies,
+            redemptionInfo: _redemptionInfoController.text.trim().isEmpty
+                ? null
+                : _redemptionInfoController.text.trim(),
           );
           totalSent += sent;
           if (sent == 0) break; // 한도 초과 시 중단
@@ -700,6 +706,9 @@ class _ComposeScreenState extends State<ComposeScreen>
             imageUrl: _imageFilePath,
             category: _brandCategory,
             acceptsReplies: _brandAcceptsReplies,
+            redemptionInfo: _redemptionInfoController.text.trim().isEmpty
+                ? null
+                : _redemptionInfoController.text.trim(),
           );
         }
       }
@@ -753,6 +762,9 @@ class _ComposeScreenState extends State<ComposeScreen>
         brandAutoExpireHours: _brandAutoExpireHours,
         category: _brandCategory,
         acceptsReplies: _brandAcceptsReplies,
+        redemptionInfo: _redemptionInfoController.text.trim().isEmpty
+            ? null
+            : _redemptionInfoController.text.trim(),
       );
 
       if (mounted) {
@@ -811,6 +823,9 @@ class _ComposeScreenState extends State<ComposeScreen>
         brandAutoExpireHours: _brandAutoExpireHours,
         category: _brandCategory,
         acceptsReplies: _brandAcceptsReplies,
+        redemptionInfo: _redemptionInfoController.text.trim().isEmpty
+            ? null
+            : _redemptionInfoController.text.trim(),
       );
     }
 
@@ -1651,7 +1666,23 @@ class _ComposeScreenState extends State<ComposeScreen>
     final l10n = AppL10n.of(context.read<AppState>().currentUser.languageCode);
     final paper = LetterStyles.paper(_paperStyle);
     final font = LetterStyles.font(_fontStyle);
-    return ClipRRect(
+    // 편지지 체감을 강화: 포커스 시 골드 글로우, 기본 상태도 은은한 음영.
+    // 컴포즈 모달에서 본문 영역을 가장 먼저 인지하도록 시각 우선순위 부여.
+    return Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: _contentFocus.hasFocus
+                ? AppColors.gold.withValues(alpha: 0.22)
+                : Colors.black.withValues(alpha: 0.35),
+            blurRadius: _contentFocus.hasFocus ? 18 : 12,
+            spreadRadius: _contentFocus.hasFocus ? 1 : 0,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: ClipRRect(
       borderRadius: BorderRadius.circular(16),
       child: CustomPaint(
         painter: LetterPaperPainter(paper),
@@ -1660,9 +1691,9 @@ class _ComposeScreenState extends State<ComposeScreen>
             borderRadius: BorderRadius.circular(16),
             border: Border.all(
               color: _contentFocus.hasFocus
-                  ? AppColors.gold.withValues(alpha: 0.4)
+                  ? AppColors.gold.withValues(alpha: 0.55)
                   : const Color(0xFF1F2D44),
-              width: 1.5,
+              width: _contentFocus.hasFocus ? 1.8 : 1.5,
             ),
           ),
           child: Column(
@@ -1761,7 +1792,7 @@ class _ComposeScreenState extends State<ComposeScreen>
               TextField(
                 controller: _contentController,
                 focusNode: _contentFocus,
-                minLines: 8,
+                minLines: 10,
                 maxLines: null,
                 maxLength: _maxChars,
                 style: font.textStyle.copyWith(color: paper.inkColor),
@@ -1785,6 +1816,7 @@ class _ComposeScreenState extends State<ComposeScreen>
           ),
         ),
       ),
+    ),
     );
   }
 
@@ -2466,6 +2498,67 @@ class _ComposeScreenState extends State<ComposeScreen>
             ],
           ),
           const SizedBox(height: 12),
+          // ── 쿠폰/교환권 사용 안내 (카테고리가 coupon/voucher 일 때만 노출) ──
+          if (_brandCategory != LetterCategory.general) ...[
+            Text(
+              l10n.composeBrandRedemptionLabel,
+              style: const TextStyle(
+                color: AppColors.textPrimary,
+                fontSize: 12,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              l10n.composeBrandRedemptionDesc,
+              style: const TextStyle(
+                color: AppColors.textMuted,
+                fontSize: 10,
+              ),
+            ),
+            const SizedBox(height: 8),
+            TextField(
+              controller: _redemptionInfoController,
+              maxLength: 200,
+              minLines: 1,
+              maxLines: 3,
+              style: const TextStyle(
+                color: AppColors.textPrimary,
+                fontSize: 13,
+              ),
+              decoration: InputDecoration(
+                hintText: l10n.composeBrandRedemptionHint,
+                hintStyle: const TextStyle(
+                  color: AppColors.textMuted,
+                  fontSize: 12,
+                ),
+                prefixIcon: const Icon(
+                  Icons.redeem_rounded,
+                  color: AppColors.teal,
+                  size: 18,
+                ),
+                filled: true,
+                fillColor: AppColors.bgSurface,
+                counterStyle: const TextStyle(
+                  color: AppColors.textMuted,
+                  fontSize: 10,
+                ),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                  borderSide: const BorderSide(color: Color(0xFF1F2D44)),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                  borderSide: const BorderSide(color: AppColors.teal, width: 1.4),
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                  borderSide: const BorderSide(color: Color(0xFF1F2D44)),
+                ),
+              ),
+            ),
+            const SizedBox(height: 12),
+          ],
           // ── 1 아이디당 1 편지 ──
           GestureDetector(
             onTap: () => setState(() => _brandUniquePerUser = !_brandUniquePerUser),

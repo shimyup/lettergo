@@ -275,7 +275,14 @@ class _InboxScreenState extends State<InboxScreen>
                     children: [
                       _InboxTab(
                         letters: _applyFilter(
-                          state.inbox.reversed.toList(),
+                          // 뮤트된 브랜드 편지는 인박스 리스트에서 숨김
+                          // (카드 자체 제거 — 필터와 무관하게 모든 탭에서).
+                          state.inbox
+                              .where((l) => !(l.senderIsBrand &&
+                                  state.isBrandMuted(l.senderId)))
+                              .toList()
+                              .reversed
+                              .toList(),
                           filter: _inboxFilter,
                           isInbox: true,
                         ),
@@ -704,10 +711,8 @@ class _InboxTab extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppL10n.of(context.read<AppState>().currentUser.languageCode);
-    final unread = letters
-        .where((l) => l.status == DeliveryStatus.delivered)
-        .toList();
-    final showChainBanner = unread.length > 1 && !canViewNext;
+    // 체인 룰 해제 — "3통 보내야 읽기" 게이트와 🔒 배너 모두 제거됨.
+    // (unread / showChainBanner 계산이 필요 없어져 삭제.)
     return Column(
       children: [
         _LetterFilterBar(
@@ -734,60 +739,8 @@ class _InboxTab extends StatelessWidget {
             ),
           )
         else ...[
-          if (showChainBanner)
-            Container(
-              margin: const EdgeInsets.fromLTRB(16, 8, 16, 0),
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: AppColors.gold.withValues(alpha: 0.08),
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(
-                  color: AppColors.gold.withValues(alpha: 0.3),
-                ),
-              ),
-              child: Row(
-                children: [
-                  const Text('🔒', style: TextStyle(fontSize: 18)),
-                  const SizedBox(width: 10),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          l10n.inboxSendMoreToRead(3 - sentSinceLastUnlock),
-                          style: const TextStyle(
-                            color: AppColors.gold,
-                            fontSize: 13,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                        const SizedBox(height: 6),
-                        ClipRRect(
-                          borderRadius: BorderRadius.circular(4),
-                          child: LinearProgressIndicator(
-                            value: sentSinceLastUnlock / 3.0,
-                            backgroundColor: AppColors.bgSurface,
-                            valueColor: const AlwaysStoppedAnimation<Color>(
-                              AppColors.gold,
-                            ),
-                            minHeight: 5,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(width: 8),
-                  Text(
-                    '$sentSinceLastUnlock/3',
-                    style: const TextStyle(
-                      color: AppColors.gold,
-                      fontWeight: FontWeight.w700,
-                      fontSize: 13,
-                    ),
-                  ),
-                ],
-              ),
-            ),
+          // "🔒 3통 보내야 다음 읽기" 체인 배너 제거 — 답장 무제한 정책과
+          // 정합 맞추기. `sentSinceLastUnlock` 카운터는 통계용으로 유지.
           Expanded(
             child: ListView.builder(
               controller: scrollController,
@@ -795,11 +748,8 @@ class _InboxTab extends StatelessWidget {
               itemCount: letters.length,
               itemBuilder: (ctx, i) {
                 final letter = letters[i];
-                // 첫 번째 미읽음 이후 편지는 잠금 표시
-                final isLocked =
-                    showChainBanner &&
-                    letter.status == DeliveryStatus.delivered &&
-                    (unread.isNotEmpty && unread.last.id != letter.id);
+                // 체인 룰 해제로 잠금 표시 항상 false.
+                const isLocked = false;
                 return Dismissible(
                   key: ValueKey(letter.id),
                   direction: DismissDirection.endToStart,

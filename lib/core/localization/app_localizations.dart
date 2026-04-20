@@ -12803,6 +12803,128 @@ class AppL10n {
     'th': 'แคมเปญนี้ไม่รับคำตอบ',
   });
 
+  // 브랜드 컴포즈: 쿠폰/교환권 사용 안내 필드 (category != general 시 표시)
+  String get composeBrandRedemptionLabel => _t({
+    'ko': '사용 방법 안내',
+    'en': 'How to redeem',
+    'ja': '使い方の案内',
+    'zh': '使用方法',
+    'fr': 'Mode d\'emploi',
+    'de': 'Einlösehinweis',
+    'es': 'Cómo usar',
+    'pt': 'Como resgatar',
+    'ru': 'Как использовать',
+    'tr': 'Nasıl kullanılır',
+    'ar': 'كيفية الاستخدام',
+    'it': 'Come utilizzare',
+    'hi': 'कैसे उपयोग करें',
+    'th': 'วิธีใช้',
+  });
+
+  String get composeBrandRedemptionDesc => _t({
+    'ko': '수신자에게 보여줄 코드·링크·매장 안내 등 (최대 200자)',
+    'en': 'Code, link, or store instructions shown to the recipient (max 200 chars)',
+    'ja': '受信者に表示するコード・リンク・店舗案内など (最大200文字)',
+    'zh': '向收件人展示的代码、链接或门店说明 (最多200字)',
+    'fr': 'Code, lien ou instructions (200 car. max)',
+    'de': 'Code, Link oder Hinweise (max. 200 Zeichen)',
+    'es': 'Código, enlace o instrucciones (máx. 200 caracteres)',
+    'pt': 'Código, link ou instruções (máx. 200 caracteres)',
+    'ru': 'Код, ссылка или инструкция (до 200 символов)',
+    'tr': 'Kod, bağlantı veya mağaza bilgisi (maks 200 karakter)',
+    'ar': 'رمز أو رابط أو إرشادات (حتى 200 حرف)',
+    'it': 'Codice, link o istruzioni (max 200 caratteri)',
+    'hi': 'कोड, लिंक, या स्टोर निर्देश (अधिकतम 200 अक्षर)',
+    'th': 'รหัส ลิงก์ หรือวิธีการที่ร้าน (ไม่เกิน 200 ตัวอักษร)',
+  });
+
+  String get composeBrandRedemptionHint => _t({
+    'ko': '예: LETTERGO20 결제 시 입력',
+    'en': 'e.g. Enter LETTERGO20 at checkout',
+    'ja': '例: 決済時に LETTERGO20 を入力',
+    'zh': '例：结账时输入 LETTERGO20',
+    'fr': 'ex : saisir LETTERGO20 au paiement',
+    'de': 'z.B. LETTERGO20 beim Bezahlen eingeben',
+    'es': 'ej: introduce LETTERGO20 al pagar',
+    'pt': 'ex: use LETTERGO20 no pagamento',
+    'ru': 'напр. введите LETTERGO20 при оплате',
+    'tr': 'örn: ödemede LETTERGO20 girin',
+    'ar': 'مثال: أدخل LETTERGO20 عند الدفع',
+    'it': 'es: inserisci LETTERGO20 al checkout',
+    'hi': 'उदा. चेकआउट पर LETTERGO20 दर्ज करें',
+    'th': 'เช่น ใส่ LETTERGO20 ตอนชำระ',
+  });
+
+  // 브랜드 뮤트 — 수신자가 "이 브랜드 편지 받지 않기" 선택 시.
+  String get letterReadMuteBrand => _t({
+    'ko': '이 브랜드 편지 받지 않기',
+    'en': 'Stop receiving letters from this brand',
+    'ja': 'このブランドの手紙を受信しない',
+    'zh': '不再接收此品牌的信件',
+    'fr': 'Ne plus recevoir cette marque',
+    'de': 'Keine Briefe dieser Marke mehr erhalten',
+    'es': 'Dejar de recibir de esta marca',
+    'pt': 'Parar de receber desta marca',
+    'ru': 'Не получать от этого бренда',
+    'tr': 'Bu markadan mektup alma',
+    'ar': 'إيقاف استلام رسائل هذه العلامة',
+    'it': 'Non ricevere più da questo brand',
+    'hi': 'इस ब्रांड से पत्र न लें',
+    'th': 'ไม่รับจดหมายจากแบรนด์นี้',
+  });
+
+  String get letterReadUnmuteBrand => _t({
+    'ko': '이 브랜드 편지 다시 받기',
+    'en': 'Resume receiving from this brand',
+    'ja': 'このブランドの手紙を再開',
+    'zh': '恢复接收此品牌信件',
+    'fr': 'Réactiver les lettres de cette marque',
+    'de': 'Briefe dieser Marke wieder empfangen',
+    'es': 'Volver a recibir de esta marca',
+    'pt': 'Voltar a receber desta marca',
+    'ru': 'Снова получать от бренда',
+    'tr': 'Bu markadan tekrar al',
+    'ar': 'استئناف الاستلام من العلامة',
+    'it': 'Riattiva questo brand',
+    'hi': 'ब्रांड को पुनः चालू करें',
+    'th': 'รับจดหมายจากแบรนด์นี้อีก',
+  });
+
+  String get letterReadMutedToast => _t({
+    'ko': '이 브랜드의 새 편지가 수집첩에 더 이상 쌓이지 않아요',
+    'en': 'New letters from this brand won\'t appear in your collection',
+    'ja': 'このブランドの新しい手紙は受信されません',
+    'zh': '此品牌的新信件将不再进入收件箱',
+    'fr': 'Les nouvelles lettres de cette marque n\'apparaîtront plus',
+    'de': 'Neue Briefe dieser Marke erscheinen nicht mehr',
+    'es': 'No aparecerán nuevas cartas de esta marca',
+    'pt': 'Novas cartas desta marca não aparecerão',
+    'ru': 'Новые письма этого бренда не будут приходить',
+    'tr': 'Bu markanın yeni mektupları gelmeyecek',
+    'ar': 'لن تصل رسائل جديدة من هذه العلامة',
+    'it': 'Le nuove lettere da questo brand non compariranno',
+    'hi': 'इस ब्रांड के नए पत्र अब संग्रह में नहीं दिखेंगे',
+    'th': 'จดหมายใหม่จากแบรนด์นี้จะไม่เข้ากล่อง',
+  });
+
+  // 수신자 측 편지 읽기 화면 쿠폰 박스
+  String get letterReadRedemptionHeader => _t({
+    'ko': '🎁 사용 방법',
+    'en': '🎁 How to redeem',
+    'ja': '🎁 使い方',
+    'zh': '🎁 使用方法',
+    'fr': '🎁 Mode d\'emploi',
+    'de': '🎁 Einlösen',
+    'es': '🎁 Cómo usar',
+    'pt': '🎁 Como resgatar',
+    'ru': '🎁 Как использовать',
+    'tr': '🎁 Nasıl kullanılır',
+    'ar': '🎁 طريقة الاستخدام',
+    'it': '🎁 Come usare',
+    'hi': '🎁 उपयोग विधि',
+    'th': '🎁 วิธีใช้',
+  });
+
   // 브랜드 컴포즈: 답장 수락 토글
   String get composeBrandAcceptsReplies => _t({
     'ko': '답장 받기',

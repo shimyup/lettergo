@@ -208,9 +208,12 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
   static Uint8List? _encKey; // 32바이트 XOR 키 (앱 최초 실행 시 생성)
 
   // ── 편지 교환 잠금 해제 카운터 ────────────────────────────────────────────
+  // "3통 보내야 다음 편지 읽기" 체인 룰은 Build 103 의 답장 무제한 정책과
+  // 정합성을 맞추기 위해 항상 해제. 값은 통계/표시 목적으로 유지하되 게이트
+  // 로직에서는 언제나 true 를 반환.
   int _sentSinceLastUnlock = 0;
   int get sentSinceLastUnlock => _sentSinceLastUnlock;
-  bool get canViewNextLetter => _sentSinceLastUnlock >= 3;
+  bool get canViewNextLetter => true;
 
   // ── 일일 발송 제한 ────────────────────────────────────────────────────────
   static const int _dailyLimitFree = 3;
@@ -899,6 +902,26 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
   // ── 차단된 발신자 (영구 차단: 관리자 확인 후) ─────────────────────────────
   final Set<String> _blockedSenderIds = {};
   Set<String> get blockedSenderIds => Set.unmodifiable(_blockedSenderIds);
+
+  // ── 유저가 직접 뮤트한 브랜드 (SharedPreferences 로 영속) ──────────────
+  // 편지 읽기 화면에서 "이 브랜드 편지 받지 않기" 탭으로 추가/해제. 뮤트된
+  // 브랜드의 새 편지는 수집첩에 합류할 때 필터링되어 인박스에서 제외됨
+  // (기존 편지는 그대로 유지 — 과거 수령한 혜택은 남김).
+  final Set<String> _mutedBrandIds = {};
+  Set<String> get mutedBrandIds => Set.unmodifiable(_mutedBrandIds);
+  bool isBrandMuted(String senderId) => _mutedBrandIds.contains(senderId);
+
+  Future<void> toggleBrandMute(String senderId) async {
+    if (senderId.isEmpty) return;
+    if (_mutedBrandIds.contains(senderId)) {
+      _mutedBrandIds.remove(senderId);
+    } else {
+      _mutedBrandIds.add(senderId);
+    }
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setStringList('mutedBrandIds', _mutedBrandIds.toList());
+    notifyListeners();
+  }
 
   // ── 임시 차단 (신고 접수 → 관리자 검토 전까지) ──────────────────────────────
   final Set<String> _tempBlockedSenderIds = {};
@@ -1696,6 +1719,10 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
     _blockedSenderIds.addAll(prefs.getStringList('blocked') ?? []);
     _tempBlockedSenderIds.clear();
     _tempBlockedSenderIds.addAll(prefs.getStringList('temp_blocked') ?? []);
+
+    // 유저가 뮤트한 브랜드 복원
+    _mutedBrandIds.clear();
+    _mutedBrandIds.addAll(prefs.getStringList('mutedBrandIds') ?? []);
 
     // 잠금 해제 카운터 복원
     _sentSinceLastUnlock = prefs.getInt('sentSinceLastUnlock') ?? 0;
@@ -5020,6 +5047,7 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
     int? brandAutoExpireHours, // 브랜드: 자동 삭제 시간
     LetterCategory category = LetterCategory.general, // 브랜드만 coupon/voucher 선택 가능
     bool acceptsReplies = true, // 브랜드가 답장 받기 off로 보낼 수 있음
+    String? redemptionInfo, // 브랜드: 쿠폰/교환권 사용 안내 (자유 텍스트)
   }) async {
     if (!_canSendLetterByDailyLimit()) {
       return false;
@@ -5188,6 +5216,8 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
       category: _currentUser.isBrand ? category : LetterCategory.general,
       // 답장 수락은 브랜드만 off 가능 — Free/Premium 은 항상 true 로 강제.
       acceptsReplies: _currentUser.isBrand ? acceptsReplies : true,
+      // 쿠폰/교환권 사용 안내도 브랜드만 기록됨. 일반 유저가 넘겨도 무시.
+      redemptionInfo: _currentUser.isBrand ? redemptionInfo : null,
     );
 
     _worldLetters.add(letter);
@@ -5249,6 +5279,7 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
     int? brandAutoExpireHours,
     LetterCategory category = LetterCategory.general,
     bool acceptsReplies = true,
+    String? redemptionInfo,
   }) async {
     if (!_currentUser.isBrand) return 0;
     int sent = 0;
@@ -5274,6 +5305,7 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
           brandAutoExpireHours: brandAutoExpireHours,
           category: category,
           acceptsReplies: acceptsReplies,
+          redemptionInfo: redemptionInfo,
         );
         if (ok) sent++;
       }
@@ -5297,6 +5329,7 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
             brandAutoExpireHours: brandAutoExpireHours,
             category: category,
             acceptsReplies: acceptsReplies,
+            redemptionInfo: redemptionInfo,
           );
           if (ok) sent++;
         }
@@ -5322,6 +5355,7 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
     int? brandAutoExpireHours,
     LetterCategory category = LetterCategory.general,
     bool acceptsReplies = true,
+    String? redemptionInfo,
   }) async {
     if (!_currentUser.isBrand) return 0;
 
@@ -5403,6 +5437,7 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
             : null,
         category: category,
         acceptsReplies: acceptsReplies,
+        redemptionInfo: redemptionInfo,
       );
 
       _worldLetters.add(letter);

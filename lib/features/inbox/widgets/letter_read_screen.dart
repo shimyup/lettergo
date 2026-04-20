@@ -272,6 +272,11 @@ class _LetterReadScreenState extends State<LetterReadScreen>
                                 !letter.hasReplied &&
                                 _isHumanLetter(letter))
                               _buildReplyFomoHint(context),
+                            // 🎁 쿠폰/교환권 사용 안내 — 브랜드 발송 + redemptionInfo 존재 시만
+                            if (_isOpened &&
+                                letter.senderIsBrand &&
+                                (letter.redemptionInfo ?? '').trim().isNotEmpty)
+                              _buildRedemptionBox(context, letter),
                             // 답장 버튼 (AI 편지는 "닿지 않음" 카드로 대체)
                             if (_isOpened) _buildAiLetterNotice(context, letter),
                             // 브랜드 발송인이 답장 미수락으로 설정한 편지는
@@ -284,6 +289,12 @@ class _LetterReadScreenState extends State<LetterReadScreen>
                                 letter.senderIsBrand &&
                                 !letter.acceptsReplies)
                               _buildBrandNoReplyNotice(context),
+                            // 🔕 브랜드 뮤트 버튼 — 브랜드 발송일 때만 노출.
+                            // 본인 발송 편지(sent 탭)에는 보이지 않도록 `senderId != myId` 체크.
+                            if (_isOpened &&
+                                letter.senderIsBrand &&
+                                letter.senderId != context.read<AppState>().currentUser.id)
+                              _buildMuteBrandButton(context, letter),
                             const SizedBox(height: 40),
                           ],
                         ),
@@ -1733,6 +1744,106 @@ class _LetterReadScreenState extends State<LetterReadScreen>
                   ),
                 ),
               ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  /// 🔕 "이 브랜드 편지 받지 않기" 텍스트 버튼 — 스팸 방지 도구.
+  /// 탭 시 AppState 에 senderId 추가/제거, SharedPreferences 영속, 이후
+  /// 수집첩에서 해당 브랜드 편지는 숨겨짐. 이미 받은 편지는 남음 (쿠폰 등).
+  Widget _buildMuteBrandButton(BuildContext ctx, Letter letter) {
+    final l10n = AppL10n.of(ctx.read<AppState>().currentUser.languageCode);
+    return Builder(builder: (inner) {
+      final state = inner.watch<AppState>();
+      final muted = state.isBrandMuted(letter.senderId);
+      return Padding(
+        padding: const EdgeInsets.symmetric(vertical: 6),
+        child: TextButton.icon(
+          icon: Icon(
+            muted ? Icons.notifications_active_outlined : Icons.notifications_off_outlined,
+            size: 16,
+            color: muted ? AppColors.teal : AppColors.textMuted,
+          ),
+          label: Text(
+            muted ? l10n.letterReadUnmuteBrand : l10n.letterReadMuteBrand,
+            style: TextStyle(
+              color: muted ? AppColors.teal : AppColors.textMuted,
+              fontSize: 12,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          onPressed: () async {
+            await ctx.read<AppState>().toggleBrandMute(letter.senderId);
+            if (!inner.mounted) return;
+            // 방금 뮤트한 경우에만 토스트 — 해제 시 조용히.
+            if (!muted) {
+              ScaffoldMessenger.of(inner).showSnackBar(
+                SnackBar(
+                  content: Text(
+                    l10n.letterReadMutedToast,
+                    style: const TextStyle(color: Colors.white),
+                  ),
+                  backgroundColor: const Color(0xFF1A1A2A),
+                  behavior: SnackBarBehavior.floating,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
+              );
+            }
+          },
+        ),
+      );
+    });
+  }
+
+  /// 🎁 쿠폰/교환권 사용 안내 박스 — 브랜드가 composeBrandRedemptionLabel
+  /// 필드에 입력한 자유 텍스트를 본문 아래 티일 강조 박스로 보여준다.
+  /// URL · 할인코드 · 매장 사용법 등 수신자가 혜택을 실제로 사용하는 동선을
+  /// 명확히 만들기 위한 핵심 UI (편지 줍기 → 혜택 사용 전환률 대폭 상승).
+  Widget _buildRedemptionBox(BuildContext ctx, Letter letter) {
+    final l10n = AppL10n.of(ctx.read<AppState>().currentUser.languageCode);
+    return Container(
+      margin: const EdgeInsets.symmetric(vertical: 10),
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [
+            AppColors.teal.withValues(alpha: 0.14),
+            AppColors.teal.withValues(alpha: 0.04),
+          ],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(
+          color: AppColors.teal.withValues(alpha: 0.45),
+          width: 1.2,
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            l10n.letterReadRedemptionHeader,
+            style: const TextStyle(
+              color: AppColors.teal,
+              fontSize: 12,
+              fontWeight: FontWeight.w800,
+              letterSpacing: 0.5,
+            ),
+          ),
+          const SizedBox(height: 8),
+          SelectableText(
+            letter.redemptionInfo ?? '',
+            style: const TextStyle(
+              color: AppColors.textPrimary,
+              fontSize: 14,
+              height: 1.45,
+              fontWeight: FontWeight.w600,
             ),
           ),
         ],
