@@ -23,7 +23,8 @@ import '../../share/share_card_service.dart';
 import 'letter_context_badge.dart';
 import 'scarcity_indicator.dart';
 import 'sender_moment_line.dart';
-import '../../penpal/penpal_tier.dart';
+// 펜팔 배지 UI 제거 — import 도 제거. 데이터 통계 로직은 _PenpalStats 내부에서만 사용.
+// import '../../penpal/penpal_tier.dart';
 
 class LetterReadScreen extends StatefulWidget {
   final Letter letter;
@@ -273,9 +274,16 @@ class _LetterReadScreenState extends State<LetterReadScreen>
                               _buildReplyFomoHint(context),
                             // 답장 버튼 (AI 편지는 "닿지 않음" 카드로 대체)
                             if (_isOpened) _buildAiLetterNotice(context, letter),
+                            // 브랜드 발송인이 답장 미수락으로 설정한 편지는
+                            // 답장 버튼 대신 안내만 노출.
                             if (_isOpened &&
-                                !letter.senderId.startsWith('ai_'))
+                                !letter.senderId.startsWith('ai_') &&
+                                !(letter.senderIsBrand && !letter.acceptsReplies))
                               _buildReplyButton(context, letter),
+                            if (_isOpened &&
+                                letter.senderIsBrand &&
+                                !letter.acceptsReplies)
+                              _buildBrandNoReplyNotice(context),
                             const SizedBox(height: 40),
                           ],
                         ),
@@ -903,37 +911,10 @@ class _LetterReadScreenState extends State<LetterReadScreen>
                         ),
                       ),
                     ),
-                    if (!letter.isAnonymous)
-                      Builder(builder: (ctx) {
-                        final stats = PenpalStats.forSender(
-                          letter.senderId,
-                          ctx.read<AppState>().inbox,
-                        );
-                        if (stats.tier == PenpalTier.none) {
-                          return const SizedBox.shrink();
-                        }
-                        return Padding(
-                          padding: const EdgeInsets.only(left: 6),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Text(
-                                penpalTierEmoji(stats.tier),
-                                style: const TextStyle(fontSize: 12),
-                              ),
-                              const SizedBox(width: 3),
-                              Text(
-                                l10n.penpalBadgeCount(stats.exchanges),
-                                style: const TextStyle(
-                                  color: AppColors.teal,
-                                  fontSize: 10,
-                                  fontWeight: FontWeight.w700,
-                                ),
-                              ),
-                            ],
-                          ),
-                        );
-                      }),
+                    // 펜팔 등급 배지 (🌱/🕊️/📜) 제거됨 — 포지셔닝 변경으로
+                    // "같은 사람과 주고받을수록 친밀도 오름" 컨셉은 숨김 처리.
+                    // PenpalStats/PenpalTier 클래스는 남겨둠 (데이터 통계에
+                    // 재활용 여지 있음) — UI 에만 노출 안 함.
                     // 브랜드 인증 배지
                     if (letter.senderIsBrand) ...[
                       const SizedBox(width: 6),
@@ -1752,6 +1733,37 @@ class _LetterReadScreenState extends State<LetterReadScreen>
                   ),
                 ),
               ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  /// 브랜드 발송인이 "답장 받지 않음" 으로 설정한 편지에 표시되는 안내.
+  /// 답장 버튼 자리를 대신해 "이 캠페인은 답장을 받지 않아요" 한 줄 카드.
+  Widget _buildBrandNoReplyNotice(BuildContext ctx) {
+    final l10n = AppL10n.of(ctx.read<AppState>().currentUser.languageCode);
+    return Container(
+      margin: const EdgeInsets.symmetric(vertical: 4),
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+      decoration: BoxDecoration(
+        color: AppColors.bgCard,
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: const Color(0xFF1F2D44)),
+      ),
+      child: Row(
+        children: [
+          const Text('🔕', style: TextStyle(fontSize: 16)),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Text(
+              l10n.letterReadBrandNoReply,
+              style: const TextStyle(
+                color: AppColors.textSecondary,
+                fontSize: 12,
+                height: 1.35,
+              ),
             ),
           ),
         ],

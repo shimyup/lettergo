@@ -254,6 +254,12 @@ class Letter {
   // "쿠폰함" 섹션에 시각적으로 분리 표시된다.
   final LetterCategory category;
 
+  /// 발신자가 답장 수락 여부를 켠 편지인지. Brand 발송 시 한정 선택 가능.
+  /// Free/Premium 은 항상 true. (false 면 수신자의 letter_read_screen 에서
+  /// 답장 버튼이 숨겨지고, 발신자 브랜드가 "이 캠페인은 답장 미수락" 이라는
+  /// 안내만 받도록 처리.)
+  final bool acceptsReplies;
+
   Letter({
     required this.id,
     required this.senderId,
@@ -296,6 +302,7 @@ class Letter {
     this.brandUniquePerUser = false,
     this.expiresAt,
     this.category = LetterCategory.general,
+    this.acceptsReplies = true,
   }) : reportedBy = reportedBy ?? {};
 
   /// 인박스용 독립 복사본 (worldLetters에서 제거 전 inbox에 추가할 때 사용)
@@ -339,6 +346,7 @@ class Letter {
     brandUniquePerUser: brandUniquePerUser,
     expiresAt: expiresAt,
     category: category,
+    acceptsReplies: acceptsReplies,
     readCount: readCount,
     maxReaders: maxReaders,
   );
@@ -544,6 +552,7 @@ class Letter {
     'brandUniquePerUser': brandUniquePerUser,
     if (expiresAt != null) 'expiresAt': expiresAt!.millisecondsSinceEpoch,
     'category': category.key,
+    'acceptsReplies': acceptsReplies,
     'readCount': readCount,
     'maxReaders': maxReaders,
   };
@@ -599,6 +608,7 @@ class Letter {
     senderTier: LetterSenderTier.values[j['senderTier'] as int? ?? 0],
     brandUniquePerUser: j['brandUniquePerUser'] as bool? ?? false,
     category: LetterCategoryExt.fromKey(j['category'] as String?),
+    acceptsReplies: j['acceptsReplies'] as bool? ?? true,
     expiresAt: j['expiresAt'] != null
         ? DateTime.fromMillisecondsSinceEpoch(j['expiresAt'] as int)
         : null,

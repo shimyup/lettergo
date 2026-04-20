@@ -73,9 +73,9 @@ class _MainScaffoldState extends State<MainScaffold> {
 
   @override
   Widget build(BuildContext context) {
-    // unreadCount + totalDMUnread만 구독 → 편지/DM 뱃지 변경 시에만 rebuild
+    // DM 기능 제거로 unreadCount 만 구독 → 수집첩 뱃지 변경 시에만 rebuild
     final badgeCount = context.select<AppState, int>(
-      (s) => s.unreadCount + s.totalDMUnread,
+      (s) => s.unreadCount,
     );
     final langCode = context.select<AppState, String>(
       (s) => s.currentUser.languageCode,

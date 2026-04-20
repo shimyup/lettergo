@@ -174,13 +174,12 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
   // ── 등급별 픽업 반경 ──────────────────────────────────────────────────
   // 무료: 200m — 주변을 진짜 걸어야 편지가 잡히는 보물찾기 느낌
   // 프리미엄: 1km — 여유 있게 탐험 가능
-  // 브랜드: 0m — 앱 포지셔닝상 Brand 는 발송 전용. 픽업 아예 금지
+  // 브랜드: 1km — Premium 과 동일. 브랜드도 줍기에 참여 (단, 발송이 본업)
   //
   // `nearYou` / `deliveredFar` 상태 전환과 픽업 시 거리 검증 모두 이 한 곳을
-  // 통해 간다. Brand 가 0m 이면 상태 전환 시점에 편지가 nearYou 가 되지
-  // 못하고, pickUpLetter 도 이중 가드로 거부한다.
+  // 통해 간다.
   double get pickupRadiusMeters {
-    if (_currentUser.isBrand) return 0;
+    if (_currentUser.isBrand) return 1000;
     if (_currentUser.isPremium) return 1000;
     return 200;
   }
@@ -5020,6 +5019,7 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
     bool brandUniquePerUser = false, // 브랜드: 수신자당 1회 수신
     int? brandAutoExpireHours, // 브랜드: 자동 삭제 시간
     LetterCategory category = LetterCategory.general, // 브랜드만 coupon/voucher 선택 가능
+    bool acceptsReplies = true, // 브랜드가 답장 받기 off로 보낼 수 있음
   }) async {
     if (!_canSendLetterByDailyLimit()) {
       return false;
@@ -5186,6 +5186,8 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
       // coupon/voucher 카테고리는 브랜드만 선택할 수 있도록 서버 사이드 가드
       // 일반·프리미엄 유저가 어떤 방식으로 category 를 전달해도 general 로 강제.
       category: _currentUser.isBrand ? category : LetterCategory.general,
+      // 답장 수락은 브랜드만 off 가능 — Free/Premium 은 항상 true 로 강제.
+      acceptsReplies: _currentUser.isBrand ? acceptsReplies : true,
     );
 
     _worldLetters.add(letter);
@@ -5246,6 +5248,7 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
     bool brandUniquePerUser = false,
     int? brandAutoExpireHours,
     LetterCategory category = LetterCategory.general,
+    bool acceptsReplies = true,
   }) async {
     if (!_currentUser.isBrand) return 0;
     int sent = 0;
@@ -5270,6 +5273,7 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
           brandUniquePerUser: brandUniquePerUser,
           brandAutoExpireHours: brandAutoExpireHours,
           category: category,
+          acceptsReplies: acceptsReplies,
         );
         if (ok) sent++;
       }
@@ -5292,6 +5296,7 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
             brandUniquePerUser: brandUniquePerUser,
             brandAutoExpireHours: brandAutoExpireHours,
             category: category,
+            acceptsReplies: acceptsReplies,
           );
           if (ok) sent++;
         }
@@ -5316,6 +5321,7 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
     bool brandUniquePerUser = false,
     int? brandAutoExpireHours,
     LetterCategory category = LetterCategory.general,
+    bool acceptsReplies = true,
   }) async {
     if (!_currentUser.isBrand) return 0;
 
@@ -5396,6 +5402,7 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
             ? now.add(Duration(minutes: expressTotalMin) + Duration(hours: brandAutoExpireHours))
             : null,
         category: category,
+        acceptsReplies: acceptsReplies,
       );
 
       _worldLetters.add(letter);
@@ -5432,14 +5439,10 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
   /// 반환값: null = 성공, 非non-null = 실패 사유 메시지
   /// [distanceCheck] false로 설정하면 거리 검증 없이 습득 (테스트/관리자용)
   String? pickUpLetter(String letterId, {bool distanceCheck = true}) {
-    // ⓪ Brand 계정은 편지 픽업 불가 — 앱의 핵심 포지셔닝 상 브랜드는
-    //   "홍보 편지를 뿌리는" 역할이고, 주워서 수집하는 건 일반 회원의
-    //   메리트로 분리한다. 브랜드에게 픽업을 허용하면 자기 뿌린 쿠폰을
-    //   자기가 회수하는 무한 루프가 가능해지는 운영 리스크도 있다.
-    if (_currentUser.isBrand) {
-      return _l10n.statePickupBrandBlocked;
-    }
-
+    // 브랜드 픽업 차단은 포지셔닝 변경으로 해제 — 모든 등급이 줍기 가능.
+    // (Free 200m / Premium 1km / Brand 1km — 브랜드는 발송 중심이지만
+    //  본인도 다른 발신자의 쿠폰/이벤트 편지를 주울 수 있음.)
+    //
     // ① 쿨다운 체크 (무료: 1시간, 프리미엄/브랜드: 10분)
     final remaining = nearbyPickupRemainingCooldown;
     if (remaining != null) {

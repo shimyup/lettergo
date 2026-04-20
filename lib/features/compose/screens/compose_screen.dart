@@ -215,6 +215,7 @@ class _ComposeScreenState extends State<ComposeScreen>
 
   // ── 브랜드 고급 옵션 ──────────────────────────────────────────────────────
   bool _brandUniquePerUser = false; // 1 아이디당 1 편지
+  bool _brandAcceptsReplies = true; // 답장 수락 여부 (기본 on)
   int? _brandAutoExpireHours; // 자동 삭제 시간 (null=없음)
   // Brand 전용 편지 카테고리 — 일반 / 할인권 / 교환권. 수집첩에서 쿠폰함 섹션
   // 으로 분리 표시되므로 브랜드 운영자가 발송 의도를 명확히 지정한다.
@@ -676,6 +677,7 @@ class _ComposeScreenState extends State<ComposeScreen>
             brandAutoExpireHours: _brandAutoExpireHours,
             imageUrl: _imageFilePath,
             category: _brandCategory,
+            acceptsReplies: _brandAcceptsReplies,
           );
           totalSent += sent;
           if (sent == 0) break; // 한도 초과 시 중단
@@ -697,6 +699,7 @@ class _ComposeScreenState extends State<ComposeScreen>
             brandAutoExpireHours: _brandAutoExpireHours,
             imageUrl: _imageFilePath,
             category: _brandCategory,
+            acceptsReplies: _brandAcceptsReplies,
           );
         }
       }
@@ -749,6 +752,7 @@ class _ComposeScreenState extends State<ComposeScreen>
         brandUniquePerUser: _brandUniquePerUser,
         brandAutoExpireHours: _brandAutoExpireHours,
         category: _brandCategory,
+        acceptsReplies: _brandAcceptsReplies,
       );
 
       if (mounted) {
@@ -806,6 +810,7 @@ class _ComposeScreenState extends State<ComposeScreen>
         brandUniquePerUser: _brandUniquePerUser,
         brandAutoExpireHours: _brandAutoExpireHours,
         category: _brandCategory,
+        acceptsReplies: _brandAcceptsReplies,
       );
     }
 
@@ -2486,6 +2491,45 @@ class _ComposeScreenState extends State<ComposeScreen>
                       ),
                       Text(
                         l10n.composeBrandUniquePerUserDesc,
+                        style: const TextStyle(
+                          color: AppColors.textMuted,
+                          fontSize: 10,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 12),
+          // ── 답장 받기 (브랜드 전용 — 기본 on) ──
+          // 이 캠페인에 답장을 받을지 발신 시점에 결정. Off 면 수신자에게
+          // 답장 버튼이 숨겨지고 "답장 미수락" 안내 카드가 대신 뜬다.
+          GestureDetector(
+            onTap: () => setState(() => _brandAcceptsReplies = !_brandAcceptsReplies),
+            child: Row(
+              children: [
+                Icon(
+                  _brandAcceptsReplies ? Icons.check_circle : Icons.circle_outlined,
+                  color: _brandAcceptsReplies ? AppColors.teal : AppColors.textMuted,
+                  size: 18,
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        l10n.composeBrandAcceptsReplies,
+                        style: TextStyle(
+                          color: _brandAcceptsReplies ? AppColors.teal : AppColors.textPrimary,
+                          fontSize: 12,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      Text(
+                        l10n.composeBrandAcceptsRepliesDesc,
                         style: const TextStyle(
                           color: AppColors.textMuted,
                           fontSize: 10,

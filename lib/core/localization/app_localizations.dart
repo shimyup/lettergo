@@ -660,33 +660,34 @@ class AppL10n {
     'th': '🗺 เก็บจดหมาย',
   });
   String get onboarding3Body => _t({
-    'ko': '세계 곳곳에 흩어진 할인권·이벤트 편지를 가까이 다가가서 주워 보세요. Free는 200m, Premium은 1km 반경에서 주울 수 있어요.',
+    // 모든 등급(Free/Premium/Brand) 이 주울 수 있음. Free 200m, Premium/Brand 1km.
+    'ko': '세계 곳곳에 뿌려진 할인·홍보 편지를 가까이 다가가서 주워 보세요. Free는 200m, Premium·Brand는 1km 반경에서 주울 수 있어요.',
     'en':
-        'Walk close to coupon and event letters scattered across the map to pick them up. Free: 200m radius · Premium: 1km.',
+        'Walk close to promo and discount letters scattered across the map to pick them up. Free: 200m · Premium & Brand: 1km.',
     'ja':
-        '世界に散らばる割引券・イベント手紙に近づいて拾いましょう。Free は 200m、Premium は 1km の範囲で拾えます。',
+        '世界に散らばる割引・プロモ手紙に近づいて拾いましょう。Free は 200m、Premium・Brand は 1km の範囲で拾えます。',
     'zh':
-        '走近散落世界各地的优惠券和活动信件就能拾起它们。Free：200米半径，Premium：1公里。',
+        '走近散落世界各地的促销信件就能拾起它们。Free：200米，Premium 与 Brand：1公里。',
     'fr':
-        'Approchez-vous des coupons et lettres d\'événement sur la carte pour les ramasser. Free : 200 m · Premium : 1 km.',
+        'Approchez-vous des lettres de promo et de réduction sur la carte pour les ramasser. Free : 200 m · Premium & Brand : 1 km.',
     'de':
-        'Geh nah an Gutschein- und Event-Briefe auf der Karte heran, um sie aufzusammeln. Free: 200 m · Premium: 1 km.',
+        'Geh nah an Promo- und Rabatt-Briefe auf der Karte heran, um sie aufzusammeln. Free: 200 m · Premium & Brand: 1 km.',
     'es':
-        'Acércate a los cupones y cartas de eventos en el mapa para recogerlos. Free: 200 m · Premium: 1 km.',
+        'Acércate a las cartas de promo y descuento en el mapa para recogerlas. Free: 200 m · Premium y Brand: 1 km.',
     'pt':
-        'Aproxime-se de cupões e cartas de eventos no mapa para apanhá-los. Free: 200 m · Premium: 1 km.',
+        'Aproxime-se de cartas de promoção e desconto no mapa para apanhá-las. Free: 200 m · Premium e Brand: 1 km.',
     'ru':
-        'Подойдите ближе к купонам и событийным письмам на карте, чтобы подобрать их. Free — 200 м, Premium — 1 км.',
+        'Подойдите ближе к промо- и скидочным письмам на карте, чтобы подобрать их. Free — 200 м, Premium и Brand — 1 км.',
     'tr':
-        'Haritaya dağılmış kupon ve etkinlik mektuplarına yaklaşarak onları topla. Free: 200 m · Premium: 1 km.',
+        'Haritaya dağılmış promosyon ve indirim mektuplarına yaklaşarak topla. Free: 200 m · Premium ve Brand: 1 km.',
     'ar':
-        'اقترب من قسائم الخصم ورسائل الأحداث المنتشرة على الخريطة لالتقاطها. Free: 200 م · Premium: 1 كم.',
+        'اقترب من رسائل العروض والخصومات المنتشرة على الخريطة لالتقاطها. Free: 200 م · Premium و Brand: 1 كم.',
     'it':
-        'Avvicinati ai coupon e alle lettere evento sparsi sulla mappa per raccoglierli. Free: 200 m · Premium: 1 km.',
+        'Avvicinati alle lettere promo e sconto sulla mappa per raccoglierle. Free: 200 m · Premium e Brand: 1 km.',
     'hi':
-        'मानचित्र पर बिखरे कूपन और इवेंट पत्रों के पास जाकर उन्हें उठाएँ. Free: 200 मी · Premium: 1 किमी.',
+        'मानचित्र पर बिखरे प्रमोशन और छूट पत्रों के पास जाकर उन्हें उठाएँ. Free: 200 मी · Premium व Brand: 1 किमी.',
     'th':
-        'เข้าใกล้คูปองและจดหมายกิจกรรมที่กระจายอยู่บนแผนที่เพื่อเก็บ Free: 200 ม. · Premium: 1 กม.',
+        'เข้าใกล้จดหมายโปรโมชั่นและส่วนลดบนแผนที่เพื่อเก็บ Free: 200 ม. · Premium และ Brand: 1 กม.',
   });
 
   String get onboarding4Title => _t({
@@ -11655,21 +11656,22 @@ class AppL10n {
     'th': 'สกินหอคอยพื้นฐาน',
   });
 
+  // DM 기능 제거로 "편지 줍기" 기능을 대표 혜택으로 변경.
   String get onboardingFreeFeat3 => _t({
-    'ko': '받은 편지함 / DM',
-    'en': 'Inbox / DM',
-    'ja': '受信トレイ / DM',
-    'zh': '收件箱 / 私信',
-    'fr': 'Boîte de réception / DM',
-    'de': 'Posteingang / DM',
-    'es': 'Bandeja de entrada / DM',
-    'pt': 'Caixa de entrada / DM',
-    'ru': 'Входящие / ЛС',
-    'tr': 'Gelen kutusu / DM',
-    'ar': 'صندوق الوارد / رسائل مباشرة',
-    'it': 'Posta in arrivo / DM',
-    'hi': 'इनबॉक्स / DM',
-    'th': 'กล่องจดหมาย / DM',
+    'ko': '편지 줍기 (반경 200m)',
+    'en': 'Letter pickup (200m radius)',
+    'ja': '手紙を拾う (200m圏内)',
+    'zh': '拾起信件 (200米范围)',
+    'fr': 'Ramassage de lettres (200 m)',
+    'de': 'Briefe aufsammeln (200 m Radius)',
+    'es': 'Recogida de cartas (200 m)',
+    'pt': 'Apanhar cartas (200 m)',
+    'ru': 'Подбор писем (200 м)',
+    'tr': 'Mektup toplama (200 m)',
+    'ar': 'التقاط الرسائل (200 م)',
+    'it': 'Raccolta lettere (200 m)',
+    'hi': 'पत्र उठाना (200 मी)',
+    'th': 'เก็บจดหมาย (รัศมี 200 ม.)',
   });
 
   String get onboardingFreeFeat4 => _t({
@@ -12780,6 +12782,60 @@ class AppL10n {
     'it': 'Risposto (solo una volta)',
     'hi': 'उत्तर दिया (केवल एक बार)',
     'th': 'ตอบแล้ว (ได้ครั้งเดียว)',
+  });
+
+  // 브랜드 발송인이 "답장 받지 않음" 으로 설정한 편지에 표시되는 안내 카드 문구.
+  // 답장 버튼이 사라진 대신 "이 캠페인은 답장을 받지 않아요" 한 줄을 띄운다.
+  String get letterReadBrandNoReply => _t({
+    'ko': '이 캠페인은 답장을 받지 않아요',
+    'en': 'This campaign does not accept replies',
+    'ja': 'このキャンペーンは返信を受け付けていません',
+    'zh': '此活动不接受回复',
+    'fr': 'Cette campagne n\'accepte pas de réponse',
+    'de': 'Diese Kampagne akzeptiert keine Antworten',
+    'es': 'Esta campaña no acepta respuestas',
+    'pt': 'Esta campanha não aceita respostas',
+    'ru': 'Эта кампания не принимает ответов',
+    'tr': 'Bu kampanya yanıt kabul etmiyor',
+    'ar': 'هذه الحملة لا تقبل الردود',
+    'it': 'Questa campagna non accetta risposte',
+    'hi': 'यह अभियान जवाब स्वीकार नहीं करता',
+    'th': 'แคมเปญนี้ไม่รับคำตอบ',
+  });
+
+  // 브랜드 컴포즈: 답장 수락 토글
+  String get composeBrandAcceptsReplies => _t({
+    'ko': '답장 받기',
+    'en': 'Accept replies',
+    'ja': '返信を受け付ける',
+    'zh': '接受回复',
+    'fr': 'Accepter les réponses',
+    'de': 'Antworten zulassen',
+    'es': 'Aceptar respuestas',
+    'pt': 'Aceitar respostas',
+    'ru': 'Принимать ответы',
+    'tr': 'Yanıtları kabul et',
+    'ar': 'قبول الردود',
+    'it': 'Accetta risposte',
+    'hi': 'जवाब स्वीकार करें',
+    'th': 'รับคำตอบ',
+  });
+
+  String get composeBrandAcceptsRepliesDesc => _t({
+    'ko': '끄면 수신자에게 답장 버튼이 보이지 않아요',
+    'en': 'If off, recipients won\'t see a reply button',
+    'ja': 'オフにすると受信者に返信ボタンが表示されません',
+    'zh': '关闭后，收件人将看不到回复按钮',
+    'fr': 'Désactivé : pas de bouton de réponse pour le destinataire',
+    'de': 'Aus: Empfänger sieht keinen Antworten-Button',
+    'es': 'Desactivado: el destinatario no verá botón de respuesta',
+    'pt': 'Desativado: o destinatário não vê botão de resposta',
+    'ru': 'Выкл: получатель не увидит кнопку ответа',
+    'tr': 'Kapalı: alıcı yanıt düğmesi görmeyecek',
+    'ar': 'إذا أُوقف لن يظهر زر الرد للمستلم',
+    'it': 'Se off, il destinatario non vede il pulsante di risposta',
+    'hi': 'बंद होने पर प्राप्तकर्ता को उत्तर बटन नहीं दिखेगा',
+    'th': 'ปิดแล้วผู้รับจะไม่เห็นปุ่มตอบกลับ',
   });
 
   String get letterReadReply => _t({

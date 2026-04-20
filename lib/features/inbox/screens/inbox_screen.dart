@@ -10,9 +10,20 @@ import '../widgets/letter_read_screen.dart';
 import '../../map/screens/letter_detail_map_screen.dart';
 import '../../dm/dm_conversation_screen.dart';
 
-// all · read · inTransit · waitingPickup · brand (기존)
-//   + coupon · voucher (브랜드 발송 편지의 카테고리별 쿠폰함 섹션용)
+// 포지셔닝 변경으로 필터 단순화 — 7개에서 4개로 축소:
+//   all · coupon · voucher · brand
+// 배송 상태(read/inTransit/waitingPickup) 는 각 편지 카드의 뱃지에서 확인.
+// 필터는 "편지의 종류"만 다룸. 기존 enum 값은 유지 (코드베이스 호환성),
+// 필터 바의 표시 목록에서만 빠진다.
 enum LetterFilterType { all, read, inTransit, waitingPickup, brand, coupon, voucher }
+
+/// 필터 바에 노출되는 4개 타입. enum 전체가 아니라 이 목록만 렌더링.
+const List<LetterFilterType> _visibleFilters = [
+  LetterFilterType.all,
+  LetterFilterType.coupon,
+  LetterFilterType.voucher,
+  LetterFilterType.brand,
+];
 
 // 필터별 empty state 이모지. 수집첩이 비었을 때 어떤 종류의 편지를 찾고
 // 있었는지 시각적으로 힌트를 준다. (예: 할인권 필터에서 비면 🎟)
@@ -101,7 +112,8 @@ class _InboxScreenState extends State<InboxScreen>
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 3, vsync: this);
+    // DM 탭 제거로 2개 탭만 운영. (받은/보낸)
+    _tabController = TabController(length: 2, vsync: this);
   }
 
   @override
@@ -183,11 +195,10 @@ class _InboxScreenState extends State<InboxScreen>
             child: Column(
               children: [
                 _buildHeader(context, state),
-                // 포지셔닝 힌트 — Free/Premium 유저에게만 "주변에서 할인·
-                // 이벤트 편지를 주우면 혜택이 있어요" 메시지 한 줄. Brand 는
-                // 보이지 않음 (자기가 뿌리는 입장).
-                if (!state.currentUser.isBrand)
-                  Container(
+                // 포지셔닝 힌트 — "주변에서 할인·이벤트 편지를 주우면 혜택이
+                // 있어요" 메시지 한 줄. 브랜드 포지셔닝 변경으로 브랜드도
+                // 줍기 가능해졌기에 모든 등급에 표시.
+                Container(
                     margin: const EdgeInsets.fromLTRB(16, 8, 16, 0),
                     padding: const EdgeInsets.symmetric(
                       horizontal: 14,
@@ -288,7 +299,7 @@ class _InboxScreenState extends State<InboxScreen>
                           setState(() => _sentFilter = next);
                         },
                       ),
-                      const _DMTab(),
+                      // DM 탭 제거 — 포지셔닝 변경으로 DM 기능 숨김.
                     ],
                   ),
                 ),
@@ -512,7 +523,7 @@ class _InboxScreenState extends State<InboxScreen>
         tabs: [
           Tab(text: '📬 ${_l10n(context).inboxTabReceived}'),
           Tab(text: '📤 ${_l10n(context).inboxTabSent}'),
-          Tab(text: '💬 ${_l10n(context).inboxTabDM}'),
+          // DM 탭 제거
         ],
       ),
     );
@@ -1468,7 +1479,8 @@ class _LetterFilterBar extends StatelessWidget {
       child: ListView(
         scrollDirection: Axis.horizontal,
         padding: const EdgeInsets.fromLTRB(16, 6, 16, 4),
-        children: LetterFilterType.values.map((type) {
+        // 4개만 렌더 (_visibleFilters) — 나머지 enum 값(read/inTransit/waiting) 숨김
+        children: _visibleFilters.map((type) {
           final selected = type == activeFilter;
           return Padding(
             padding: const EdgeInsets.only(right: 8),
