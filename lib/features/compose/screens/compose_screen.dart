@@ -218,6 +218,7 @@ class _ComposeScreenState extends State<ComposeScreen>
   // ── 브랜드 고급 옵션 ──────────────────────────────────────────────────────
   bool _brandUniquePerUser = false; // 1 아이디당 1 편지
   bool _brandAcceptsReplies = true; // 답장 수락 여부 (기본 on)
+  bool _isExactDropped = false; // ExactDrop 로 좌표 선택됨 → 발송 시 크레딧 차감
   int? _brandAutoExpireHours; // 자동 삭제 시간 (null=없음)
   // Brand 전용 편지 카테고리 — 일반 / 할인권 / 교환권. 수집첩에서 쿠폰함 섹션
   // 으로 분리 표시되므로 브랜드 운영자가 발송 의도를 명확히 지정한다.
@@ -797,6 +798,26 @@ class _ComposeScreenState extends State<ComposeScreen>
 
     bool sent = false;
     await _refreshCurrentLocationIfAvailable(state);
+
+    // ExactDrop 사용 편지는 1 크레딧 차감. 부족 시 발송 중단.
+    if (_isExactDropped && !_isReply) {
+      final ok = await state.consumeExactDropCredit();
+      if (!ok) {
+        setState(() => _isSending = false);
+        _sendController.reset();
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(l10n.composeExactDropOutOfCredits),
+              backgroundColor: AppColors.error,
+              behavior: SnackBarBehavior.floating,
+            ),
+          );
+        }
+        return;
+      }
+    }
+
     if (_isReply) {
       sent = await state.replyToLetter(
         originalLetterId: widget.replyToId!,
@@ -974,9 +995,93 @@ class _ComposeScreenState extends State<ComposeScreen>
 
   // Brand 전용 — 지도에서 정확한 좌표 핀을 찍어 편지를 떨어뜨린다.
   // Free / Premium 은 이 진입점을 볼 수 없다.
+  // Build 106: 유료 크레딧 필요 (100통 = 10,000원). 크레딧 0 이면 "관리자 문의"
+  // 다이얼로그 안내 후 진입 차단.
   Future<void> _selectExactDrop() async {
     final state = context.read<AppState>();
     final langCode = state.currentUser.languageCode;
+    final l = AppL10n.of(langCode);
+
+    // 크레딧 체크 — 0 이면 유료 안내 다이얼로그로 이탈.
+    if (!state.canUseExactDrop) {
+      await showDialog(
+        context: context,
+        builder: (dCtx) => AlertDialog(
+          backgroundColor: AppColors.bgCard,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+          title: Row(
+            children: [
+              const Text('🎯', style: TextStyle(fontSize: 20)),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  l.composeExactDropPaywallTitle,
+                  style: const TextStyle(
+                    color: AppColors.textPrimary,
+                    fontSize: 15,
+                    fontWeight: FontWeight.w800,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                l.composeExactDropPaywallBody,
+                style: const TextStyle(
+                  color: AppColors.textSecondary,
+                  fontSize: 13,
+                  height: 1.5,
+                ),
+              ),
+              const SizedBox(height: 14),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                decoration: BoxDecoration(
+                  color: AppColors.gold.withValues(alpha: 0.12),
+                  borderRadius: BorderRadius.circular(10),
+                  border: Border.all(
+                    color: AppColors.gold.withValues(alpha: 0.4),
+                  ),
+                ),
+                child: Row(
+                  children: [
+                    const Text('💰', style: TextStyle(fontSize: 18)),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: Text(
+                        l.composeExactDropPaywallPricing,
+                        style: const TextStyle(
+                          color: AppColors.gold,
+                          fontSize: 13,
+                          fontWeight: FontWeight.w800,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(dCtx).pop(),
+              child: Text(
+                l.authClose,
+                style: const TextStyle(color: AppColors.textMuted),
+              ),
+            ),
+          ],
+        ),
+      );
+      return;
+    }
+
     final initial = ll.LatLng(
       _destLat != 0.0 ? _destLat : state.currentUser.latitude,
       _destLng != 0.0 ? _destLng : state.currentUser.longitude,
@@ -1016,6 +1121,9 @@ class _ComposeScreenState extends State<ComposeScreen>
       _selectedCity = city;
       _selectedFlag = flag;
       _isRandom = false;
+      // 유료 ExactDrop 크레딧은 실제 발송 시점에 차감한다. 단순 선택만으론
+      // 크레딧이 소모되지 않게 플래그로 마킹.
+      _isExactDropped = true;
     });
   }
 

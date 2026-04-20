@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../core/theme/app_theme.dart';
 import '../core/localization/app_localizations.dart';
 import '../state/app_state.dart';
@@ -42,7 +44,145 @@ class _MainScaffoldState extends State<MainScaffold> {
       Future.delayed(const Duration(milliseconds: 400), () {
         if (mounted) LevelUpBanner.showIfLevelUp(context);
       });
+      // 🎁 브랜드 할인 편지 안내 팝업 — 7일 간격으로 재노출 (Free/Premium 전용)
+      Future.delayed(const Duration(milliseconds: 1200), () {
+        if (mounted) _showBrandPromoIfDue(context);
+      });
     });
+  }
+
+  /// 🎁 "브랜드 할인 편지" 안내 팝업.
+  /// 표시 조건:
+  ///   - 유저가 Free 또는 Premium (Brand 는 이미 알고 있어 제외)
+  ///   - SharedPreferences 의 `brandPromoPopupLastShown` 이 null 이거나
+  ///     현재 시각보다 7일 이상 전
+  /// CTA:
+  ///   - 알겠어요 (dismiss) → lastShown 갱신
+  ///   - 관리자 문의 (mailto) → lastShown 갱신 + support 이메일 열기
+  Future<void> _showBrandPromoIfDue(BuildContext ctx) async {
+    final state = ctx.read<AppState>();
+    if (state.currentUser.isBrand) return;
+
+    final prefs = await SharedPreferences.getInstance();
+    final lastMs = prefs.getInt('brandPromoPopupLastShown');
+    final now = DateTime.now().millisecondsSinceEpoch;
+    const sevenDaysMs = 7 * 24 * 60 * 60 * 1000;
+    if (lastMs != null && now - lastMs < sevenDaysMs) return;
+
+    if (!ctx.mounted) return;
+    final l = AppL10n.of(state.currentUser.languageCode);
+
+    Future<void> markShown() async {
+      await prefs.setInt('brandPromoPopupLastShown', now);
+    }
+
+    await showDialog(
+      context: ctx,
+      builder: (dCtx) => AlertDialog(
+        backgroundColor: AppColors.bgCard,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
+        title: Row(
+          children: [
+            const Text('🎁', style: TextStyle(fontSize: 22)),
+            const SizedBox(width: 10),
+            Expanded(
+              child: Text(
+                l.brandPromoTitle,
+                style: const TextStyle(
+                  color: AppColors.textPrimary,
+                  fontSize: 16,
+                  fontWeight: FontWeight.w800,
+                ),
+              ),
+            ),
+          ],
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              l.brandPromoBody,
+              style: const TextStyle(
+                color: AppColors.textSecondary,
+                fontSize: 13,
+                height: 1.55,
+              ),
+            ),
+            const SizedBox(height: 14),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+              decoration: BoxDecoration(
+                color: AppColors.teal.withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(
+                  color: AppColors.teal.withValues(alpha: 0.35),
+                ),
+              ),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text('💼', style: TextStyle(fontSize: 16)),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: Text(
+                      l.brandPromoContactHint,
+                      style: const TextStyle(
+                        color: AppColors.teal,
+                        fontSize: 12,
+                        height: 1.4,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () async {
+              await markShown();
+              if (dCtx.mounted) Navigator.of(dCtx).pop();
+            },
+            child: Text(
+              l.brandPromoDismiss,
+              style: const TextStyle(color: AppColors.textMuted),
+            ),
+          ),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.gold,
+              foregroundColor: AppColors.bgDeep,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10),
+              ),
+            ),
+            onPressed: () async {
+              await markShown();
+              final uri = Uri(
+                scheme: 'mailto',
+                path: 'support@airony.xyz',
+                queryParameters: {
+                  'subject': '[Letter Go] Brand Campaign Inquiry / 브랜드 캠페인 문의',
+                  'body':
+                      'Hello / 안녕하세요,\n\nI\'m interested in running brand coupon campaigns on Letter Go.\n브랜드 쿠폰 캠페인을 운영하고 싶습니다.\n\nID / 아이디: ${state.currentUser.username}\nEmail / 이메일: ${state.currentUser.email ?? "N/A"}\n\n---\n',
+                },
+              );
+              try {
+                await launchUrl(uri);
+              } catch (_) {}
+              if (dCtx.mounted) Navigator.of(dCtx).pop();
+            },
+            child: Text(
+              l.brandPromoContactCta,
+              style: const TextStyle(fontWeight: FontWeight.w800),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   void _openCompose(BuildContext ctx) async {

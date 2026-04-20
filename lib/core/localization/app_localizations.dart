@@ -4538,6 +4538,161 @@ class AppL10n {
     'hi': '🎯 सटीक स्थान',
     'th': '🎯 ตำแหน่งที่แม่นยำ',
   });
+  // 🎁 브랜드 할인 편지 안내 팝업 (로그인 후, 7일 간격) — Free/Premium 전용
+  String get brandPromoTitle => _t({
+    'ko': '브랜드 할인 편지가 도착하고 있어요',
+    'en': 'Brand coupon letters are on the map',
+    'ja': 'ブランド割引手紙が届いています',
+    'zh': '品牌折扣信件正在地图上传递',
+    'fr': 'Des lettres de coupons de marque arrivent',
+    'de': 'Marken-Coupon-Briefe sind unterwegs',
+    'es': 'Las cartas de cupón de marca están llegando',
+    'pt': 'Cartas de cupão de marca estão a chegar',
+    'ru': 'Письма-купоны брендов уже на карте',
+    'tr': 'Marka kupon mektupları haritada',
+    'ar': 'رسائل قسائم العلامات تصل الآن',
+    'it': 'Le lettere-coupon dei brand sono in arrivo',
+    'hi': 'ब्रांड कूपन पत्र मानचित्र पर आ रहे हैं',
+    'th': 'จดหมายคูปองแบรนด์กำลังมาถึง',
+  });
+
+  String get brandPromoBody => _t({
+    'ko': '지도에서 가까이 걸어가 편지를 주우면 즉시 사용 가능한 할인권·교환권이 나와요. 새로 도착한 편지가 있으면 수집첩에서 확인해보세요!',
+    'en': 'Walk close to letters on the map to pick up ready-to-use coupons and vouchers. Check your Collection for what\'s new.',
+    'ja': '地図上で手紙に近づいて拾うと、すぐ使える割引券や引換券がもらえます。コレクションで新着をチェック！',
+    'zh': '走近地图上的信件即可获得可立即使用的优惠券和兑换券。请到收藏查看。',
+    'fr': 'Rapprochez-vous des lettres sur la carte pour recevoir coupons et bons immédiatement utilisables. Consultez votre Collection !',
+    'de': 'Geh nah an Briefe auf der Karte, um sofort einlösbare Coupons und Gutscheine zu bekommen. Sieh in deiner Sammlung nach!',
+    'es': 'Acércate a las cartas en el mapa para recibir cupones y vales listos para usar. ¡Revisa tu Colección!',
+    'pt': 'Aproxima-te das cartas no mapa para receber cupões e vales prontos a usar. Vê a tua Coleção!',
+    'ru': 'Подойдите ближе к письмам на карте, чтобы получить готовые к использованию купоны и ваучеры. Проверьте Коллекцию!',
+    'tr': 'Haritadaki mektuplara yaklaşarak hazır kupon ve çek alın. Koleksiyonunuza göz atın!',
+    'ar': 'اقترب من الرسائل على الخريطة لاستلام قسائم وقسائم جاهزة للاستخدام. راجع مجموعتك!',
+    'it': 'Avvicinati alle lettere sulla mappa per ricevere coupon e buoni pronti all\'uso. Controlla la Collezione!',
+    'hi': 'मानचित्र पर पत्रों के पास जाकर तुरंत उपयोगी कूपन और वाउचर प्राप्त करें. कलेक्शन देखें!',
+    'th': 'เข้าใกล้จดหมายบนแผนที่เพื่อรับคูปองและบัตรกำนัลพร้อมใช้ ดูในคอลเลคชัน',
+  });
+
+  String get brandPromoContactHint => _t({
+    'ko': '브랜드 계정으로 광고·캠페인을 운영하고 싶으시면 관리자에게 문의해주세요.',
+    'en': 'Want to run brand campaigns? Contact the admin to set up a brand account.',
+    'ja': 'ブランドアカウントでキャンペーンを運営したい方は管理者までご連絡ください。',
+    'zh': '如需通过品牌账号开展活动，请联系管理员。',
+    'fr': 'Pour lancer des campagnes de marque, contactez l\'admin.',
+    'de': 'Für Marken-Kampagnen wende dich an den Admin.',
+    'es': 'Para campañas de marca, contacta al admin.',
+    'pt': 'Para campanhas de marca, contacta o admin.',
+    'ru': 'Хотите запустить бренд-кампанию? Напишите админу.',
+    'tr': 'Marka kampanyaları için yöneticiye ulaşın.',
+    'ar': 'لتشغيل حملات علامة تجارية تواصل مع المشرف.',
+    'it': 'Per campagne brand contatta l\'admin.',
+    'hi': 'ब्रांड अभियान के लिए व्यवस्थापक से संपर्क करें.',
+    'th': 'สนใจทำแคมเปญแบรนด์ ติดต่อผู้ดูแล',
+  });
+
+  String get brandPromoDismiss => _t({
+    'ko': '알겠어요',
+    'en': 'Got it',
+    'ja': '了解',
+    'zh': '知道了',
+    'fr': 'Compris',
+    'de': 'Verstanden',
+    'es': 'Entendido',
+    'pt': 'Entendi',
+    'ru': 'Понятно',
+    'tr': 'Anladım',
+    'ar': 'فهمت',
+    'it': 'Capito',
+    'hi': 'समझ गया',
+    'th': 'เข้าใจแล้ว',
+  });
+
+  String get brandPromoContactCta => _t({
+    'ko': '💼 관리자 문의',
+    'en': '💼 Contact admin',
+    'ja': '💼 管理者に連絡',
+    'zh': '💼 联系管理员',
+    'fr': '💼 Contacter l\'admin',
+    'de': '💼 Admin kontaktieren',
+    'es': '💼 Contactar admin',
+    'pt': '💼 Contactar admin',
+    'ru': '💼 Написать админу',
+    'tr': '💼 Yöneticiye ulaş',
+    'ar': '💼 تواصل مع المشرف',
+    'it': '💼 Contatta l\'admin',
+    'hi': '💼 व्यवस्थापक से संपर्क',
+    'th': '💼 ติดต่อผู้ดูแล',
+  });
+
+  // 🎯 ExactDrop 유료 전환 (Build 106) — 크레딧 부족 시 다이얼로그
+  String get composeExactDropPaywallTitle => _t({
+    'ko': '정확 좌표 드롭은 유료 기능이에요',
+    'en': 'Exact-coordinate drop is a paid feature',
+    'ja': '精確座標ドロップは有料機能です',
+    'zh': '精确坐标投放为付费功能',
+    'fr': 'Le dépôt aux coordonnées exactes est payant',
+    'de': 'Präzise Ablage ist kostenpflichtig',
+    'es': 'La entrega en coordenadas exactas es de pago',
+    'pt': 'A entrega em coordenadas exatas é paga',
+    'ru': 'Точная доставка — платная функция',
+    'tr': 'Tam koordinat teslimi ücretli',
+    'ar': 'توصيل الإحداثيات الدقيقة ميزة مدفوعة',
+    'it': 'Rilascio a coordinate esatte è a pagamento',
+    'hi': 'सटीक निर्देशांक ड्रॉप एक सशुल्क सुविधा है',
+    'th': 'การวางจุดพิกัดเป็นฟีเจอร์เสียเงิน',
+  });
+
+  String get composeExactDropPaywallBody => _t({
+    'ko': '원하는 매장·좌표에 편지를 정확히 뿌릴 수 있어요. 사용을 원하시면 관리자에게 문의해주세요.',
+    'en': 'Drop letters on exact store locations or coordinates. Contact the admin to enable this feature.',
+    'ja': '特定の店舗・座標に手紙を正確に配置できます。利用希望は管理者にお問い合わせください。',
+    'zh': '将信件精确投放到指定地点或坐标。如需使用请联系管理员。',
+    'fr': 'Déposez des lettres à des points de vente ou coordonnées précis. Contactez l\'admin pour activer.',
+    'de': 'Briefe an exakte Standorte oder Koordinaten ablegen. Admin für Freischaltung kontaktieren.',
+    'es': 'Deja cartas en ubicaciones o coordenadas exactas. Contacta al admin para activarlo.',
+    'pt': 'Deixe cartas em locais exatos ou coordenadas. Contacte o admin para ativar.',
+    'ru': 'Размещайте письма в точных местах или координатах. Обратитесь к админу.',
+    'tr': 'Belirli mağaza veya koordinatlara mektup bırakın. Aktifleştirmek için yöneticiye ulaşın.',
+    'ar': 'وزّع الرسائل على مواقع أو إحداثيات دقيقة. تواصل مع المشرف لتفعيلها.',
+    'it': 'Rilascia lettere in luoghi o coordinate esatte. Contatta l\'admin per abilitarla.',
+    'hi': 'सटीक स्थानों या निर्देशांक पर पत्र छोड़ें. सुविधा सक्षम करने के लिए व्यवस्थापक से संपर्क करें.',
+    'th': 'วางจดหมายที่ร้านค้าหรือพิกัดที่ต้องการ ติดต่อผู้ดูแลเพื่อเปิดใช้',
+  });
+
+  String get composeExactDropPaywallPricing => _t({
+    'ko': '100통 패키지 · 10,000원',
+    'en': '100-letter package · KRW 10,000',
+    'ja': '100通パッケージ · 10,000ウォン',
+    'zh': '100 封套餐 · 10,000 韩元',
+    'fr': '100 lettres · 10 000 KRW',
+    'de': '100er-Paket · 10.000 KRW',
+    'es': 'Paquete de 100 · 10.000 KRW',
+    'pt': 'Pacote de 100 · 10.000 KRW',
+    'ru': 'Пакет 100 писем · 10 000 KRW',
+    'tr': '100 mektup paketi · 10.000 KRW',
+    'ar': 'باقة 100 رسالة · 10,000 KRW',
+    'it': 'Pacchetto da 100 · 10.000 KRW',
+    'hi': '100 पत्र पैकेज · ₩10,000',
+    'th': 'แพ็คเกจ 100 ฉบับ · 10,000 วอน',
+  });
+
+  String get composeExactDropOutOfCredits => _t({
+    'ko': 'ExactDrop 크레딧이 부족해요. 관리자에게 문의하세요.',
+    'en': 'Not enough ExactDrop credits. Contact the admin.',
+    'ja': 'ExactDrop クレジットが不足しています。管理者にお問い合わせください。',
+    'zh': 'ExactDrop 额度不足，请联系管理员。',
+    'fr': 'Crédits ExactDrop insuffisants. Contactez l\'admin.',
+    'de': 'Nicht genug ExactDrop-Credits. Admin kontaktieren.',
+    'es': 'Créditos de ExactDrop insuficientes. Contacta al admin.',
+    'pt': 'Créditos ExactDrop insuficientes. Contacte o admin.',
+    'ru': 'Недостаточно кредитов ExactDrop. Свяжитесь с админом.',
+    'tr': 'ExactDrop kredisi yetersiz. Yöneticiye ulaşın.',
+    'ar': 'رصيد ExactDrop غير كافٍ. تواصل مع المشرف.',
+    'it': 'Crediti ExactDrop insufficienti. Contatta l\'admin.',
+    'hi': 'ExactDrop क्रेडिट अपर्याप्त. व्यवस्थापक से संपर्क करें.',
+    'th': 'เครดิต ExactDrop ไม่พอ ติดต่อผู้ดูแล',
+  });
+
   String get composeExactDropHint => _t({
     'ko': '빨간 핀이 떨어뜨릴 위치예요. 지도를 움직여 조정한 뒤 아래 버튼으로 확정하세요',
     'en': 'The red pin marks the drop spot. Pan the map to adjust, then tap Confirm below',
@@ -16717,6 +16872,95 @@ class AppL10n {
     'it': "Ispirazione di oggi",
     'hi': 'आज की प्रेरणा',
     'th': 'แรงบันดาลใจวันนี้',
+  });
+
+  // 🎯 현재 레벨의 줍기 반경 보너스 — 프로필 XP 카드 하단
+  String xpPickupBonusDesc(int radius, int bonus) {
+    switch (languageCode) {
+      case 'ko':
+        return '줍기 반경 ${radius}m (레벨 보너스 +${bonus}m)';
+      case 'en':
+        return 'Pickup radius ${radius}m (level bonus +${bonus}m)';
+      case 'ja':
+        return '拾える範囲 ${radius}m (レベルボーナス +${bonus}m)';
+      case 'zh':
+        return '拾取范围 ${radius}m (等级加成 +${bonus}m)';
+      case 'fr':
+        return 'Rayon ${radius}m (bonus de niveau +${bonus}m)';
+      case 'de':
+        return 'Aufhebradius ${radius}m (Level-Bonus +${bonus}m)';
+      case 'es':
+        return 'Radio ${radius}m (bonus de nivel +${bonus}m)';
+      case 'pt':
+        return 'Raio ${radius}m (bónus de nível +${bonus}m)';
+      case 'ru':
+        return 'Радиус ${radius}м (бонус уровня +${bonus}м)';
+      case 'tr':
+        return 'Yarıçap ${radius}m (seviye bonusu +${bonus}m)';
+      case 'ar':
+        return 'نطاق ${radius} م (مكافأة المستوى +${bonus} م)';
+      case 'it':
+        return 'Raggio ${radius}m (bonus livello +${bonus}m)';
+      case 'hi':
+        return 'पिकअप ${radius}मी (स्तर बोनस +${bonus}मी)';
+      case 'th':
+        return 'รัศมี ${radius}ม (โบนัสระดับ +${bonus}ม)';
+      default:
+        return 'Pickup radius ${radius}m (+${bonus}m level bonus)';
+    }
+  }
+
+  // 🪙 Level 50 도달 후 포인트 적립 라벨
+  String xpPointsLabel(int points) {
+    switch (languageCode) {
+      case 'ko':
+        return '적립 포인트 · $points P';
+      case 'en':
+        return 'Earned · $points pts';
+      case 'ja':
+        return '積立 · $points P';
+      case 'zh':
+        return '积分 · $points 点';
+      case 'fr':
+        return 'Points · $points';
+      case 'de':
+        return 'Punkte · $points';
+      case 'es':
+        return 'Puntos · $points';
+      case 'pt':
+        return 'Pontos · $points';
+      case 'ru':
+        return 'Очки · $points';
+      case 'tr':
+        return 'Puanlar · $points';
+      case 'ar':
+        return 'النقاط · $points';
+      case 'it':
+        return 'Punti · $points';
+      case 'hi':
+        return 'पॉइंट्स · $points';
+      case 'th':
+        return 'คะแนน · $points';
+      default:
+        return 'Earned · $points pts';
+    }
+  }
+
+  String get xpPointsHint => _t({
+    'ko': '구독 시 사용',
+    'en': 'Use on subscription',
+    'ja': '購読時に利用',
+    'zh': '订阅时使用',
+    'fr': 'Utilisable sur abonnement',
+    'de': 'Für Abo einlösbar',
+    'es': 'Usable en suscripción',
+    'pt': 'Usável na subscrição',
+    'ru': 'Для подписки',
+    'tr': 'Abonelikte kullan',
+    'ar': 'استخدامها في الاشتراك',
+    'it': 'Utilizzabili per abbonamento',
+    'hi': 'सदस्यता पर उपयोग',
+    'th': 'ใช้ตอนสมัคร',
   });
 
   // 레벨 마일스톤 바텀시트 — 프로필의 🏆 버튼으로 열림

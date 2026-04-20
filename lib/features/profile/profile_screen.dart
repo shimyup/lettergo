@@ -1651,6 +1651,69 @@ class _ProfileScreenState extends State<ProfileScreen> {
               fontSize: 11,
             ),
           ),
+          const SizedBox(height: 8),
+          // 🎯 현재 레벨의 줍기 반경 보너스 표시 (Level 2 부터 +10m 단위)
+          Row(
+            children: [
+              const Icon(
+                Icons.near_me_rounded,
+                size: 13,
+                color: AppColors.teal,
+              ),
+              const SizedBox(width: 4),
+              Expanded(
+                child: Text(
+                  l.xpPickupBonusDesc(
+                    state.pickupRadiusMeters.toInt(),
+                    (state.currentLevel - 1).clamp(0, 49) * 10,
+                  ),
+                  style: const TextStyle(
+                    color: AppColors.teal,
+                    fontSize: 11,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          // 🪙 Level 50 도달 시 포인트 적립 (추후 구독 결제 크레딧용)
+          if (state.hasMaxLevel) ...[
+            const SizedBox(height: 6),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+              decoration: BoxDecoration(
+                color: AppColors.gold.withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(
+                  color: AppColors.gold.withValues(alpha: 0.3),
+                ),
+              ),
+              child: Row(
+                children: [
+                  const Text('🪙', style: TextStyle(fontSize: 14)),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      l.xpPointsLabel(state.userPoints),
+                      style: const TextStyle(
+                        color: AppColors.gold,
+                        fontSize: 12,
+                        fontWeight: FontWeight.w800,
+                      ),
+                    ),
+                  ),
+                  Text(
+                    l.xpPointsHint,
+                    style: const TextStyle(
+                      color: AppColors.textMuted,
+                      fontSize: 10,
+                      fontStyle: FontStyle.italic,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
           const SizedBox(height: 10),
           // 🏆 전체 10 tier 마일스톤 보기 — 바텀시트로 레벨 1–50 구간 시각화
           InkWell(

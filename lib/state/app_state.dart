@@ -172,17 +172,42 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
       : const Duration(minutes: 60);
 
   // ── 등급별 픽업 반경 ──────────────────────────────────────────────────
-  // 무료: 200m — 주변을 진짜 걸어야 편지가 잡히는 보물찾기 느낌
-  // 프리미엄: 1km — 여유 있게 탐험 가능
-  // 브랜드: 1km — Premium 과 동일. 브랜드도 줍기에 참여 (단, 발송이 본업)
+  // 기본 반경:
+  //   무료     200m — 주변을 걸어야 편지가 잡히는 보물찾기 느낌
+  //   프리미엄 1km  — 여유 있게 탐험 가능
+  //   브랜드   1km  — Premium 과 동일 (줍기에 참여, 발송이 본업)
   //
-  // `nearYou` / `deliveredFar` 상태 전환과 픽업 시 거리 검증 모두 이 한 곳을
-  // 통해 간다.
+  // 레벨 보너스 (Build 106):
+  //   Free/Premium 은 현재 레벨에서 (level - 1) × 10m 가 기본 반경에 더해진다.
+  //   Level 1 = +0m, Level 50 = +490m.
+  //     → Free 최대 690m, Premium 최대 1,490m.
+  //   Brand 는 레벨 시스템 외 (`currentLevel` 이 항상 0) 이라 보너스 0m.
+  //
+  // `nearYou` / `deliveredFar` 상태 전환과 픽업 시 거리 검증 모두 이 getter
+  // 를 통해 간다.
   double get pickupRadiusMeters {
     if (_currentUser.isBrand) return 1000;
-    if (_currentUser.isPremium) return 1000;
-    return 200;
+    final base = _currentUser.isPremium ? 1000.0 : 200.0;
+    final levelBonus = (currentLevel - 1).clamp(0, 49) * 10.0;
+    return base + levelBonus;
   }
+
+  // ── 포인트 (Level 50 이후 초과 XP 누적) ─────────────────────────────────
+  // Level 50 도달 XP = (50-1)² × 50 = 120,050. 이후 쌓이는 XP 는 "포인트"
+  // 로 환산되어 추후 구독 결제 시 크레딧으로 사용할 수 있도록 적립된다.
+  // 환산 비율: 50 XP = 1 point (편지 5회 줍기 ≈ 1 point).
+  // 별도 영속 필드 없이 currentXp 에서 파생 — 항상 정합.
+  static const int _level50Threshold = 120050;
+  static const int _xpPerPoint = 50;
+
+  int get userPoints {
+    if (_currentUser.isBrand) return 0;
+    final xp = currentXp;
+    if (xp <= _level50Threshold) return 0;
+    return (xp - _level50Threshold) ~/ _xpPerPoint;
+  }
+
+  bool get hasMaxLevel => currentLevel >= 50;
 
   DateTime? _lastNearbyPickupAt;
 
@@ -538,6 +563,35 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
 
   // ── 브랜드 추가 구매 월간 발송권 ───────────────────────────────────────────
   int _brandExtraMonthlyQuota = 0;
+
+  // ── 브랜드 정확 좌표 드롭 (ExactDrop) 크레딧 ─────────────────────────────
+  // Build 106: 지도에 편지를 정확히 찍어 뿌리는 기능은 유료 애드온으로 전환.
+  // 100통 패키지 = 10,000원. 관리자 패널에서 수동 충전 (RevenueCat / 실제
+  // 결제 연동은 후속 작업). 크레딧 0 이면 컴포즈 화면에서 "관리자 문의"
+  // 다이얼로그로 안내. 1통 발송 시 1 크레딧 차감.
+  int _brandExactDropCredits = 0;
+  int get brandExactDropCredits => _brandExactDropCredits;
+  bool get canUseExactDrop =>
+      _currentUser.isBrand && _brandExactDropCredits > 0;
+
+  Future<void> adminGrantExactDropCredits(int amount) async {
+    if (amount <= 0) return;
+    _brandExactDropCredits += amount;
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setInt('brandExactDropCredits', _brandExactDropCredits);
+    notifyListeners();
+  }
+
+  /// ExactDrop 로 편지 1통을 발송한 후 호출 — 크레딧 차감.
+  /// 잔고 부족 시 false 반환 (호출측에서 발송 중단).
+  Future<bool> consumeExactDropCredit() async {
+    if (_brandExactDropCredits <= 0) return false;
+    _brandExactDropCredits--;
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setInt('brandExactDropCredits', _brandExactDropCredits);
+    notifyListeners();
+    return true;
+  }
   int _inviteRewardCredits = 0;
   String _inviteCode = '';
   String? _appliedInviteCode;
@@ -1776,6 +1830,7 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
     _pendingDMCount = prefs.getInt('pendingDMCount') ?? 0;
     _brandExtraMonthlyQuota =
         prefs.getInt(PrefKeys.brandExtraMonthlyQuota) ?? 0;
+    _brandExactDropCredits = prefs.getInt('brandExactDropCredits') ?? 0;
     _inviteRewardCredits = prefs.getInt(PrefKeys.inviteRewardCredits) ?? 0;
     final restoredOwnInviteCode = prefs.getString(PrefKeys.inviteCode);
     _inviteCode =
