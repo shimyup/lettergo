@@ -13474,14 +13474,23 @@ class AppL10n {
     'th': '✨ รัศมีของฉัน',
   });
 
-  // Build 121 — 타워 대체용 "헌터 아이템" 슬롯 제목 + 잠김 힌트.
+  // Build 123: 유저 정체성 명칭을 "헌터" → "레고(Lego)" 로 전환. Letter Go
+  // 의 한국어 줄임말이자 글로벌 영문 표기를 "Lego" 로 통일. l10n key 이름과
+  // 코드 심볼은 기존 `hunter*` 유지 — 내부 식별자, 사용자 노출 없음,
+  // 리팩터 비용 억제.
+  //
+  // ⚠️ LEGO 상표 주의: "Lego" 는 The LEGO Group 의 등록 상표와 음가·표기
+  // 동일. 특히 중국어 "乐高" / 일본어 レゴ 는 해당 시장에서 LEGO 공식
+  // 브랜드명이라 분쟁 리스크 매우 높음. 현재 설정은 사용자 직접 결정에
+  // 따른 적용이며, 글로벌 스토어 런칭 전 반드시 상표 변호사 검토 권장.
+  // 안전 변형 후보: "레고(Le:Go)" / "레:고 / LE:GO" / "LeGo" / "Le-go" 등.
   String get hunterItemsTitle => _t({
-    'ko': '헌터 아이템', 'en': 'Hunter items', 'ja': 'ハンターアイテム',
-    'zh': '猎人物品', 'fr': 'Objets de chasse', 'de': 'Jäger-Ausrüstung',
-    'es': 'Objetos de caza', 'pt': 'Itens de caçador',
-    'ru': 'Снаряжение охотника', 'tr': 'Avcı eşyaları',
-    'ar': 'أدوات الصياد', 'it': 'Oggetti del cacciatore',
-    'hi': 'शिकारी सामान', 'th': 'ไอเท็มนักล่า',
+    'ko': '레고 아이템', 'en': 'Lego items', 'ja': 'レゴ アイテム',
+    'zh': 'Lego 道具', 'fr': 'Objets Lego', 'de': 'Lego-Ausrüstung',
+    'es': 'Objetos Lego', 'pt': 'Itens Lego',
+    'ru': 'Снаряжение Lego', 'tr': 'Lego eşyaları',
+    'ar': 'أدوات Lego', 'it': 'Oggetti Lego',
+    'hi': 'Lego सामान', 'th': 'ไอเท็ม Lego',
   });
 
   String hunterItemLockedHint(int level) => _t({
