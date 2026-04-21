@@ -749,16 +749,17 @@ class _PremiumPage extends StatelessWidget {
       l.onboardingFreeFeat4,
     ];
 
-    // 프리미엄 전용 기능 (실제 한도와 동일하게 유지)
+    // Build 119: 픽업-퍼스트 리오더. 반경 📍 → 쿨다운 ⏱ → 발송 묶음 ✈️ →
+    // 꾸미기 묶음 🎨 순서로 페이월(premium_screen) 과 통일.
     final premiumFeatures = [
       {
-        'emoji': '✉️',
+        'emoji': '📍',
         'text': l.onboardingPremiumFeat1,
         'color': const Color(0xFFFF6B9D),
       },
-      {'emoji': '📸', 'text': l.onboardingPremiumFeat2, 'color': AppColors.teal},
-      {'emoji': '⚡', 'text': l.onboardingPremiumFeat3, 'color': AppColors.gold},
-      {'emoji': '🗼', 'text': l.onboardingPremiumFeat4, 'color': const Color(0xFFFF8A5C)},
+      {'emoji': '⏱', 'text': l.onboardingPremiumFeat2, 'color': AppColors.teal},
+      {'emoji': '✈️', 'text': l.onboardingPremiumFeat3, 'color': AppColors.gold},
+      {'emoji': '🎨', 'text': l.onboardingPremiumFeat4, 'color': const Color(0xFFFF8A5C)},
     ];
     final dayTimeline = [
       {
