@@ -115,6 +115,13 @@ class HuntWalletCard extends StatelessWidget {
                 // 확대" 골드 CTA 추가. 레벨 올릴수록 바가 차오름.
                 const SizedBox(height: 16),
                 _buildRadiusBar(l10n, state),
+                // Build 121: 헌터 아이템 슬롯 — 타워 층 은유를 대체하는
+                // "주워 모은 장비" 시각화. 마일스톤 레벨 5곳에 각각 이모지
+                // 아이템 (🎯 🧭 🗺 🎒 👑). 획득=풀컬러, 미획득=회색 + 잠금 힌트.
+                if (!state.currentUser.isBrand) ...[
+                  const SizedBox(height: 16),
+                  _buildHunterItems(l10n, state),
+                ],
                 // Build 116: 주간 퀘스트 진행 — Pokémon GO Field Research 류
                 // 데일리/위클리 목표의 헌트 버전. 5통 목표 달성 시 체크 메시지.
                 const SizedBox(height: 16),
@@ -241,6 +248,44 @@ class HuntWalletCard extends StatelessWidget {
     );
   }
 
+  /// Build 121: 헌터 아이템 줄 — 5개 마일스톤(Lv 2/5/10/25/50) 슬롯.
+  /// 획득: 풀컬러 큰 이모지 · 미획득: 회색 + 작은 자물쇠 + "Lv N 해금" 툴팁.
+  /// 타워의 "층" 대신 "주워 모은 장비" 메타포로 전환.
+  Widget _buildHunterItems(AppL10n l10n, AppState state) {
+    final milestones = AppState.hunterMilestoneLevels;
+    final earned = state.earnedHunterItemLevels.toSet();
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          l10n.hunterItemsTitle,
+          style: const TextStyle(
+            color: AppColors.textPrimary,
+            fontSize: 12,
+            fontWeight: FontWeight.w700,
+          ),
+        ),
+        const SizedBox(height: 8),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            for (final level in milestones)
+              Tooltip(
+                message: earned.contains(level)
+                    ? 'Lv $level'
+                    : l10n.hunterItemLockedHint(level),
+                child: _HunterItemSlot(
+                  emoji: AppState.hunterItemEmoji(level) ?? '❓',
+                  level: level,
+                  isEarned: earned.contains(level),
+                ),
+              ),
+          ],
+        ),
+      ],
+    );
+  }
+
   Widget _buildWeeklyQuest(AppL10n l10n, AppState state) {
     final current = state.pickupsThisWeek;
     final goal = state.weeklyQuestGoal;
@@ -307,4 +352,62 @@ class HuntWalletCard extends StatelessWidget {
         height: 46,
         color: AppColors.textMuted.withValues(alpha: 0.2),
       );
+}
+
+/// Build 121: 헌터 아이템 슬롯 한 칸. 획득 시 풀컬러 + 큰 이모지, 미획득 시
+/// 회색 + 작은 자물쇠 + 필요 레벨 라벨.
+class _HunterItemSlot extends StatelessWidget {
+  final String emoji;
+  final int level;
+  final bool isEarned;
+
+  const _HunterItemSlot({
+    required this.emoji,
+    required this.level,
+    required this.isEarned,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 54,
+      padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 4),
+      decoration: BoxDecoration(
+        color: isEarned
+            ? AppColors.gold.withValues(alpha: 0.12)
+            : AppColors.bgSurface,
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(
+          color: isEarned
+              ? AppColors.gold.withValues(alpha: 0.55)
+              : AppColors.textMuted.withValues(alpha: 0.18),
+          width: isEarned ? 1.3 : 1,
+        ),
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Opacity(
+            opacity: isEarned ? 1.0 : 0.35,
+            child: Text(
+              emoji,
+              style: TextStyle(
+                fontSize: isEarned ? 24 : 20,
+              ),
+            ),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            isEarned ? 'Lv $level' : '🔒',
+            style: TextStyle(
+              color: isEarned ? AppColors.gold : AppColors.textMuted,
+              fontSize: 9,
+              fontWeight: FontWeight.w800,
+              letterSpacing: 0.3,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 }

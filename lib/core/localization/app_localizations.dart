@@ -13474,6 +13474,33 @@ class AppL10n {
     'th': '✨ รัศมีของฉัน',
   });
 
+  // Build 121 — 타워 대체용 "헌터 아이템" 슬롯 제목 + 잠김 힌트.
+  String get hunterItemsTitle => _t({
+    'ko': '헌터 아이템', 'en': 'Hunter items', 'ja': 'ハンターアイテム',
+    'zh': '猎人物品', 'fr': 'Objets de chasse', 'de': 'Jäger-Ausrüstung',
+    'es': 'Objetos de caza', 'pt': 'Itens de caçador',
+    'ru': 'Снаряжение охотника', 'tr': 'Avcı eşyaları',
+    'ar': 'أدوات الصياد', 'it': 'Oggetti del cacciatore',
+    'hi': 'शिकारी सामान', 'th': 'ไอเท็มนักล่า',
+  });
+
+  String hunterItemLockedHint(int level) => _t({
+    'ko': 'Lv $level 에 해금',
+    'en': 'Unlocks at Lv $level',
+    'ja': 'Lv $level で解放',
+    'zh': 'Lv $level 解锁',
+    'fr': 'Débloque au Lv $level',
+    'de': 'Freigeschaltet ab Lv $level',
+    'es': 'Se desbloquea en Lv $level',
+    'pt': 'Desbloqueia no Lv $level',
+    'ru': 'Откроется на Lv $level',
+    'tr': 'Lv $level ile açılır',
+    'ar': 'يُفتح في Lv $level',
+    'it': 'Sbloccato al Lv $level',
+    'hi': 'Lv $level पर खुलता है',
+    'th': 'ปลดล็อคที่ Lv $level',
+  });
+
   // Build 116 — 헌트 지갑 확장: 팔로우 카운트 + 주간 퀘스트.
   String huntWalletFollowing(int n) => _t({
     'ko': '❤️ $n개 브랜드 팔로우 중',

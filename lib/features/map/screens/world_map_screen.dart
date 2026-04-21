@@ -628,6 +628,12 @@ class _WorldMapScreenState extends State<WorldMapScreen>
             floors: state.currentUser.activityScore.towerFloors,
             pulseController: _pulseController,
             pendingLetterCount: overlappingLetters.length,
+            // Build 121: 아바타 색상을 픽업 반경 링과 일치시킨다.
+            isPremium: state.currentUser.isPremium,
+            isBrand: state.currentUser.isBrand,
+            hunterLevel: state.currentLevel,
+            // 최상위 획득 마일스톤의 대표 아이템을 아바타 좌상단에 작게.
+            milestoneItemEmoji: state.latestHunterItemEmoji,
           ),
         ),
       ),
@@ -3436,43 +3442,46 @@ class _DisambiguationTile extends StatelessWidget {
   }
 }
 
+/// Build 121 — "타워" 를 픽업 중심 헌터 포지셔닝에 맞춰 원형 헌터 아바타로
+/// 대체. 내 위치 전용 마커 (`_MyTowerMarker` 참조 지점만 이 위젯으로 교체).
+/// 다른 유저 위치는 기존 `_TowerClusterMarker` 계열 유지 — 사회적 표식.
+///
+/// 시각 구성:
+///   • 외곽 맥동 링 (반경 링과 다른 펄스, 시선 유도용)
+///   • 원형 아바타 (국가 플래그 + 중앙 레벨 뱃지)
+///   • 티어(브랜드·프리미엄·프리)별 색상 = 지도의 픽업 반경 링 색과 일치
+///   • 우상단 우측: 마일스톤 도달 시 대표 아이템 이모지 (🎯🧭🗺🎒👑)
+///   • 우상단: 수령 대기 편지 수 뱃지 (기존 유지)
 class _MyTowerMarker extends StatelessWidget {
+  // 기존 호출 지점과의 호환을 위해 이름·시그니처 보존. `tier`·`floors` 는
+  // 유저 위치 마커 렌더링에서는 더 이상 쓰이지 않지만 타 컴포넌트에서
+  // 활용 가능해 남겨둠.
   final TowerTier tier;
   final String flag;
   final int floors;
   final AnimationController pulseController;
-  final int pendingLetterCount; // 타워 위치에 겹친 수령 가능 편지 수
+  final int pendingLetterCount;
+  final bool isPremium;
+  final bool isBrand;
+  final int hunterLevel;
+  final String? milestoneItemEmoji;
+
   const _MyTowerMarker({
     required this.tier,
     required this.flag,
     required this.floors,
     required this.pulseController,
+    required this.isPremium,
+    required this.isBrand,
+    required this.hunterLevel,
+    this.milestoneItemEmoji,
     this.pendingLetterCount = 0,
   });
 
-  Color _tierColor() {
-    switch (tier) {
-      case TowerTier.shack:
-        return const Color(0xFF8B7355);
-      case TowerTier.cottage:
-        return const Color(0xFFCD7F32);
-      case TowerTier.house:
-        return const Color(0xFFC0C0C0);
-      case TowerTier.townhouse:
-        return const Color(0xFF90C878);
-      case TowerTier.building:
-        return AppColors.gold;
-      case TowerTier.office:
-        return AppColors.teal;
-      case TowerTier.skyscraper:
-        return const Color(0xFF60A5FA);
-      case TowerTier.supertall:
-        return const Color(0xFFAB78FF);
-      case TowerTier.megatower:
-        return const Color(0xFFFF9F43);
-      case TowerTier.landmark:
-        return const Color(0xFFFF6B9D);
-    }
+  Color _accent() {
+    if (isBrand) return const Color(0xFFFF8A5C);
+    if (isPremium) return AppColors.gold;
+    return AppColors.teal;
   }
 
   @override
@@ -3481,69 +3490,113 @@ class _MyTowerMarker extends StatelessWidget {
       animation: pulseController,
       builder: (_, __) {
         final pulse = (sin(pulseController.value * 3.14159 * 2) * 0.5 + 0.5);
-        final color = _tierColor();
+        final color = _accent();
         return Stack(
           alignment: Alignment.center,
           clipBehavior: Clip.none,
           children: [
-            // 펄스 링
+            // 외곽 맥동 링
             Container(
-              width: 52 + pulse * 6,
-              height: 52 + pulse * 6,
+              width: 54 + pulse * 6,
+              height: 54 + pulse * 6,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 border: Border.all(
-                  color: color.withValues(alpha: 0.2 + pulse * 0.2),
+                  color: color.withValues(alpha: 0.2 + pulse * 0.22),
                   width: 1.5,
                 ),
               ),
             ),
-            // 타워 마커 본체
+            // 아바타 본체 (원형)
             Container(
-              width: 44,
-              height: 54,
+              width: 46,
+              height: 46,
               decoration: BoxDecoration(
+                shape: BoxShape.circle,
                 color: AppColors.bgCard.withValues(alpha: 0.97),
-                borderRadius: BorderRadius.circular(12),
                 border: Border.all(color: color, width: 2),
                 boxShadow: [
                   BoxShadow(
-                    color: color.withValues(alpha: 0.4 + pulse * 0.2),
+                    color: color.withValues(alpha: 0.45 + pulse * 0.2),
                     blurRadius: 12,
                     spreadRadius: 1,
                   ),
                 ],
               ),
-              child: FittedBox(
-                fit: BoxFit.scaleDown,
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(tier.emoji, style: const TextStyle(fontSize: 18)),
-                    Text(
-                      pendingLetterCount > 0 ? '📮' : flag,
-                      style: TextStyle(
-                        fontSize: pendingLetterCount > 0 ? 12 : 10,
-                      ),
-                    ),
-                    Text(
-                      '${floors}F',
-                      style: TextStyle(
-                        color: color,
-                        fontSize: 8,
-                        fontWeight: FontWeight.w800,
-                      ),
-                    ),
-                  ],
+              child: Center(
+                child: Text(
+                  pendingLetterCount > 0 ? '📮' : flag,
+                  style: const TextStyle(fontSize: 24),
                 ),
               ),
             ),
-            // 📮 뱃지: 타워 위치에 겹친 편지가 있을 때 우상단에 표시
+            // 하단 중앙: 레벨 뱃지 (Brand 는 왕관)
+            if (!isBrand && hunterLevel > 0)
+              Positioned(
+                bottom: -6,
+                child: Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 6,
+                    vertical: 2,
+                  ),
+                  decoration: BoxDecoration(
+                    color: AppColors.bgDeep,
+                    borderRadius: BorderRadius.circular(10),
+                    border: Border.all(color: color, width: 1.4),
+                  ),
+                  child: Text(
+                    'Lv $hunterLevel',
+                    style: TextStyle(
+                      color: color,
+                      fontSize: 9,
+                      fontWeight: FontWeight.w900,
+                      letterSpacing: 0.3,
+                    ),
+                  ),
+                ),
+              )
+            else if (isBrand)
+              Positioned(
+                bottom: -6,
+                child: Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 6,
+                    vertical: 2,
+                  ),
+                  decoration: BoxDecoration(
+                    color: AppColors.bgDeep,
+                    borderRadius: BorderRadius.circular(10),
+                    border: Border.all(color: color, width: 1.4),
+                  ),
+                  child: const Text(
+                    '👑',
+                    style: TextStyle(fontSize: 10),
+                  ),
+                ),
+              ),
+            // 좌상단: 최근 획득한 마일스톤 아이템 이모지 (있을 때만)
+            if (milestoneItemEmoji != null)
+              Positioned(
+                top: -6,
+                left: -6,
+                child: Container(
+                  padding: const EdgeInsets.all(3),
+                  decoration: BoxDecoration(
+                    color: AppColors.bgCard,
+                    shape: BoxShape.circle,
+                    border: Border.all(color: color, width: 1.2),
+                  ),
+                  child: Text(
+                    milestoneItemEmoji!,
+                    style: const TextStyle(fontSize: 12),
+                  ),
+                ),
+              ),
+            // 우상단: 수령 대기 편지 수 뱃지
             if (pendingLetterCount > 0)
               Positioned(
-                top: -10,
-                right: -12,
+                top: -8,
+                right: -10,
                 child: Container(
                   padding: const EdgeInsets.symmetric(
                     horizontal: 6,

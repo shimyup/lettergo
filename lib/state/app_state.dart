@@ -492,6 +492,42 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
     notifyListeners();
   }
 
+  // ── 헌터 아이템 (Build 121) ──────────────────────────────────────────────
+  // 타워 층 비주얼을 대체해 "주웠다 = 모았다" 감각을 주는 이모지 아이템. 5개
+  // 마일스톤 레벨에 한 개씩 매핑. 지도 아바타 좌상단에 가장 최근 획득 아이템
+  // 작게 노출, 프로필 HuntWalletCard 에 전체 슬롯 5칸 나열.
+  static const Map<int, String> _hunterItemEmojis = {
+    2: '🎯',  // 조준 — 첫 마일스톤
+    5: '🧭',  // 나침반
+    10: '🗺', // 보물 지도
+    25: '🎒', // 여행자 배낭
+    50: '👑', // 전설의 왕관
+  };
+
+  /// 특정 마일스톤 레벨의 아이템 이모지 (정의된 레벨이 아니면 null).
+  static String? hunterItemEmoji(int milestoneLevel) =>
+      _hunterItemEmojis[milestoneLevel];
+
+  /// 마일스톤 레벨 목록 (정렬된 오름차순) — UI 슬롯 렌더링용.
+  static List<int> get hunterMilestoneLevels =>
+      _milestoneLevels.toList()..sort();
+
+  /// 현재 사용자가 이미 획득한 헌터 아이템 레벨 목록 (오름차순).
+  /// 레벨이 마일스톤 기준 이상이면 아직 축하 모달을 안 봤어도 아이템은 소유.
+  List<int> get earnedHunterItemLevels {
+    if (_currentUser.isBrand) return const [];
+    final lvl = currentLevel;
+    return _milestoneLevels.where((m) => lvl >= m).toList()..sort();
+  }
+
+  /// 가장 높은 마일스톤의 아이템 이모지 (지도 아바타 뱃지용). 없으면 null.
+  String? get latestHunterItemEmoji {
+    if (_currentUser.isBrand) return null;
+    final earned = earnedHunterItemLevels;
+    if (earned.isEmpty) return null;
+    return _hunterItemEmojis[earned.last];
+  }
+
   /// 앱 진입 / 첫 액티비티 시 호출. 하루 1회만 실제 증가, 중복 호출 안전.
   /// - 처음 접속: streak = 1
   /// - 어제 접속 → 오늘 재접속: streak++
