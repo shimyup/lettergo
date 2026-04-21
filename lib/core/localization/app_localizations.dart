@@ -75,21 +75,24 @@ class AppL10n {
     'th': 'ข้อความในขวด',
   });
 
+  // Build 114: 스플래시 메인 태그라인 — 마케팅 기획서 Build 113 의 1순위
+  // 후보 ("걸으면 쿠폰이 보여요" / "Walk close. Pick it up.") 로 교체.
+  // 기존 "세상 어딘가의 당신에게" 는 펜팔 포지셔닝 잔재.
   String get tagline => _t({
-    'ko': '세상 어딘가의 당신에게',
-    'en': 'To you, somewhere in the world',
-    'ja': 'どこかの誰かへ',
-    'zh': '致世界某处的你',
-    'fr': 'À toi, quelque part dans le monde',
-    'de': 'An dich, irgendwo auf der Welt',
-    'es': 'A ti, en algún lugar del mundo',
-    'pt': 'Para você, em algum lugar do mundo',
-    'ru': 'Тебе, где-то в мире',
-    'tr': 'Dünyanın bir yerindeki sana',
-    'ar': 'إليك، في مكان ما في العالم',
-    'it': 'A te, da qualche parte nel mondo',
-    'hi': 'दुनिया में कहीं तुम्हारे लिए',
-    'th': 'ถึงคุณ ที่ไหนสักแห่งในโลก',
+    'ko': '걸으면 쿠폰이 보여요',
+    'en': 'Walk close. Pick it up.',
+    'ja': '歩けばクーポンが見える',
+    'zh': '走近就能捡到优惠',
+    'fr': 'Marche. Ramasse. Profite.',
+    'de': 'Geh hin. Hol es dir.',
+    'es': 'Camina. Recoge. Disfruta.',
+    'pt': 'Caminhe. Recolha. Use.',
+    'ru': 'Подойди. Подними. Используй.',
+    'tr': 'Yaklaş. Al. Kullan.',
+    'ar': 'اقترب. التقطها. استخدمها.',
+    'it': 'Avvicinati. Raccogli. Usa.',
+    'hi': 'चलो। उठाओ। बचाओ।',
+    'th': 'เดิน. เก็บ. ใช้ได้ทันที.',
   });
 
   // ── Auth ──────────────────────────────────────────────────────────────────
@@ -14657,11 +14660,14 @@ class AppL10n {
     'ar': 'محادثة فردية فورية', 'it': 'Chat 1:1 in tempo reale', 'hi': '1:1 रीयल-टाइम चैट', 'th': 'แชท 1:1 แบบเรียลไทม์',
   });
 
+  // Build 114: "펜팔 / 편지 친구" 문구를 "긴 대화 스레드" 로 교체. DM 기능은
+  // Build 104 패치에서 UI 숨김 상태지만, 코드 경로가 살아있어 l10n 만이라도
+  // 현재 헌트 포지셔닝과 충돌하지 않게 정리.
   String get dmGateFeature2 => _t({
-    'ko': '편지 친구와 더 깊은 대화', 'en': 'Deeper conversations with pen pals', 'ja': 'ペンパルとの深い会話', 'zh': '与笔友更深入的对话',
-    'fr': 'Conversations plus profondes avec vos correspondants', 'de': 'Tiefere Gespräche mit Brieffreunden', 'es': 'Conversaciones más profundas con amigos por correspondencia',
-    'pt': 'Conversas mais profundas com amigos por correspondência', 'ru': 'Более глубокие беседы с друзьями по переписке', 'tr': 'Mektup arkadaşlarıyla daha derin sohbetler',
-    'ar': 'محادثات أعمق مع أصدقاء المراسلة', 'it': 'Conversazioni più profonde con gli amici di penna', 'hi': 'पत्र मित्रों के साथ गहरी बातचीत', 'th': 'สนทนาลึกซึ้งยิ่งขึ้นกับเพื่อนทางจดหมาย',
+    'ko': '오래 이어가는 대화 스레드', 'en': 'Ongoing conversation threads', 'ja': '長く続ける会話スレッド', 'zh': '持续的对话主题',
+    'fr': 'Fils de conversation continus', 'de': 'Fortlaufende Gesprächsstränge', 'es': 'Hilos de conversación continuos',
+    'pt': 'Threads de conversa contínuos', 'ru': 'Долговременные ветки диалогов', 'tr': 'Uzun süreli sohbet akışları',
+    'ar': 'خيوط محادثة مستمرة', 'it': 'Fili di conversazione continui', 'hi': 'लगातार चलने वाले बातचीत थ्रेड', 'th': 'กระทู้สนทนาต่อเนื่อง',
   });
 
   String get dmGateFeature3 => _t({
@@ -15085,22 +15091,24 @@ class AppL10n {
     'th': 'จดหมายเดินทางในจังหวะของตัวเอง — ทางบก ทางอากาศ ทางทะเล',
   });
 
-  /// 앱의 핵심 가치 한 줄 — "시간이 느리게 흐르는 소셜"
+  /// 앱의 핵심 가치 한 줄 — Build 114 에서 "느린 소셜" 에서
+  /// "지도 위 할인·홍보 편지 헌트" 로 전환. 마케팅 기획서 Build 113 의
+  /// 포지셔닝과 완전 일치.
   String get appSubTagline => _t({
-    'ko': '시간이 느리게 흐르는 소셜',
-    'en': 'A social space where time slows down',
-    'ja': '時間がゆっくり流れるソーシャル',
-    'zh': '时间缓缓流淌的社交空间',
-    'fr': 'Un espace social où le temps ralentit',
-    'de': 'Ein sozialer Raum, in dem die Zeit langsamer fließt',
-    'es': 'Un espacio social donde el tiempo se ralentiza',
-    'pt': 'Um espaço social onde o tempo desacelera',
-    'ru': 'Социальное пространство, где время замедляется',
-    'tr': 'Zamanın yavaşladığı bir sosyal alan',
-    'ar': 'فضاء اجتماعي يتباطأ فيه الزمن',
-    'it': 'Uno spazio sociale dove il tempo rallenta',
-    'hi': 'एक सामाजिक जगह जहाँ समय धीमा हो जाता है',
-    'th': 'พื้นที่โซเชียลที่เวลาเดินช้าลง',
+    'ko': '지도 위 브랜드 할인·홍보 편지 헌트',
+    'en': 'The map that drops discount letters near you',
+    'ja': '地図上の割引・プロモ手紙ハント',
+    'zh': '地图上的品牌优惠信件寻宝',
+    'fr': 'La carte qui dépose des coupons autour de toi',
+    'de': 'Die Karte voller Rabatt-Briefe in deiner Nähe',
+    'es': 'El mapa que deja cupones cerca de ti',
+    'pt': 'O mapa que deixa cupões perto de você',
+    'ru': 'Карта, которая оставляет купоны рядом',
+    'tr': 'Yanına indirim mektubu bırakan harita',
+    'ar': 'خريطة تترك رسائل الخصومات قربك',
+    'it': 'La mappa che lascia coupon vicino a te',
+    'hi': 'आपके पास कूपन गिराने वाला नक्शा',
+    'th': 'แผนที่ที่ทิ้งคูปองใกล้คุณ',
   });
 
   // ── Hardcoded string l10n (formerly hardcoded) ─────────────────────────
