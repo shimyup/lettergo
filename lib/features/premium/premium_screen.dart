@@ -61,19 +61,15 @@ class PremiumScreen extends StatelessWidget {
         final autoRenewDateText = purchase.nextBillingDate != null
             ? _formatDate(purchase.nextBillingDate!, langCode)
             : null;
-        final premiumFeatures = state.useValueBasedPremiumCopy
-            ? [
-                '🚀  ${l.premiumValueFeature1}',
-                '📬  ${l.premiumValueFeature2}',
-                '📸  ${l.premiumValueFeature3}',
-                '⚡  ${l.premiumValueFeature4}',
-              ]
-            : [
-                '✉️  ${l.premiumFeature1}',
-                '📸  ${l.premiumFeature2}',
-                '🗼  ${l.premiumFeature3}',
-                '⚡  ${l.premiumFeature4}',
-              ];
+        // Build 118: A/B (send-중심 가치 카피 vs send-중심 기본 카피) 분기를
+        // 제거. 두 변형 모두 발송 중심이어서 헌트 포지셔닝과 충돌. 새 카피는
+        // 픽업 반경·쿨다운 을 먼저 내세우는 단일 구성으로 통일.
+        final premiumFeatures = [
+          '📍  ${l.premiumFeature1}',
+          '⏱  ${l.premiumFeature2}',
+          '✈️  ${l.premiumFeature3}',
+          '🎨  ${l.premiumFeature4}',
+        ];
 
         return Scaffold(
           backgroundColor: AppColors.bgDeep,
@@ -170,8 +166,10 @@ class PremiumScreen extends StatelessWidget {
                   badge: isFree ? l.premiumCurrentPlan : '',
                   badgeColor: AppColors.teal,
                   features: [
-                    '✉️  ${l.premiumFreeFeature1}',
-                    '🗺️  ${l.premiumFreeFeature2}',
+                    // Build 118: Free 플랜도 픽업 제약 (반경·쿨다운) 부터
+                    // 노출해 Premium 업그레이드 동기를 시각적으로 만든다.
+                    '📍  ${l.premiumFreeFeature1}',
+                    '✉️  ${l.premiumFreeFeature2}',
                   ],
                   isActive: false,
                   onTap: (isFree || purchase.loading)
