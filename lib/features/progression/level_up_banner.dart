@@ -18,6 +18,12 @@ class LevelUpBanner {
 
     final l10n = AppL10n.of(state.currentUser.languageCode);
     final welcome = _localizedWelcome(l10n, newLevel);
+    // Build 120: 레벨업 순간 실제 "반경 확대" 를 함께 보여준다. 배너 본문에
+    // 한 줄 추가. XP 레벨 기반 픽업 반경이 +10m 단위로 올라가므로 델타는
+    // 고정 10m, 신규 값은 pickupRadiusMeters 를 정수로 반올림.
+    final isBrand = state.currentUser.isBrand;
+    final newRadius = state.pickupRadiusMeters.round();
+    final radiusLine = isBrand ? null : l10n.levelUpRadiusDelta(10, newRadius);
 
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
@@ -46,6 +52,17 @@ class LevelUpBanner {
                       fontSize: 14,
                     ),
                   ),
+                  if (radiusLine != null) ...[
+                    const SizedBox(height: 4),
+                    Text(
+                      radiusLine,
+                      style: const TextStyle(
+                        color: Color(0xFF00BFA5),
+                        fontSize: 12,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ],
                 ],
               ),
             ),

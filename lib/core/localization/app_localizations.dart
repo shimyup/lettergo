@@ -13306,6 +13306,174 @@ class AppL10n {
     'ar': 'إجمالي الاستخدام', 'it': 'Totale riscattate',
     'hi': 'कुल उपयोग', 'th': 'รวมใช้',
   });
+  // ─────────────────────────────────────────────────────────────────────
+  // Build 120 — 픽업 감각 증폭 UX 로드맵 (7가지). 레벨업 반경 토스트·프로필
+  // 반경 바·네비 위 근처 카운터·나침반 힌트·레벨 마일스톤·타워 펄스.
+  // ─────────────────────────────────────────────────────────────────────
+
+  String levelUpRadiusDelta(int delta, int newRadius) => _t({
+    'ko': '📍 반경 +${delta}m · 이제 ${newRadius}m',
+    'en': '📍 Radius +${delta}m · now ${newRadius}m',
+    'ja': '📍 範囲 +${delta}m · 現在 ${newRadius}m',
+    'zh': '📍 范围 +${delta}米 · 现 ${newRadius}米',
+    'fr': '📍 Rayon +${delta} m · ${newRadius} m maintenant',
+    'de': '📍 Radius +${delta} m · jetzt ${newRadius} m',
+    'es': '📍 Radio +${delta} m · ahora ${newRadius} m',
+    'pt': '📍 Raio +${delta} m · agora ${newRadius} m',
+    'ru': '📍 Радиус +${delta} м · теперь ${newRadius} м',
+    'tr': '📍 Yarıçap +${delta} m · şimdi ${newRadius} m',
+    'ar': '📍 نطاق +${delta}م · الآن ${newRadius}م',
+    'it': '📍 Raggio +${delta} m · ora ${newRadius} m',
+    'hi': '📍 रेडियस +${delta} मी · अब ${newRadius} मी',
+    'th': '📍 รัศมี +${delta} ม. · ตอนนี้ ${newRadius} ม.',
+  });
+
+  String get huntWalletRadiusTitle => _t({
+    'ko': '내 줍기 반경',
+    'en': 'My pickup radius',
+    'ja': '私の拾える範囲',
+    'zh': '我的拾取范围',
+    'fr': 'Mon rayon',
+    'de': 'Mein Aufsammelradius',
+    'es': 'Mi radio',
+    'pt': 'Meu raio',
+    'ru': 'Мой радиус',
+    'tr': 'Yarıçapım',
+    'ar': 'نطاقي',
+    'it': 'Il mio raggio',
+    'hi': 'मेरा रेडियस',
+    'th': 'รัศมีของฉัน',
+  });
+
+  String huntWalletRadiusValue(int current, int max) => _t({
+    'ko': '${current}m · 최대 ${max}m',
+    'en': '${current}m · max ${max}m',
+    'ja': '${current}m · 最大 ${max}m',
+    'zh': '${current}m · 最大 ${max}m',
+    'fr': '${current} m · max ${max} m',
+    'de': '${current} m · max ${max} m',
+    'es': '${current} m · máx ${max} m',
+    'pt': '${current} m · máx ${max} m',
+    'ru': '${current} м · макс ${max} м',
+    'tr': '${current} m · maks ${max} m',
+    'ar': '${current}م · الحد ${max}م',
+    'it': '${current} m · max ${max} m',
+    'hi': '${current} मी · अधिकतम ${max} मी',
+    'th': '${current} ม. · สูงสุด ${max} ม.',
+  });
+
+  String get huntWalletRadiusUpgradeCta => _t({
+    'ko': 'Premium 전환 시 5× 즉시 확대 →',
+    'en': 'Go Premium to widen 5× instantly →',
+    'ja': 'プレミアムで即 5× 拡大 →',
+    'zh': '升级 Premium 立即扩大 5× →',
+    'fr': 'Passe en Premium pour élargir 5× →',
+    'de': 'Premium: sofort 5× weiter →',
+    'es': 'Pásate a Premium para expandir 5× →',
+    'pt': 'Vai Premium para expandir 5× →',
+    'ru': 'Premium — сразу в 5× шире →',
+    'tr': "Premium ile hemen 5× genişle →",
+    'ar': 'Premium يوسّعه 5× فوراً →',
+    'it': 'Con Premium subito 5× più ampio →',
+    'hi': 'Premium से 5× तुरंत बड़ा →',
+    'th': 'อัปเป็น Premium กว้างขึ้น 5 เท่าทันที →',
+  });
+
+  String mainNavNearbyChip(int n) => _t({
+    'ko': '🎟 근처 $n통',
+    'en': '🎟 $n nearby',
+    'ja': '🎟 近く $n通',
+    'zh': '🎟 附近 $n',
+    'fr': '🎟 $n à proximité',
+    'de': '🎟 $n in der Nähe',
+    'es': '🎟 $n cerca',
+    'pt': '🎟 $n por perto',
+    'ru': '🎟 $n рядом',
+    'tr': '🎟 Yakında $n',
+    'ar': '🎟 $n قريب',
+    'it': '🎟 $n vicino',
+    'hi': '🎟 $n पास',
+    'th': '🎟 ใกล้ $n',
+  });
+
+  // 나침반 힌트 — 주변 반경 내 편지는 없지만 월드 편지 중 가장 가까운 것의
+  // 방향과 거리. 방향은 화살표 이모지(↑ ↗ → ↘ ↓ ↙ ← ↖) 로 표현해 번역 불필요.
+  String mapCompassHint(int meters, String arrow, String categoryEmoji) => _t({
+    'ko': '🧭 $arrow ${meters}m — $categoryEmoji 편지가 있어요',
+    'en': '🧭 $arrow ${meters}m — $categoryEmoji letter waiting',
+    'ja': '🧭 $arrow ${meters}m に $categoryEmoji 手紙',
+    'zh': '🧭 $arrow ${meters}m — $categoryEmoji 信件',
+    'fr': "🧭 $arrow ${meters} m — lettre $categoryEmoji",
+    'de': '🧭 $arrow ${meters} m — $categoryEmoji Brief',
+    'es': '🧭 $arrow ${meters} m — carta $categoryEmoji',
+    'pt': '🧭 $arrow ${meters} m — carta $categoryEmoji',
+    'ru': '🧭 $arrow ${meters} м — письмо $categoryEmoji',
+    'tr': '🧭 $arrow ${meters} m — $categoryEmoji mektup',
+    'ar': '🧭 $arrow ${meters}م — رسالة $categoryEmoji',
+    'it': '🧭 $arrow ${meters} m — lettera $categoryEmoji',
+    'hi': '🧭 $arrow ${meters} मी — $categoryEmoji पत्र',
+    'th': '🧭 $arrow ${meters} ม. — จดหมาย $categoryEmoji',
+  });
+
+  String milestoneLevelTitle(int level) => _t({
+    'ko': '🏆 레벨 $level 달성!',
+    'en': '🏆 Level $level reached!',
+    'ja': '🏆 レベル $level 到達！',
+    'zh': '🏆 达到 $level 级！',
+    'fr': '🏆 Niveau $level atteint !',
+    'de': '🏆 Level $level erreicht!',
+    'es': '🏆 ¡Nivel $level alcanzado!',
+    'pt': '🏆 Nível $level alcançado!',
+    'ru': '🏆 Уровень $level достигнут!',
+    'tr': '🏆 Seviye $level tamam!',
+    'ar': '🏆 وصلت للمستوى $level!',
+    'it': '🏆 Livello $level raggiunto!',
+    'hi': '🏆 स्तर $level प्राप्त!',
+    'th': '🏆 ถึงระดับ $level!',
+  });
+
+  String milestoneLevelBody(int radius) => _t({
+    'ko': '이제 줍기 반경이 ${radius}m 로 넓어졌어요. 더 멀리 주울 수 있어요.',
+    'en': 'Your pickup radius is now ${radius}m. Reach further.',
+    'ja': '拾える範囲が ${radius}m に広がりました。さらに遠くまで拾えます。',
+    'zh': '拾取范围扩大到 ${radius}m。可以走得更远。',
+    'fr': 'Ton rayon est maintenant ${radius} m. Va plus loin.',
+    'de': 'Dein Radius beträgt jetzt ${radius} m. Greif weiter.',
+    'es': 'Tu radio ahora es ${radius} m. Llega más lejos.',
+    'pt': 'O teu raio agora é ${radius} m. Chega mais longe.',
+    'ru': 'Ваш радиус теперь ${radius} м. Можно дальше.',
+    'tr': 'Yarıçapın artık ${radius} m. Daha ileri git.',
+    'ar': 'نطاقك الآن ${radius}م. تقدّم أبعد.',
+    'it': 'Il tuo raggio è ora ${radius} m. Arriva più lontano.',
+    'hi': 'अब आपका रेडियस ${radius} मी है। और दूर पहुँचो।',
+    'th': 'รัศมีคุณคือ ${radius} ม. แล้ว ไปไกลขึ้นได้',
+  });
+
+  String get milestoneLevelCta => _t({
+    'ko': '계속 주우러 가기', 'en': 'Keep hunting', 'ja': '続けて拾う',
+    'zh': '继续寻找', 'fr': 'Continuer', 'de': 'Weiter sammeln',
+    'es': 'Seguir cazando', 'pt': 'Continuar', 'ru': 'Продолжить',
+    'tr': 'Devam', 'ar': 'متابعة', 'it': 'Continua', 'hi': 'जारी रखो',
+    'th': 'ไปต่อ',
+  });
+
+  String get towerPulseHint => _t({
+    'ko': '✨ 내 줍기 반경',
+    'en': '✨ My pickup radius',
+    'ja': '✨ 私の拾える範囲',
+    'zh': '✨ 我的拾取范围',
+    'fr': '✨ Mon rayon',
+    'de': '✨ Mein Radius',
+    'es': '✨ Mi radio',
+    'pt': '✨ Meu raio',
+    'ru': '✨ Мой радиус',
+    'tr': '✨ Yarıçapım',
+    'ar': '✨ نطاقي',
+    'it': '✨ Il mio raggio',
+    'hi': '✨ मेरा रेडियस',
+    'th': '✨ รัศมีของฉัน',
+  });
+
   // Build 116 — 헌트 지갑 확장: 팔로우 카운트 + 주간 퀘스트.
   String huntWalletFollowing(int n) => _t({
     'ko': '❤️ $n개 브랜드 팔로우 중',

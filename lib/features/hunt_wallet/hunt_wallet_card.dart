@@ -110,6 +110,11 @@ class HuntWalletCard extends StatelessWidget {
                     ),
                   ],
                 ),
+                // Build 120: 줍기 반경 진행바 — 현재 반경이 내 티어 최대의
+                // 몇 % 인지 시각화. Free 는 하단에 "Premium 전환 시 5× 즉시
+                // 확대" 골드 CTA 추가. 레벨 올릴수록 바가 차오름.
+                const SizedBox(height: 16),
+                _buildRadiusBar(l10n, state),
                 // Build 116: 주간 퀘스트 진행 — Pokémon GO Field Research 류
                 // 데일리/위클리 목표의 헌트 버전. 5통 목표 달성 시 체크 메시지.
                 const SizedBox(height: 16),
@@ -168,6 +173,71 @@ class HuntWalletCard extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+
+  /// Build 120: 줍기 반경 진행 바. 현재 반경 / 내 티어의 Lv50 최대 반경.
+  /// Free: 690m 기준 (200 + 49*10), Premium: 1490m (1000 + 49*10).
+  /// 0→100% 를 teal/gold 그라디언트 로 시각화. Free 일 땐 하단에 "Premium
+  /// 전환 시 5× 즉시 확대" 골드 CTA 삽입.
+  Widget _buildRadiusBar(AppL10n l10n, AppState state) {
+    final isBrand = state.currentUser.isBrand;
+    final isPremium = state.currentUser.isPremium;
+    final current = state.pickupRadiusMeters.round();
+    // 티어별 최대 (Lv 50 도달 시)
+    final tierMax = isBrand ? 1000 : (isPremium ? 1490 : 690);
+    final pct = (current / tierMax).clamp(0.0, 1.0);
+    final accent = isBrand
+        ? const Color(0xFFFF8A5C)
+        : (isPremium ? AppColors.gold : AppColors.teal);
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Expanded(
+              child: Text(
+                l10n.huntWalletRadiusTitle,
+                style: const TextStyle(
+                  color: AppColors.textPrimary,
+                  fontSize: 12,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+            ),
+            Text(
+              l10n.huntWalletRadiusValue(current, tierMax),
+              style: TextStyle(
+                color: accent,
+                fontSize: 11.5,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 6),
+        ClipRRect(
+          borderRadius: BorderRadius.circular(6),
+          child: LinearProgressIndicator(
+            value: pct,
+            minHeight: 7,
+            backgroundColor: AppColors.bgSurface,
+            valueColor: AlwaysStoppedAnimation<Color>(accent),
+          ),
+        ),
+        // Free 계정만 업그레이드 CTA 노출 — Premium·Brand 은 불필요.
+        if (!isPremium && !isBrand) ...[
+          const SizedBox(height: 6),
+          Text(
+            l10n.huntWalletRadiusUpgradeCta,
+            style: const TextStyle(
+              color: AppColors.gold,
+              fontSize: 11,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+        ],
+      ],
     );
   }
 

@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:math';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:latlong2/latlong.dart' as ll;
@@ -225,6 +226,36 @@ class _WorldMapScreenState extends State<WorldMapScreen>
                     ),
                   ],
                 ),
+                // ── 픽업 반경 링 (Build 120) ────────────────────────────
+                // 실제 줍기 가능한 반경을 티어별 색으로 상시 표시. Premium
+                // (골드) 과 Free (티일) 의 시각적 차이가 유저에게 "5× 넓은
+                // 원" 을 매일 느끼게 하는 핵심 앵커.
+                // - Free: teal (200m + 레벨 보너스)
+                // - Premium: gold (1km + 레벨 보너스)
+                // - Brand: orange (1km)
+                CircleLayer(
+                  circles: [
+                    CircleMarker(
+                      point: ll.LatLng(
+                        state.currentUser.latitude,
+                        state.currentUser.longitude,
+                      ),
+                      radius: state.pickupRadiusMeters,
+                      useRadiusInMeter: true,
+                      color: state.currentUser.isBrand
+                          ? const Color(0xFFFF8A5C).withValues(alpha: 0.07)
+                          : state.currentUser.isPremium
+                              ? AppColors.gold.withValues(alpha: 0.10)
+                              : AppColors.teal.withValues(alpha: 0.10),
+                      borderColor: state.currentUser.isBrand
+                          ? const Color(0xFFFF8A5C).withValues(alpha: 0.70)
+                          : state.currentUser.isPremium
+                              ? AppColors.gold.withValues(alpha: 0.75)
+                              : AppColors.teal.withValues(alpha: 0.75),
+                      borderStrokeWidth: 2.0,
+                    ),
+                  ],
+                ),
                 // ── 모든 마커 (단일 레이어 — 히트 테스팅 정확도 보장) ──
                 // 순서: 클러스터 타워 → 내 타워 + 편지 (뒤쪽이 위에 렌더링)
                 ValueListenableBuilder<int>(
@@ -302,6 +333,49 @@ class _WorldMapScreenState extends State<WorldMapScreen>
               ),
             // Brand-only send banner removed — 포지셔닝 변경으로 브랜드도
             // 편지를 주울 수 있게 됨. 배너를 띄울 이유가 사라짐.
+            // Build 120: 나침반 힌트 배너 — 반경 안에 편지가 없을 때 가장 가까운
+            // 바깥쪽 편지의 방향·거리를 한 줄로 알려준다. "앱을 열었는데 반경 0통"
+            // 인 죽은 상태를 "저쪽으로 150m 가면 있어요" 로 전환.
+            if (state.nearbyLetters.isEmpty && state.worldLetters.isNotEmpty)
+              Builder(builder: (ctx) {
+                final hint = _nearestLetterCompass(state);
+                if (hint == null) return const SizedBox.shrink();
+                return Positioned(
+                  top: 220,
+                  left: 16,
+                  right: 16,
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 14, vertical: 10,
+                    ),
+                    decoration: BoxDecoration(
+                      color: AppColors.bgCard.withValues(alpha: 0.92),
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(
+                        color: AppColors.gold.withValues(alpha: 0.4),
+                        width: 1.2,
+                      ),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withValues(alpha: 0.3),
+                          blurRadius: 10,
+                        ),
+                      ],
+                    ),
+                    child: Text(
+                      l10n.mapCompassHint(
+                        hint.$1, hint.$2, hint.$3,
+                      ),
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(
+                        color: AppColors.gold,
+                        fontSize: 12.5,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ),
+                );
+              }),
             // ── 지도 퀵 액션 (전체보기/내 위치) ─────────────────────────────
             Positioned(
               bottom: 120,
@@ -521,6 +595,32 @@ class _WorldMapScreenState extends State<WorldMapScreen>
             } else {
               _showMyTowerInfo(context, context.read<AppState>(), l10n);
             }
+          },
+          // Build 120: 내 타워 길게 누르면 "내 줍기 반경" 즉시 확인 — 반경 링
+          // 이 항상 그려져 있지만, 확인 동작을 명시적으로 지원해 "여기가 내
+          // 사냥터" 감각 + 숫자 확인 (haptic + 스낵바) 를 제공한다.
+          onLongPress: () {
+            HapticFeedback.mediumImpact();
+            final radius = state.pickupRadiusMeters.round();
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(
+                  '${l10n.towerPulseHint} · ${radius}m',
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+                backgroundColor: state.currentUser.isPremium
+                    ? const Color(0xFF7C4A00)
+                    : const Color(0xFF004D47),
+                behavior: SnackBarBehavior.floating,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                duration: const Duration(seconds: 2),
+              ),
+            );
           },
           child: _MyTowerMarker(
             tier: state.currentUser.activityScore.tier,
@@ -1737,6 +1837,16 @@ class _WorldMapScreenState extends State<WorldMapScreen>
                 state.acknowledgeFirstPickup();
               });
             }
+            // Build 120: 마일스톤 레벨(2/5/10/25/50) 에 도달했다면 별도 축하
+            // 모달. 픽업으로 XP 쌓다가 터졌을 가능성이 크므로 여기서 폴링.
+            final milestone = state.pendingMilestoneLevel;
+            if (milestone != null) {
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                if (!ctx.mounted) return;
+                _showMilestoneCelebration(ctx, l10n, milestone, state);
+                state.acknowledgeMilestone();
+              });
+            }
           } else {
             ScaffoldMessenger.of(ctx).showSnackBar(
               SnackBar(
@@ -1821,6 +1931,79 @@ class _WorldMapScreenState extends State<WorldMapScreen>
     );
   }
 
+  /// Build 120: 레벨 마일스톤(2/5/10/25/50) 축하 모달. 반경이 얼마나
+  /// 넓어졌는지 본문에서 강조해 "레벨업의 의미 = 픽업 범위 확대" 연결고리
+  /// 를 계속 상기시킨다. `acknowledgeMilestone()` 으로 소진.
+  void _showMilestoneCelebration(
+    BuildContext ctx,
+    AppL10n l10n,
+    int level,
+    AppState state,
+  ) {
+    final radius = state.pickupRadiusMeters.round();
+    showDialog(
+      context: ctx,
+      barrierDismissible: false,
+      builder: (_) => AlertDialog(
+        backgroundColor: AppColors.bgCard,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20),
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            const Text('🏆', style: TextStyle(fontSize: 56)),
+            const SizedBox(height: 12),
+            Text(
+              l10n.milestoneLevelTitle(level),
+              textAlign: TextAlign.center,
+              style: const TextStyle(
+                color: AppColors.gold,
+                fontSize: 17,
+                fontWeight: FontWeight.w800,
+              ),
+            ),
+            const SizedBox(height: 10),
+            Text(
+              l10n.milestoneLevelBody(radius),
+              textAlign: TextAlign.center,
+              style: const TextStyle(
+                color: AppColors.textSecondary,
+                fontSize: 13,
+                height: 1.55,
+              ),
+            ),
+          ],
+        ),
+        actionsAlignment: MainAxisAlignment.center,
+        actions: [
+          ElevatedButton(
+            onPressed: () => Navigator.pop(ctx),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.gold,
+              foregroundColor: Colors.black,
+              padding: const EdgeInsets.symmetric(
+                horizontal: 26,
+                vertical: 10,
+              ),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(14),
+              ),
+            ),
+            child: Text(
+              l10n.milestoneLevelCta,
+              style: const TextStyle(
+                fontWeight: FontWeight.w800,
+                letterSpacing: 0.3,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   void _showTransitInfo(BuildContext ctx, Letter letter, AppL10n l10n) {
     showModalBottomSheet(
       context: ctx,
@@ -1838,6 +2021,56 @@ class _WorldMapScreenState extends State<WorldMapScreen>
 
   String _todayKey(DateTime now) =>
       '${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')}';
+
+  /// Build 120: 나침반 힌트 — 내 위치에서 가장 가까운 "줍을 수 있는" 편지
+  /// (nearYou / deliveredFar / 이동 중 또는 도착 후 미오픈) 의 거리와 방향을
+  /// 찾아 `(미터, 방향 화살표 이모지, 카테고리 이모지)` 로 반환.
+  /// 반경 내에 이미 있는 경우는 호출측에서 제외 — 반경 밖 가장 가까운 것을
+  /// 찾는 것이 목적.
+  (int, String, String)? _nearestLetterCompass(AppState state) {
+    final myLat = state.currentUser.latitude;
+    final myLng = state.currentUser.longitude;
+    final me = LatLng(myLat, myLng);
+    final radius = state.pickupRadiusMeters;
+
+    Letter? nearest;
+    double nearestDist = double.infinity;
+    for (final l in state.worldLetters) {
+      final status = l.status;
+      if (status != DeliveryStatus.nearYou &&
+          status != DeliveryStatus.deliveredFar &&
+          status != DeliveryStatus.inTransit &&
+          !(status == DeliveryStatus.delivered && !l.isReadByRecipient)) {
+        continue;
+      }
+      final d = l.destinationLocation.distanceTo(me);
+      if (d < radius) continue; // 반경 안에 있으면 이미 줍기 가능 — 스킵
+      if (d < nearestDist) {
+        nearestDist = d;
+        nearest = l;
+      }
+    }
+    if (nearest == null || nearestDist == double.infinity) return null;
+
+    // Bearing 계산 (Haversine)
+    final lat1 = myLat * pi / 180;
+    final lat2 = nearest.destinationLocation.latitude * pi / 180;
+    final dLng = (nearest.destinationLocation.longitude - myLng) * pi / 180;
+    final y = sin(dLng) * cos(lat2);
+    final x = cos(lat1) * sin(lat2) - sin(lat1) * cos(lat2) * cos(dLng);
+    final bearing = (atan2(y, x) * 180 / pi + 360) % 360;
+
+    // 8 방향 화살표 매핑 (0 = 북 = ↑, 45 = 북동 = ↗, ...)
+    const arrows = ['↑', '↗', '→', '↘', '↓', '↙', '←', '↖'];
+    final idx = ((bearing + 22.5) / 45).floor() % 8;
+
+    // 카테고리 이모지 (브랜드 편지만 맞춤, 아니면 📬)
+    final catEmoji = nearest.senderIsBrand
+        ? nearest.category.brandEmoji
+        : '📬';
+
+    return (nearestDist.round(), arrows[idx], catEmoji);
+  }
 
   Future<void> _checkLocationPermission() async {
     final permission = await Geolocator.checkPermission();

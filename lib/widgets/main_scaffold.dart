@@ -138,7 +138,18 @@ class _MainScaffoldState extends State<MainScaffold> {
           ],
         ),
       ),
-      bottomNavigationBar: _buildBottomNav(context, badgeCount, l),
+      bottomNavigationBar: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          // Build 120: 네비 바 바로 위 "🎟 근처 N통" 상시 칩. 0 이면 숨김.
+          // 탐험 탭이 이미 선택된 상태에서는 지도에 이미 보이므로 숨긴다.
+          _NearbyCountChip(
+            onTap: () => setState(() => _currentIndex = 0),
+            hideWhenExploreSelected: _currentIndex == 0,
+          ),
+          _buildBottomNav(context, badgeCount, l),
+        ],
+      ),
     );
     // 기존 중앙 FAB 제거 — "보내기" 가 하단 네비 5번째 탭으로 승격되며
     // 수집(보물찾기) UX 에 발송 액션을 동등한 비중으로 둔다. 발송 자체는
@@ -634,6 +645,68 @@ class _SideNotch extends StatelessWidget {
       decoration: const BoxDecoration(
         color: Color(0xFF0A0A12),
         shape: BoxShape.circle,
+      ),
+    );
+  }
+}
+
+/// Build 120: "🎟 근처 N통" 항상 노출 칩. 네비 바 위에 얇은 띠로 렌더.
+/// 0 통이면 공간 자체 숨김. 탐험 탭에 이미 있을 때도 중복이라 숨김.
+class _NearbyCountChip extends StatelessWidget {
+  final VoidCallback onTap;
+  final bool hideWhenExploreSelected;
+
+  const _NearbyCountChip({
+    required this.onTap,
+    required this.hideWhenExploreSelected,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    if (hideWhenExploreSelected) return const SizedBox.shrink();
+    final count = context.select<AppState, int>(
+      (s) => s.nearbyLetters.length,
+    );
+    if (count == 0) return const SizedBox.shrink();
+    final langCode = context.select<AppState, String>(
+      (s) => s.currentUser.languageCode,
+    );
+    final l10n = AppL10n.of(langCode);
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
+        child: Container(
+          width: double.infinity,
+          padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 14),
+          decoration: BoxDecoration(
+            color: AppColors.teal.withValues(alpha: 0.15),
+            border: Border(
+              top: BorderSide(
+                color: AppColors.teal.withValues(alpha: 0.35),
+                width: 0.8,
+              ),
+              bottom: BorderSide(
+                color: AppColors.teal.withValues(alpha: 0.35),
+                width: 0.8,
+              ),
+            ),
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                l10n.mainNavNearbyChip(count),
+                style: const TextStyle(
+                  color: AppColors.teal,
+                  fontSize: 12,
+                  fontWeight: FontWeight.w700,
+                  letterSpacing: 0.3,
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }

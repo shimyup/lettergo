@@ -460,8 +460,36 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
     final xpLevel = currentLevel;
     if (xpLevel > 0 && xpLevel > _previousXpLevel) {
       _justLeveledUp = true;
+      // Build 120: 마일스톤 레벨(2/5/10/25/50) 도달 시 별도 플래그 — UI 에서
+      // 축하 모달 트리거용. 단순 레벨업 배너보다 무거운 축하 모먼트.
+      if (_milestoneLevels.contains(xpLevel) &&
+          !_celebratedMilestones.contains(xpLevel)) {
+        _pendingMilestoneLevel = xpLevel;
+      }
     }
     _previousXpLevel = xpLevel;
+  }
+
+  // ── 레벨 마일스톤 축하 (Build 120) ────────────────────────────────────────
+  // 레벨 시스템의 게임플레이 상 의미를 느끼게 하는 주요 마디. 각 마일스톤은
+  // 한 번만 표시 — 해당 레벨 하향 시에도 재표시 안 됨.
+  static const Set<int> _milestoneLevels = {2, 5, 10, 25, 50};
+  int? _pendingMilestoneLevel;
+  final Set<int> _celebratedMilestones = {};
+
+  int? get pendingMilestoneLevel => _pendingMilestoneLevel;
+
+  Future<void> acknowledgeMilestone() async {
+    final lvl = _pendingMilestoneLevel;
+    if (lvl == null) return;
+    _pendingMilestoneLevel = null;
+    _celebratedMilestones.add(lvl);
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setStringList(
+      'celebratedMilestones',
+      _celebratedMilestones.map((e) => e.toString()).toList(),
+    );
+    notifyListeners();
   }
 
   /// 앱 진입 / 첫 액티비티 시 호출. 하루 1회만 실제 증가, 중복 호출 안전.
@@ -1955,6 +1983,15 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
     // 브랜드 팔로우 복원
     _followedBrandIds.clear();
     _followedBrandIds.addAll(prefs.getStringList('followedBrandIds') ?? []);
+
+    // 레벨 마일스톤 축하 소진 이력 복원 (Build 120)
+    _celebratedMilestones
+      ..clear()
+      ..addAll(
+        (prefs.getStringList('celebratedMilestones') ?? const [])
+            .map(int.tryParse)
+            .whereType<int>(),
+      );
 
     // 첫 픽업 축하 소진 여부 복원. Build 117 마이그레이션: Build 115 이전부터
     // 이미 편지를 주운 사용자는 축하 키가 없으면서 픽업 이력이 있다. 그대로
