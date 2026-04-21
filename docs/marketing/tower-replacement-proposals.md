@@ -235,10 +235,46 @@ Build 122 에서 교체:
 
 ---
 
-## ✅ Build 123 — 최종 명칭 확정: **레고 (Lego)**
+## ✅ Build 124 — 최종 명칭 재확정: **레터 (Letter)**
 
-Letter Go 의 한국어 음운 줄임말 "레고" 를 유저 정체성 명칭으로 확정.
-글로벌 영문 표기도 동일하게 **"Lego"** 로 통일. 사용자 직접 결정.
+Build 123 에서 "레고 (Lego)" 로 설정했으나 The LEGO Group 상표와 중국
+(乐高) · 일본 (レゴ) · 글로벌 (LEGO) 에서 직접 충돌 리스크가 커 **"레터
+(Letter)"** 로 전환. "Letter" 는 **Letter Go 브랜드명의 핵심 요소** 이자
+일반 명사라 상표 분쟁 위험이 사실상 없음.
+
+### 전환 이유
+- Letter Go → **Letter** 로 줄이면 브랜드 연속성 유지
+- 영문 Letter = 보통 명사, 상표권 주장 불가
+- 14개 언어 모두 "Letter" 그대로 통용 가능
+- 앱 정체성 ("편지를 주우러 다니는 사람") 과 직접 정합
+- "레터 아이템" = 편지 관련 수집 아이템, 직관적 의미
+
+### 적용 범위 (Build 124)
+- l10n key `hunterItemsTitle`:
+  - KO: "레터 아이템"
+  - EN / FR / DE / ES / PT / IT / TR / AR / HI / TH / RU: "... Letter ..."
+  - JA: "レター アイテム"
+  - ZH: "Letter 道具"
+- 내부 코드 심볼 (`hunterItemEmoji`, `earnedHunterItemLevels`,
+  `_buildHunterItems` 등) **변경 없음** — 유저 노출 없는 식별자.
+
+### 이전 후보들 (과거 기록)
+
+- ~~레고 / Lego~~ (Build 123) — The LEGO Group 상표 충돌로 폐기
+- 파발꾼 / Herald — 한국 전통 + RPG 감성
+- 레터러 / Letterer — 브랜드 확장 신조어
+- 편지꾼 / Letter Carrier — XP 티어와 일관
+
+Build 124 의 "Letter" 는 위 후보들을 고려한 후 **가장 단순·안전·브랜드 직결**
+한 결정.
+
+---
+
+## 💤 과거 Build 123 — 레고 (Lego) ⚠️ 폐기
+
+Build 123 에서 잠시 "레고 (Lego)" 로 지정했지만 LEGO 상표 리스크로
+Build 124 에서 "레터 (Letter)" 로 교체. 과거 결정 맥락은 커밋 [11df6d1]
+(https://github.com/shimyup/lettergo/commit/11df6d1) 에서 확인.
 
 ### 적용 범위
 - l10n key `hunterItemsTitle`:
