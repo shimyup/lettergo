@@ -492,6 +492,48 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
     notifyListeners();
   }
 
+  // ── 헌터 캐릭터 이모지 진화 (Build 122) ──────────────────────────────────
+  // 타워/플래그 중심의 정적 마커 → 레벨에 따라 변하는 캐릭터 이모지. 10개
+  // 티어(5레벨씩) 에 한 개씩 매핑해 "내 레벨이 올라갈수록 지도에 보이는
+  // 내 모습이 달라진다" 는 RPG 식 진화감. 플래그는 보조 정보로 bottom pill
+  // 에 합쳐짐.
+  //
+  // 캐릭터 선정 원칙:
+  //   1) 모두 사람·인격체 이모지 (객체·도구 배제 — 도구는 hunter items 슬롯)
+  //   2) 스토리 아크 = 초보 → 활동적 → 기술 습득 → 달인 → 전설
+  //   3) 단일 코드포인트 사용 (ZWJ sequence 피해 OS 간 호환성)
+  static const List<String> _characterEmojisByTier = [
+    '🧑',  //  1–4  평범한 사람
+    '🚶',  //  5–9  걷기 시작
+    '🏃',  // 10–14 달리는 사람
+    '🧗',  // 15–19 등반가
+    '🕵',  // 20–24 탐정
+    '🥷',  // 25–29 닌자
+    '🧙',  // 30–34 마법사
+    '🦸',  // 35–39 영웅
+    '🧝',  // 40–44 요정·엘프
+    '👑',  // 45–50 전설의 왕관
+  ];
+
+  /// 특정 레벨(1–50)의 캐릭터 이모지. Brand 는 왕관 고정 (레벨 시스템 밖).
+  /// 0 이하/범위 밖은 첫 티어 이모지 반환.
+  static String characterEmojiForLevel(int level, {bool isBrand = false}) {
+    if (isBrand) return '👑';
+    if (level <= 0) return _characterEmojisByTier.first;
+    final tierIndex = ((level - 1) ~/ 5).clamp(0, _characterEmojisByTier.length - 1);
+    return _characterEmojisByTier[tierIndex];
+  }
+
+  /// 현재 사용자의 캐릭터 이모지 — UI 에서 바로 쓰도록 getter 제공.
+  String get currentCharacterEmoji => characterEmojiForLevel(
+        currentLevel,
+        isBrand: _currentUser.isBrand,
+      );
+
+  /// 전체 티어 진화 목록 — 프로필 설명/가이드 UI 에서 노출 가능.
+  static List<String> get characterTierEmojis =>
+      List.unmodifiable(_characterEmojisByTier);
+
   // ── 헌터 아이템 (Build 121) ──────────────────────────────────────────────
   // 타워 층 비주얼을 대체해 "주웠다 = 모았다" 감각을 주는 이모지 아이템. 5개
   // 마일스톤 레벨에 한 개씩 매핑. 지도 아바타 좌상단에 가장 최근 획득 아이템

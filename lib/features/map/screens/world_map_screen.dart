@@ -634,6 +634,8 @@ class _WorldMapScreenState extends State<WorldMapScreen>
             hunterLevel: state.currentLevel,
             // 최상위 획득 마일스톤의 대표 아이템을 아바타 좌상단에 작게.
             milestoneItemEmoji: state.latestHunterItemEmoji,
+            // Build 122: 레벨에 따라 진화하는 캐릭터 이모지 (중앙).
+            characterEmoji: state.currentCharacterEmoji,
           ),
         ),
       ),
@@ -3442,16 +3444,17 @@ class _DisambiguationTile extends StatelessWidget {
   }
 }
 
-/// Build 121 — "타워" 를 픽업 중심 헌터 포지셔닝에 맞춰 원형 헌터 아바타로
-/// 대체. 내 위치 전용 마커 (`_MyTowerMarker` 참조 지점만 이 위젯으로 교체).
-/// 다른 유저 위치는 기존 `_TowerClusterMarker` 계열 유지 — 사회적 표식.
+/// Build 121 → 122 — 타워를 레벨 기반 진화 캐릭터 이모지 아바타로 대체.
+/// 내 위치 전용 마커 (`_MyTowerMarker` 지점만 이 위젯으로 교체). 다른 유저
+/// 위치는 기존 `_TowerClusterMarker` 계열 유지 — 사회적 표식.
 ///
-/// 시각 구성:
-///   • 외곽 맥동 링 (반경 링과 다른 펄스, 시선 유도용)
-///   • 원형 아바타 (국가 플래그 + 중앙 레벨 뱃지)
-///   • 티어(브랜드·프리미엄·프리)별 색상 = 지도의 픽업 반경 링 색과 일치
-///   • 우상단 우측: 마일스톤 도달 시 대표 아이템 이모지 (🎯🧭🗺🎒👑)
-///   • 우상단: 수령 대기 편지 수 뱃지 (기존 유지)
+/// 시각 구성 (Build 122 업데이트):
+///   • 외곽 맥동 링 (시선 유도)
+///   • 원형 아바타 ← **중앙에 레벨별 진화 캐릭터 이모지** (Build 122)
+///   • 티어(브랜드·프리미엄·프리)별 테두리 색 = 픽업 반경 링 색과 일치
+///   • 하단: **🇰🇷 + Lv N 결합 pill** (Build 122 — 플래그를 여기에 표시)
+///   • 좌상단: 최근 획득 마일스톤 아이템 이모지 (🎯🧭🗺🎒👑)
+///   • 우상단: 수령 대기 편지 수 뱃지 (기존)
 class _MyTowerMarker extends StatelessWidget {
   // 기존 호출 지점과의 호환을 위해 이름·시그니처 보존. `tier`·`floors` 는
   // 유저 위치 마커 렌더링에서는 더 이상 쓰이지 않지만 타 컴포넌트에서
@@ -3465,6 +3468,7 @@ class _MyTowerMarker extends StatelessWidget {
   final bool isBrand;
   final int hunterLevel;
   final String? milestoneItemEmoji;
+  final String characterEmoji;
 
   const _MyTowerMarker({
     required this.tier,
@@ -3474,6 +3478,7 @@ class _MyTowerMarker extends StatelessWidget {
     required this.isPremium,
     required this.isBrand,
     required this.hunterLevel,
+    required this.characterEmoji,
     this.milestoneItemEmoji,
     this.pendingLetterCount = 0,
   });
@@ -3491,6 +3496,10 @@ class _MyTowerMarker extends StatelessWidget {
       builder: (_, __) {
         final pulse = (sin(pulseController.value * 3.14159 * 2) * 0.5 + 0.5);
         final color = _accent();
+        // 수령 대기 편지가 있으면 중앙 이모지를 📮 로 잠깐 전환 (arrival alert).
+        // 그 외엔 레벨 진화 캐릭터.
+        final centerEmoji =
+            pendingLetterCount > 0 ? '📮' : characterEmoji;
         return Stack(
           alignment: Alignment.center,
           clipBehavior: Clip.none,
@@ -3507,7 +3516,7 @@ class _MyTowerMarker extends StatelessWidget {
                 ),
               ),
             ),
-            // 아바타 본체 (원형)
+            // 아바타 본체 (원형) — 중앙에 진화 캐릭터 이모지
             Container(
               width: 46,
               height: 46,
@@ -3525,55 +3534,46 @@ class _MyTowerMarker extends StatelessWidget {
               ),
               child: Center(
                 child: Text(
-                  pendingLetterCount > 0 ? '📮' : flag,
-                  style: const TextStyle(fontSize: 24),
+                  centerEmoji,
+                  style: const TextStyle(fontSize: 26),
                 ),
               ),
             ),
-            // 하단 중앙: 레벨 뱃지 (Brand 는 왕관)
-            if (!isBrand && hunterLevel > 0)
-              Positioned(
-                bottom: -6,
-                child: Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 6,
-                    vertical: 2,
-                  ),
-                  decoration: BoxDecoration(
-                    color: AppColors.bgDeep,
-                    borderRadius: BorderRadius.circular(10),
-                    border: Border.all(color: color, width: 1.4),
-                  ),
-                  child: Text(
-                    'Lv $hunterLevel',
-                    style: TextStyle(
-                      color: color,
-                      fontSize: 9,
-                      fontWeight: FontWeight.w900,
-                      letterSpacing: 0.3,
-                    ),
-                  ),
+            // 하단 중앙 pill: 🇰🇷 플래그 + Lv N (Build 122 — 플래그를
+            // 중앙에서 하단 pill 로 이동해 캐릭터가 주인공이 되게).
+            // Brand 는 Lv 대신 👑 표시 (레벨 시스템 밖).
+            Positioned(
+              bottom: -6,
+              child: Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 7,
+                  vertical: 2,
                 ),
-              )
-            else if (isBrand)
-              Positioned(
-                bottom: -6,
-                child: Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 6,
-                    vertical: 2,
-                  ),
-                  decoration: BoxDecoration(
-                    color: AppColors.bgDeep,
-                    borderRadius: BorderRadius.circular(10),
-                    border: Border.all(color: color, width: 1.4),
-                  ),
-                  child: const Text(
-                    '👑',
-                    style: TextStyle(fontSize: 10),
-                  ),
+                decoration: BoxDecoration(
+                  color: AppColors.bgDeep,
+                  borderRadius: BorderRadius.circular(10),
+                  border: Border.all(color: color, width: 1.4),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(flag, style: const TextStyle(fontSize: 10)),
+                    const SizedBox(width: 3),
+                    Text(
+                      isBrand
+                          ? '👑'
+                          : (hunterLevel > 0 ? 'Lv $hunterLevel' : 'Lv 1'),
+                      style: TextStyle(
+                        color: color,
+                        fontSize: isBrand ? 10 : 9,
+                        fontWeight: FontWeight.w900,
+                        letterSpacing: 0.3,
+                      ),
+                    ),
+                  ],
                 ),
               ),
+            ),
             // 좌상단: 최근 획득한 마일스톤 아이템 이모지 (있을 때만)
             if (milestoneItemEmoji != null)
               Positioned(
