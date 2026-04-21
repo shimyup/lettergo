@@ -110,6 +110,22 @@ class HuntWalletCard extends StatelessWidget {
                     ),
                   ],
                 ),
+                // Build 116: 주간 퀘스트 진행 — Pokémon GO Field Research 류
+                // 데일리/위클리 목표의 헌트 버전. 5통 목표 달성 시 체크 메시지.
+                const SizedBox(height: 16),
+                _buildWeeklyQuest(l10n, state),
+                // Build 116: 팔로우 중인 브랜드 카운트 (0이면 숨김).
+                if (state.followedBrandIds.isNotEmpty) ...[
+                  const SizedBox(height: 10),
+                  Text(
+                    l10n.huntWalletFollowing(state.followedBrandIds.length),
+                    style: const TextStyle(
+                      color: AppColors.textSecondary,
+                      fontSize: 11.5,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ],
               ],
             ],
           ),
@@ -152,6 +168,40 @@ class HuntWalletCard extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buildWeeklyQuest(AppL10n l10n, AppState state) {
+    final current = state.pickupsThisWeek;
+    final goal = state.weeklyQuestGoal;
+    final isDone = current >= goal;
+    final pct = isDone ? 1.0 : current / goal;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          isDone
+              ? l10n.huntWalletWeeklyGoalDone
+              : l10n.huntWalletWeeklyGoal(current, goal),
+          style: TextStyle(
+            color: isDone ? AppColors.gold : AppColors.textSecondary,
+            fontSize: 12,
+            fontWeight: FontWeight.w700,
+          ),
+        ),
+        const SizedBox(height: 6),
+        ClipRRect(
+          borderRadius: BorderRadius.circular(6),
+          child: LinearProgressIndicator(
+            value: pct,
+            minHeight: 6,
+            backgroundColor: AppColors.bgSurface,
+            valueColor: AlwaysStoppedAnimation<Color>(
+              isDone ? AppColors.gold : AppColors.teal,
+            ),
+          ),
+        ),
+      ],
     );
   }
 

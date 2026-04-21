@@ -245,15 +245,21 @@ class _InboxScreenState extends State<InboxScreen>
                       ],
                     ),
                   ),
-                // 만료 사이렌 (Build 115) — 24h 이내 만료되는 쿠폰/교환권이
-                // 있을 때만 붉은 배너 노출. FOMO 를 이용해 즉시 사용 유도.
-                // 탭하면 탐험 탭으로 이동하지 않고 인박스 최상단으로 스크롤
-                // (따로 필터 추가 비용 피하기 위해 currently no-op).
+                // 만료 사이렌 (Build 115, Build 116 에서 탭 가능) — 24h 이내
+                // 만료되는 쿠폰/교환권이 있을 때만 붉은 배너 노출. 탭 시
+                // 쿠폰 필터로 즉시 전환 + 받은 편지 탭으로 이동해 사용 유도.
                 Builder(builder: (ctx) {
                   final expiring = state.expiringSoonLetters;
                   if (expiring.isEmpty) return const SizedBox.shrink();
                   final l10n = AppL10n.of(state.currentUser.languageCode);
-                  return Container(
+                  return GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        _inboxFilter = LetterFilterType.coupon;
+                        _tabController.animateTo(0);
+                      });
+                    },
+                    child: Container(
                     margin: const EdgeInsets.fromLTRB(16, 8, 16, 0),
                     padding: const EdgeInsets.symmetric(
                       horizontal: 14,
@@ -298,6 +304,7 @@ class _InboxScreenState extends State<InboxScreen>
                         ),
                       ],
                     ),
+                  ),
                   );
                 }),
                 Builder(builder: (ctx) {

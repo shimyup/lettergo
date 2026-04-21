@@ -13288,6 +13288,58 @@ class AppL10n {
     'ar': 'إجمالي الاستخدام', 'it': 'Totale riscattate',
     'hi': 'कुल उपयोग', 'th': 'รวมใช้',
   });
+  // Build 116 — 헌트 지갑 확장: 팔로우 카운트 + 주간 퀘스트.
+  String huntWalletFollowing(int n) => _t({
+    'ko': '❤️ $n개 브랜드 팔로우 중',
+    'en': '❤️ Following $n brand${n == 1 ? '' : 's'}',
+    'ja': '❤️ $nブランドをフォロー中',
+    'zh': '❤️ 关注中 $n 个品牌',
+    'fr': '❤️ $n marque${n == 1 ? '' : 's'} suivie${n == 1 ? '' : 's'}',
+    'de': '❤️ $n Marke${n == 1 ? '' : 'n'} gefolgt',
+    'es': '❤️ Siguiendo $n marca${n == 1 ? '' : 's'}',
+    'pt': '❤️ A seguir $n marca${n == 1 ? '' : 's'}',
+    'ru': '❤️ Подписок: $n',
+    'tr': '❤️ $n marka takip',
+    'ar': '❤️ متابعة $n علامة',
+    'it': '❤️ $n brand seguiti',
+    'hi': '❤️ $n ब्रांड फ़ॉलो',
+    'th': '❤️ ติดตาม $n แบรนด์',
+  });
+
+  String huntWalletWeeklyGoal(int current, int goal) => _t({
+    'ko': '이번 주 목표 · $current / $goal통',
+    'en': 'Weekly goal · $current / $goal',
+    'ja': '今週の目標 · $current / $goal通',
+    'zh': '本周目标 · $current / $goal 封',
+    'fr': 'Objectif · $current / $goal',
+    'de': 'Wochenziel · $current / $goal',
+    'es': 'Meta semanal · $current / $goal',
+    'pt': 'Meta semanal · $current / $goal',
+    'ru': 'Цель недели · $current / $goal',
+    'tr': 'Haftalık · $current / $goal',
+    'ar': 'هدف الأسبوع · $current / $goal',
+    'it': 'Settimana · $current / $goal',
+    'hi': 'साप्ताहिक · $current / $goal',
+    'th': 'เป้ารายสัปดาห์ · $current / $goal',
+  });
+
+  String get huntWalletWeeklyGoalDone => _t({
+    'ko': '🎉 이번 주 목표 달성!',
+    'en': '🎉 Weekly goal complete!',
+    'ja': '🎉 今週の目標達成！',
+    'zh': '🎉 本周目标达成！',
+    'fr': '🎉 Objectif hebdomadaire atteint !',
+    'de': '🎉 Wochenziel erreicht!',
+    'es': '🎉 ¡Meta semanal cumplida!',
+    'pt': '🎉 Meta semanal cumprida!',
+    'ru': '🎉 Цель недели выполнена!',
+    'tr': '🎉 Haftalık hedef tamam!',
+    'ar': '🎉 هدف الأسبوع مكتمل!',
+    'it': '🎉 Obiettivo settimanale!',
+    'hi': '🎉 साप्ताहिक लक्ष्य पूरा!',
+    'th': '🎉 ครบเป้าสัปดาห์!',
+  });
+
   String get huntWalletEmpty => _t({
     'ko': '아직 주운 편지가 없어요. 지도에서 찾아보세요!',
     'en': 'No letters picked up yet. Open the map and hunt!',

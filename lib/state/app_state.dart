@@ -1111,6 +1111,25 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
       _inbox.where((l) => l.senderIsBrand).length;
   int get totalRedemptions => _redeemedLetterIds.length;
 
+  // 주간 (월요일 00:00 부터 현재까지) 픽업 수 — 주간 퀘스트 진행 바용.
+  // 로컬 타임존 기준. 일요일 자정에 자동 리셋. Build 116.
+  DateTime get _startOfWeek {
+    final now = DateTime.now();
+    final daysFromMonday = (now.weekday - DateTime.monday) % 7;
+    final monday = DateTime(now.year, now.month, now.day)
+        .subtract(Duration(days: daysFromMonday));
+    return monday;
+  }
+
+  int get pickupsThisWeek => _inbox
+      .where(
+          (l) => l.arrivedAt != null && l.arrivedAt!.isAfter(_startOfWeek))
+      .length;
+
+  /// 주간 헌트 퀘스트 기본 목표치 (현재 하드코딩 5통). Free/Premium/Brand
+  /// 동일. 추후 티어별 차등 도입 시 이 값만 조정하면 됨.
+  int get weeklyQuestGoal => 5;
+
   // ── 만료 임박 쿠폰 (Build 115 "만료 사이렌" 배너용) ────────────────────────
   // 받은 브랜드 쿠폰·교환권 중 24h 이내 만료 + 미사용. 인박스 상단 빨간
   // 배너로 FOMO 트리거. 일반 브랜드 편지는 제외 (혜택 개념 없음).
