@@ -622,26 +622,37 @@ class _WorldMapScreenState extends State<WorldMapScreen>
               ),
             );
           },
-          child: _MyTowerMarker(
-            tier: state.currentUser.activityScore.tier,
-            flag: state.currentUser.countryFlag,
-            floors: state.currentUser.activityScore.towerFloors,
-            pulseController: _pulseController,
-            pendingLetterCount: overlappingLetters.length,
-            // Build 121: 아바타 색상을 픽업 반경 링과 일치시킨다.
-            isPremium: state.currentUser.isPremium,
-            isBrand: state.currentUser.isBrand,
-            hunterLevel: state.currentLevel,
-            // 최상위 획득 마일스톤의 대표 아이템을 아바타 좌상단에 작게.
-            milestoneItemEmoji: state.latestHunterItemEmoji,
-            // Build 122: 레벨에 따라 진화하는 캐릭터 이모지 (중앙).
-            characterEmoji: state.currentCharacterEmoji,
-            // Build 125: 동행 동물 + 머리 위 악세사리 — 꾸미기 요소.
-            companionEmoji: state.activeCompanionEmoji,
-            accessoryEmoji: state.activeAccessoryEmoji,
-            // Build 127: Brand 사업자 인증 완료 시 ✅ 뱃지.
-            isBrandVerified: state.isBrandVerified,
-          ),
+          // Build 128: Brand 공식 발송인은 원래 타워 비주얼로 복귀
+          // (레벨 시스템 밖 — 캐릭터 진화 아바타는 Free/Premium 전용).
+          child: state.currentUser.isBrand
+              ? _BrandTowerMarker(
+                  tier: state.currentUser.activityScore.tier,
+                  flag: state.currentUser.countryFlag,
+                  floors: state.currentUser.activityScore.towerFloors,
+                  pulseController: _pulseController,
+                  pendingLetterCount: overlappingLetters.length,
+                  isBrandVerified: state.isBrandVerified,
+                )
+              : _MyTowerMarker(
+                  tier: state.currentUser.activityScore.tier,
+                  flag: state.currentUser.countryFlag,
+                  floors: state.currentUser.activityScore.towerFloors,
+                  pulseController: _pulseController,
+                  pendingLetterCount: overlappingLetters.length,
+                  // Build 121: 아바타 색상을 픽업 반경 링과 일치시킨다.
+                  isPremium: state.currentUser.isPremium,
+                  isBrand: state.currentUser.isBrand,
+                  hunterLevel: state.currentLevel,
+                  // 최상위 획득 마일스톤의 대표 아이템을 아바타 좌상단에 작게.
+                  milestoneItemEmoji: state.latestHunterItemEmoji,
+                  // Build 122: 레벨에 따라 진화하는 캐릭터 이모지 (중앙).
+                  characterEmoji: state.currentCharacterEmoji,
+                  // Build 125: 동행 동물 + 머리 위 악세사리 — 꾸미기 요소.
+                  companionEmoji: state.activeCompanionEmoji,
+                  accessoryEmoji: state.activeAccessoryEmoji,
+                  // Build 127: Brand 사업자 인증 완료 시 ✅ 뱃지.
+                  isBrandVerified: state.isBrandVerified,
+                ),
         ),
       ),
     );
@@ -3449,9 +3460,165 @@ class _DisambiguationTile extends StatelessWidget {
   }
 }
 
+/// Build 128 — Brand 공식 발송인 전용: 원래의 타워 비주얼 복원.
+/// 레벨 시스템(XP/캐릭터 진화/아이템/동반자) 밖이므로, 사각형 타워 본체 +
+/// 티어 이모지 + 플래그 + 층수(floors) 만 표시. Build 121 이전과 동일.
+/// Build 127 ✅ 인증 뱃지는 플래그 앞에 유지.
+class _BrandTowerMarker extends StatelessWidget {
+  final TowerTier tier;
+  final String flag;
+  final int floors;
+  final AnimationController pulseController;
+  final int pendingLetterCount;
+  final bool isBrandVerified;
+
+  const _BrandTowerMarker({
+    required this.tier,
+    required this.flag,
+    required this.floors,
+    required this.pulseController,
+    this.pendingLetterCount = 0,
+    this.isBrandVerified = false,
+  });
+
+  Color _tierColor() {
+    switch (tier) {
+      case TowerTier.shack:
+        return const Color(0xFF8B7355);
+      case TowerTier.cottage:
+        return const Color(0xFFCD7F32);
+      case TowerTier.house:
+        return const Color(0xFFC0C0C0);
+      case TowerTier.townhouse:
+        return const Color(0xFF90C878);
+      case TowerTier.building:
+        return AppColors.gold;
+      case TowerTier.office:
+        return AppColors.teal;
+      case TowerTier.skyscraper:
+        return const Color(0xFF60A5FA);
+      case TowerTier.supertall:
+        return const Color(0xFFAB78FF);
+      case TowerTier.megatower:
+        return const Color(0xFFFF9F43);
+      case TowerTier.landmark:
+        return const Color(0xFFFF6B9D);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedBuilder(
+      animation: pulseController,
+      builder: (_, __) {
+        final pulse = (sin(pulseController.value * 3.14159 * 2) * 0.5 + 0.5);
+        final color = _tierColor();
+        return Stack(
+          alignment: Alignment.center,
+          clipBehavior: Clip.none,
+          children: [
+            Container(
+              width: 52 + pulse * 6,
+              height: 52 + pulse * 6,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                border: Border.all(
+                  color: color.withValues(alpha: 0.2 + pulse * 0.2),
+                  width: 1.5,
+                ),
+              ),
+            ),
+            Container(
+              width: 44,
+              height: 54,
+              decoration: BoxDecoration(
+                color: AppColors.bgCard.withValues(alpha: 0.97),
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: color, width: 2),
+                boxShadow: [
+                  BoxShadow(
+                    color: color.withValues(alpha: 0.4 + pulse * 0.2),
+                    blurRadius: 12,
+                    spreadRadius: 1,
+                  ),
+                ],
+              ),
+              child: FittedBox(
+                fit: BoxFit.scaleDown,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(tier.emoji, style: const TextStyle(fontSize: 18)),
+                    Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        if (isBrandVerified) ...[
+                          const Text('✅', style: TextStyle(fontSize: 9)),
+                          const SizedBox(width: 2),
+                        ],
+                        Text(
+                          pendingLetterCount > 0 ? '📮' : flag,
+                          style: TextStyle(
+                            fontSize: pendingLetterCount > 0 ? 12 : 10,
+                          ),
+                        ),
+                      ],
+                    ),
+                    Text(
+                      '${floors}F',
+                      style: TextStyle(
+                        color: color,
+                        fontSize: 8,
+                        fontWeight: FontWeight.w800,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            if (pendingLetterCount > 0)
+              Positioned(
+                top: -10,
+                right: -12,
+                child: Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 6,
+                    vertical: 3,
+                  ),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFFF6B35),
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(color: AppColors.bgCard, width: 1.8),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withValues(alpha: 0.22),
+                        blurRadius: 5,
+                        offset: const Offset(0, 1),
+                      ),
+                    ],
+                  ),
+                  child: Text(
+                    '$pendingLetterCount',
+                    style: const TextStyle(
+                      fontSize: 10,
+                      fontWeight: FontWeight.w800,
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+              ),
+          ],
+        );
+      },
+    );
+  }
+}
+
 /// Build 121 → 122 — 타워를 레벨 기반 진화 캐릭터 이모지 아바타로 대체.
 /// 내 위치 전용 마커 (`_MyTowerMarker` 지점만 이 위젯으로 교체). 다른 유저
 /// 위치는 기존 `_TowerClusterMarker` 계열 유지 — 사회적 표식.
+/// Build 128: Brand 는 `_BrandTowerMarker` 로 분기 — 아래 위젯은 Free/Premium 전용.
 ///
 /// 시각 구성 (Build 122 업데이트):
 ///   • 외곽 맥동 링 (시선 유도)
