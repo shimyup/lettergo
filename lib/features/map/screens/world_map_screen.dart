@@ -3462,54 +3462,67 @@ class _StatsBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final timeColors = AppTimeColors.of(context);
-    // Build 141: 통계 바 컴팩트화. padding · font · emoji 크기 전반 축소.
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-      decoration: BoxDecoration(
-        color: timeColors.bgCard.withValues(alpha: 0.92),
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: timeColors.accent.withValues(alpha: 0.15)),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.32),
-            blurRadius: 10,
-            offset: const Offset(0, 3),
+    // Build 144: 반투명 + 블러 톤 + primary/secondary 위계 도입.
+    // 📍 "근처" 지표만 primary (줍기 가능 여부가 핵심 action).
+    // 나머지 (전체/받은/보낸) 은 secondary 로 톤 다운.
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(16),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
+        decoration: BoxDecoration(
+          // 반투명 (0.78) + 얇은 테두리 → 지도 배경이 살짝 비쳐
+          // "지도 주인공" 느낌 유지. 기존 0.92 너무 불투명.
+          color: timeColors.bgCard.withValues(alpha: 0.78),
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(
+            color: timeColors.accent.withValues(alpha: 0.22),
+            width: 0.8,
           ),
-        ],
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: [
-          _StatBtn(
-            icon: '✈️',
-            value: '${state.totalInTransitCount}',
-            label: l10n.mapAllLetters,
-            onTap: onShowAll,
-          ),
-          _Divider(),
-          _StatBtn(
-            icon: '📍',
-            value: '${state.nearbyLetters.length}',
-            label: l10n.mapNearby,
-            onTap: onShowNearby,
-          ),
-          _Divider(),
-          _StatBtn(
-            icon: '📬',
-            value: '${state.inbox.length}',
-            label: l10n.mapReceivedLetters,
-            onTap: onGoToInbox,
-            highlight: state.unreadCount > 0,
-            badge: state.unreadCount > 0 ? '${state.unreadCount}' : null,
-          ),
-          _Divider(),
-          _StatBtn(
-            icon: '✍️',
-            value: '${state.sent.length}',
-            label: l10n.mapSentLetters,
-            onTap: onGoToInbox,
-          ),
-        ],
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.35),
+              blurRadius: 14,
+              offset: const Offset(0, 4),
+            ),
+          ],
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: [
+            _StatBtn(
+              icon: '✈️',
+              value: '${state.totalInTransitCount}',
+              label: l10n.mapAllLetters,
+              onTap: onShowAll,
+            ),
+            _Divider(),
+            _StatBtn(
+              icon: '📍',
+              value: '${state.nearbyLetters.length}',
+              label: l10n.mapNearby,
+              onTap: onShowNearby,
+              // Build 144: 근처 편지가 있을 때 primary 강조 (main action)
+              highlight: state.nearbyLetters.isNotEmpty,
+              primary: true,
+            ),
+            _Divider(),
+            _StatBtn(
+              icon: '📬',
+              value: '${state.inbox.length}',
+              label: l10n.mapReceivedLetters,
+              onTap: onGoToInbox,
+              highlight: state.unreadCount > 0,
+              badge: state.unreadCount > 0 ? '${state.unreadCount}' : null,
+            ),
+            _Divider(),
+            _StatBtn(
+              icon: '✍️',
+              value: '${state.sent.length}',
+              label: l10n.mapSentLetters,
+              onTap: onGoToInbox,
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -3522,6 +3535,7 @@ class _StatBtn extends StatelessWidget {
   final VoidCallback? onTap;
   final bool highlight;
   final String? badge;
+  final bool primary; // Build 144: primary 액션 (📍 근처) 전용 강조
 
   const _StatBtn({
     required this.icon,
@@ -3530,52 +3544,67 @@ class _StatBtn extends StatelessWidget {
     this.onTap,
     this.highlight = false,
     this.badge,
+    this.primary = false,
   });
 
   @override
   Widget build(BuildContext context) {
     final timeColors = AppTimeColors.of(context);
     final active = onTap != null;
+    // Build 144: primary (근처) 지표는 크기·폰트 한 단계 상승, 터치 타겟도
+    // 확보. 다른 지표는 secondary 톤 다운. 접근성을 위해 최소 44pt 높이.
+    final valueFont = primary ? 14.5 : 12.5;
+    final labelFont = primary ? 9.5 : 9.0;
+    final iconFont = primary ? 15.0 : 13.0;
     return GestureDetector(
       onTap: onTap,
       behavior: HitTestBehavior.opaque,
       child: AnimatedContainer(
-        duration: const Duration(milliseconds: 150),
-        // Build 141: 컴팩트 버전 — padding · font · emoji 축소.
-        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+        duration: const Duration(milliseconds: 160),
+        constraints: const BoxConstraints(minHeight: 44),
+        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
         decoration: BoxDecoration(
           color: highlight
-              ? AppColors.gold.withValues(alpha: 0.10)
+              ? (primary
+                  ? AppColors.teal.withValues(alpha: 0.14)
+                  : AppColors.gold.withValues(alpha: 0.10))
               : Colors.transparent,
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: BorderRadius.circular(10),
         ),
         child: Stack(
           clipBehavior: Clip.none,
           children: [
             Column(
               mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Text(icon, style: const TextStyle(fontSize: 13)),
-                const SizedBox(height: 1),
+                Text(icon, style: TextStyle(fontSize: iconFont)),
+                const SizedBox(height: 2),
                 Text(
                   value,
                   style: TextStyle(
                     color: highlight
-                        ? AppColors.gold
+                        ? (primary ? AppColors.teal : AppColors.gold)
                         : active
-                        ? timeColors.accent
-                        : AppColors.textMuted,
-                    fontSize: 11.5,
-                    fontWeight: FontWeight.w800,
+                            ? (primary
+                                ? timeColors.accent
+                                : AppColors.textSecondary)
+                            : AppColors.textMuted,
+                    fontSize: valueFont,
+                    fontWeight:
+                        primary ? FontWeight.w900 : FontWeight.w700,
+                    letterSpacing: -0.2,
                   ),
                 ),
                 Text(
                   label,
                   style: TextStyle(
                     color: active
-                        ? AppColors.textMuted
+                        ? AppColors.textMuted.withValues(alpha: 0.85)
                         : AppColors.textMuted.withValues(alpha: 0.5),
-                    fontSize: 8,
+                    fontSize: labelFont,
+                    fontWeight: FontWeight.w600,
+                    letterSpacing: 0.1,
                   ),
                 ),
               ],
@@ -3597,7 +3626,7 @@ class _StatBtn extends StatelessWidget {
                     badge!,
                     style: const TextStyle(
                       color: AppColors.bgDeep,
-                      fontSize: 8,
+                      fontSize: 9,
                       fontWeight: FontWeight.w800,
                     ),
                   ),
