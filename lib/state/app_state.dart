@@ -3458,6 +3458,71 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
     _currentUser.longitude = lng;
     notifyListeners();
     _saveUserToFirestore(); // 위치 변경 시 Firestore 업데이트
+    // Build 149: 유효한 좌표 첫 확보 시점에 튜토리얼 편지 1통 자동 배치.
+    // 첫 실행 빈 지도 경험 해소 — 온보딩 직후 반경 안에 반드시 줍을 수 있는
+    // 환영 편지가 보이도록.
+    unawaited(_maybePlaceTutorialLetter());
+  }
+
+  /// Build 149: 첫 실행 시 유저 근처(~100m)에 환영 편지 1통 자동 배치.
+  /// SharedPreferences 플래그로 한 번만 수행. Brand 유저는 제외 (광고주라서
+  /// 실제 편지 풀에 더미가 들어가면 ROI 대시보드 오염).
+  Future<void> _maybePlaceTutorialLetter() async {
+    try {
+      if (_currentUser.isBrand) return;
+      if (_currentUser.latitude == 0 && _currentUser.longitude == 0) return;
+      final prefs = await SharedPreferences.getInstance();
+      if (prefs.getBool('tutorial_letter_placed') == true) return;
+
+      // 유저 반경 안쪽 (~100m 북쪽) 에 고정 위치로 생성.
+      // 1도 위도 ≈ 111km → 100m = 0.0009도.
+      final lat = _currentUser.latitude + 0.0009;
+      final lng = _currentUser.longitude;
+
+      final now = DateTime.now();
+      final id = 'tutorial_welcome_${_currentUser.id}';
+      // 이미 같은 id 존재 시 스킵 (중복 방지).
+      if (_worldLetters.any((l) => l.id == id)) {
+        await prefs.setBool('tutorial_letter_placed', true);
+        return;
+      }
+
+      final welcomeLetter = Letter(
+        id: id,
+        senderId: 'system_welcome',
+        senderName: _l10n.tutorialLetterSenderName,
+        senderCountry: _currentUser.country,
+        senderCountryFlag: _currentUser.countryFlag,
+        content: _l10n.tutorialLetterContent,
+        originLocation: LatLng(lat, lng),
+        destinationLocation: LatLng(lat, lng),
+        destinationCountry: _currentUser.country,
+        destinationCountryFlag: _currentUser.countryFlag,
+        destinationCity: null,
+        segments: const [],
+        currentSegmentIndex: 0,
+        status: DeliveryStatus.delivered, // 즉시 줍기 가능
+        sentAt: now,
+        arrivedAt: now,
+        arrivalTime: now,
+        estimatedTotalMinutes: 0,
+        isAnonymous: false,
+        senderIsBrand: false,
+        senderTier: LetterSenderTier.free,
+        category: LetterCategory.general,
+        acceptsReplies: false,
+        deliveryEmoji: '✨',
+      );
+
+      _worldLetters.add(welcomeLetter);
+      await prefs.setBool('tutorial_letter_placed', true);
+      notifyListeners();
+      if (kDebugMode) {
+        debugPrint('[Tutorial] 환영 편지 배치: ($lat, $lng)');
+      }
+    } catch (e) {
+      if (kDebugMode) debugPrint('[Tutorial] 환영 편지 배치 실패: $e');
+    }
   }
 
   // ── 타워 이름 업데이트 ─────────────────────────────────────────────────────

@@ -4620,6 +4620,42 @@ class AppL10n {
     'th': 'โดย',
   });
 
+  // Build 149: 첫 실행 시 자동 배치되는 튜토리얼 환영 편지 — 반경 안에 1통
+  // 반드시 줍기 가능한 상태로 지도에 뿌려 빈 지도 경험 해소.
+  String get tutorialLetterSenderName => _t({
+    'ko': 'Letter Go',
+    'en': 'Letter Go',
+    'ja': 'Letter Go',
+    'zh': 'Letter Go',
+    'fr': 'Letter Go',
+    'de': 'Letter Go',
+    'es': 'Letter Go',
+    'pt': 'Letter Go',
+    'ru': 'Letter Go',
+    'tr': 'Letter Go',
+    'ar': 'Letter Go',
+    'it': 'Letter Go',
+    'hi': 'Letter Go',
+    'th': 'Letter Go',
+  });
+
+  String get tutorialLetterContent => _t({
+    'ko': '환영합니다! ✨\n\nLetter Go 에 오신 걸 환영해요. 이 편지를 주우면 줍기 경험을 미리 체험할 수 있어요.\n\n가까이 다가가서 편지를 탭해보세요. 지도 아래 📍 근처 카운터가 함께 반응할 거예요.\n\n앞으로 전 세계 브랜드들이 뿌리는 할인·이벤트 편지를 만나보세요!',
+    'en': 'Welcome to Letter Go! ✨\n\nPick up this letter to try the hunt experience. Walk close and tap it.\n\nThe 📍 Nearby counter on the map will light up as soon as you\'re in range.\n\nBrands from around the world drop coupons and event letters — happy hunting!',
+    'ja': 'Letter Go へようこそ！✨\n\nこの手紙を拾って体験を始めましょう。近づいてタップしてください。\n\n範囲に入ると地図の 📍 近くのカウンターが反応します。\n\n世界中のブランドが落とす割引・イベント手紙をお楽しみください！',
+    'zh': '欢迎来到 Letter Go！✨\n\n拾起这封信体验"拾取"玩法。靠近并点击它即可。\n\n进入范围后地图上的 📍 附近计数器会亮起。\n\n来自世界各地的品牌在此投放优惠与活动信件——祝你好运！',
+    'fr': 'Bienvenue dans Letter Go ! ✨\n\nRamasse cette lettre pour découvrir l\'expérience. Approche-toi et appuie dessus.\n\nLe compteur 📍 À proximité s\'allumera dès que tu seras à portée.\n\nDes marques du monde entier déposent coupons et lettres promo — bonne chasse !',
+    'de': 'Willkommen bei Letter Go! ✨\n\nHeb diesen Brief auf und probiere die Hunt-Erfahrung. Geh nah ran und tippe ihn an.\n\nDer 📍 In-der-Nähe-Zähler leuchtet auf, sobald du in Reichweite bist.\n\nMarken weltweit verteilen Rabatte und Event-Briefe — viel Spaß beim Sammeln!',
+    'es': '¡Bienvenido a Letter Go! ✨\n\nRecoge esta carta para probar la experiencia. Acércate y tócala.\n\nEl contador 📍 Cerca se iluminará en cuanto estés a tiro.\n\nMarcas de todo el mundo sueltan cupones y cartas de eventos — ¡buena caza!',
+    'pt': 'Bem-vindo ao Letter Go! ✨\n\nApanha esta carta para experimentar. Aproxima-te e toca.\n\nO contador 📍 Perto vai acender assim que estiveres no alcance.\n\nMarcas do mundo inteiro largam cupões e cartas de eventos — boa caça!',
+    'ru': 'Добро пожаловать в Letter Go! ✨\n\nПодберите это письмо, чтобы попробовать охоту. Подойдите и нажмите.\n\nСчётчик 📍 Рядом подсветится, как только вы окажетесь в зоне.\n\nБренды со всего мира разбрасывают купоны — удачной охоты!',
+    'tr': 'Letter Go\'ya hoş geldin! ✨\n\nBu mektubu toplayarak deneyimi başlat. Yaklaş ve dokun.\n\nMenzile girdiğin an 📍 Yakın sayacı parlayacak.\n\nDünya çapında markalar kuponlar bırakıyor — iyi avlanmalar!',
+    'ar': 'مرحبًا بك في Letter Go! ✨\n\nالتقط هذه الرسالة لتجربة اللعبة. اقترب واضغط عليها.\n\nعدّاد 📍 قريب سيضيء فور دخولك النطاق.\n\nعلامات تجارية من حول العالم تسقط القسائم — صيدًا موفقًا!',
+    'it': 'Benvenuto in Letter Go! ✨\n\nRaccogli questa lettera per provare l\'esperienza. Avvicinati e tocca.\n\nIl contatore 📍 Vicino si illuminerà appena sarai a portata.\n\nBrand di tutto il mondo lasciano coupon — buona caccia!',
+    'hi': 'Letter Go में आपका स्वागत है! ✨\n\nइस पत्र को उठाकर अनुभव शुरू करें. पास जाएँ और टैप करें.\n\nदायरे में आते ही नक्शे का 📍 पास काउंटर जलेगा.\n\nदुनिया भर के ब्रांड कूपन गिराते हैं — शुभ शिकार!',
+    'th': 'ยินดีต้อนรับสู่ Letter Go! ✨\n\nเก็บจดหมายฉบับนี้เพื่อทดลองใช้งาน เดินเข้าใกล้แล้วแตะ\n\nตัวนับ 📍 ใกล้ ๆ บนแผนที่จะสว่างเมื่อคุณอยู่ในรัศมี\n\nแบรนด์ทั่วโลกทิ้งคูปองไว้ — สนุกกับการค้นหา!',
+  });
+
   String get brandTicketDefaultBrand => _t({
     'ko': '공식 발송인',
     'en': 'Official Sender',
