@@ -1894,21 +1894,11 @@ class _LetterReadScreenState extends State<LetterReadScreen>
               ],
             ),
             const SizedBox(height: 8),
-            SelectableText(
-              letter.redemptionInfo ?? '',
-              style: TextStyle(
-                color: redeemed
-                    ? AppColors.textMuted
-                    : AppColors.textPrimary,
-                fontSize: 14,
-                height: 1.45,
-                fontWeight: FontWeight.w600,
-                decoration: redeemed
-                    ? TextDecoration.lineThrough
-                    : TextDecoration.none,
-                decorationColor: AppColors.textMuted.withValues(alpha: 0.5),
-              ),
-            ),
+            // Build 131: 카테고리별 분기 렌더링.
+            //   voucher → URL/로컬 경로 감지 → 이미지 인라인 (탭 시 풀스크린)
+            //   coupon  → 코드 텍스트 + 📋 복사 버튼
+            //   그 외   → 기존 SelectableText (하위 호환)
+            _buildRedemptionContent(ctx, inner, letter, l10n, redeemed),
             if (!redeemed) ...[
               const SizedBox(height: 12),
               SizedBox(
@@ -1957,6 +1947,161 @@ class _LetterReadScreenState extends State<LetterReadScreen>
   }
 
   /// 브랜드 발송인이 "답장 받지 않음" 으로 설정한 편지에 표시되는 안내.
+  /// Build 131: redemption box 내부 본문 — 카테고리별 분기 렌더링.
+  ///   voucher → redemptionInfo 가 URL/로컬경로처럼 보이면 이미지 인라인,
+  ///              아니면 SelectableText fallback
+  ///   coupon  → 코드 텍스트 + 📋 복사 버튼
+  ///   general → 기존 SelectableText (하위 호환)
+  Widget _buildRedemptionContent(
+    BuildContext ctx,
+    BuildContext inner,
+    Letter letter,
+    AppL10n l10n,
+    bool redeemed,
+  ) {
+    final info = letter.redemptionInfo ?? '';
+    final baseStyle = TextStyle(
+      color: redeemed ? AppColors.textMuted : AppColors.textPrimary,
+      fontSize: 14,
+      height: 1.45,
+      fontWeight: FontWeight.w600,
+      decoration: redeemed ? TextDecoration.lineThrough : TextDecoration.none,
+      decorationColor: AppColors.textMuted.withValues(alpha: 0.5),
+    );
+
+    if (letter.category == LetterCategory.voucher && _looksLikeImageRef(info)) {
+      return _buildRedemptionImage(ctx, info, redeemed, l10n);
+    }
+    if (letter.category == LetterCategory.coupon && info.trim().isNotEmpty) {
+      return _buildRedemptionCoupon(inner, info, baseStyle, redeemed, l10n);
+    }
+    return SelectableText(info, style: baseStyle);
+  }
+
+  bool _looksLikeImageRef(String v) {
+    final t = v.trim();
+    if (t.isEmpty) return false;
+    if (t.startsWith('http://') || t.startsWith('https://')) return true;
+    // 절대경로(로컬 파일) — iOS·Android 모두 `/` 시작.
+    if (t.startsWith('/') || t.startsWith('file://')) return true;
+    return false;
+  }
+
+  Widget _buildRedemptionImage(
+    BuildContext ctx,
+    String info,
+    bool redeemed,
+    AppL10n l10n,
+  ) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        GestureDetector(
+          onTap: () => _openFullscreenImage(ctx, info),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(10),
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxHeight: 260),
+              child: Opacity(
+                opacity: redeemed ? 0.55 : 1.0,
+                child: _buildLetterImage(info),
+              ),
+            ),
+          ),
+        ),
+        const SizedBox(height: 6),
+        Text(
+          l10n.letterReadVoucherShowAtCounter,
+          style: const TextStyle(
+            color: AppColors.textMuted,
+            fontSize: 10.5,
+            fontWeight: FontWeight.w500,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildRedemptionCoupon(
+    BuildContext inner,
+    String code,
+    TextStyle baseStyle,
+    bool redeemed,
+    AppL10n l10n,
+  ) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Expanded(
+          child: SelectableText(
+            code,
+            style: baseStyle.copyWith(
+              fontFamily: 'monospace',
+              letterSpacing: 0.8,
+            ),
+          ),
+        ),
+        const SizedBox(width: 10),
+        InkWell(
+          onTap: redeemed
+              ? null
+              : () async {
+                  await Clipboard.setData(ClipboardData(text: code.trim()));
+                  if (!inner.mounted) return;
+                  ScaffoldMessenger.of(inner).showSnackBar(
+                    SnackBar(
+                      content: Text(
+                        l10n.letterReadCouponCopied,
+                        style: const TextStyle(color: Colors.white),
+                      ),
+                      backgroundColor: AppColors.teal,
+                      behavior: SnackBarBehavior.floating,
+                      duration: const Duration(seconds: 2),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                  );
+                },
+          borderRadius: BorderRadius.circular(8),
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+            decoration: BoxDecoration(
+              color: redeemed
+                  ? AppColors.bgSurface
+                  : AppColors.teal.withValues(alpha: 0.15),
+              borderRadius: BorderRadius.circular(8),
+              border: Border.all(
+                color: redeemed
+                    ? AppColors.textMuted.withValues(alpha: 0.3)
+                    : AppColors.teal.withValues(alpha: 0.5),
+              ),
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(
+                  Icons.copy_rounded,
+                  size: 13,
+                  color: redeemed ? AppColors.textMuted : AppColors.teal,
+                ),
+                const SizedBox(width: 4),
+                Text(
+                  l10n.letterReadCouponCopyBtn,
+                  style: TextStyle(
+                    color: redeemed ? AppColors.textMuted : AppColors.teal,
+                    fontSize: 11,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
   /// 답장 버튼 자리를 대신해 "이 캠페인은 답장을 받지 않아요" 한 줄 카드.
   Widget _buildBrandNoReplyNotice(BuildContext ctx) {
     final l10n = AppL10n.of(ctx.read<AppState>().currentUser.languageCode);

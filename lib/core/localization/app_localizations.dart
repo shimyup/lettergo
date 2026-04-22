@@ -14149,6 +14149,59 @@ class AppL10n {
     'th': '🎁 วิธีใช้',
   });
 
+  // Build 131: 교환권 이미지 아래 안내.
+  String get letterReadVoucherShowAtCounter => _t({
+    'ko': '매장 카운터에서 이 이미지를 보여주세요.',
+    'en': 'Show this image at the counter.',
+    'ja': 'カウンターでこの画像を見せてください。',
+    'zh': '在柜台出示此图片。',
+    'fr': 'Montrez cette image au comptoir.',
+    'de': 'Dieses Bild an der Kasse vorzeigen.',
+    'es': 'Muestra esta imagen en el mostrador.',
+    'pt': 'Mostre esta imagem no balcão.',
+    'ru': 'Покажите изображение на кассе.',
+    'tr': 'Görseli tezgâhta gösterin.',
+    'ar': 'أظهر هذه الصورة عند الكاونتر.',
+    'it': 'Mostra l\'immagine alla cassa.',
+    'hi': 'यह छवि काउंटर पर दिखाएँ।',
+    'th': 'แสดงรูปนี้ที่เคาน์เตอร์',
+  });
+
+  // Build 131: 할인권 복사 버튼 + 복사 완료 토스트.
+  String get letterReadCouponCopyBtn => _t({
+    'ko': '복사',
+    'en': 'Copy',
+    'ja': 'コピー',
+    'zh': '复制',
+    'fr': 'Copier',
+    'de': 'Kopieren',
+    'es': 'Copiar',
+    'pt': 'Copiar',
+    'ru': 'Копировать',
+    'tr': 'Kopyala',
+    'ar': 'نسخ',
+    'it': 'Copia',
+    'hi': 'कॉपी',
+    'th': 'คัดลอก',
+  });
+
+  String get letterReadCouponCopied => _t({
+    'ko': '📋 할인 코드가 복사됐어요',
+    'en': '📋 Coupon code copied',
+    'ja': '📋 クーポンコードをコピーしました',
+    'zh': '📋 优惠码已复制',
+    'fr': '📋 Code copié',
+    'de': '📋 Code kopiert',
+    'es': '📋 Código copiado',
+    'pt': '📋 Código copiado',
+    'ru': '📋 Код скопирован',
+    'tr': '📋 Kod kopyalandı',
+    'ar': '📋 تم نسخ الكود',
+    'it': '📋 Codice copiato',
+    'hi': '📋 कूपन कोड कॉपी हुआ',
+    'th': '📋 คัดลอกรหัสแล้ว',
+  });
+
   // 브랜드 컴포즈: 답장 수락 토글
   String get composeBrandAcceptsReplies => _t({
     'ko': '답장 받기',
