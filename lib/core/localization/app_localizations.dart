@@ -14309,6 +14309,96 @@ class AppL10n {
     'th': '📋 คัดลอกรหัสแล้ว',
   });
 
+  // Build 133: 쿠폰/교환권 유효기간 · 만료 상태.
+  String get letterReadRedemptionExpiredHeader => _t({
+    'ko': '⏰ 유효기간 만료',
+    'en': '⏰ Redemption expired',
+    'ja': '⏰ 有効期限切れ',
+    'zh': '⏰ 已过有效期',
+    'fr': '⏰ Utilisation expirée',
+    'de': '⏰ Abgelaufen',
+    'es': '⏰ Canjeo caducado',
+    'pt': '⏰ Resgate expirado',
+    'ru': '⏰ Срок истёк',
+    'tr': '⏰ Süresi doldu',
+    'ar': '⏰ انتهت الصلاحية',
+    'it': '⏰ Riscatto scaduto',
+    'hi': '⏰ अवधि समाप्त',
+    'th': '⏰ หมดอายุแล้ว',
+  });
+
+  String get letterReadRedemptionExpiredBadge => _t({
+    'ko': '만료됨',
+    'en': 'Expired',
+    'ja': '期限切れ',
+    'zh': '已过期',
+    'fr': 'Expiré',
+    'de': 'Abgelaufen',
+    'es': 'Caducado',
+    'pt': 'Expirado',
+    'ru': 'Истёк',
+    'tr': 'Süresi doldu',
+    'ar': 'منتهي',
+    'it': 'Scaduto',
+    'hi': 'समाप्त',
+    'th': 'หมดอายุ',
+  });
+
+  String letterReadRedemptionExpiresOn(String date) {
+    switch (languageCode) {
+      case 'ko': return '$date까지';
+      case 'ja': return '$dateまで';
+      case 'zh': return '有效期至 $date';
+      case 'fr': return "jusqu'au $date";
+      case 'de': return 'bis $date';
+      case 'es': return 'hasta el $date';
+      case 'pt': return 'até $date';
+      case 'ru': return 'до $date';
+      case 'tr': return '$date tarihine kadar';
+      case 'ar': return 'حتى $date';
+      case 'it': return 'fino al $date';
+      case 'hi': return '$date तक';
+      case 'th': return 'ถึง $date';
+      default: return 'until $date';
+    }
+  }
+
+  String letterReadRedemptionDaysLeft(int days) {
+    switch (languageCode) {
+      case 'ko': return '$days일 남음';
+      case 'ja': return '残り$days日';
+      case 'zh': return '还剩$days天';
+      case 'fr': return '$days j. restants';
+      case 'de': return 'noch $days Tage';
+      case 'es': return '$days días rest.';
+      case 'pt': return '$days dias rest.';
+      case 'ru': return 'осталось $days дн.';
+      case 'tr': return '$days gün kaldı';
+      case 'ar': return 'متبقي $days يوم';
+      case 'it': return '$days gg rimasti';
+      case 'hi': return '$days दिन बाकी';
+      case 'th': return 'เหลือ $days วัน';
+      default: return '$days days left';
+    }
+  }
+
+  String get letterReadRedemptionTodayOnly => _t({
+    'ko': '오늘 마지막',
+    'en': 'last day',
+    'ja': '今日まで',
+    'zh': '仅剩今天',
+    'fr': 'dernier jour',
+    'de': 'letzter Tag',
+    'es': 'último día',
+    'pt': 'último dia',
+    'ru': 'последний день',
+    'tr': 'son gün',
+    'ar': 'آخر يوم',
+    'it': 'ultimo giorno',
+    'hi': 'अंतिम दिन',
+    'th': 'วันสุดท้าย',
+  });
+
   // 브랜드 컴포즈: 답장 수락 토글
   String get composeBrandAcceptsReplies => _t({
     'ko': '답장 받기',

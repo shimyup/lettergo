@@ -1816,28 +1816,44 @@ class _LetterReadScreenState extends State<LetterReadScreen>
     return Builder(builder: (inner) {
       final state = inner.watch<AppState>();
       final redeemed = state.isLetterRedeemed(letter.id);
+      // Build 133: 사용 기한 체크 — 만료된 쿠폰은 사용 완료된 것과 동일하게
+      // 비활성 + 취소선. Mark-used 버튼도 숨긴다 (이미 쓸 수 없으므로).
+      final expired = letter.isRedemptionExpired;
+      final disabled = redeemed || expired;
+      // 만료 임박(3일 이내) — 노란 경고 톤으로 카운트다운 강조.
+      final expiresAt = letter.redemptionExpiresAt;
+      final daysLeft = expiresAt?.difference(DateTime.now()).inDays;
+      final expiringSoon =
+          !expired && daysLeft != null && daysLeft <= 3;
       return Container(
         margin: const EdgeInsets.symmetric(vertical: 10),
         padding: const EdgeInsets.all(14),
         decoration: BoxDecoration(
           gradient: LinearGradient(
-            colors: redeemed
+            colors: disabled
                 ? [
                     const Color(0xFF4A5A75).withValues(alpha: 0.22),
                     const Color(0xFF4A5A75).withValues(alpha: 0.08),
                   ]
-                : [
-                    AppColors.teal.withValues(alpha: 0.14),
-                    AppColors.teal.withValues(alpha: 0.04),
-                  ],
+                : expiringSoon
+                    ? [
+                        const Color(0xFFFFB86B).withValues(alpha: 0.16),
+                        const Color(0xFFFFB86B).withValues(alpha: 0.04),
+                      ]
+                    : [
+                        AppColors.teal.withValues(alpha: 0.14),
+                        AppColors.teal.withValues(alpha: 0.04),
+                      ],
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
           ),
           borderRadius: BorderRadius.circular(14),
           border: Border.all(
-            color: redeemed
+            color: disabled
                 ? const Color(0xFF4A5A75).withValues(alpha: 0.45)
-                : AppColors.teal.withValues(alpha: 0.45),
+                : expiringSoon
+                    ? const Color(0xFFFFB86B).withValues(alpha: 0.55)
+                    : AppColors.teal.withValues(alpha: 0.45),
             width: 1.2,
           ),
         ),
@@ -1848,13 +1864,17 @@ class _LetterReadScreenState extends State<LetterReadScreen>
               children: [
                 Expanded(
                   child: Text(
-                    redeemed
-                        ? l10n.letterReadRedemptionUsedHeader
-                        : l10n.letterReadRedemptionHeader,
+                    expired
+                        ? l10n.letterReadRedemptionExpiredHeader
+                        : redeemed
+                            ? l10n.letterReadRedemptionUsedHeader
+                            : l10n.letterReadRedemptionHeader,
                     style: TextStyle(
-                      color: redeemed
+                      color: disabled
                           ? AppColors.textMuted
-                          : AppColors.teal,
+                          : expiringSoon
+                              ? const Color(0xFFFFB86B)
+                              : AppColors.teal,
                       fontSize: 12,
                       fontWeight: FontWeight.w800,
                       letterSpacing: 0.5,
@@ -1862,44 +1882,32 @@ class _LetterReadScreenState extends State<LetterReadScreen>
                   ),
                 ),
                 if (redeemed)
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 7,
-                      vertical: 3,
-                    ),
-                    decoration: BoxDecoration(
-                      color: AppColors.teal.withValues(alpha: 0.15),
-                      borderRadius: BorderRadius.circular(6),
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        const Icon(
-                          Icons.check_circle_rounded,
-                          size: 12,
-                          color: AppColors.teal,
-                        ),
-                        const SizedBox(width: 4),
-                        Text(
-                          l10n.letterReadRedemptionUsedBadge,
-                          style: const TextStyle(
-                            color: AppColors.teal,
-                            fontSize: 10,
-                            fontWeight: FontWeight.w800,
-                          ),
-                        ),
-                      ],
-                    ),
+                  _statusBadge(
+                    icon: Icons.check_circle_rounded,
+                    label: l10n.letterReadRedemptionUsedBadge,
+                    color: AppColors.teal,
+                  )
+                else if (expired)
+                  _statusBadge(
+                    icon: Icons.timer_off_rounded,
+                    label: l10n.letterReadRedemptionExpiredBadge,
+                    color: const Color(0xFFE07A5F),
                   ),
               ],
             ),
+            // Build 133: 유효기간 카운트다운 — 만료 상태가 아니면서 만료일이
+            // 있을 때만. 임박(≤3일)이면 주황색, 그 외엔 teal.
+            if (expiresAt != null && !redeemed) ...[
+              const SizedBox(height: 6),
+              _buildExpiryCountdown(expiresAt, expired, expiringSoon, l10n),
+            ],
             const SizedBox(height: 8),
             // Build 131: 카테고리별 분기 렌더링.
             //   voucher → URL/로컬 경로 감지 → 이미지 인라인 (탭 시 풀스크린)
             //   coupon  → 코드 텍스트 + 📋 복사 버튼
             //   그 외   → 기존 SelectableText (하위 호환)
-            _buildRedemptionContent(ctx, inner, letter, l10n, redeemed),
-            if (!redeemed) ...[
+            _buildRedemptionContent(ctx, inner, letter, l10n, disabled),
+            if (!disabled) ...[
               const SizedBox(height: 12),
               SizedBox(
                 width: double.infinity,
@@ -1947,6 +1955,86 @@ class _LetterReadScreenState extends State<LetterReadScreen>
   }
 
   /// 브랜드 발송인이 "답장 받지 않음" 으로 설정한 편지에 표시되는 안내.
+  /// Build 133: redemption box 우상단 뱃지 (used / expired 공통 템플릿).
+  Widget _statusBadge({
+    required IconData icon,
+    required String label,
+    required Color color,
+  }) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.15),
+        borderRadius: BorderRadius.circular(6),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, size: 12, color: color),
+          const SizedBox(width: 4),
+          Text(
+            label,
+            style: TextStyle(
+              color: color,
+              fontSize: 10,
+              fontWeight: FontWeight.w800,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  /// Build 133: 유효기간 카운트다운 — 날짜 + "N일 남음". 만료일이 있을 때만
+  /// 렌더. 임박(≤3일)이면 주황, 그 외 teal. 만료됐거나 사용완료면 숨김.
+  Widget _buildExpiryCountdown(
+    DateTime expiresAt,
+    bool expired,
+    bool expiringSoon,
+    AppL10n l10n,
+  ) {
+    final dateStr =
+        '${expiresAt.year}.${expiresAt.month.toString().padLeft(2, '0')}.${expiresAt.day.toString().padLeft(2, '0')}';
+    final daysLeft = expiresAt.difference(DateTime.now()).inDays;
+    final color = expired
+        ? AppColors.textMuted
+        : expiringSoon
+            ? const Color(0xFFFFB86B)
+            : AppColors.teal;
+    return Row(
+      children: [
+        Icon(Icons.schedule_rounded, size: 12, color: color),
+        const SizedBox(width: 4),
+        Text(
+          l10n.letterReadRedemptionExpiresOn(dateStr),
+          style: TextStyle(
+            color: color,
+            fontSize: 10.5,
+            fontWeight: FontWeight.w700,
+          ),
+        ),
+        if (!expired) ...[
+          const SizedBox(width: 6),
+          Text(
+            '·',
+            style: TextStyle(color: color.withValues(alpha: 0.5)),
+          ),
+          const SizedBox(width: 6),
+          Text(
+            daysLeft == 0
+                ? l10n.letterReadRedemptionTodayOnly
+                : l10n.letterReadRedemptionDaysLeft(daysLeft),
+            style: TextStyle(
+              color: color,
+              fontSize: 10.5,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+        ],
+      ],
+    );
+  }
+
   /// Build 131: redemption box 내부 본문 — 카테고리별 분기 렌더링.
   ///   voucher → redemptionInfo 가 URL/로컬경로처럼 보이면 이미지 인라인,
   ///              아니면 SelectableText fallback
