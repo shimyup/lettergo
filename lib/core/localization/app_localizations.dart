@@ -7716,20 +7716,20 @@ class AppL10n {
   });
 
   String get premiumFeature3 => _t({
-    'ko': '하루 30통 발송 + 이미지·링크 편지',
-    'en': '30 letters/day + image & link letters',
-    'ja': '1日30通発送 + 画像・リンク付き手紙',
-    'zh': '每日 30 封发送 + 图片·链接信件',
-    'fr': '30 lettres/jour + image & lien',
-    'de': '30 Briefe/Tag + Bild & Link',
-    'es': '30 cartas/día + imagen y enlace',
-    'pt': '30 cartas/dia + imagem e link',
-    'ru': '30 писем/день + фото и ссылки',
-    'tr': 'Günde 30 mektup + resim & link',
-    'ar': '30 رسالة/يوم + صور وروابط',
-    'it': '30 lettere/giorno + immagine e link',
-    'hi': '30 पत्र/दिन + छवि व लिंक',
-    'th': '30 ฉบับ/วัน + ภาพ·ลิงก์',
+    'ko': '📸 사진 + 🔗 채널 링크 홍보 편지 · 하루 30통',
+    'en': '📸 Photo + 🔗 channel-link promo letters · 30/day',
+    'ja': '📸 写真 + 🔗 チャンネルリンクPR手紙 · 1日30通',
+    'zh': '📸 照片 + 🔗 频道链接推广信件 · 每日 30 封',
+    'fr': '📸 Photo + 🔗 lien de chaîne promo · 30/jour',
+    'de': '📸 Foto + 🔗 Kanal-Link Promo-Briefe · 30/Tag',
+    'es': '📸 Foto + 🔗 enlace canal promo · 30/día',
+    'pt': '📸 Foto + 🔗 link de canal promo · 30/dia',
+    'ru': '📸 Фото + 🔗 ссылка на канал · 30/день',
+    'tr': '📸 Fotoğraf + 🔗 kanal bağlantısı · 30/gün',
+    'ar': '📸 صور + 🔗 روابط قناة ترويجية · 30/يوم',
+    'it': '📸 Foto + 🔗 link canale promo · 30/giorno',
+    'hi': '📸 फ़ोटो + 🔗 चैनल लिंक प्रोमो · 30/दिन',
+    'th': '📸 รูป + 🔗 ลิงก์ช่อง · 30/วัน',
   });
 
   String get premiumFeature4 => _t({
@@ -14381,6 +14381,42 @@ class AppL10n {
       default: return '$days days left';
     }
   }
+
+  // Build 137: 무료 유저가 "보내기" 탭 탭했을 때 뜨는 Premium 안내 시트 문구.
+  // Free = 줍기 전용, Premium = 홍보 편지 발송의 가치 제안.
+  String get composeGateFeatureName => _t({
+    'ko': '홍보 편지 발송',
+    'en': 'Promo letter sending',
+    'ja': 'プロモ手紙の送信',
+    'zh': '推广信件发送',
+    'fr': 'Envoi de lettres promo',
+    'de': 'Promo-Brief-Versand',
+    'es': 'Envío de cartas promo',
+    'pt': 'Envio de cartas promo',
+    'ru': 'Отправка промо-писем',
+    'tr': 'Promo mektup gönderimi',
+    'ar': 'إرسال الرسائل الترويجية',
+    'it': 'Invio lettere promo',
+    'hi': 'प्रोमो पत्र भेजना',
+    'th': 'ส่งจดหมายโปรโมต',
+  });
+
+  String get composeGateDesc => _t({
+    'ko': '편지를 세계에 뿌리고 싶다면 Premium 으로 업그레이드하세요.\n📸 사진 첨부 · 🔗 채널/SNS 링크로 나를 홍보할 수 있어요.\n무료 회원은 지도에서 편지를 주워 혜택을 활용할 수 있어요.',
+    'en': 'Upgrade to Premium to drop your own letters worldwide.\n📸 Attach photos · 🔗 Add channel/SNS links to promote yourself.\nFree members keep picking up letters and claiming benefits.',
+    'ja': 'Premium にアップグレードして、自分の手紙を世界に届けましょう。\n📸 写真添付 · 🔗 チャンネル/SNS リンクで自己PR。\n無料会員は地図で手紙を拾って特典を活用できます。',
+    'zh': '升级 Premium 将你的信件发送到世界各地。\n📸 附加照片 · 🔗 添加频道/社交链接自我宣传。\n免费会员可以继续在地图上拾取信件。',
+    'fr': 'Passe à Premium pour envoyer tes lettres dans le monde entier.\n📸 Joins des photos · 🔗 Ajoute des liens de chaîne / réseaux.\nLes membres gratuits continuent de ramasser des lettres.',
+    'de': 'Mit Premium sendest du eigene Briefe weltweit.\n📸 Fotos anhängen · 🔗 Kanal-/Social-Links für Selbstvermarktung.\nFreie Mitglieder sammeln weiterhin Briefe auf der Karte.',
+    'es': 'Actualiza a Premium para lanzar tus cartas al mundo.\n📸 Adjunta fotos · 🔗 Añade enlaces de canal/redes.\nLos miembros gratuitos siguen recogiendo cartas.',
+    'pt': 'Atualiza para Premium e lança as tuas cartas ao mundo.\n📸 Anexa fotos · 🔗 Adiciona links de canal/redes.\nMembros gratuitos continuam a apanhar cartas.',
+    'ru': 'Перейдите на Premium, чтобы отправлять письма по всему миру.\n📸 Прикрепляйте фото · 🔗 Добавляйте ссылки на канал/соцсети.\nБесплатные пользователи продолжают собирать письма.',
+    'tr': "Premium'a yükselt ve mektuplarını dünyaya bırak.\n📸 Fotoğraf ekle · 🔗 Kanal/SNS bağlantısıyla kendini tanıt.\nÜcretsiz üyeler haritadan mektup toplamaya devam eder.",
+    'ar': 'ارتقِ إلى Premium لإرسال رسائلك للعالم.\n📸 أرفق الصور · 🔗 أضف روابط قناتك/وسائلك.\nالأعضاء المجانيون يواصلون التقاط الرسائل.',
+    'it': 'Passa a Premium per lanciare le tue lettere nel mondo.\n📸 Allega foto · 🔗 Aggiungi link canale/social.\nI membri gratuiti continuano a raccogliere lettere.',
+    'hi': 'Premium में अपग्रेड करें और अपने पत्र दुनिया में भेजें।\n📸 फ़ोटो संलग्न करें · 🔗 चैनल/SNS लिंक जोड़ें।\nमुफ़्त सदस्य मानचित्र पर पत्र उठाते रहें।',
+    'th': 'อัปเกรด Premium เพื่อส่งจดหมายไปทั่วโลก\n📸 แนบรูป · 🔗 ใส่ลิงก์ช่อง/โซเชียล\nสมาชิกฟรียังเก็บจดหมายบนแผนที่ได้',
+  });
 
   String get letterReadRedemptionTodayOnly => _t({
     'ko': '오늘 마지막',

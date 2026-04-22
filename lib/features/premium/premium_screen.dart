@@ -61,14 +61,15 @@ class PremiumScreen extends StatelessWidget {
         final autoRenewDateText = purchase.nextBillingDate != null
             ? _formatDate(purchase.nextBillingDate!, langCode)
             : null;
-        // Build 118: A/B (send-중심 가치 카피 vs send-중심 기본 카피) 분기를
-        // 제거. 두 변형 모두 발송 중심이어서 헌트 포지셔닝과 충돌. 새 카피는
-        // 픽업 반경·쿨다운 을 먼저 내세우는 단일 구성으로 통일.
+        // Build 137: Premium 의 핵심 가치는 "본인 홍보 편지 발송" 이라는
+        // 유저 결정에 맞춰 순서 재조정. 📸 사진 + 🔗 링크 편지를 최상단으로
+        // 올려 "Premium = 나를 알리는 도구" 포지셔닝을 1스캔에 전달.
+        // Free 는 줍기만 — 보내기 탭 자체가 Premium Gate.
         final premiumFeatures = [
-          '📍  ${l.premiumFeature1}',
-          '⏱  ${l.premiumFeature2}',
-          '✈️  ${l.premiumFeature3}',
-          '🎨  ${l.premiumFeature4}',
+          '📸  ${l.premiumFeature3}', // 하루 30통 + 사진·링크 (promotion primary)
+          '📍  ${l.premiumFeature1}', // 줍기 반경 1km
+          '⏱  ${l.premiumFeature2}', // 쿨다운 10분
+          '🎨  ${l.premiumFeature4}', // 타워 커스텀 + 특급
         ];
 
         return Scaffold(

@@ -7,6 +7,7 @@ import '../models/letter.dart';
 import '../state/app_state.dart';
 import '../features/map/screens/world_map_screen.dart';
 import '../features/compose/screens/compose_screen.dart';
+import '../features/premium/premium_gate_sheet.dart';
 import '../features/inbox/screens/inbox_screen.dart';
 import '../features/tower/screens/tower_screen.dart';
 import '../features/profile/profile_screen.dart';
@@ -90,6 +91,20 @@ class _MainScaffoldState extends State<MainScaffold> {
   void _openCompose(BuildContext ctx) async {
     // 탭 진입 피드백
     HapticFeedback.lightImpact();
+    // Build 137: Free 유저는 "줍기 전용" 포지셔닝. 보내기 탭을 탭하면
+    // Premium 업그레이드 시트로 유도 — "자기 홍보 편지 (사진 + 채널 링크)"
+    // 혜택을 어필. 답장은 `letter_read_screen` 에서 별도로 여전히 가능.
+    final state = ctx.read<AppState>();
+    if (!state.currentUser.isPremium && !state.currentUser.isBrand) {
+      final l = AppL10n.of(state.currentUser.languageCode);
+      PremiumGateSheet.show(
+        ctx,
+        featureName: l.composeGateFeatureName,
+        featureEmoji: '📣',
+        description: l.composeGateDesc,
+      );
+      return;
+    }
     final result = await Navigator.push<bool>(
       ctx,
       PageRouteBuilder(
