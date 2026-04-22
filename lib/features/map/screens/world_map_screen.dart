@@ -36,12 +36,17 @@ class _WorldMapScreenState extends State<WorldMapScreen>
   static const String _permissionDialogDateKey =
       'world_map_permission_denied_forever_prompt_date';
   static const double _towerLabelZoomThreshold = 4.8;
+  // Build 151: 지도 줌/센터 세션 persistence 키.
+  static const String _prefLastZoom = 'map_last_zoom';
+  static const String _prefLastLat = 'map_last_lat';
+  static const String _prefLastLng = 'map_last_lng';
 
   // 타일 설정은 MapConfig에서 중앙 관리 (lib/core/config/map_config.dart)
   final MapController _mapController = MapController();
   late AnimationController _pulseController;
   Timer? _positionTimer; // 실시간 편지 위치 갱신용 1초 타이머
   Timer? _mapRefreshTimer; // 5분마다 타워 목록 갱신
+  Timer? _positionSaveDebounce; // Build 151: 지도 이동 시 debounce 저장
   final _tickNotifier = ValueNotifier<int>(0);
   double _lastKnownZoom = 2.0;
   bool _showTowerLabels = false;
@@ -65,16 +70,9 @@ class _WorldMapScreenState extends State<WorldMapScreen>
       if (!mounted) return;
       final state = context.read<AppState>();
       state.fetchMapUsers(force: true);
-      // 유저 위치가 기본값(서울)이 아니면 유저 위치로 자동 이동
-      final lat = state.currentUser.latitude;
-      final lng = state.currentUser.longitude;
-      final isDefault = (lat - 37.5665).abs() < 0.001 && (lng - 126.978).abs() < 0.001;
-      if (lat != 0 && lng != 0) {
-        _mapController.move(
-          ll.LatLng(lat, lng),
-          isDefault ? 5.0 : 11.0, // 기본 위치면 넓게, 실제 위치면 가깝게
-        );
-      }
+      // Build 151: 이전 세션의 지도 위치·줌이 저장돼 있으면 우선 복원.
+      // 없으면 기존 로직 (유저 현재 위치로 이동).
+      _restoreLastMapPosition(state);
     });
     // 15분마다 타워 목록 자동 갱신 (과도한 네트워크 호출 방지)
     _mapRefreshTimer = Timer.periodic(const Duration(minutes: 15), (_) {
@@ -103,10 +101,55 @@ class _WorldMapScreenState extends State<WorldMapScreen>
     WorldMapScreen.focusSentLetterNotifier.removeListener(_onFocusSentLetter);
     _positionTimer?.cancel();
     _mapRefreshTimer?.cancel();
+    _positionSaveDebounce?.cancel();
     _tickNotifier.dispose();
     _pulseController.dispose();
     _mapController.dispose();
     super.dispose();
+  }
+
+  /// Build 151: 이전 세션 지도 위치·줌 복원. 저장된 값 없으면 유저 좌표로
+  /// 초기 이동 (기존 로직).
+  Future<void> _restoreLastMapPosition(AppState state) async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final savedZoom = prefs.getDouble(_prefLastZoom);
+      final savedLat = prefs.getDouble(_prefLastLat);
+      final savedLng = prefs.getDouble(_prefLastLng);
+      if (!mounted) return;
+      if (savedZoom != null && savedLat != null && savedLng != null) {
+        _mapController.move(ll.LatLng(savedLat, savedLng), savedZoom);
+        _lastKnownZoom = savedZoom;
+        return;
+      }
+    } catch (_) {}
+    // 저장값 없거나 실패 → 기존 로직 (유저 현재 위치).
+    if (!mounted) return;
+    final lat = state.currentUser.latitude;
+    final lng = state.currentUser.longitude;
+    final isDefault =
+        (lat - 37.5665).abs() < 0.001 && (lng - 126.978).abs() < 0.001;
+    if (lat != 0 && lng != 0) {
+      _mapController.move(
+        ll.LatLng(lat, lng),
+        isDefault ? 5.0 : 11.0,
+      );
+    }
+  }
+
+  /// Build 151: 지도 이동 시 debounce 저장 (2초 후). `onPositionChanged`
+  /// 가 드래그 중 초당 수 회 호출될 수 있어 매번 I/O 하면 낭비.
+  void _scheduleMapPositionSave() {
+    _positionSaveDebounce?.cancel();
+    _positionSaveDebounce = Timer(const Duration(seconds: 2), () async {
+      try {
+        final camera = _mapController.camera;
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.setDouble(_prefLastZoom, camera.zoom);
+        await prefs.setDouble(_prefLastLat, camera.center.latitude);
+        await prefs.setDouble(_prefLastLng, camera.center.longitude);
+      } catch (_) {}
+    });
   }
 
   // 타일 URL / 서브도메인 → MapConfig 위임 (중앙 관리)
@@ -174,6 +217,9 @@ class _WorldMapScreenState extends State<WorldMapScreen>
                   if (shouldShowLabels != _showTowerLabels && mounted) {
                     setState(() => _showTowerLabels = shouldShowLabels);
                   }
+                  // Build 151: 이동 멈춘 2초 뒤 현재 좌표·줌 저장
+                  // (SharedPreferences). 다음 앱 실행 시 이 지점으로 복원.
+                  _scheduleMapPositionSave();
                 },
               ),
               children: [
