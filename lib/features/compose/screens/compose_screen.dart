@@ -2558,6 +2558,130 @@ class _ComposeScreenState extends State<ComposeScreen>
     );
   }
 
+  /// Build 127: 편지 종류 사용법 바텀시트.
+  /// 할인권 = 웹사이트에서 쓸 수 있는 코드 형식 (LETTERGO20 같은 문자열)
+  /// 교환권 = 매장 등에서 실사용 가능한 쿠폰 이미지 업로드 형식
+  /// 일반 = 브랜드 스토리·공지 등 자유 텍스트
+  void _showCategoryHelpSheet(BuildContext ctx, AppL10n l10n) {
+    showModalBottomSheet(
+      context: ctx,
+      backgroundColor: AppColors.bgCard,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (sheetCtx) => SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(20, 18, 20, 24),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  const Text('📖', style: TextStyle(fontSize: 22)),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: Text(
+                      l10n.categoryHelpTitle,
+                      style: const TextStyle(
+                        color: AppColors.textPrimary,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w800,
+                      ),
+                    ),
+                  ),
+                  IconButton(
+                    icon: const Icon(
+                      Icons.close_rounded,
+                      color: AppColors.textMuted,
+                    ),
+                    onPressed: () => Navigator.pop(sheetCtx),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 14),
+              _helpRow(
+                emoji: '🎟',
+                title: l10n.composeBrandCategoryCoupon,
+                body: l10n.categoryHelpCouponDesc,
+              ),
+              const SizedBox(height: 14),
+              _helpRow(
+                emoji: '🎁',
+                title: l10n.composeBrandCategoryVoucher,
+                body: l10n.categoryHelpVoucherDesc,
+              ),
+              const SizedBox(height: 14),
+              _helpRow(
+                emoji: '✉️',
+                title: l10n.composeBrandCategoryGeneral,
+                body: l10n.categoryHelpGeneralDesc,
+              ),
+              const SizedBox(height: 14),
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: AppColors.gold.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(10),
+                  border: Border.all(
+                    color: AppColors.gold.withValues(alpha: 0.3),
+                  ),
+                ),
+                child: Text(
+                  l10n.categoryHelpBrandOnlyNote,
+                  style: const TextStyle(
+                    color: AppColors.gold,
+                    fontSize: 11.5,
+                    fontWeight: FontWeight.w600,
+                    height: 1.5,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _helpRow({
+    required String emoji,
+    required String title,
+    required String body,
+  }) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(emoji, style: const TextStyle(fontSize: 22)),
+        const SizedBox(width: 10),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                title,
+                style: const TextStyle(
+                  color: AppColors.textPrimary,
+                  fontSize: 13,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+              const SizedBox(height: 3),
+              Text(
+                body,
+                style: const TextStyle(
+                  color: AppColors.textSecondary,
+                  fontSize: 12,
+                  height: 1.5,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
   // ── 브랜드 편지 카테고리 패널 (본문 위 STEP) ────────────────────────────
   // Build 113 에서 `_buildBrandOptions()` 의 상단 (카테고리 + 사용 방법) 을
   // 이 메서드로 분리해 ExpansionTile 밖에서 노출. 브랜드는 "무엇을 드롭할지"
@@ -2577,7 +2701,7 @@ class _ComposeScreenState extends State<ComposeScreen>
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // 헤더 — "어떤 편지인가요?" 느낌으로 카테고리 레이블만 사용
+          // 헤더 — "어떤 편지인가요?" + Build 127 정보 아이콘(사용법 모달).
           Row(
             children: [
               const Text('🏢', style: TextStyle(fontSize: 15)),
@@ -2588,6 +2712,19 @@ class _ComposeScreenState extends State<ComposeScreen>
                   color: AppColors.textPrimary,
                   fontSize: 12,
                   fontWeight: FontWeight.w700,
+                ),
+              ),
+              const SizedBox(width: 6),
+              InkWell(
+                onTap: () => _showCategoryHelpSheet(context, l10n),
+                borderRadius: BorderRadius.circular(10),
+                child: const Padding(
+                  padding: EdgeInsets.all(2),
+                  child: Icon(
+                    Icons.help_outline_rounded,
+                    size: 15,
+                    color: AppColors.textMuted,
+                  ),
                 ),
               ),
             ],
@@ -2666,7 +2803,12 @@ class _ComposeScreenState extends State<ComposeScreen>
             ),
             const SizedBox(height: 4),
             Text(
-              l10n.composeBrandRedemptionDesc,
+              // Build 127: 카테고리별 설명 · 힌트 · 아이콘 분기.
+              //   할인권 → 코드 형식 설명 (예: LETTERGO20)
+              //   교환권 → 쿠폰 이미지 업로드 안내
+              _brandCategory == LetterCategory.coupon
+                  ? l10n.composeBrandCouponDesc
+                  : l10n.composeBrandVoucherDesc,
               style: const TextStyle(
                 color: AppColors.textMuted,
                 fontSize: 10,
@@ -2683,13 +2825,17 @@ class _ComposeScreenState extends State<ComposeScreen>
                 fontSize: 13,
               ),
               decoration: InputDecoration(
-                hintText: l10n.composeBrandRedemptionHint,
+                hintText: _brandCategory == LetterCategory.coupon
+                    ? l10n.composeBrandCouponHint
+                    : l10n.composeBrandVoucherHint,
                 hintStyle: const TextStyle(
                   color: AppColors.textMuted,
                   fontSize: 12,
                 ),
-                prefixIcon: const Icon(
-                  Icons.redeem_rounded,
+                prefixIcon: Icon(
+                  _brandCategory == LetterCategory.coupon
+                      ? Icons.qr_code_2_rounded
+                      : Icons.image_rounded,
                   color: AppColors.teal,
                   size: 18,
                 ),

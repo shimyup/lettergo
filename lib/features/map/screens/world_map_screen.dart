@@ -639,6 +639,8 @@ class _WorldMapScreenState extends State<WorldMapScreen>
             // Build 125: 동행 동물 + 머리 위 악세사리 — 꾸미기 요소.
             companionEmoji: state.activeCompanionEmoji,
             accessoryEmoji: state.activeAccessoryEmoji,
+            // Build 127: Brand 사업자 인증 완료 시 ✅ 뱃지.
+            isBrandVerified: state.isBrandVerified,
           ),
         ),
       ),
@@ -3474,6 +3476,7 @@ class _MyTowerMarker extends StatelessWidget {
   final String characterEmoji;
   final String? companionEmoji;
   final String? accessoryEmoji;
+  final bool isBrandVerified;
 
   const _MyTowerMarker({
     required this.tier,
@@ -3487,6 +3490,7 @@ class _MyTowerMarker extends StatelessWidget {
     this.milestoneItemEmoji,
     this.companionEmoji,
     this.accessoryEmoji,
+    this.isBrandVerified = false,
     this.pendingLetterCount = 0,
   });
 
@@ -3564,6 +3568,11 @@ class _MyTowerMarker extends StatelessWidget {
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
+                    // Build 127: Brand 사업자 인증 완료 시 플래그 앞에 ✅ 마크.
+                    if (isBrandVerified) ...[
+                      const Text('✅', style: TextStyle(fontSize: 9)),
+                      const SizedBox(width: 2),
+                    ],
                     Text(flag, style: const TextStyle(fontSize: 10)),
                     const SizedBox(width: 3),
                     Text(

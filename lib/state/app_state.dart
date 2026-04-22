@@ -637,6 +637,75 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
     return _letterAccessories[earned.last];
   }
 
+  // ── Brand 사업자 인증 (Build 127) ───────────────────────────────────────
+  // Brand 계정이 진짜 사업자인지 입력·저장·(후속) 관리자 승인. 승인 완료
+  // 시점(brandVerifiedAt) 이 찍히면 지도 아바타 플래그 앞에 ✅ 노출.
+
+  bool get isBrandVerified =>
+      _currentUser.isBrand && _currentUser.brandVerifiedAt != null;
+
+  /// Brand 인증 정보 제출 — 사업자 번호 · 등록증 URL · 담당자 전화.
+  /// 현재는 SharedPreferences 에 저장만. 관리자 승인은 후속 빌드.
+  /// `autoApprove=true` 로 호출 시(디버그/베타) 즉시 인증 완료 처리.
+  Future<void> submitBrandVerification({
+    required String businessRegistrationNumber,
+    required String businessRegistrationDocUrl,
+    required String businessContactPhone,
+    bool autoApprove = false,
+  }) async {
+    _currentUser.businessRegistrationNumber =
+        businessRegistrationNumber.trim();
+    _currentUser.businessRegistrationDocUrl =
+        businessRegistrationDocUrl.trim();
+    _currentUser.businessContactPhone = businessContactPhone.trim();
+    if (autoApprove) {
+      _currentUser.brandVerifiedAt = DateTime.now();
+    }
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(
+      'brandBusinessNumber',
+      _currentUser.businessRegistrationNumber ?? '',
+    );
+    await prefs.setString(
+      'brandRegistrationDocUrl',
+      _currentUser.businessRegistrationDocUrl ?? '',
+    );
+    await prefs.setString(
+      'brandContactPhone',
+      _currentUser.businessContactPhone ?? '',
+    );
+    final verifiedAt = _currentUser.brandVerifiedAt;
+    if (verifiedAt != null) {
+      await prefs.setInt(
+        'brandVerifiedAtMs',
+        verifiedAt.millisecondsSinceEpoch,
+      );
+    } else {
+      await prefs.remove('brandVerifiedAtMs');
+    }
+    notifyListeners();
+  }
+
+  /// 관리자 측에서 인증 승인 (후속 빌드에서 서버 동기화 예정). 현재 로컬.
+  Future<void> approveBrandVerification() async {
+    if (!_currentUser.isBrand) return;
+    _currentUser.brandVerifiedAt = DateTime.now();
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setInt(
+      'brandVerifiedAtMs',
+      _currentUser.brandVerifiedAt!.millisecondsSinceEpoch,
+    );
+    notifyListeners();
+  }
+
+  /// 인증 취소 (관리자 검토 후 반려 시).
+  Future<void> revokeBrandVerification() async {
+    _currentUser.brandVerifiedAt = null;
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove('brandVerifiedAtMs');
+    notifyListeners();
+  }
+
   /// 앱 진입 / 첫 액티비티 시 호출. 하루 1회만 실제 증가, 중복 호출 안전.
   /// - 처음 접속: streak = 1
   /// - 어제 접속 → 오늘 재접속: streak++
@@ -2128,6 +2197,26 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
     // 브랜드 팔로우 복원
     _followedBrandIds.clear();
     _followedBrandIds.addAll(prefs.getStringList('followedBrandIds') ?? []);
+
+    // Brand 사업자 인증 복원 (Build 127)
+    _currentUser.businessRegistrationNumber =
+        prefs.getString('brandBusinessNumber');
+    if (_currentUser.businessRegistrationNumber?.isEmpty ?? false) {
+      _currentUser.businessRegistrationNumber = null;
+    }
+    _currentUser.businessRegistrationDocUrl =
+        prefs.getString('brandRegistrationDocUrl');
+    if (_currentUser.businessRegistrationDocUrl?.isEmpty ?? false) {
+      _currentUser.businessRegistrationDocUrl = null;
+    }
+    _currentUser.businessContactPhone = prefs.getString('brandContactPhone');
+    if (_currentUser.businessContactPhone?.isEmpty ?? false) {
+      _currentUser.businessContactPhone = null;
+    }
+    final brandVerifiedMs = prefs.getInt('brandVerifiedAtMs');
+    _currentUser.brandVerifiedAt = brandVerifiedMs != null
+        ? DateTime.fromMillisecondsSinceEpoch(brandVerifiedMs)
+        : null;
 
     // 레벨 마일스톤 축하 소진 이력 복원 (Build 120)
     _celebratedMilestones

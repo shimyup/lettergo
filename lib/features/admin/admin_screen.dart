@@ -401,6 +401,25 @@ class _AdminScreenState extends State<AdminScreen> {
             onTap: () => _showExactDropGrantSheet(state),
           ),
           const SizedBox(height: 8),
+          _divider(),
+          // Build 127: Brand 사업자 인증 진입점 — 사업자 번호 · 등록증 URL ·
+          // 담당자 전화 입력 후 관리자 승인 대기. 승인 완료 시 지도 아바타에
+          // ✅ 뱃지 노출.
+          _actionTile(
+            icon: Icons.verified_user_rounded,
+            iconColor: state.isBrandVerified ? AppColors.teal : AppColors.gold,
+            label: l.brandVerificationTitle,
+            subtitle: state.isBrandVerified
+                ? l.brandVerificationStatusApproved
+                : (state.currentUser.businessRegistrationNumber != null
+                    ? l.brandVerificationStatusPending
+                    : l.brandVerificationSubtitle),
+            trailing: state.isBrandVerified
+                ? _badge('✅', AppColors.teal)
+                : _badge('📝', AppColors.gold),
+            onTap: () => _showBrandVerificationSheet(state, l),
+          ),
+          const SizedBox(height: 8),
 
           // ──────────────────────────────────────────────────────────────────
           // 🛡️ 콘텐츠 관리
@@ -791,6 +810,182 @@ class _AdminScreenState extends State<AdminScreen> {
   // ── 🎯 ExactDrop 크레딧 충전 시트 ────────────────────────────────────────
   /// 브랜드가 유료로 "정확 좌표 드롭" 을 쓸 수 있게 관리자가 수동 크레딧 충전.
   /// 현재 로컬 디바이스 잔고만 조정 — 실제 결제·서버 동기화는 후속 작업.
+  /// Build 127: Brand 사업자 인증 폼 시트 — 3필드 입력 + 제출.
+  /// 제출 시 `AppState.submitBrandVerification` 호출해 SharedPreferences
+  /// 저장. 관리자가 `approveBrandVerification()` 호출 시 `brandVerifiedAt`
+  /// 타임스탬프 기록 → 지도 아바타에 ✅.
+  void _showBrandVerificationSheet(AppState state, AppL10n l) {
+    final numberCtrl = TextEditingController(
+      text: state.currentUser.businessRegistrationNumber ?? '',
+    );
+    final docCtrl = TextEditingController(
+      text: state.currentUser.businessRegistrationDocUrl ?? '',
+    );
+    final phoneCtrl = TextEditingController(
+      text: state.currentUser.businessContactPhone ?? '',
+    );
+
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: AppColors.bgCard,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (sheetCtx) => Padding(
+        padding: EdgeInsets.only(
+          bottom: MediaQuery.of(sheetCtx).viewInsets.bottom,
+        ),
+        child: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(20, 18, 20, 20),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    const Icon(
+                      Icons.verified_user_rounded,
+                      color: AppColors.gold,
+                    ),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: Text(
+                        l.brandVerificationTitle,
+                        style: const TextStyle(
+                          color: AppColors.textPrimary,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w800,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 6),
+                Text(
+                  l.brandVerificationSubtitle,
+                  style: const TextStyle(
+                    color: AppColors.textSecondary,
+                    fontSize: 12,
+                    height: 1.5,
+                  ),
+                ),
+                const SizedBox(height: 16),
+                _verificationField(
+                  label: l.brandVerificationNumberLabel,
+                  controller: numberCtrl,
+                  hint: '123-45-67890',
+                  keyboard: TextInputType.number,
+                ),
+                const SizedBox(height: 10),
+                _verificationField(
+                  label: l.brandVerificationDocLabel,
+                  controller: docCtrl,
+                  hint: 'https://.../cert.pdf',
+                  keyboard: TextInputType.url,
+                ),
+                const SizedBox(height: 10),
+                _verificationField(
+                  label: l.brandVerificationPhoneLabel,
+                  controller: phoneCtrl,
+                  hint: '010-0000-0000',
+                  keyboard: TextInputType.phone,
+                ),
+                const SizedBox(height: 16),
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: () async {
+                      await state.submitBrandVerification(
+                        businessRegistrationNumber: numberCtrl.text,
+                        businessRegistrationDocUrl: docCtrl.text,
+                        businessContactPhone: phoneCtrl.text,
+                        // 베타: 입력 즉시 자동 승인 → ✅ 표시.
+                        // 운영 시 관리자 검토 플로우로 교체 필요.
+                        autoApprove: true,
+                      );
+                      if (!sheetCtx.mounted) return;
+                      Navigator.pop(sheetCtx);
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text(l.brandVerificationSubmittedToast),
+                          backgroundColor: AppColors.teal,
+                        ),
+                      );
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.gold,
+                      foregroundColor: Colors.black,
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                    child: Text(
+                      l.brandVerificationSubmitCta,
+                      style: const TextStyle(
+                        fontWeight: FontWeight.w800,
+                        letterSpacing: 0.3,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _verificationField({
+    required String label,
+    required TextEditingController controller,
+    required String hint,
+    TextInputType? keyboard,
+  }) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          label,
+          style: const TextStyle(
+            color: AppColors.textPrimary,
+            fontSize: 12,
+            fontWeight: FontWeight.w700,
+          ),
+        ),
+        const SizedBox(height: 5),
+        TextField(
+          controller: controller,
+          keyboardType: keyboard,
+          style: const TextStyle(
+            color: AppColors.textPrimary,
+            fontSize: 13,
+          ),
+          decoration: InputDecoration(
+            hintText: hint,
+            hintStyle: const TextStyle(
+              color: AppColors.textMuted,
+              fontSize: 12,
+            ),
+            filled: true,
+            fillColor: AppColors.bgSurface,
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10),
+              borderSide: const BorderSide(color: Color(0xFF1F2D44)),
+            ),
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: 12,
+              vertical: 10,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
   void _showExactDropGrantSheet(AppState state) {
     final l = _l10n(context);
     showModalBottomSheet(

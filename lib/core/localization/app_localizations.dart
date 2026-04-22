@@ -13491,6 +13491,242 @@ class AppL10n {
     'hi': 'Letter सामान', 'th': 'ไอเท็ม Letter',
   });
 
+  // ─────────────────────────────────────────────────────────────────────
+  // Build 127 — 편지 카테고리 사용법 모달 + 할인권/교환권 구분 카피 +
+  // Brand 사업자 인증 UI l10n.
+  // ─────────────────────────────────────────────────────────────────────
+
+  String get categoryHelpTitle => _t({
+    'ko': '편지 종류 사용법', 'en': 'Letter types', 'ja': '手紙の種類',
+    'zh': '信件类型', 'fr': 'Types de lettres', 'de': 'Brieftypen',
+    'es': 'Tipos de carta', 'pt': 'Tipos de carta',
+    'ru': 'Типы писем', 'tr': 'Mektup türleri',
+    'ar': 'أنواع الرسائل', 'it': 'Tipi di lettera',
+    'hi': 'पत्र प्रकार', 'th': 'ประเภทจดหมาย',
+  });
+
+  String get categoryHelpCouponDesc => _t({
+    'ko': '웹사이트·앱에서 쓸 수 있는 코드 형식 쿠폰. 예: "LETTERGO20" 같은 문자열을 받은 사람이 결제 시 입력.',
+    'en': 'Code-based discount for online use. The receiver types your code (e.g. "LETTERGO20") at checkout.',
+    'ja': 'ウェブサイトやアプリで使えるコード形式のクーポン。例: "LETTERGO20" のような文字列を決済時に入力。',
+    'zh': '网站/APP 使用的代码形式优惠。例如 "LETTERGO20"，结账时输入即可。',
+    'fr': 'Code promo utilisable en ligne. Le destinataire tape ton code (ex : "LETTERGO20") au paiement.',
+    'de': 'Code-basierter Online-Rabatt. Empfänger gibt deinen Code (z. B. "LETTERGO20") an der Kasse ein.',
+    'es': 'Descuento con código para uso online. El receptor introduce tu código (ej. "LETTERGO20") al pagar.',
+    'pt': 'Código de desconto para uso online. O destinatário insere o código (ex. "LETTERGO20") no pagamento.',
+    'ru': 'Промокод для онлайн-оплаты. Получатель вводит ваш код (например, "LETTERGO20") при оплате.',
+    'tr': 'Online kullanım için kod. Alıcı ödemede kodunu ("LETTERGO20") girer.',
+    'ar': 'رمز خصم للاستخدام عبر الإنترنت. يُدخل المستلم الرمز (مثل "LETTERGO20") عند الدفع.',
+    'it': 'Codice sconto per uso online. Il destinatario inserisce il codice (es. "LETTERGO20") al checkout.',
+    'hi': 'ऑनलाइन उपयोग के लिए कोड-आधारित छूट। पाने वाला आपका कोड (जैसे "LETTERGO20") चेकआउट पर डालता है।',
+    'th': 'ส่วนลดแบบรหัสสำหรับใช้ออนไลน์ ผู้รับใส่รหัส (เช่น "LETTERGO20") ตอนชำระ',
+  });
+
+  String get categoryHelpVoucherDesc => _t({
+    'ko': '매장·오프라인에서 쓸 수 있는 쿠폰 이미지. 바코드·QR·스탬프 이미지를 업로드해 수신자가 현장에서 보여주고 사용.',
+    'en': 'Image coupon for in-store use. Upload a barcode / QR / stamp image the receiver shows at the counter.',
+    'ja': '店舗で使える画像クーポン。バーコード・QR・スタンプ画像をアップロードし、受取人がレジで提示。',
+    'zh': '线下门店使用的图片优惠。上传条形码 / 二维码 / 图章图片，收件人到店出示即可。',
+    'fr': "Bon image pour usage en boutique. Upload un code-barre, QR ou tampon que le destinataire montre en caisse.",
+    'de': 'Bild-Gutschein für Laden-Einsatz. Lade einen Barcode/QR/Stempel hoch, den der Empfänger an der Kasse zeigt.',
+    'es': 'Cupón de imagen para tienda. Sube un código de barras/QR/sello que el receptor muestra en caja.',
+    'pt': 'Cupão de imagem para loja física. Carrega um código de barras/QR/carimbo que o destinatário mostra no balcão.',
+    'ru': 'Купон-изображение для магазина. Загрузите штрих-код/QR/штамп — получатель покажет на кассе.',
+    'tr': 'Mağazada kullanım için görsel kupon. Barkod/QR/damga yükle, alıcı kasada gösterir.',
+    'ar': 'قسيمة صورة للاستخدام في المتجر. ارفع صورة باركود/QR/ختم يعرضها المستلم عند الدفع.',
+    'it': 'Coupon immagine per uso in negozio. Carica un codice a barre/QR/timbro che il destinatario mostra alla cassa.',
+    'hi': 'दुकान में उपयोग के लिए छवि कूपन। बारकोड/QR/स्टैंप छवि अपलोड करें, पाने वाला काउंटर पर दिखाएगा।',
+    'th': 'คูปองแบบรูปใช้ในร้าน อัปโหลดบาร์โค้ด/QR/ตราประทับ ผู้รับแสดงที่เคาน์เตอร์',
+  });
+
+  String get categoryHelpGeneralDesc => _t({
+    'ko': '일반 브랜드 스토리·공지. 할인 코드나 이미지 없이 자유 메시지를 보낼 때 선택.',
+    'en': 'Plain brand message. Use when sending a story, announcement, or greeting without a code or image.',
+    'ja': '一般のブランドメッセージ。割引コードや画像なしで自由なメッセージを送るときに。',
+    'zh': '普通品牌信息。无优惠码或图片，仅发送品牌故事或通知时选择。',
+    'fr': "Message de marque libre. À utiliser pour une annonce ou histoire sans code ni image.",
+    'de': 'Freier Marken-Text. Nutze ihn für Story/Ankündigung ohne Code oder Bild.',
+    'es': 'Mensaje de marca libre. Úsalo para anuncios o historias sin código ni imagen.',
+    'pt': 'Mensagem de marca livre. Usa quando envias uma história ou anúncio sem código ou imagem.',
+    'ru': 'Обычное сообщение бренда. Для истории или анонса без кода или изображения.',
+    'tr': 'Serbest marka mesajı. Kod veya görsel olmadan hikaye/duyuru gönderirken kullan.',
+    'ar': 'رسالة علامة عادية. استخدمها لإرسال قصة أو إعلان دون رمز أو صورة.',
+    'it': 'Messaggio di marca libero. Per storie o annunci senza codice o immagine.',
+    'hi': 'सामान्य ब्रांड संदेश। कोड या छवि के बिना कहानी/घोषणा भेजते समय चुनें।',
+    'th': 'ข้อความแบรนด์ทั่วไป ใช้เมื่อส่งเรื่องราวหรือประกาศโดยไม่มีรหัสหรือรูป',
+  });
+
+  String get categoryHelpBrandOnlyNote => _t({
+    'ko': '🎟 할인권과 🎁 교환권은 Brand 계정만 발송 가능해요. 무료·Premium 회원은 지도에서 주워서 사용할 수 있어요.',
+    'en': '🎟 Coupons and 🎁 Vouchers can only be sent by Brand accounts. Free and Premium users pick them up on the map.',
+    'ja': '🎟 割引券と 🎁 交換券は Brand アカウント限定で送信可能。無料・Premium 会員は地図で拾って使えます。',
+    'zh': '🎟 优惠券和 🎁 兑换券仅 Brand 账号可发送。免费/Premium 用户在地图上拾取使用。',
+    'fr': '🎟 Coupons et 🎁 Bons : envoi réservé aux comptes Brand. Utilisateurs Gratuit/Premium les ramassent sur la carte.',
+    'de': '🎟 Gutscheine und 🎁 Bons können nur Brand-Accounts senden. Free/Premium-User sammeln sie auf der Karte.',
+    'es': '🎟 Cupones y 🎁 Vales solo los envían cuentas Brand. Los usuarios Gratis/Premium los recogen en el mapa.',
+    'pt': '🎟 Cupões e 🎁 Vales só são enviados por contas Brand. Free/Premium apanham no mapa.',
+    'ru': '🎟 Купоны и 🎁 Ваучеры отправляют только Brand-аккаунты. Free/Premium подбирают их на карте.',
+    'tr': '🎟 Kupon ve 🎁 Fiş sadece Brand hesapları gönderir. Ücretsiz/Premium haritadan toplar.',
+    'ar': '🎟 الكوبونات و 🎁 القسائم يرسلها حسابات Brand فقط. يلتقطها Free/Premium من الخريطة.',
+    'it': '🎟 Coupon e 🎁 Buoni solo da account Brand. Gli utenti Free/Premium li raccolgono dalla mappa.',
+    'hi': '🎟 कूपन और 🎁 वाउचर केवल Brand खाते भेज सकते हैं। Free/Premium उपयोगकर्ता नक्शे पर उठाते हैं।',
+    'th': '🎟 คูปองและ 🎁 บัตรกำนัลส่งได้เฉพาะบัญชี Brand. ผู้ใช้ฟรี/Premium เก็บจากแผนที่',
+  });
+
+  // 카테고리별 redemption 필드 설명 + 힌트 (할인권 코드 vs 교환권 이미지).
+  String get composeBrandCouponDesc => _t({
+    'ko': '할인 코드를 입력하세요. 수신자가 결제·주문 시 이 코드를 입력하면 혜택 적용.',
+    'en': 'Enter the discount code. Receivers type this at checkout/order.',
+    'ja': '割引コードを入力。受取人が決済/注文時にこのコードを入力します。',
+    'zh': '输入折扣代码。收件人结账/下单时输入该代码。',
+    'fr': "Saisis le code. Les destinataires le tapent au paiement.",
+    'de': 'Gib den Rabatt-Code ein. Empfänger tippt ihn an der Kasse.',
+    'es': 'Introduce el código. El receptor lo escribe al pagar.',
+    'pt': 'Introduz o código. O destinatário digita-o no pagamento.',
+    'ru': 'Введите код. Получатель вводит его при оплате.',
+    'tr': 'İndirim kodunu gir. Alıcı ödemede yazar.',
+    'ar': 'أدخل رمز الخصم. يُدخله المستلم عند الدفع.',
+    'it': 'Inserisci il codice. Il destinatario lo digita al pagamento.',
+    'hi': 'छूट कोड दर्ज करें। पाने वाला चेकआउट पर टाइप करेगा।',
+    'th': 'ใส่รหัสส่วนลด ผู้รับพิมพ์ตอนชำระ',
+  });
+
+  String get composeBrandCouponHint => _t({
+    'ko': '예: LETTERGO20', 'en': 'e.g. LETTERGO20', 'ja': '例: LETTERGO20',
+    'zh': '例：LETTERGO20', 'fr': 'ex : LETTERGO20', 'de': 'z. B. LETTERGO20',
+    'es': 'ej: LETTERGO20', 'pt': 'ex: LETTERGO20',
+    'ru': 'напр. LETTERGO20', 'tr': 'örn: LETTERGO20',
+    'ar': 'مثال: LETTERGO20', 'it': 'es: LETTERGO20',
+    'hi': 'उदा. LETTERGO20', 'th': 'เช่น LETTERGO20',
+  });
+
+  String get composeBrandVoucherDesc => _t({
+    'ko': '교환권 이미지 URL(바코드·QR·도장). 받은 사람이 매장에서 화면에 띄워 사용. 부가 설명은 본문에.',
+    'en': 'Image URL for a physical voucher (barcode/QR/stamp). Receivers show it at the counter. Use the letter body for notes.',
+    'ja': '交換券画像の URL(バーコード/QR/スタンプ)。受取人が店舗で画面に表示。補足は本文に。',
+    'zh': '兑换券图片 URL（条形码/QR/图章）。收件人到店显示画面。补充说明写在正文中。',
+    'fr': "URL d'image pour bon physique (code-barre/QR/tampon). Destinataires la montrent en caisse.",
+    'de': 'Bild-URL für Gutschein (Barcode/QR/Stempel). Empfänger zeigt es an der Kasse.',
+    'es': 'URL de imagen del vale físico (código/QR/sello). El receptor la muestra en caja.',
+    'pt': 'URL da imagem do vale físico (código/QR/carimbo). O destinatário mostra no balcão.',
+    'ru': 'URL изображения ваучера (штрих-код/QR/штамп). Получатель покажет на кассе.',
+    'tr': 'Fiziksel kupon görseli URL (barkod/QR/damga). Alıcı kasada gösterir.',
+    'ar': 'رابط صورة القسيمة المادية (باركود/QR/ختم). يعرضها المستلم في المتجر.',
+    'it': "URL dell'immagine del buono (codice/QR/timbro). Il destinatario la mostra alla cassa.",
+    'hi': 'भौतिक वाउचर छवि URL (बारकोड/QR/स्टैंप)। पाने वाला काउंटर पर दिखाएगा।',
+    'th': 'URL รูปคูปองจริง (บาร์โค้ด/QR/ตรา) ผู้รับแสดงที่เคาน์เตอร์',
+  });
+
+  String get composeBrandVoucherHint => _t({
+    'ko': '예: https://... .png', 'en': 'e.g. https://... .png',
+    'ja': '例: https://... .png', 'zh': '例：https://... .png',
+    'fr': 'ex : https://... .png', 'de': 'z. B. https://... .png',
+    'es': 'ej: https://... .png', 'pt': 'ex: https://... .png',
+    'ru': 'напр. https://... .png', 'tr': 'örn: https://... .png',
+    'ar': 'مثال: https://... .png', 'it': 'es: https://... .png',
+    'hi': 'उदा. https://... .png', 'th': 'เช่น https://... .png',
+  });
+
+  // Brand 사업자 인증 UI.
+  String get brandVerificationTitle => _t({
+    'ko': '사업자 인증', 'en': 'Business verification', 'ja': '事業者認証',
+    'zh': '企业认证', 'fr': 'Vérification entreprise',
+    'de': 'Geschäftsverifizierung', 'es': 'Verificación empresarial',
+    'pt': 'Verificação empresarial', 'ru': 'Подтверждение бизнеса',
+    'tr': 'İşletme doğrulama', 'ar': 'التحقق من الأعمال',
+    'it': 'Verifica aziendale', 'hi': 'व्यवसाय सत्यापन',
+    'th': 'ยืนยันธุรกิจ',
+  });
+
+  String get brandVerificationSubtitle => _t({
+    'ko': '사업자 번호·등록증·담당자 연락처를 제출하면 인증 완료 후 프로필에 ✅ 마크가 붙어요.',
+    'en': 'Submit your business number, registration document, and contact phone to earn a ✅ badge.',
+    'ja': '事業者番号・登録証・担当者連絡先を提出すると、認証後プロフィールに ✅ マーク。',
+    'zh': '提交企业编号、注册证和联系电话，认证后资料上会显示 ✅。',
+    'fr': "Soumets le numéro, le document et le contact pour obtenir le badge ✅.",
+    'de': 'Reiche Nummer, Urkunde und Kontakt ein, um das ✅ zu erhalten.',
+    'es': 'Envía número, documento y contacto para conseguir la ✅.',
+    'pt': 'Envia número, documento e contacto para obter ✅.',
+    'ru': 'Отправьте номер, документ и контакт, чтобы получить ✅.',
+    'tr': 'Numara, belge ve iletişim gönder — ✅ kazan.',
+    'ar': 'أرسل الرقم والمستند والاتصال للحصول على ✅.',
+    'it': 'Invia numero, documento e contatto per la ✅.',
+    'hi': 'नंबर, दस्तावेज़ और संपर्क भेजें — ✅ बैज पाएँ।',
+    'th': 'ส่งเลขทะเบียน เอกสาร และเบอร์ติดต่อ เพื่อรับ ✅',
+  });
+
+  String get brandVerificationNumberLabel => _t({
+    'ko': '사업자 등록번호', 'en': 'Business registration number',
+    'ja': '事業者登録番号', 'zh': '企业注册号',
+    'fr': 'N° d\'enregistrement', 'de': 'Handelsregister-Nr.',
+    'es': 'Nº de registro', 'pt': 'N.º de registo',
+    'ru': 'Регистрационный номер', 'tr': 'Kayıt numarası',
+    'ar': 'رقم التسجيل', 'it': 'N° di registrazione',
+    'hi': 'पंजीकरण नंबर', 'th': 'หมายเลขทะเบียน',
+  });
+
+  String get brandVerificationDocLabel => _t({
+    'ko': '등록증 URL', 'en': 'Document URL', 'ja': '登録証 URL',
+    'zh': '证件 URL', 'fr': 'URL du document', 'de': 'Dokument-URL',
+    'es': 'URL del documento', 'pt': 'URL do documento',
+    'ru': 'URL документа', 'tr': 'Belge URL',
+    'ar': 'رابط المستند', 'it': 'URL del documento',
+    'hi': 'दस्तावेज़ URL', 'th': 'URL เอกสาร',
+  });
+
+  String get brandVerificationPhoneLabel => _t({
+    'ko': '담당자 전화번호', 'en': 'Contact phone', 'ja': '担当者電話番号',
+    'zh': '联系电话', 'fr': 'Téléphone du contact', 'de': 'Kontakttelefon',
+    'es': 'Teléfono de contacto', 'pt': 'Telefone de contacto',
+    'ru': 'Контактный телефон', 'tr': 'İletişim telefonu',
+    'ar': 'هاتف الاتصال', 'it': 'Telefono di contatto',
+    'hi': 'संपर्क फ़ोन', 'th': 'เบอร์ติดต่อ',
+  });
+
+  String get brandVerificationSubmitCta => _t({
+    'ko': '인증 요청 보내기', 'en': 'Submit verification',
+    'ja': '認証を申請', 'zh': '提交认证',
+    'fr': 'Envoyer la demande', 'de': 'Verifizierung anfordern',
+    'es': 'Enviar verificación', 'pt': 'Enviar verificação',
+    'ru': 'Отправить запрос', 'tr': 'Doğrulama gönder',
+    'ar': 'إرسال طلب التحقق', 'it': 'Invia verifica',
+    'hi': 'सत्यापन भेजें', 'th': 'ส่งคำขอยืนยัน',
+  });
+
+  String get brandVerificationStatusPending => _t({
+    'ko': '검토 대기 중', 'en': 'Under review', 'ja': '審査中',
+    'zh': '审核中', 'fr': 'En cours de vérification',
+    'de': 'In Prüfung', 'es': 'En revisión', 'pt': 'Em revisão',
+    'ru': 'На проверке', 'tr': 'İnceleniyor',
+    'ar': 'قيد المراجعة', 'it': 'In revisione',
+    'hi': 'समीक्षाधीन', 'th': 'กำลังตรวจสอบ',
+  });
+
+  String get brandVerificationStatusApproved => _t({
+    'ko': '✅ 인증 완료', 'en': '✅ Verified', 'ja': '✅ 認証済み',
+    'zh': '✅ 已认证', 'fr': '✅ Vérifié', 'de': '✅ Verifiziert',
+    'es': '✅ Verificado', 'pt': '✅ Verificado', 'ru': '✅ Подтверждено',
+    'tr': '✅ Doğrulandı', 'ar': '✅ مُوثَّق', 'it': '✅ Verificato',
+    'hi': '✅ सत्यापित', 'th': '✅ ยืนยันแล้ว',
+  });
+
+  String get brandVerificationSubmittedToast => _t({
+    'ko': '인증 요청이 접수됐어요. 관리자 검토 후 완료됩니다.',
+    'en': 'Verification request received. Admin will review soon.',
+    'ja': '認証申請を受け付けました。管理者の審査後、完了します。',
+    'zh': '已收到认证请求，管理员审核后生效。',
+    'fr': 'Demande reçue. L\'admin l\'examinera bientôt.',
+    'de': 'Antrag eingegangen. Prüfung folgt.',
+    'es': 'Solicitud recibida. El admin la revisará.',
+    'pt': 'Pedido recebido. O admin vai rever.',
+    'ru': 'Запрос получен. Админ проверит.',
+    'tr': 'Başvuru alındı. Yönetici inceleyecek.',
+    'ar': 'تم استلام الطلب. سيراجعه المدير.',
+    'it': 'Richiesta ricevuta. L\'admin la esaminerà.',
+    'hi': 'अनुरोध प्राप्त। व्यवस्थापक समीक्षा करेंगे।',
+    'th': 'รับคำขอแล้ว ผู้ดูแลจะตรวจสอบ',
+  });
+
   // Build 125 — 레터 꾸미기 (동행·장식) 슬롯 타이틀.
   String get letterCompanionsTitle => _t({
     'ko': '동행', 'en': 'Companions', 'ja': '仲間',
