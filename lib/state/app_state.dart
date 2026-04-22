@@ -570,6 +570,66 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
     return _hunterItemEmojis[earned.last];
   }
 
+  // ── 레터 동행 동물 (Companion) · Build 125 ──────────────────────────────
+  // 타워 층 대신 "내 레터와 함께 걷는 동물" 이모지 펫. 특정 레벨 달성 시
+  // 해금. 지도 아바타 옆·프로필에 노출. 게임성·캐릭터 애착 강화.
+  static const Map<int, String> _letterCompanions = {
+    3: '🐕',  // 강아지 — 첫 동반자
+    8: '🐈',  // 고양이
+    18: '🦊', // 여우
+    28: '🦉', // 부엉이
+    38: '🐉', // 드래곤
+    48: '🦄', // 유니콘 — 전설
+  };
+
+  static String? letterCompanionEmoji(int level) => _letterCompanions[level];
+  static List<int> get letterCompanionLevels =>
+      _letterCompanions.keys.toList()..sort();
+
+  List<int> get earnedCompanionLevels {
+    if (_currentUser.isBrand) return const [];
+    final lvl = currentLevel;
+    return _letterCompanions.keys.where((m) => lvl >= m).toList()..sort();
+  }
+
+  /// 현재 레터가 데리고 다니는 최상위 동반자 (지도 아바타 옆 노출).
+  String? get activeCompanionEmoji {
+    if (_currentUser.isBrand) return null;
+    final earned = earnedCompanionLevels;
+    if (earned.isEmpty) return null;
+    return _letterCompanions[earned.last];
+  }
+
+  // ── 레터 장식·악세사리 · Build 125 ───────────────────────────────────────
+  // 내 레터를 꾸미는 악세사리. 레벨 해금 방식. 프로필에 컬렉션 표시.
+  static const Map<int, String> _letterAccessories = {
+    4: '🎩',   // 실크햇
+    12: '🕶',  // 선글라스
+    20: '🎀',  // 리본
+    30: '💎',  // 보석
+    40: '🌈',  // 무지개
+    50: '⭐',  // 별
+  };
+
+  static String? letterAccessoryEmoji(int level) =>
+      _letterAccessories[level];
+  static List<int> get letterAccessoryLevels =>
+      _letterAccessories.keys.toList()..sort();
+
+  List<int> get earnedAccessoryLevels {
+    if (_currentUser.isBrand) return const [];
+    final lvl = currentLevel;
+    return _letterAccessories.keys.where((m) => lvl >= m).toList()..sort();
+  }
+
+  /// 현재 레터가 착용한 최상위 악세사리. 지도 아바타 머리 위에 올릴 수 있음.
+  String? get activeAccessoryEmoji {
+    if (_currentUser.isBrand) return null;
+    final earned = earnedAccessoryLevels;
+    if (earned.isEmpty) return null;
+    return _letterAccessories[earned.last];
+  }
+
   /// 앱 진입 / 첫 액티비티 시 호출. 하루 1회만 실제 증가, 중복 호출 안전.
   /// - 처음 접속: streak = 1
   /// - 어제 접속 → 오늘 재접속: streak++

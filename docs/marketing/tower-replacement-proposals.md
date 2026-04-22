@@ -235,6 +235,57 @@ Build 122 에서 교체:
 
 ---
 
+## 🎨 Build 125 — 레터 꾸미기: 동행 동물 + 악세사리
+
+유저 정체성이 "레터" 로 확정된 뒤, 레벨업 외에도 **성장을 눈으로 보는**
+장치 두 개를 추가. Pokémon GO 의 "버디 포켓몬", Nintendo Animal Crossing
+의 의상 커스텀에 해당하는 경량 시스템.
+
+### 1) 동행 동물 (Companion) — 6단계
+| 레벨 | 이모지 | 의미 |
+|------|--------|------|
+| 3 | 🐕 | 강아지 — 첫 동반자 |
+| 8 | 🐈 | 고양이 |
+| 18 | 🦊 | 여우 |
+| 28 | 🦉 | 부엉이 |
+| 38 | 🐉 | 드래곤 |
+| 48 | 🦄 | 유니콘 — 전설 |
+
+- 지도 아바타 **우하단 외부**에 작은 원형 뱃지로 노출 (22×22)
+- 프로필 HuntWalletCard "동행" 줄에 6슬롯 표시 (획득/미획득)
+- 최상위 해금 동물이 자동 "현재 동반자" 로 노출
+- Brand 계정은 레벨 시스템 밖이라 표시 안 됨
+
+### 2) 악세사리 (Accessory) — 6단계
+| 레벨 | 이모지 | 의미 |
+|------|--------|------|
+| 4 | 🎩 | 실크햇 |
+| 12 | 🕶 | 선글라스 |
+| 20 | 🎀 | 리본 |
+| 30 | 💎 | 보석 |
+| 40 | 🌈 | 무지개 |
+| 50 | ⭐ | 별 |
+
+- 지도 아바타 **중앙 상단(머리 위)** 에 16px 오버레이 — "모자 쓴 레터"
+- 프로필 HuntWalletCard "장식" 줄에 6슬롯 표시
+- 최상위 해금 악세사리가 자동 "현재 장식" 으로 착용
+
+### 설계 원칙
+- **수동 equip UI 없음** — 최상위 해금 = 자동 장착. 미니멀리즘.
+- **감정 애착** — 동물+장식은 "내 캐릭터" 를 귀엽게 만듦 → 리텐션 ↑
+- **Premium 구매 없음** — 모두 레벨 해금. 무과금도 동등.
+- **이모지 기반** — 에셋 제작 비용 0. 크로스 플랫폼 렌더 일관.
+
+### 구현 위치
+- AppState: `_letterCompanions` / `_letterAccessories` 두 개 Map
+- AppState getters: `activeCompanionEmoji` / `activeAccessoryEmoji`
+- HuntWalletCard: `_buildCompanionsRow` + `_buildAccessoriesRow`
+- 공통 `_buildIconSlotRow` 로 아이템 + 동행 + 악세사리 3행 재사용
+- `_HunterItemSlot` width 54 → 48 (6슬롯 overflow 방지)
+- 지도 `_MyTowerMarker` 파라미터 추가: `companionEmoji`, `accessoryEmoji`
+
+---
+
 ## ✅ Build 124 — 최종 명칭 재확정: **레터 (Letter)**
 
 Build 123 에서 "레고 (Lego)" 로 설정했으나 The LEGO Group 상표와 중국

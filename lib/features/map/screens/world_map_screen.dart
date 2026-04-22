@@ -636,6 +636,9 @@ class _WorldMapScreenState extends State<WorldMapScreen>
             milestoneItemEmoji: state.latestHunterItemEmoji,
             // Build 122: 레벨에 따라 진화하는 캐릭터 이모지 (중앙).
             characterEmoji: state.currentCharacterEmoji,
+            // Build 125: 동행 동물 + 머리 위 악세사리 — 꾸미기 요소.
+            companionEmoji: state.activeCompanionEmoji,
+            accessoryEmoji: state.activeAccessoryEmoji,
           ),
         ),
       ),
@@ -3469,6 +3472,8 @@ class _MyTowerMarker extends StatelessWidget {
   final int hunterLevel;
   final String? milestoneItemEmoji;
   final String characterEmoji;
+  final String? companionEmoji;
+  final String? accessoryEmoji;
 
   const _MyTowerMarker({
     required this.tier,
@@ -3480,6 +3485,8 @@ class _MyTowerMarker extends StatelessWidget {
     required this.hunterLevel,
     required this.characterEmoji,
     this.milestoneItemEmoji,
+    this.companionEmoji,
+    this.accessoryEmoji,
     this.pendingLetterCount = 0,
   });
 
@@ -3589,6 +3596,42 @@ class _MyTowerMarker extends StatelessWidget {
                   child: Text(
                     milestoneItemEmoji!,
                     style: const TextStyle(fontSize: 12),
+                  ),
+                ),
+              ),
+            // Build 125: 머리 위 악세사리 (해금 시). 캐릭터 중앙 위에 작게
+            // 올려 "모자 쓴 레터" 느낌. 아바타 내부라 Positioned 대신
+            // Align 으로 수직 정렬.
+            if (accessoryEmoji != null)
+              Positioned(
+                top: -4,
+                child: Text(
+                  accessoryEmoji!,
+                  style: const TextStyle(fontSize: 16),
+                ),
+              ),
+            // Build 125: 우하단 외부 동행 동물 — "함께 걷는 펫" 감각. 서클
+            // 바깥 아래쪽에 offset 해서 산책 동반자처럼 보이게.
+            if (companionEmoji != null)
+              Positioned(
+                bottom: -4,
+                right: -14,
+                child: Container(
+                  width: 22,
+                  height: 22,
+                  decoration: BoxDecoration(
+                    color: AppColors.bgCard,
+                    shape: BoxShape.circle,
+                    border: Border.all(
+                      color: color.withValues(alpha: 0.5),
+                      width: 1,
+                    ),
+                  ),
+                  child: Center(
+                    child: Text(
+                      companionEmoji!,
+                      style: const TextStyle(fontSize: 14),
+                    ),
                   ),
                 ),
               ),

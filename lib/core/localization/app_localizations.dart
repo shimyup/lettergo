@@ -13265,14 +13265,16 @@ class AppL10n {
   // Build 115 — 소비자 감사 기반 4개 신규 기능. 각 키 묶음 앞에 용도 명시.
   // ─────────────────────────────────────────────────────────────────────
 
-  // 1) 프로필 "나의 헌트 기록" 카드 (HuntWalletCard)
+  // 1) 프로필 "나의 레터 기록" 카드 (HuntWalletCard).
+  // Build 125: 사용자 정체성 "레터" 통일에 따라 "헌트 기록" → "레터 기록"
+  // 으로 교체. 14개 언어 모두 Letter 브랜드명 정합 재작성.
   String get huntWalletTitle => _t({
-    'ko': '나의 헌트 기록', 'en': 'My Hunt Log', 'ja': '私のハント記録',
-    'zh': '我的寻宝记录', 'fr': 'Mon journal de chasse', 'de': 'Mein Jagdprotokoll',
-    'es': 'Mi registro de caza', 'pt': 'Meu registro de caça',
-    'ru': 'Моя охотничья запись', 'tr': 'Avcılık kaydım',
-    'ar': 'سجل صيدي', 'it': 'Il mio diario di caccia',
-    'hi': 'मेरा शिकार लॉग', 'th': 'บันทึกการล่าของฉัน',
+    'ko': '나의 레터 기록', 'en': 'My Letter Log', 'ja': '私のレター記録',
+    'zh': '我的 Letter 记录', 'fr': 'Mon journal Letter', 'de': 'Mein Letter-Log',
+    'es': 'Mi registro Letter', 'pt': 'Meu registro Letter',
+    'ru': 'Мой Letter-журнал', 'tr': 'Letter kaydım',
+    'ar': 'سجل Letter الخاص بي', 'it': 'Il mio diario Letter',
+    'hi': 'मेरा Letter लॉग', 'th': 'บันทึก Letter ของฉัน',
   });
   String get huntWalletPickupsMonth => _t({
     'ko': '이번 달 픽업', 'en': 'Pickups this month', 'ja': '今月のピックアップ',
@@ -13487,6 +13489,23 @@ class AppL10n {
     'ru': 'Снаряжение Letter', 'tr': 'Letter eşyaları',
     'ar': 'أدوات Letter', 'it': 'Oggetti Letter',
     'hi': 'Letter सामान', 'th': 'ไอเท็ม Letter',
+  });
+
+  // Build 125 — 레터 꾸미기 (동행·장식) 슬롯 타이틀.
+  String get letterCompanionsTitle => _t({
+    'ko': '동행', 'en': 'Companions', 'ja': '仲間',
+    'zh': '伙伴', 'fr': 'Compagnons', 'de': 'Gefährten',
+    'es': 'Compañeros', 'pt': 'Companheiros', 'ru': 'Спутники',
+    'tr': 'Yoldaşlar', 'ar': 'الرفاق', 'it': 'Compagni',
+    'hi': 'साथी', 'th': 'เพื่อนร่วมทาง',
+  });
+
+  String get letterAccessoriesTitle => _t({
+    'ko': '장식', 'en': 'Accessories', 'ja': 'アクセサリー',
+    'zh': '装饰', 'fr': 'Accessoires', 'de': 'Accessoires',
+    'es': 'Accesorios', 'pt': 'Acessórios', 'ru': 'Аксессуары',
+    'tr': 'Aksesuarlar', 'ar': 'الإكسسوارات', 'it': 'Accessori',
+    'hi': 'सहायक वस्तुएँ', 'th': 'เครื่องประดับ',
   });
 
   String hunterItemLockedHint(int level) => _t({

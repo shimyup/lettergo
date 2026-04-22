@@ -121,6 +121,12 @@ class HuntWalletCard extends StatelessWidget {
                 if (!state.currentUser.isBrand) ...[
                   const SizedBox(height: 16),
                   _buildHunterItems(l10n, state),
+                  // Build 125: 동행 동물 6슬롯 (🐕 🐈 🦊 🦉 🐉 🦄).
+                  const SizedBox(height: 14),
+                  _buildCompanionsRow(l10n, state),
+                  // Build 125: 악세사리 6슬롯 (🎩 🕶 🎀 💎 🌈 ⭐).
+                  const SizedBox(height: 14),
+                  _buildAccessoriesRow(l10n, state),
                 ],
                 // Build 116: 주간 퀘스트 진행 — Pokémon GO Field Research 류
                 // 데일리/위클리 목표의 헌트 버전. 5통 목표 달성 시 체크 메시지.
@@ -248,6 +254,75 @@ class HuntWalletCard extends StatelessWidget {
     );
   }
 
+  /// Build 125: 동행 동물 6슬롯 (Lv 3/8/18/28/38/48). 획득 시 풀컬러, 미획득
+  /// 시 회색 + 🔒 + "Lv N 해금" 툴팁. 타워의 "내 건물" 은유가 아니라 "함께
+  /// 걷는 레터" 감각 부여.
+  Widget _buildCompanionsRow(AppL10n l10n, AppState state) {
+    final levels = AppState.letterCompanionLevels;
+    final earned = state.earnedCompanionLevels.toSet();
+    return _buildIconSlotRow(
+      title: l10n.letterCompanionsTitle,
+      levels: levels,
+      earned: earned,
+      emojiForLevel: AppState.letterCompanionEmoji,
+      lockedHint: l10n.hunterItemLockedHint,
+    );
+  }
+
+  /// Build 125: 악세사리 6슬롯 (Lv 4/12/20/30/40/50). 머리 위에 착용되는
+  /// 꾸미기 요소. 해금 규칙·렌더링은 동행과 동일.
+  Widget _buildAccessoriesRow(AppL10n l10n, AppState state) {
+    final levels = AppState.letterAccessoryLevels;
+    final earned = state.earnedAccessoryLevels.toSet();
+    return _buildIconSlotRow(
+      title: l10n.letterAccessoriesTitle,
+      levels: levels,
+      earned: earned,
+      emojiForLevel: AppState.letterAccessoryEmoji,
+      lockedHint: l10n.hunterItemLockedHint,
+    );
+  }
+
+  /// 공통 슬롯 줄 렌더러 — 아이템·동행·악세사리 3군데가 같은 레이아웃을
+  /// 공유. `_HunterItemSlot` 재사용.
+  Widget _buildIconSlotRow({
+    required String title,
+    required List<int> levels,
+    required Set<int> earned,
+    required String? Function(int) emojiForLevel,
+    required String Function(int) lockedHint,
+  }) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          title,
+          style: const TextStyle(
+            color: AppColors.textPrimary,
+            fontSize: 12,
+            fontWeight: FontWeight.w700,
+          ),
+        ),
+        const SizedBox(height: 8),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            for (final level in levels)
+              Tooltip(
+                message:
+                    earned.contains(level) ? 'Lv $level' : lockedHint(level),
+                child: _HunterItemSlot(
+                  emoji: emojiForLevel(level) ?? '❓',
+                  level: level,
+                  isEarned: earned.contains(level),
+                ),
+              ),
+          ],
+        ),
+      ],
+    );
+  }
+
   /// Build 121: 헌터 아이템 줄 — 5개 마일스톤(Lv 2/5/10/25/50) 슬롯.
   /// 획득: 풀컬러 큰 이모지 · 미획득: 회색 + 작은 자물쇠 + "Lv N 해금" 툴팁.
   /// 타워의 "층" 대신 "주워 모은 장비" 메타포로 전환.
@@ -369,9 +444,11 @@ class _HunterItemSlot extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Build 125: 너비 54 → 48 로 축소. 6슬롯 행(동행·악세사리) 이 소형
+    // 화면(iPhone SE, 375px) 에서도 overflow 없이 들어가도록.
     return Container(
-      width: 54,
-      padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 4),
+      width: 48,
+      padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 3),
       decoration: BoxDecoration(
         color: isEarned
             ? AppColors.gold.withValues(alpha: 0.12)
