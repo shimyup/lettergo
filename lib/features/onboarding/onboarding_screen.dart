@@ -29,8 +29,10 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
   AppL10n get _l => AppL10n.of(_langCode);
 
+  // Build 140: intro 슬라이드를 4개 → 2개 로 축약. 새 티어 정체성을
+  // (🎟 줍기 → 📸 홍보 → 🚀 시작) 3 단계로 간결 설명.
   static const int _totalPages =
-      7; // page 0 = country, 1 = location, 2-5 = intro, 6 = coming soon
+      6; // page 0 = country, 1 = location, 2-4 = intro (🎟 📸 🚀), 5 = premium
 
   static const List<Map<String, String>> _popularCountries = [
     {'name': '대한민국', 'flag': '🇰🇷', 'lang': 'ko'},
@@ -287,30 +289,23 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 onRequest: _requestLocationPermission,
                 langCode: _langCode,
               ),
-              // Pages 2-5: Intro slides.
-              // Build 109 — "편지 줍기"를 위치 권한 바로 다음 첫 인상으로 승격.
-              // 이전 구성(✈️ 실제 배송 경로 → 🗺 줍기 → 🎁 혜택)이
-              // 배송 메커니즘을 핵심 가치처럼 앞세웠던 것을 역전.
-              // 지금의 흐름: 🎟 (왜 여는지 = 줍기) → ✈️ (어떻게 움직이는지) →
-              // 🎁 (주운 뒤 무엇을 얻는지) → 🚀 (시작).
+              // Build 140: Intro 슬라이드 3개 — 새 3-티어 정체성을 한 흐름에
+              // 전달.
+              //   Page 2 (🎟) — 줍기 (Free 의 핵심 활동)
+              //   Page 3 (📸) — 홍보 (Premium + Brand 의 가치 제안)
+              //   Page 4 (🚀) — 시작
+              // ✈️ 배송 메커니즘 + 🎁 혜택 설명은 "픽업하면 알아서 보인다"
+              // 로 inline 교육으로 위임 — 온보딩은 짧게.
               _IntroPage(
-                // 핵심 가치 제안: 지도에 뿌려진 할인·홍보 편지를 주워 모으기.
-                // 이모지를 🗺 → 🎟 로 통일 (title 과 매칭).
                 emoji: '🎟',
                 title: _l.onboarding3Title,
                 body: _l.onboarding3Body,
                 gradient: const [Color(0xFF0F1A30), Color(0xFF1A2A50)],
               ),
               _IntroPage(
-                // 부가 메커니즘: 위 "줍기" 에 딸린 배송 애니메이션/이동 경로.
-                emoji: '✈️',
-                title: _l.onboarding2Title,
-                body: _l.onboarding2Body,
-                gradient: const [Color(0xFF0A1628), Color(0xFF0D2040)],
-              ),
-              _IntroPage(
-                // 주운 편지로부터 실제 혜택 — 가치 제안의 페이아웃.
-                emoji: '🎁',
+                // Build 140: 기존 onboarding4 (🎁 benefits) 슬롯 재활용, 카피
+                // 는 Premium/Brand 의 홍보 편지 발송 가치 제안으로 리프레임.
+                emoji: '📸',
                 title: _l.onboarding4Title,
                 body: _l.onboarding4Body,
                 gradient: const [Color(0xFF15102A), Color(0xFF2A1A50)],
@@ -321,7 +316,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 body: _l.onboarding5Body,
                 gradient: const [Color(0xFF0A1628), Color(0xFF162040)],
               ),
-              // Page 6: Premium 소개
+              // Page 5: Premium 소개
               _PremiumPage(l: _l),
             ],
           ),

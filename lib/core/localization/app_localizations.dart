@@ -731,53 +731,52 @@ class AppL10n {
         'เข้าใกล้จดหมายโปรโมชั่นและส่วนลดบนแผนที่เพื่อเก็บ Free: 200 ม. · Premium และ Brand: 1 กม.',
   });
 
-  // Build 107 재포지셔닝 — "시간대별 테마" 피쳐는 존재하지만 메인 홍보
-  // 메시지에서 빠짐. 이 페이지는 이제 "즉시 사용 가능한 혜택" 가치 제안으로
-  // 사용된다. 시간대 테마는 주요 가치에 부속된 경험.
+  // Build 140 재포지셔닝 — 새 3-티어 정체성에 맞춰 "📸 나만의 편지 뿌리기"
+  // 로 전면 개편. Free 는 줍기, Premium 은 홍보, Brand 는 캠페인 이라는
+  // 3 단 역할 분리를 이 한 슬라이드에서 요약.
   String get onboarding4Title => _t({
-    'ko': '🎁 즉시 사용 가능한 혜택',
-    'en': '🎁 Redeem on the Spot',
-    'ja': '🎁 その場で使える特典',
-    'zh': '🎁 立即可用的优惠',
-    'fr': '🎁 Utilisable sur place',
-    'de': '🎁 Sofort einlösbar',
-    'es': '🎁 Canjea al instante',
-    'pt': '🎁 Resgata na hora',
-    'ru': '🎁 Сразу в дело',
-    'tr': '🎁 Anında kullan',
-    'ar': '🎁 استخدم فوراً',
-    'it': '🎁 Da usare subito',
-    'hi': '🎁 तुरंत उपयोग करें',
-    'th': '🎁 ใช้ได้ทันที',
+    'ko': '📸 내 편지를 세계에 뿌리다',
+    'en': '📸 Drop Your Own Letters',
+    'ja': '📸 自分の手紙を世界に届ける',
+    'zh': '📸 向世界投放自己的信件',
+    'fr': '📸 Lance tes lettres',
+    'de': '📸 Eigene Briefe verteilen',
+    'es': '📸 Lanza tus propias cartas',
+    'pt': '📸 Espalha as tuas cartas',
+    'ru': '📸 Распространяйте свои письма',
+    'tr': '📸 Kendi mektuplarını bırak',
+    'ar': '📸 انشر رسائلك',
+    'it': '📸 Lancia le tue lettere',
+    'hi': '📸 अपने पत्र बिखेरें',
+    'th': '📸 ส่งจดหมายของคุณ',
   });
   String get onboarding4Body => _t({
-    'ko': '주운 편지 안에 할인 코드·URL·매장 안내가 들어있어 바로 쓸 수 있어요. 브랜드마다 유효 기간이 설정되니 놓치지 마세요.',
+    'ko': 'Premium은 📸 사진과 🔗 채널 링크로 나를 홍보하고, Brand는 🎟 할인권·🎁 교환권 캠페인으로 비즈니스를 알려요. Free는 줍는 데 집중!',
     'en':
-        'Coupon codes, URLs, and in-store instructions come right inside the letter you picked up — usable immediately. Each brand sets its own expiry.',
+        'Premium promotes you with 📸 photos and 🔗 channel links. Brand runs 🎟 coupon & 🎁 voucher campaigns. Free focuses on picking up.',
     'ja':
-        '拾った手紙の中に割引コード・URL・店舗案内が入っていて、すぐに使えます。有効期限はブランドごとに設定されます。',
-    'zh':
-        '拾起的信件内含折扣码、链接与到店说明，立即可用。每个品牌自行设定有效期限。',
+        'Premium は 📸 写真と 🔗 チャンネルリンクで自己PR。Brand は 🎟 割引券・🎁 交換券キャンペーン。Free は拾うことに集中！',
+    'zh': 'Premium 用 📸 照片和 🔗 频道链接自我推广。Brand 开展 🎟 优惠券·🎁 代金券活动。Free 专注拾取！',
     'fr':
-        'Codes promo, liens et instructions en boutique sont inclus — utilisables immédiatement. Chaque marque fixe son expiration.',
+        'Premium te met en avant avec 📸 photos et 🔗 liens. Brand lance 🎟 coupons & 🎁 bons. Free se concentre sur le ramassage.',
     'de':
-        'Im aufgehobenen Brief stehen Code, Link oder Ladenhinweis — sofort einlösbar. Jede Marke legt eigene Gültigkeit fest.',
+        'Premium präsentiert dich mit 📸 Fotos und 🔗 Kanal-Links. Brand schaltet 🎟 Coupon- & 🎁 Gutschein-Kampagnen. Free sammelt auf.',
     'es':
-        'El código, enlace o instrucciones para la tienda están dentro de la carta que recoges — listos para usar. Cada marca fija su caducidad.',
+        'Premium te promociona con 📸 fotos y 🔗 enlaces. Brand lanza campañas 🎟 cupones & 🎁 vales. Free se dedica a recoger.',
     'pt':
-        'Códigos, links ou instruções da loja vêm dentro da carta — prontos a usar. Cada marca define o seu prazo.',
+        'Premium promove-te com 📸 fotos e 🔗 links. Brand lança campanhas 🎟 cupões & 🎁 vales. Free foca-se em apanhar.',
     'ru':
-        'Промокод, ссылка или инструкция ждут внутри поднятого письма — используйте сразу. Срок действия задаёт бренд.',
+        'Premium продвигает вас через 📸 фото и 🔗 ссылки на канал. Brand запускает кампании 🎟 купонов и 🎁 ваучеров. Free собирает.',
     'tr':
-        'Topladığın mektubun içinde indirim kodu, link veya mağaza bilgisi hemen kullanıma hazır. Süreyi marka belirler.',
+        "Premium seni 📸 fotoğraf ve 🔗 kanal bağlantılarıyla tanıtır. Brand 🎟 kupon ve 🎁 çeki kampanyaları yayınlar. Free toplamaya odaklanır.",
     'ar':
-        'رموز الخصم أو الروابط أو تعليمات المتجر داخل الرسالة التي التقطتها — جاهزة للاستخدام فوراً. كل علامة تضع مدتها.',
+        'Premium يروج لك بـ 📸 الصور و 🔗 روابط القناة. Brand يطلق حملات 🎟 القسائم و 🎁 الكوبونات. Free يركز على الالتقاط.',
     'it':
-        'Codice, link o istruzioni del negozio sono dentro la lettera che hai raccolto — usabili subito. La scadenza la decide il brand.',
+        'Premium ti promuove con 📸 foto e 🔗 link. Brand lancia campagne 🎟 coupon & 🎁 buoni. Free si concentra sulla raccolta.',
     'hi':
-        'आपने उठाए पत्र में कूपन कोड, URL या स्टोर निर्देश होते हैं — तुरंत उपयोगी. हर ब्रांड अपनी समाप्ति तय करता है.',
+        'Premium आपको 📸 फ़ोटो और 🔗 चैनल लिंक से प्रमोट करता है. Brand 🎟 कूपन & 🎁 वाउचर अभियान चलाता है. Free उठाने पर केंद्रित.',
     'th':
-        'รหัสส่วนลด ลิงก์ หรือวิธีการที่ร้านอยู่ในจดหมายที่คุณเก็บ ใช้ได้ทันที แต่ละแบรนด์กำหนดวันหมดอายุเอง',
+        'Premium โปรโมตคุณด้วย 📸 รูปและ 🔗 ลิงก์ช่อง. Brand จัดแคมเปญ 🎟 คูปอง·🎁 วาวเชอร์. Free เน้นเก็บ!',
   });
 
   String get onboarding5Title => _t({
