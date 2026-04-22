@@ -1207,14 +1207,15 @@ class _ComposeScreenState extends State<ComposeScreen>
                               _buildDestinationCard(state, hasPremium),
                             if (!_isReply && !_isBulkMode)
                               const SizedBox(height: 8),
-                            // Brand 전용 — 카테고리 + 사용 방법 패널 (Build 113
-                            // 간편 발송). 기존엔 ExpansionTile 안쪽에 묻혀 있어
-                            // 브랜드가 쿠폰/교환권으로 드롭하려면 "더 많은 옵션"
-                            // 을 반드시 펼쳐야 했는데, 이제는 destination 바로
-                            // 아래에서 🎟/🎁/✉️ 중 하나를 한 탭으로 선택 가능.
-                            if (!_isReply && !_isBulkMode && isBrand)
+                            // Build 113: 브랜드는 destination 바로 아래에서
+                            // 🎟/🎁/✉️ 중 하나를 한 탭으로 선택.
+                            // Build 128: Free/Premium 에게도 카테고리 패널을
+                            // 노출해 "할인권/교환권은 Brand 에서 발송" 임을
+                            // 명시. 쿠폰/교환권 칩은 비활성 + 탭 시 업그레이드
+                            // 안내 시트 오픈.
+                            if (!_isReply && !_isBulkMode)
                               _buildBrandCategoryPanel(state),
-                            if (!_isReply && !_isBulkMode && isBrand)
+                            if (!_isReply && !_isBulkMode)
                               const SizedBox(height: 8),
                             // Brand 전용 — 정확한 좌표 드롭 진입점
                             if (!_isReply && !_isBulkMode && isBrand)
@@ -2558,6 +2559,26 @@ class _ComposeScreenState extends State<ComposeScreen>
     );
   }
 
+  /// Build 128: Free/Premium 이 🎟 할인권 / 🎁 교환권 칩을 탭했을 때
+  /// "이건 Brand 가 뿌리는 편지예요" 를 알리는 업그레이드 안내 시트.
+  /// `PremiumGateSheet` 를 재사용 — CTA 는 Premium 화면으로 이동.
+  void _showBrandOnlyCategorySheet(
+    BuildContext ctx,
+    AppL10n l10n,
+    LetterCategory c,
+  ) {
+    final name = c == LetterCategory.coupon
+        ? l10n.composeBrandCategoryCoupon
+        : l10n.composeBrandCategoryVoucher;
+    final emoji = c == LetterCategory.coupon ? '🎟' : '🎁';
+    PremiumGateSheet.show(
+      ctx,
+      featureName: name,
+      featureEmoji: emoji,
+      description: l10n.categoryHelpBrandOnlyNote,
+    );
+  }
+
   /// Build 127: 편지 종류 사용법 바텀시트.
   /// 할인권 = 웹사이트에서 쓸 수 있는 코드 형식 (LETTERGO20 같은 문자열)
   /// 교환권 = 매장 등에서 실사용 가능한 쿠폰 이미지 업로드 형식
@@ -2689,8 +2710,12 @@ class _ComposeScreenState extends State<ComposeScreen>
   // 쿠폰·교환권일 때만 사용 방법 입력 필드가 함께 보인다. 나머지 고급 옵션
   // (1-per-user · 답장 받기 · 자동 삭제) 은 `_buildBrandAdvancedOptions()`
   // 로 이동.
+  // Build 128: Free/Premium 에게도 표시 — 쿠폰·교환권 칩은 🔒 비활성 상태로
+  // "이건 Brand 가 뿌리는 편지예요" 를 가시화. 탭하면 Brand 업그레이드 안내
+  // 시트 오픈.
   Widget _buildBrandCategoryPanel(AppState state) {
     final l10n = AppL10n.of(state.currentUser.languageCode);
+    final isBrand = state.currentUser.isBrand;
     return Container(
       padding: const EdgeInsets.all(13),
       decoration: BoxDecoration(
@@ -2735,54 +2760,96 @@ class _ComposeScreenState extends State<ComposeScreen>
               for (final c in LetterCategory.values) ...[
                 Expanded(
                   child: InkWell(
-                    onTap: () => setState(() => _brandCategory = c),
+                    onTap: () {
+                      // Build 128: 쿠폰/교환권은 Brand 전용. Free/Premium 이
+                      // 탭하면 업그레이드 안내 시트를 연다. `_brandCategory`
+                      // 는 바꾸지 않아 서버 guard 와 UI 상태가 일치한다.
+                      if (!isBrand && c != LetterCategory.general) {
+                        _showBrandOnlyCategorySheet(context, l10n, c);
+                        return;
+                      }
+                      setState(() => _brandCategory = c);
+                    },
                     borderRadius: BorderRadius.circular(8),
-                    child: Container(
-                      margin: const EdgeInsets.only(right: 6),
-                      padding: const EdgeInsets.symmetric(
-                        vertical: 10,
-                        horizontal: 6,
-                      ),
-                      decoration: BoxDecoration(
-                        color: _brandCategory == c
-                            ? AppColors.teal.withValues(alpha: 0.16)
-                            : AppColors.bgSurface,
-                        borderRadius: BorderRadius.circular(8),
-                        border: Border.all(
-                          color: _brandCategory == c
-                              ? AppColors.teal
-                              : AppColors.textMuted.withValues(alpha: 0.3),
-                          width: _brandCategory == c ? 1.3 : 1,
+                    child: Opacity(
+                      opacity: (!isBrand && c != LetterCategory.general)
+                          ? 0.55
+                          : 1.0,
+                      child: Container(
+                        margin: const EdgeInsets.only(right: 6),
+                        padding: const EdgeInsets.symmetric(
+                          vertical: 10,
+                          horizontal: 6,
                         ),
-                      ),
-                      child: Column(
-                        children: [
-                          Text(
-                            c == LetterCategory.coupon
-                                ? '🎟'
-                                : c == LetterCategory.voucher
-                                    ? '🎁'
-                                    : '✉️',
-                            style: const TextStyle(fontSize: 20),
+                        decoration: BoxDecoration(
+                          color: _brandCategory == c && isBrand
+                              ? AppColors.teal.withValues(alpha: 0.16)
+                              : AppColors.bgSurface,
+                          borderRadius: BorderRadius.circular(8),
+                          border: Border.all(
+                            color: _brandCategory == c && isBrand
+                                ? AppColors.teal
+                                : AppColors.textMuted.withValues(alpha: 0.3),
+                            width: _brandCategory == c && isBrand ? 1.3 : 1,
                           ),
-                          const SizedBox(height: 4),
-                          Text(
-                            c == LetterCategory.coupon
-                                ? l10n.composeBrandCategoryCoupon
-                                : c == LetterCategory.voucher
-                                    ? l10n.composeBrandCategoryVoucher
-                                    : l10n.composeBrandCategoryGeneral,
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: TextStyle(
-                              color: _brandCategory == c
-                                  ? AppColors.teal
-                                  : AppColors.textSecondary,
-                              fontSize: 11.5,
-                              fontWeight: FontWeight.w700,
+                        ),
+                        child: Stack(
+                          clipBehavior: Clip.none,
+                          children: [
+                            Column(
+                              children: [
+                                Text(
+                                  c == LetterCategory.coupon
+                                      ? '🎟'
+                                      : c == LetterCategory.voucher
+                                          ? '🎁'
+                                          : '✉️',
+                                  style: const TextStyle(fontSize: 20),
+                                ),
+                                const SizedBox(height: 4),
+                                Text(
+                                  c == LetterCategory.coupon
+                                      ? l10n.composeBrandCategoryCoupon
+                                      : c == LetterCategory.voucher
+                                          ? l10n.composeBrandCategoryVoucher
+                                          : l10n.composeBrandCategoryGeneral,
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: TextStyle(
+                                    color: _brandCategory == c && isBrand
+                                        ? AppColors.teal
+                                        : AppColors.textSecondary,
+                                    fontSize: 11.5,
+                                    fontWeight: FontWeight.w700,
+                                  ),
+                                ),
+                              ],
                             ),
-                          ),
-                        ],
+                            // Build 128: Free/Premium 에게 쿠폰·교환권 칩이
+                            // Brand 전용임을 알리는 🔒 뱃지.
+                            if (!isBrand && c != LetterCategory.general)
+                              Positioned(
+                                top: -4,
+                                right: -4,
+                                child: Container(
+                                  padding: const EdgeInsets.all(2.5),
+                                  decoration: BoxDecoration(
+                                    color: const Color(0xFFFF8A5C),
+                                    shape: BoxShape.circle,
+                                    border: Border.all(
+                                      color: AppColors.bgCard,
+                                      width: 1.2,
+                                    ),
+                                  ),
+                                  child: const Icon(
+                                    Icons.lock_rounded,
+                                    size: 9,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                              ),
+                          ],
+                        ),
                       ),
                     ),
                   ),
@@ -2790,8 +2857,8 @@ class _ComposeScreenState extends State<ComposeScreen>
               ],
             ],
           ),
-          // ── 쿠폰/교환권 사용 방법 (카테고리가 coupon/voucher 일 때만 노출) ──
-          if (_brandCategory != LetterCategory.general) ...[
+          // ── 쿠폰/교환권 사용 방법 (브랜드 & 카테고리가 coupon/voucher 일 때만) ──
+          if (isBrand && _brandCategory != LetterCategory.general) ...[
             const SizedBox(height: 12),
             Text(
               l10n.composeBrandRedemptionLabel,
