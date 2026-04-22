@@ -2699,12 +2699,26 @@ class _UnreadDeliveredMarker extends StatelessWidget {
         final showAsPremium =
             isPremiumSender || (isBrandSender && !viewerIsPremiumOrBrand);
 
-        // 등급별 글로우 색상
+        // 등급별 글로우 색상 (외곽 pulse 링)
         final glowColor = showAsBrand
             ? const Color(0xFFFF8A5C)
             : showAsPremium
             ? AppColors.gold
             : Colors.white;
+
+        // Build 147: 카테고리별 내부 테두리 색 — 외곽 tier glow 유지하면서
+        // 내부 링이 카테고리를 시각화. 🎟 할인권=teal, 🎁 교환권=coral.
+        //   브랜드 general / 비브랜드: tier glow 색 그대로.
+        // 이중 링 구조로 "이 편지가 누구 거 (tier)" + "무엇 (category)" 동시 식별.
+        final isCoupon =
+            showAsBrand && letter.category == LetterCategory.coupon;
+        final isVoucher =
+            showAsBrand && letter.category == LetterCategory.voucher;
+        final innerBorderColor = isCoupon
+            ? AppColors.teal
+            : isVoucher
+                ? const Color(0xFFFFB86B)
+                : glowColor;
 
         // 편지함 컨테이너 배경색
         final boxBg = showAsBrand
@@ -2739,7 +2753,7 @@ class _UnreadDeliveredMarker extends StatelessWidget {
                     ),
                   ),
                 ),
-                // 편지함 아이콘 컨테이너
+                // 편지함 아이콘 컨테이너 (Build 147: 내부 테두리 = 카테고리 색)
                 Container(
                   width: 30,
                   height: 30,
@@ -2747,7 +2761,9 @@ class _UnreadDeliveredMarker extends StatelessWidget {
                     color: boxBg,
                     shape: BoxShape.circle,
                     border: Border.all(
-                      color: glowColor.withValues(alpha: 0.55 + pulse * 0.3),
+                      color: innerBorderColor.withValues(
+                        alpha: 0.55 + pulse * 0.3,
+                      ),
                       width: showAsBrand ? 2.0 : 1.5,
                     ),
                     boxShadow: [
