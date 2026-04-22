@@ -229,6 +229,12 @@ class _ComposeScreenState extends State<ComposeScreen>
   // 을 직접 타이핑하면 null 로 되돌아가 이미지 선택 상태 해제.
   String? _voucherImageLocalPath;
 
+  // Build 132: 쿠폰/교환권 유효기간 (일 단위). null = 무제한.
+  // 기본 30일 — Kakao Gift 평균 유효기간과 동일. coupon/voucher 카테고리에서만
+  // 전송되며 general 카테고리에서는 무시.
+  int? _redemptionValidityDays = 30;
+  static const List<int?> _redemptionValidityChoices = [7, 30, 90, 365, null];
+
   static const List<String> _bannedWords = [
     // English
     'fuck', 'shit', 'bitch', 'asshole', 'bastard', 'dick', 'pussy', 'cunt',
@@ -696,6 +702,7 @@ class _ComposeScreenState extends State<ComposeScreen>
             redemptionInfo: _redemptionInfoController.text.trim().isEmpty
                 ? null
                 : _redemptionInfoController.text.trim(),
+            redemptionExpiresAt: _computeRedemptionExpiresAt(),
           );
           totalSent += sent;
           if (sent == 0) break; // 한도 초과 시 중단
@@ -721,6 +728,7 @@ class _ComposeScreenState extends State<ComposeScreen>
             redemptionInfo: _redemptionInfoController.text.trim().isEmpty
                 ? null
                 : _redemptionInfoController.text.trim(),
+            redemptionExpiresAt: _computeRedemptionExpiresAt(),
           );
         }
       }
@@ -777,6 +785,7 @@ class _ComposeScreenState extends State<ComposeScreen>
         redemptionInfo: _redemptionInfoController.text.trim().isEmpty
             ? null
             : _redemptionInfoController.text.trim(),
+        redemptionExpiresAt: _computeRedemptionExpiresAt(),
       );
 
       if (mounted) {
@@ -858,6 +867,7 @@ class _ComposeScreenState extends State<ComposeScreen>
         redemptionInfo: _redemptionInfoController.text.trim().isEmpty
             ? null
             : _redemptionInfoController.text.trim(),
+        redemptionExpiresAt: _computeRedemptionExpiresAt(),
       );
     }
 
@@ -2564,6 +2574,111 @@ class _ComposeScreenState extends State<ComposeScreen>
     );
   }
 
+  /// Build 132: 쿠폰/교환권 유효기간 DateTime 계산.
+  /// `_redemptionValidityDays` 가 null 이면 무제한 → null 반환.
+  /// 그 외엔 "지금부터 N일 후 자정 23:59" 로 설정 — 유저가 발송 시각이 아닌
+  /// 만료일 자정 기준으로 이해하도록 (기프트 앱 관습).
+  DateTime? _computeRedemptionExpiresAt() {
+    if (_brandCategory == LetterCategory.general) return null;
+    final days = _redemptionValidityDays;
+    if (days == null) return null;
+    final now = DateTime.now();
+    return DateTime(now.year, now.month, now.day + days, 23, 59, 59);
+  }
+
+  /// Build 132: 유효기간 선택 칩 로우. coupon/voucher 카테고리일 때만 표시.
+  /// [7일] [30일] [90일] [1년] [무제한] — 중앙 만료일 라벨.
+  Widget _buildRedemptionValidityRow(AppL10n l10n) {
+    final computed = _computeRedemptionExpiresAt();
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            const Icon(
+              Icons.event_rounded,
+              size: 14,
+              color: AppColors.textSecondary,
+            ),
+            const SizedBox(width: 6),
+            Text(
+              l10n.composeBrandRedemptionValidityLabel,
+              style: const TextStyle(
+                color: AppColors.textPrimary,
+                fontSize: 12,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+            const Spacer(),
+            if (computed != null)
+              Text(
+                l10n.composeBrandRedemptionExpiresOn(
+                  '${computed.year}.${computed.month.toString().padLeft(2, '0')}.${computed.day.toString().padLeft(2, '0')}',
+                ),
+                style: const TextStyle(
+                  color: AppColors.teal,
+                  fontSize: 10.5,
+                  fontWeight: FontWeight.w600,
+                ),
+              )
+            else
+              Text(
+                l10n.composeBrandRedemptionUnlimited,
+                style: const TextStyle(
+                  color: AppColors.textMuted,
+                  fontSize: 10.5,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+          ],
+        ),
+        const SizedBox(height: 6),
+        Wrap(
+          spacing: 6,
+          runSpacing: 6,
+          children: _redemptionValidityChoices.map((d) {
+            final selected = _redemptionValidityDays == d;
+            final label = d == null
+                ? l10n.composeBrandRedemptionUnlimitedChip
+                : (d == 365
+                    ? l10n.composeBrandRedemptionOneYear
+                    : l10n.composeBrandRedemptionDays(d));
+            return InkWell(
+              onTap: () => setState(() => _redemptionValidityDays = d),
+              borderRadius: BorderRadius.circular(8),
+              child: Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 6,
+                ),
+                decoration: BoxDecoration(
+                  color: selected
+                      ? AppColors.teal.withValues(alpha: 0.16)
+                      : AppColors.bgSurface,
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(
+                    color: selected
+                        ? AppColors.teal
+                        : AppColors.textMuted.withValues(alpha: 0.3),
+                    width: selected ? 1.3 : 1,
+                  ),
+                ),
+                child: Text(
+                  label,
+                  style: TextStyle(
+                    color: selected ? AppColors.teal : AppColors.textSecondary,
+                    fontSize: 11,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ),
+            );
+          }).toList(),
+        ),
+      ],
+    );
+  }
+
   /// Build 130: 교환권 이미지 선택 row — 버튼 + 선택 시 썸네일 미리보기.
   /// 탭하면 `image_picker` 로 갤러리 열고 로컬 경로를 `_redemptionInfoController`
   /// 에 채운다. 다시 탭해서 교체 가능. 옆의 ✕ 버튼으로 제거.
@@ -3042,6 +3157,10 @@ class _ComposeScreenState extends State<ComposeScreen>
               const SizedBox(height: 8),
               _buildVoucherImagePickRow(l10n),
             ],
+            // Build 132: 쿠폰/교환권 유효기간 선택 — Kakao Gift / Starbucks 패턴.
+            // general 편지에는 의미 없음 (쿠폰이 아니니까).
+            const SizedBox(height: 12),
+            _buildRedemptionValidityRow(l10n),
             const SizedBox(height: 4),
             // 쿠폰/교환권 발송 시 본문 최소 20자 완화 안내.
             Text(

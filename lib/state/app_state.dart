@@ -5567,6 +5567,7 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
     LetterCategory category = LetterCategory.general, // 브랜드만 coupon/voucher 선택 가능
     bool acceptsReplies = true, // 브랜드가 답장 받기 off로 보낼 수 있음
     String? redemptionInfo, // 브랜드: 쿠폰/교환권 사용 안내 (자유 텍스트)
+    DateTime? redemptionExpiresAt, // Build 132: 브랜드 쿠폰/교환권 유효기간 (사용 가능 마지막 시각)
   }) async {
     if (!_canSendLetterByDailyLimit()) {
       return false;
@@ -5737,6 +5738,11 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
       acceptsReplies: _currentUser.isBrand ? acceptsReplies : true,
       // 쿠폰/교환권 사용 안내도 브랜드만 기록됨. 일반 유저가 넘겨도 무시.
       redemptionInfo: _currentUser.isBrand ? redemptionInfo : null,
+      // Build 132: 쿠폰/교환권 유효기간 — coupon/voucher 카테고리일 때만 저장.
+      redemptionExpiresAt: (_currentUser.isBrand &&
+              category != LetterCategory.general)
+          ? redemptionExpiresAt
+          : null,
     );
 
     _worldLetters.add(letter);
@@ -5799,6 +5805,7 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
     LetterCategory category = LetterCategory.general,
     bool acceptsReplies = true,
     String? redemptionInfo,
+    DateTime? redemptionExpiresAt,
   }) async {
     if (!_currentUser.isBrand) return 0;
     int sent = 0;
@@ -5825,6 +5832,7 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
           category: category,
           acceptsReplies: acceptsReplies,
           redemptionInfo: redemptionInfo,
+          redemptionExpiresAt: redemptionExpiresAt,
         );
         if (ok) sent++;
       }
@@ -5849,6 +5857,7 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
             category: category,
             acceptsReplies: acceptsReplies,
             redemptionInfo: redemptionInfo,
+            redemptionExpiresAt: redemptionExpiresAt,
           );
           if (ok) sent++;
         }
@@ -5875,6 +5884,7 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
     LetterCategory category = LetterCategory.general,
     bool acceptsReplies = true,
     String? redemptionInfo,
+    DateTime? redemptionExpiresAt,
   }) async {
     if (!_currentUser.isBrand) return 0;
 
@@ -5957,6 +5967,9 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
         category: category,
         acceptsReplies: acceptsReplies,
         redemptionInfo: redemptionInfo,
+        redemptionExpiresAt: category != LetterCategory.general
+            ? redemptionExpiresAt
+            : null,
       );
 
       _worldLetters.add(letter);

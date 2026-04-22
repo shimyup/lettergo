@@ -13662,6 +13662,113 @@ class AppL10n {
     'th': '📸 เปลี่ยนรูป',
   });
 
+  // Build 132: 유효기간 UI.
+  String get composeBrandRedemptionValidityLabel => _t({
+    'ko': '유효기간',
+    'en': 'Validity',
+    'ja': '有効期限',
+    'zh': '有效期',
+    'fr': 'Validité',
+    'de': 'Gültigkeit',
+    'es': 'Validez',
+    'pt': 'Validade',
+    'ru': 'Срок действия',
+    'tr': 'Geçerlilik',
+    'ar': 'الصلاحية',
+    'it': 'Validità',
+    'hi': 'वैधता',
+    'th': 'ระยะเวลา',
+  });
+
+  String composeBrandRedemptionExpiresOn(String date) {
+    switch (languageCode) {
+      case 'ko': return '만료: $date';
+      case 'ja': return '期限: $date';
+      case 'zh': return '到期: $date';
+      case 'fr': return 'Expire le $date';
+      case 'de': return 'Läuft ab: $date';
+      case 'es': return 'Caduca el $date';
+      case 'pt': return 'Expira em $date';
+      case 'ru': return 'До $date';
+      case 'tr': return 'Son tarih: $date';
+      case 'ar': return 'ينتهي: $date';
+      case 'it': return 'Scade il $date';
+      case 'hi': return 'समाप्ति: $date';
+      case 'th': return 'หมดอายุ $date';
+      default: return 'Expires $date';
+    }
+  }
+
+  String get composeBrandRedemptionUnlimited => _t({
+    'ko': '만료 없음',
+    'en': 'No expiry',
+    'ja': '無期限',
+    'zh': '无到期日',
+    'fr': 'Sans expiration',
+    'de': 'Kein Ablauf',
+    'es': 'Sin caducidad',
+    'pt': 'Sem expiração',
+    'ru': 'Бессрочно',
+    'tr': 'Süresiz',
+    'ar': 'بدون انتهاء',
+    'it': 'Senza scadenza',
+    'hi': 'समाप्ति नहीं',
+    'th': 'ไม่มีวันหมดอายุ',
+  });
+
+  String get composeBrandRedemptionUnlimitedChip => _t({
+    'ko': '무제한',
+    'en': 'Unlimited',
+    'ja': '無期限',
+    'zh': '无限',
+    'fr': 'Illimité',
+    'de': 'Unbegrenzt',
+    'es': 'Ilimitado',
+    'pt': 'Ilimitado',
+    'ru': 'Бессрочно',
+    'tr': 'Sınırsız',
+    'ar': 'غير محدود',
+    'it': 'Illimitato',
+    'hi': 'असीमित',
+    'th': 'ไม่จำกัด',
+  });
+
+  String get composeBrandRedemptionOneYear => _t({
+    'ko': '1년',
+    'en': '1 year',
+    'ja': '1年',
+    'zh': '1年',
+    'fr': '1 an',
+    'de': '1 Jahr',
+    'es': '1 año',
+    'pt': '1 ano',
+    'ru': '1 год',
+    'tr': '1 yıl',
+    'ar': 'سنة',
+    'it': '1 anno',
+    'hi': '1 वर्ष',
+    'th': '1 ปี',
+  });
+
+  String composeBrandRedemptionDays(int days) {
+    switch (languageCode) {
+      case 'ko': return '${days}일';
+      case 'ja': return '$days日';
+      case 'zh': return '$days天';
+      case 'fr': return '$days jours';
+      case 'de': return '$days Tage';
+      case 'es': return '$days días';
+      case 'pt': return '$days dias';
+      case 'ru': return '$days дн.';
+      case 'tr': return '$days gün';
+      case 'ar': return '$days يوم';
+      case 'it': return '$days giorni';
+      case 'hi': return '$days दिन';
+      case 'th': return '$days วัน';
+      default: return '$days days';
+    }
+  }
+
   // Brand 사업자 인증 UI.
   String get brandVerificationTitle => _t({
     'ko': '사업자 인증', 'en': 'Business verification', 'ja': '事業者認証',

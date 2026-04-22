@@ -289,6 +289,13 @@ class Letter {
   /// 자유 텍스트로 허용. 최대 200자.
   final String? redemptionInfo;
 
+  /// Build 132: 쿠폰/교환권 **유효기간** (사용 가능 마지막 시각).
+  /// `expiresAt` 는 "편지가 지도/수령함에서 사라지는 시각" (보통 12–72h) 이고,
+  /// 이것은 "쿠폰 자체의 사용 기한" (보통 7/30/90일). 두 의미가 달라 분리 유지.
+  /// 기프트 앱들 (Kakao Gift / Starbucks) 의 유효기간 패턴과 동일.
+  /// null = 무제한.
+  final DateTime? redemptionExpiresAt;
+
   Letter({
     required this.id,
     required this.senderId,
@@ -333,6 +340,7 @@ class Letter {
     this.category = LetterCategory.general,
     this.acceptsReplies = true,
     this.redemptionInfo,
+    this.redemptionExpiresAt,
   }) : reportedBy = reportedBy ?? {};
 
   /// 인박스용 독립 복사본 (worldLetters에서 제거 전 inbox에 추가할 때 사용)
@@ -378,6 +386,7 @@ class Letter {
     category: category,
     acceptsReplies: acceptsReplies,
     redemptionInfo: redemptionInfo,
+    redemptionExpiresAt: redemptionExpiresAt,
     readCount: readCount,
     maxReaders: maxReaders,
   );
@@ -385,6 +394,12 @@ class Letter {
   double get avgRating => ratingCount > 0 ? ratingTotal / ratingCount : 0.0;
   bool get isBlocked => reportCount >= 3;
   bool get isExpired => expiresAt != null && DateTime.now().isAfter(expiresAt!);
+
+  /// Build 132: 쿠폰/교환권 사용 기한이 지났는지.
+  /// `redemptionExpiresAt` 이 null 이면 무제한 → false.
+  bool get isRedemptionExpired =>
+      redemptionExpiresAt != null &&
+      DateTime.now().isAfter(redemptionExpiresAt!);
 
   // ── 현재 구간 ───────────────────────────────────────────────────────────────
   RouteSegment get currentSegment =>
@@ -585,6 +600,8 @@ class Letter {
     'category': category.key,
     'acceptsReplies': acceptsReplies,
     if (redemptionInfo != null) 'redemptionInfo': redemptionInfo,
+    if (redemptionExpiresAt != null)
+      'redemptionExpiresAt': redemptionExpiresAt!.millisecondsSinceEpoch,
     'readCount': readCount,
     'maxReaders': maxReaders,
   };
@@ -642,6 +659,11 @@ class Letter {
     category: LetterCategoryExt.fromKey(j['category'] as String?),
     acceptsReplies: j['acceptsReplies'] as bool? ?? true,
     redemptionInfo: j['redemptionInfo'] as String?,
+    redemptionExpiresAt: j['redemptionExpiresAt'] != null
+        ? DateTime.fromMillisecondsSinceEpoch(
+            j['redemptionExpiresAt'] as int,
+          )
+        : null,
     expiresAt: j['expiresAt'] != null
         ? DateTime.fromMillisecondsSinceEpoch(j['expiresAt'] as int)
         : null,
