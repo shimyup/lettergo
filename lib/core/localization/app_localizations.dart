@@ -14419,6 +14419,41 @@ class AppL10n {
 
   // Build 137: 무료 유저가 "보내기" 탭 탭했을 때 뜨는 Premium 안내 시트 문구.
   // Free = 줍기 전용, Premium = 홍보 편지 발송의 가치 제안.
+  // Build 142: 지도 상단 브랜드 홍보 배너 광고.
+  String get brandPromoBannerAdLabel => _t({
+    'ko': '· 홍보',
+    'en': '· Ad',
+    'ja': '· 広告',
+    'zh': '· 广告',
+    'fr': '· Pub',
+    'de': '· Anzeige',
+    'es': '· Ad',
+    'pt': '· Anúncio',
+    'ru': '· Реклама',
+    'tr': '· Reklam',
+    'ar': '· إعلان',
+    'it': '· Annuncio',
+    'hi': '· विज्ञापन',
+    'th': '· โฆษณา',
+  });
+
+  String get brandPromoBannerCTA => _t({
+    'ko': '자세히',
+    'en': 'View',
+    'ja': '詳細',
+    'zh': '查看',
+    'fr': 'Voir',
+    'de': 'Ansehen',
+    'es': 'Ver',
+    'pt': 'Ver',
+    'ru': 'Подробнее',
+    'tr': 'Detay',
+    'ar': 'عرض',
+    'it': 'Vedi',
+    'hi': 'देखें',
+    'th': 'ดู',
+  });
+
   // Build 141: 지도 상단 ⓘ 도움말 시트 콘텐츠.
   String get mapHelpTitle => _t({
     'ko': 'Letter Go 사용 안내',

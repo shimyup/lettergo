@@ -44,48 +44,11 @@ class _MainScaffoldState extends State<MainScaffold> {
       Future.delayed(const Duration(milliseconds: 400), () {
         if (mounted) LevelUpBanner.showIfLevelUp(context);
       });
-      // 🎁 브랜드 할인 편지 안내 팝업 — 7일 간격으로 재노출 (Free/Premium 전용)
-      Future.delayed(const Duration(milliseconds: 1200), () {
-        if (mounted) _showBrandPromoIfDue(context);
-      });
+      // Build 142: 브랜드 홍보 배너는 이제 WorldMapScreen 내부의 top banner
+      // 로 이동 (modal Dialog 대신). main_scaffold 는 더 이상 popup 을
+      // 열지 않음 — `_showBrandPromoIfDue` 는 하위 호환을 위해 시그니처만
+      // 유지하되 no-op 로 변경.
     });
-  }
-
-  /// 🎟 브랜드 홍보 티켓형 팝업 (Build 107).
-  /// 형식: 테두리 쿠폰 티켓 — "신상 50% 할인 by OOO 브랜드" + 만료 기간 표시.
-  /// 표시 조건:
-  ///   - 유저가 Free 또는 Premium (Brand 는 자기 캠페인이라 제외)
-  ///   - 활성 브랜드 holidayBrand 편지가 존재 (`AppState.featuredBrandPromo`)
-  ///   - 이번 세션에서 아직 한 번도 표시되지 않음
-  /// 닫으면 `markPromoShownThisSession()` 으로 세션 플래그 on — 앱 재시작까지
-  /// 재노출 안 됨. 기간 제한은 편지의 `expiresAt` 을 그대로 사용 (브랜드가
-  /// 컴포즈 시 설정).
-  Future<void> _showBrandPromoIfDue(BuildContext ctx) async {
-    final state = ctx.read<AppState>();
-    if (state.currentUser.isBrand) return;
-    if (state.promoShownThisSession) return;
-
-    final promo = state.featuredBrandPromo;
-    if (promo == null) return;
-
-    if (!ctx.mounted) return;
-    final l = AppL10n.of(state.currentUser.languageCode);
-
-    state.markPromoShownThisSession();
-
-    await showDialog(
-      context: ctx,
-      barrierColor: Colors.black.withValues(alpha: 0.7),
-      builder: (dCtx) => Dialog(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        child: _BrandPromoTicket(
-          promo: promo,
-          l10n: l,
-          onClose: () => Navigator.of(dCtx).pop(),
-        ),
-      ),
-    );
   }
 
   void _openCompose(BuildContext ctx) async {
@@ -464,10 +427,10 @@ class _NavItemWithBadge extends StatelessWidget {
   }
 }
 
-// ── 🎟 브랜드 홍보 티켓형 팝업 ────────────────────────────────────────────────
-/// "신상 50% 할인 by OOO 브랜드" 형식의 쿠폰 티켓 모달.
-/// 좌우 반원 노치로 티켓감 + 점선 구분선 + 만료 기간 표시. 닫기 누르면 세션
-/// 내 재표시 안 됨. 만료는 브랜드의 편지 expiresAt 을 그대로 따른다.
+// Build 142: 이전에 center modal 로 쓰이던 `_BrandPromoTicket` 은 지도 상단
+// banner (`BrandPromoBanner`) 로 대체됐음. 아래 클래스는 현재 참조되지 않음.
+// 완전 삭제 대신 reference 용으로 남겨 티켓 디자인을 필요 시 참고 가능.
+// ignore: unused_element
 class _BrandPromoTicket extends StatelessWidget {
   final Letter promo;
   final AppL10n l10n;
@@ -679,6 +642,7 @@ class _BrandPromoTicket extends StatelessWidget {
   }
 }
 
+// ignore: unused_element
 class _SideNotch extends StatelessWidget {
   const _SideNotch();
   @override

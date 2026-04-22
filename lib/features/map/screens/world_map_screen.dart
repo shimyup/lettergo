@@ -16,6 +16,7 @@ import '../../../core/theme/app_theme.dart';
 import '../../../models/letter.dart';
 import '../../../models/user_profile.dart';
 import '../../../state/app_state.dart';
+import '../../brand/brand_promo_banner.dart';
 
 // 목업 타워 데이터 제거 → AppState.mapUsers (Firestore 실시간) 사용
 
@@ -306,6 +307,28 @@ class _WorldMapScreenState extends State<WorldMapScreen>
               left: 0,
               right: 0,
               child: const _MapHeader(),
+            ),
+            // Build 142: 헤더 바로 아래로 슬라이드-다운 되는 브랜드 홍보
+            // 배너 광고. 앱 시작 직후 1회 노출 (세션 플래그 기반). 탭하면
+            // 지도가 해당 편지 위치로 이동 + 닫힘. 8초 후 자동 접힘.
+            Positioned(
+              top: 56,
+              left: 0,
+              right: 0,
+              child: SafeArea(
+                bottom: false,
+                child: BrandPromoBanner(
+                  onRevealOnMap: (letter) {
+                    _mapController.move(
+                      ll.LatLng(
+                        letter.destinationLocation.latitude,
+                        letter.destinationLocation.longitude,
+                      ),
+                      14.0,
+                    );
+                  },
+                ),
+              ),
             ),
             // ── 근처 도착 배너 (experienced 레벨 이상에서만) ─────────────
             // 브랜드도 줍기 가능해져서 `!isBrand` 조건 제거.
