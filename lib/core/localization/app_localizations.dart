@@ -4620,6 +4620,41 @@ class AppL10n {
     'th': 'โดย',
   });
 
+  // Build 154: 주말 부스트 칩.
+  String get weekendBoostLabel => _t({
+    'ko': '주말 부스트',
+    'en': 'Weekend Boost',
+    'ja': '週末ブースト',
+    'zh': '周末加成',
+    'fr': 'Boost Week-end',
+    'de': 'Wochenend-Boost',
+    'es': 'Boost Finde',
+    'pt': 'Boost de FDS',
+    'ru': 'Буст выходных',
+    'tr': 'Hafta Sonu Boost',
+    'ar': 'دفعة نهاية الأسبوع',
+    'it': 'Boost Weekend',
+    'hi': 'वीकेंड बूस्ट',
+    'th': 'บูสต์สุดสัปดาห์',
+  });
+
+  String get weekendBoostDesc => _t({
+    'ko': '🌈 주말에는 더 많은 브랜드가 편지를 뿌려요. 오늘 더 많이 주워보세요!',
+    'en': '🌈 Brands drop more letters on weekends — pick up extra today!',
+    'ja': '🌈 週末はブランドが多くの手紙を届けます — 今日はたくさん拾おう！',
+    'zh': '🌈 周末品牌投放更多信件 — 今天多拾取一些吧！',
+    'fr': '🌈 Les marques larguent plus de lettres le week-end — ramasse plus aujourd\'hui !',
+    'de': '🌈 Marken lassen am Wochenende mehr Briefe fallen — heute extra sammeln!',
+    'es': '🌈 Las marcas sueltan más cartas los fines de semana — recoge más hoy!',
+    'pt': '🌈 Marcas largam mais cartas ao fim-de-semana — apanha mais hoje!',
+    'ru': '🌈 По выходным бренды разбрасывают больше писем — собирайте сегодня!',
+    'tr': '🌈 Markalar hafta sonu daha fazla mektup bırakıyor — bugün ekstra topla!',
+    'ar': '🌈 العلامات التجارية تسقط المزيد من الرسائل في عطلة نهاية الأسبوع — التقط المزيد اليوم!',
+    'it': '🌈 I brand lasciano più lettere nei weekend — raccogli di più oggi!',
+    'hi': '🌈 वीकेंड पर ब्रांड अधिक पत्र गिराते हैं — आज अधिक उठाएँ!',
+    'th': '🌈 แบรนด์ทิ้งจดหมายมากขึ้นในสุดสัปดาห์ — เก็บเพิ่มวันนี้!',
+  });
+
   // Build 153: 수집첩 월간 목표 진척 라벨 — "이번 달 32 / 50".
   String inboxMonthlyGoalLabel(int collected, int target) {
     switch (languageCode) {

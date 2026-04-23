@@ -3043,8 +3043,88 @@ class _MapHeader extends StatelessWidget {
                 ),
               ),
               const Spacer(),
+              // Build 154: 주말(토·일) 감지 시 🌈 부스트 칩 노출. 유저에게
+              // 매주 돌아오는 이벤트 감각 — 실제 XP 배수는 브랜드 활동량이
+              // 주말 증가한다는 가정. 도움말 버튼 좌측.
+              const _WeekendBoostChip(),
               _MapHelpButton(),
             ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// Build 154: 주말 부스트 칩 — 토·일 하루 종일 표시. 탭하면 snackbar 로
+/// 주말 이벤트 설명. 실제 XP 배수 로직은 미구현 (placeholder UI).
+class _WeekendBoostChip extends StatelessWidget {
+  const _WeekendBoostChip();
+
+  @override
+  Widget build(BuildContext context) {
+    final weekday = DateTime.now().weekday; // 월=1, 일=7
+    final isWeekend = weekday == DateTime.saturday || weekday == DateTime.sunday;
+    if (!isWeekend) return const SizedBox.shrink();
+    final langCode = context.read<AppState>().currentUser.languageCode;
+    final l10n = AppL10n.of(langCode);
+    return Padding(
+      padding: const EdgeInsets.only(right: 4),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          borderRadius: BorderRadius.circular(22),
+          onTap: () {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(
+                  l10n.weekendBoostDesc,
+                  style: const TextStyle(color: Colors.white),
+                ),
+                backgroundColor: const Color(0xFFB87333),
+                behavior: SnackBarBehavior.floating,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                duration: const Duration(seconds: 3),
+              ),
+            );
+          },
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+            decoration: BoxDecoration(
+              gradient: const LinearGradient(
+                colors: [
+                  Color(0xFFFF8A5C),
+                  Color(0xFFFFB86B),
+                ],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+              borderRadius: BorderRadius.circular(22),
+              boxShadow: [
+                BoxShadow(
+                  color: const Color(0xFFFF8A5C).withValues(alpha: 0.35),
+                  blurRadius: 8,
+                ),
+              ],
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Text('🌈', style: TextStyle(fontSize: 13)),
+                const SizedBox(width: 4),
+                Text(
+                  l10n.weekendBoostLabel,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 10,
+                    fontWeight: FontWeight.w800,
+                    letterSpacing: 0.4,
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),
