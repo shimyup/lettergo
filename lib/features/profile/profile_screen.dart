@@ -1345,54 +1345,56 @@ class _ProfileScreenState extends State<ProfileScreen> {
     final score = user.activityScore;
     // 나라 수: 받은 편지 발송 국가
     final countrySet = state.inbox.map((l) => l.senderCountry).toSet();
+    // Build 181: 4-stat 카드 → 한 줄 compact inline. padding 14 제거,
+    // container border 얇게, 이모지·수치 nowrap. 수직 공간 ~50px 회수.
     return Container(
-      margin: const EdgeInsets.fromLTRB(16, 14, 16, 0),
-      padding: const EdgeInsets.symmetric(vertical: 14),
+      margin: const EdgeInsets.fromLTRB(16, 10, 16, 0),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       decoration: BoxDecoration(
-        color: AppColors.bgCard,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.textMuted.withValues(alpha: 0.12)),
+        color: AppColors.bgCard.withValues(alpha: 0.7),
+        borderRadius: BorderRadius.circular(AppRadius.pill),
+        border: Border.all(
+          color: AppColors.textMuted.withValues(alpha: 0.12),
+          width: 0.6,
+        ),
       ),
       child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
-          _stat4Cell('📬', '${score.sentCount}', _fsl.profileSentLetters),
-          _stat4Divider(),
-          _stat4Cell('📥', '${score.receivedCount}', _fsl.profileReceivedLetters),
-          _stat4Divider(),
-          _stat4Cell('🌍', '${countrySet.length}', _fsl.profileVisitedCountries),
-          _stat4Divider(),
-          _stat4Cell('👥', '${user.followerIds.length}', _fsl.profileFollowers),
+          _stat4Inline('📬', '${score.sentCount}', _fsl.profileSentLetters),
+          _stat4Inline('📥', '${score.receivedCount}', _fsl.profileReceivedLetters),
+          _stat4Inline('🌍', '${countrySet.length}', _fsl.profileVisitedCountries),
+          _stat4Inline('👥', '${user.followerIds.length}', _fsl.profileFollowers),
         ],
       ),
     );
   }
 
-  Widget _stat4Cell(String emoji, String value, String label) {
-    return Expanded(
-      child: Column(
-        children: [
-          Text(emoji, style: const TextStyle(fontSize: 18)),
-          const SizedBox(height: 4),
-          Text(
-            value,
-            style: const TextStyle(
-              color: AppColors.textPrimary,
-              fontSize: 17,
-              fontWeight: FontWeight.w800,
-            ),
+  /// Build 181: 4 stats 인라인 셀 — emoji + 값 + tiny label.
+  Widget _stat4Inline(String emoji, String value, String label) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Text(emoji, style: const TextStyle(fontSize: 13)),
+        const SizedBox(width: 4),
+        Text(
+          value,
+          style: AppText.small.copyWith(
+            color: AppColors.textPrimary,
+            fontWeight: FontWeight.w800,
           ),
-          const SizedBox(height: 2),
-          Text(
-            label,
-            style: const TextStyle(color: AppColors.textMuted, fontSize: 10),
+        ),
+        const SizedBox(width: 3),
+        Text(
+          label,
+          style: AppText.caption.copyWith(
+            color: AppColors.textMuted,
+            fontSize: 9,
+            fontWeight: FontWeight.w600,
           ),
-        ],
-      ),
+        ),
+      ],
     );
-  }
-
-  Widget _stat4Divider() {
-    return Container(width: 1, height: 44, color: AppColors.bgSurface);
   }
 
   // ── ② 구독 카드 + 오늘 발송 잔여 카드 (B+C) ─────────────────────────────────
