@@ -3,7 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
-import 'package:share_plus/share_plus.dart';
+// Build 175: ShareCardService 를 쓰면서 share_plus 직접 호출은 필요 없어짐.
+import '../share/share_card_service.dart';
 
 import '../progression/user_progress.dart';
 import '../brand/brand_analytics_card.dart';
@@ -89,35 +90,34 @@ class _ProfileScreenState extends State<ProfileScreen> {
     showEditUsernameDialog(ctx, state);
   }
 
-  /// Build 155: 내 레벨·캐릭터 SNS 공유. share_plus 로 시스템 공유 시트 호출.
-  /// 텍스트 + 앱 링크만 공유 (캔버스 이미지 렌더링은 scope 밖 — 추후 필요 시
-  /// ShareCardService 에 `shareLevelCard` 메서드 추가).
+  /// Build 155: 내 레벨·캐릭터 SNS 공유.
+  /// Build 175: 텍스트-only → **1080×1920 이미지 카드** 로 업그레이드.
+  /// ShareCardService.shareCharacterCard 로 위임. 실패 시 기존 텍스트 fallback.
   Future<void> _shareMyLevel(BuildContext ctx, AppState state) async {
     final l = AppL10n.of(state.currentUser.languageCode);
-    final char = state.currentCharacterEmoji;
-    final companion = state.activeCompanionEmoji;
-    final accessory = state.activeAccessoryEmoji;
-    final trail = [
-      if (accessory != null) accessory,
-      char,
-      if (companion != null) companion,
-    ].join(' ');
-    final text = l.shareMyLevelText(
+    final user = state.currentUser;
+    final letterName =
+        (user.customTowerName?.isNotEmpty == true)
+            ? user.customTowerName!
+            : user.username;
+    final ok = await ShareCardService.shareCharacterCard(
+      characterEmoji: state.currentCharacterEmoji,
+      companionEmoji: state.activeCompanionEmoji,
+      accessoryEmoji: state.activeAccessoryEmoji,
       level: state.currentLevel,
-      trail: trail,
-      collected: state.inbox.length,
+      levelLabel: state.levelLabel,
+      letterName: letterName,
+      daysSinceJoined: state.daysSinceJoined,
+      collectedLetters: state.inbox.length,
+      langCode: user.languageCode,
     );
-    try {
-      await Share.share(text, subject: l.shareMyLevelSubject);
-    } catch (e) {
-      if (ctx.mounted) {
-        ScaffoldMessenger.of(ctx).showSnackBar(
-          SnackBar(
-            content: Text(l.shareFailed),
-            backgroundColor: AppColors.error,
-          ),
-        );
-      }
+    if (!ok && ctx.mounted) {
+      ScaffoldMessenger.of(ctx).showSnackBar(
+        SnackBar(
+          content: Text(l.shareFailed),
+          backgroundColor: AppColors.error,
+        ),
+      );
     }
   }
 
