@@ -347,41 +347,48 @@ class _InboxScreenState extends State<InboxScreen>
                   ),
                   );
                 }),
+                // Build 179: 3-stat card (new/transit/total) 을 한 줄 compact
+                // pill 로 축소. 수직 공간 ~60px 회수.
                 Builder(builder: (ctx) {
                   final newCount = state.inbox.where((l) => l.status == DeliveryStatus.delivered).length;
                   final transitCount = state.inbox.where((l) => l.status == DeliveryStatus.inTransit || l.status == DeliveryStatus.nearYou).length;
-                  final totalCount = state.inbox.length;
-                  return Container(
-                    margin: const EdgeInsets.fromLTRB(16, 8, 16, 0),
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                    decoration: BoxDecoration(
-                      color: AppColors.bgCard,
-                      borderRadius: BorderRadius.circular(14),
-                      border: Border.all(color: const Color(0xFF1F2D44)),
-                    ),
+                  final l10n = AppL10n.of(state.currentUser.languageCode);
+                  if (newCount == 0 && transitCount == 0) {
+                    return const SizedBox(height: 6);
+                  }
+                  return Padding(
+                    padding: const EdgeInsets.fromLTRB(20, 6, 20, 0),
                     child: Row(
+                      mainAxisSize: MainAxisSize.min,
                       children: [
-                        _buildStatChip(
-                          AppL10n.of(state.currentUser.languageCode).inboxStatNew,
-                          newCount.toString(),
-                          AppColors.gold,
-                        ),
-                        const Expanded(child: SizedBox()),
-                        Container(width: 1, height: 28, color: const Color(0xFF1F2D44)),
-                        const Expanded(child: SizedBox()),
-                        _buildStatChip(
-                          AppL10n.of(state.currentUser.languageCode).inboxStatTransit,
-                          transitCount.toString(),
-                          AppColors.teal,
-                        ),
-                        const Expanded(child: SizedBox()),
-                        Container(width: 1, height: 28, color: const Color(0xFF1F2D44)),
-                        const Expanded(child: SizedBox()),
-                        _buildStatChip(
-                          AppL10n.of(state.currentUser.languageCode).inboxStatTotal,
-                          totalCount.toString(),
-                          AppColors.textSecondary,
-                        ),
+                        if (newCount > 0) ...[
+                          Text(
+                            '📩 ${l10n.inboxStatNew} $newCount',
+                            style: AppText.caption.copyWith(
+                              color: AppColors.gold,
+                              fontWeight: FontWeight.w800,
+                            ),
+                          ),
+                          if (transitCount > 0) ...[
+                            const SizedBox(width: 10),
+                            Container(
+                              width: 2, height: 2,
+                              decoration: const BoxDecoration(
+                                color: AppColors.textMuted,
+                                shape: BoxShape.circle,
+                              ),
+                            ),
+                            const SizedBox(width: 10),
+                          ],
+                        ],
+                        if (transitCount > 0)
+                          Text(
+                            '🚀 ${l10n.inboxStatTransit} $transitCount',
+                            style: AppText.caption.copyWith(
+                              color: AppColors.teal,
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
                       ],
                     ),
                   );
@@ -473,51 +480,49 @@ class _InboxScreenState extends State<InboxScreen>
   Widget _buildHeader(BuildContext ctx, AppState state) {
     final l10n = AppL10n.of(state.currentUser.languageCode);
     return Padding(
-      padding: const EdgeInsets.fromLTRB(20, 16, 20, 4),
+      // Build 179: 세로 패딩 축소 (16→12), 내부 구조 단일화.
+      padding: const EdgeInsets.fromLTRB(20, 12, 20, 4),
       child: Column(
         children: [
           Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    ShaderMask(
-                      shaderCallback: (b) => const LinearGradient(
-                        colors: [AppColors.goldLight, AppColors.gold],
-                      ).createShader(b),
-                      child: Text(
-                        // 헌트 피봇(Build 103)에서 네비 라벨이 "수집첩" 으로
-                        // 바뀌었으므로 페이지 헤더도 같은 용어를 써서 혼동을 피한다.
-                        l10n.navCollection,
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 26,
-                          fontWeight: FontWeight.w800,
-                          letterSpacing: -0.5,
+                    // Build 179: title fontSize 26→22, subtitle caps 제거.
+                    // 전체 수집 수가 제목 옆에 "· 30" 형식으로 바로 노출.
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.baseline,
+                      textBaseline: TextBaseline.alphabetic,
+                      children: [
+                        ShaderMask(
+                          shaderCallback: (b) => const LinearGradient(
+                            colors: [AppColors.goldLight, AppColors.gold],
+                          ).createShader(b),
+                          child: Text(
+                            l10n.navCollection,
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 22,
+                              fontWeight: FontWeight.w900,
+                              letterSpacing: -0.4,
+                            ),
+                          ),
                         ),
-                      ),
-                    ),
-                    Text(
-                      l10n.inboxSubtitle,
-                      style: TextStyle(
-                        color: AppColors.textMuted,
-                        fontSize: 8,
-                        fontWeight: FontWeight.w700,
-                        letterSpacing: 1.8,
-                      ),
-                    ),
-                    const SizedBox(height: 1),
-                    Text(
-                      l10n.inboxTotalReceived(state.inbox.length),
-                      style: const TextStyle(
-                        color: AppColors.textMuted,
-                        fontSize: 13,
-                      ),
+                        const SizedBox(width: 8),
+                        Text(
+                          '· ${state.inbox.length}',
+                          style: AppText.small.copyWith(
+                            color: AppColors.textMuted,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                      ],
                     ),
                     const SizedBox(height: 6),
-                    // Build 153: 이번 달 수집 진척도 — 50통 목표 기준 %.
-                    // 파워 유저 long-term goal 부재 문제 해소 (월마다 리셋).
+                    // Build 179: Monthly progress 만 남김 (subtitle caps + total 수 제거 — title 옆으로 흡수).
                     _MonthlyProgressBar(
                       collected: _countThisMonth(state.inbox),
                       target: 50,
