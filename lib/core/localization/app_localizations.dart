@@ -78,23 +78,24 @@ class AppL10n {
   // Build 114: 스플래시 메인 태그라인 — 마케팅 기획서 Build 113 의 1순위
   // 후보 ("걸으면 쿠폰이 보여요" / "Walk close. Pick it up.") 로 교체.
   // 기존 "세상 어딘가의 당신에게" 는 펜팔 포지셔닝 잔재.
-  // Build 170: 포지셔닝 재구성 — "편지로 주고받는 공간 기반 글로벌 쿠폰 플랫폼".
-  // 메인 슬로건은 감성+실용 동시 전달. 짧게 유지 (한 줄).
+  // Build 172: 감성적 톤으로 리라이트. 실용성 (action verb) 보다 "편지가 나를
+  // 기다리는" 감성 앵커를 우선. "주워 쓰세요" 는 onboarding/CTA 에서 계속 등장.
+  // 메인 스플래시에는 한 번 만나는 순간이라 여운 있는 카피.
   String get tagline => _t({
-    'ko': '편지를 주워 바로 쓰세요',
-    'en': 'Pick up letters. Redeem on the spot.',
-    'ja': '手紙を拾って、その場で使う',
-    'zh': '拾起信件，即刻使用',
-    'fr': 'Ramasse une lettre. Utilise-la.',
-    'de': 'Brief aufheben. Sofort einlösen.',
-    'es': 'Recoge la carta. Úsala al instante.',
-    'pt': 'Apanha a carta. Usa na hora.',
-    'ru': 'Подбери письмо. Используй сразу.',
-    'tr': 'Mektubu al. Hemen kullan.',
-    'ar': 'التقط الرسالة. استخدمها الآن.',
-    'it': 'Raccogli la lettera. Usala subito.',
-    'hi': 'पत्र उठाएँ. तुरंत उपयोग करें.',
-    'th': 'เก็บจดหมาย ใช้ได้ทันที',
+    'ko': '오늘, 편지가 당신을 기다려요',
+    'en': 'A letter is waiting for you today',
+    'ja': '今日、手紙があなたを待っています',
+    'zh': '今天，有一封信在等你',
+    'fr': "Aujourd'hui, une lettre vous attend",
+    'de': 'Heute wartet ein Brief auf dich',
+    'es': 'Hoy, una carta te espera',
+    'pt': 'Hoje, uma carta espera por ti',
+    'ru': 'Сегодня вас ждёт письмо',
+    'tr': 'Bugün seni bir mektup bekliyor',
+    'ar': 'اليوم، رسالة تنتظرك',
+    'it': 'Oggi, una lettera ti aspetta',
+    'hi': 'आज आपका एक पत्र इंतज़ार कर रहा है',
+    'th': 'วันนี้ มีจดหมายรอคุณอยู่',
   });
 
   // ── Auth ──────────────────────────────────────────────────────────────────
