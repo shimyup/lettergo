@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../core/localization/app_localizations.dart';
+import '../../core/services/feedback_service.dart';
 import '../../state/app_state.dart';
 import 'user_level.dart';
 
@@ -15,6 +16,9 @@ class LevelUpBanner {
     final newLevel = state.consumeLevelUpFlag();
     if (newLevel == null) return;
     if (newLevel == UserLevel.newbie) return; // newbie 는 축하 생략
+
+    // Build 182: 레벨업 순간 chime + heavy haptic.
+    FeedbackService.onLevelUp();
 
     final l10n = AppL10n.of(state.currentUser.languageCode);
     final welcome = _localizedWelcome(l10n, newLevel);

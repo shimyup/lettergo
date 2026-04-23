@@ -19,6 +19,7 @@ import '../../../state/app_state.dart';
 import '../../../core/services/purchase_service.dart';
 import '../../city_of_month/city_of_month.dart';
 import '../../premium/premium_gate_sheet.dart';
+import '../../premium/brand_only_gate_sheet.dart';
 import '../compose_prompts.dart';
 import '../compose_quick_pick.dart';
 import '../day_theme.dart';
@@ -1223,14 +1224,14 @@ class _ComposeScreenState extends State<ComposeScreen>
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             const SizedBox(height: 14),
-                            // ── STEP 1: 목적지 선택 (brand 는 대량 모드도 가능) ──
-                            if (!_isReply && isBrand) _buildBulkModeToggle(),
-                            if (!_isReply && isBrand)
-                              const SizedBox(height: 10),
-                            if (!_isReply && isBrand && _isBulkMode)
-                              _buildBulkSendPanel(state),
-                            if (!_isReply && isBrand && _isBulkMode)
-                              const SizedBox(height: 10),
+                            // ── STEP 1: 목적지 선택 — Build 182 재배치 ──────
+                            // (1) 🌍 나라 선택 (primary, 카드 상단)
+                            //     └ 🎲 랜덤 / 🎯 정확한 위치 지정(Brand) 은 그
+                            //       "밑"의 보조 옵션 (DestinationCard 내부).
+                            // (2) 🎟/🎁/✉️ 브랜드 카테고리 (Brand 선택 · 나머지 잠금).
+                            // (3) 📦 대량 발송 토글 (Brand 전용) — Express "위".
+                            // (4) 📦 대량 발송 패널 (Brand, _isBulkMode 때).
+                            // (5) ⚡ 프리미엄 특급 배송 토글.
                             if (!_isReply && !_isBulkMode)
                               _buildDestinationCard(state, hasPremium),
                             if (!_isReply && !_isBulkMode)
@@ -1245,10 +1246,18 @@ class _ComposeScreenState extends State<ComposeScreen>
                               _buildBrandCategoryPanel(state),
                             if (!_isReply && !_isBulkMode)
                               const SizedBox(height: 8),
-                            // Brand 전용 — 정확한 좌표 드롭 진입점
-                            if (!_isReply && !_isBulkMode && isBrand)
-                              _buildExactDropButton(state),
-                            if (!_isReply && !_isBulkMode && isBrand)
+                            // 대량 발송 — Brand 전용, Express 토글 바로 위.
+                            if (!_isReply && isBrand) _buildBulkModeToggle(),
+                            if (!_isReply && isBrand)
+                              const SizedBox(height: 8),
+                            if (!_isReply && isBrand && _isBulkMode)
+                              _buildBulkSendPanel(state),
+                            if (!_isReply && isBrand && _isBulkMode)
+                              const SizedBox(height: 8),
+                            // 프리미엄 특급 배송 — 대량 아래 (Free 는 잠금 카드).
+                            if (!_isReply && !_isBulkMode)
+                              _buildExpressToggle(state, hasPremium),
+                            if (!_isReply && !_isBulkMode)
                               const SizedBox(height: 8),
 
                             // ── STEP 2: 편지 본문 (destination 직하) ──────────
@@ -1381,10 +1390,87 @@ class _ComposeScreenState extends State<ComposeScreen>
             ),
           ),
           const SizedBox(height: 10),
-          // ── 토글 버튼 행 ──────────────────────────────────────────
+          // Build 182: 목적지 레이아웃 재배치 — 🌍 나라 선택을 최상단 primary 버튼
+          // 으로 두고, 🎲 랜덤 · 🎯 정확한 위치 지정(Brand) 을 그 **아래** 보조
+          // 옵션으로 배치. 이전엔 [랜덤|나라선택] 50/50 row 였으나 "의도적인
+          // 목적지" 가 기본이고 랜덤은 대안이라는 위계를 UI 가 반영하도록 함.
+          GestureDetector(
+            onTap: _selectCountry,
+            child: AnimatedContainer(
+              duration: const Duration(milliseconds: 200),
+              width: double.infinity,
+              padding: const EdgeInsets.symmetric(
+                vertical: 12,
+                horizontal: 14,
+              ),
+              decoration: BoxDecoration(
+                color: !_isRandom
+                    ? AppColors.gold.withValues(alpha: 0.18)
+                    : AppColors.bgSurface,
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(
+                  color: !_isRandom ? AppColors.gold : Colors.transparent,
+                  width: 1.5,
+                ),
+              ),
+              child: Row(
+                children: [
+                  Text(
+                    !_isRandom ? _selectedFlag : '🌍',
+                    style: TextStyle(fontSize: !_isRandom ? 26 : 22),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          !_isRandom
+                              ? CountryL10n.localizedName(
+                                  _selectedCountry, langCode,
+                                )
+                              : l10n.selectCountry,
+                          style: TextStyle(
+                            color: !_isRandom
+                                ? AppColors.gold
+                                : AppColors.textPrimary,
+                            fontSize: 14,
+                            fontWeight: FontWeight.w800,
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        const SizedBox(height: 2),
+                        Text(
+                          !_isRandom
+                              ? l10n.composeTapToChange
+                              : l10n.composeChooseDirectly,
+                          style: TextStyle(
+                            color: !_isRandom
+                                ? AppColors.gold.withValues(alpha: 0.75)
+                                : AppColors.textMuted,
+                            fontSize: 11,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Icon(
+                    Icons.keyboard_arrow_right_rounded,
+                    color: !_isRandom
+                        ? AppColors.gold
+                        : AppColors.textMuted,
+                    size: 20,
+                  ),
+                ],
+              ),
+            ),
+          ),
+          const SizedBox(height: 8),
+          // ── 보조 옵션: 🎲 랜덤 + 🎯 정확한 위치 지정(Brand 전용) ────────
           Row(
             children: [
-              // 랜덤 버튼
+              // 랜덤 버튼 (secondary)
               Expanded(
                 child: GestureDetector(
                   onTap: () {
@@ -1395,39 +1481,38 @@ class _ComposeScreenState extends State<ComposeScreen>
                     padding: const EdgeInsets.symmetric(vertical: 10),
                     decoration: BoxDecoration(
                       color: _isRandom
-                          ? AppColors.gold.withValues(alpha: 0.18)
+                          ? AppColors.gold.withValues(alpha: 0.14)
                           : AppColors.bgSurface,
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: BorderRadius.circular(10),
                       border: Border.all(
-                        color: _isRandom ? AppColors.gold : Colors.transparent,
-                        width: 1.5,
+                        color: _isRandom
+                            ? AppColors.gold.withValues(alpha: 0.7)
+                            : AppColors.textMuted.withValues(alpha: 0.25),
+                        width: 1.2,
                       ),
                     ),
-                    child: Column(
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Text(
                           '🎲',
-                          style: TextStyle(fontSize: _isRandom ? 22 : 18),
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          l10n.composeRandom,
                           style: TextStyle(
-                            color: _isRandom
-                                ? AppColors.gold
-                                : AppColors.textMuted,
-                            fontSize: 12,
-                            fontWeight: FontWeight.w700,
+                            fontSize: _isRandom ? 17 : 15,
                           ),
                         ),
-                        const SizedBox(height: 2),
-                        Text(
-                          l10n.composeSomewhereInWorld,
-                          style: TextStyle(
-                            color: _isRandom
-                                ? AppColors.gold.withValues(alpha: 0.7)
-                                : AppColors.textMuted.withValues(alpha: 0.6),
-                            fontSize: 10,
+                        const SizedBox(width: 6),
+                        Flexible(
+                          child: Text(
+                            l10n.composeRandom,
+                            style: TextStyle(
+                              color: _isRandom
+                                  ? AppColors.gold
+                                  : AppColors.textSecondary,
+                              fontSize: 12,
+                              fontWeight: FontWeight.w700,
+                            ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
                           ),
                         ),
                       ],
@@ -1435,186 +1520,47 @@ class _ComposeScreenState extends State<ComposeScreen>
                   ),
                 ),
               ),
-              const SizedBox(width: 10),
-              // 나라 선택 버튼
-              Expanded(
-                child: GestureDetector(
-                  onTap: _selectCountry,
-                  child: AnimatedContainer(
-                    duration: const Duration(milliseconds: 200),
-                    padding: const EdgeInsets.symmetric(vertical: 10),
-                    decoration: BoxDecoration(
-                      color: !_isRandom
-                          ? AppColors.gold.withValues(alpha: 0.18)
-                          : AppColors.bgSurface,
-                      borderRadius: BorderRadius.circular(12),
-                      border: Border.all(
-                        color: !_isRandom ? AppColors.gold : Colors.transparent,
-                        width: 1.5,
+              // Brand 전용 — 정확한 위치 지정 버튼을 나라 선택 아래 보조 옵션으로 배치.
+              if (state.currentUser.isBrand) ...[
+                const SizedBox(width: 8),
+                Expanded(
+                  child: GestureDetector(
+                    onTap: _selectExactDrop,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(vertical: 10),
+                      decoration: BoxDecoration(
+                        color: AppColors.gold.withValues(alpha: 0.1),
+                        borderRadius: BorderRadius.circular(10),
+                        border: Border.all(
+                          color: AppColors.gold.withValues(alpha: 0.45),
+                          width: 1.2,
+                        ),
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Text('🎯', style: TextStyle(fontSize: 15)),
+                          const SizedBox(width: 6),
+                          Flexible(
+                            child: Text(
+                              l10n.composeExactDropToggle,
+                              style: const TextStyle(
+                                color: AppColors.gold,
+                                fontSize: 12,
+                                fontWeight: FontWeight.w800,
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                        ],
                       ),
                     ),
-                    child: Column(
-                      children: [
-                        Text(
-                          !_isRandom ? _selectedFlag : '🌍',
-                          style: TextStyle(fontSize: !_isRandom ? 22 : 18),
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          !_isRandom ? CountryL10n.localizedName(_selectedCountry, langCode) : l10n.selectCountry,
-                          style: TextStyle(
-                            color: !_isRandom
-                                ? AppColors.gold
-                                : AppColors.textMuted,
-                            fontSize: 12,
-                            fontWeight: FontWeight.w700,
-                          ),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                        const SizedBox(height: 2),
-                        Text(
-                          !_isRandom ? l10n.composeTapToChange : l10n.composeChooseDirectly,
-                          style: TextStyle(
-                            color: !_isRandom
-                                ? AppColors.gold.withValues(alpha: 0.7)
-                                : AppColors.textMuted.withValues(alpha: 0.6),
-                            fontSize: 10,
-                          ),
-                        ),
-                      ],
-                    ),
                   ),
                 ),
-              ),
+              ],
             ],
           ),
-          const SizedBox(height: 10),
-          if (hasPremium)
-            GestureDetector(
-              onTap: () {
-                final canEnable =
-                    state.currentUser.isBrand || state.canUsePremiumExpress;
-                if (!canEnable && !_isExpressMode) {
-                  _showError(state.premiumExpressLimitExceededMessage);
-                  return;
-                }
-                setState(() => _isExpressMode = !_isExpressMode);
-              },
-              child: Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 12,
-                  vertical: 10,
-                ),
-                decoration: BoxDecoration(
-                  color: _isExpressMode
-                      ? AppColors.gold.withValues(alpha: 0.12)
-                      : AppColors.bgSurface,
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(
-                    color: _isExpressMode
-                        ? AppColors.gold.withValues(alpha: 0.65)
-                        : AppColors.textMuted.withValues(alpha: 0.24),
-                    width: _isExpressMode ? 1.4 : 1.0,
-                  ),
-                ),
-                child: Row(
-                  children: [
-                    Icon(
-                      Icons.bolt_rounded,
-                      size: 18,
-                      color: _isExpressMode
-                          ? AppColors.gold
-                          : AppColors.textMuted,
-                    ),
-                    const SizedBox(width: 8),
-                    Expanded(
-                      child: Text(
-                        state.currentUser.isBrand
-                            ? (_isExpressMode
-                                  ? '⚡ ${l10n.composeBrandExpressOn}'
-                                  : '⚡ ${l10n.composeBrandExpress}')
-                            : (_isExpressMode
-                                  ? '⚡ ${l10n.composePremiumExpressOn(state.todayPremiumExpressSentCount, state.premiumExpressDailyLimit)}'
-                                  : '⚡ ${l10n.composePremiumExpress(state.premiumExpressDailyLimit)}'),
-                        style: TextStyle(
-                          color: _isExpressMode
-                              ? AppColors.gold
-                              : AppColors.textSecondary,
-                          fontSize: 12,
-                          fontWeight: FontWeight.w700,
-                        ),
-                      ),
-                    ),
-                    Switch(
-                      value: _isExpressMode,
-                      onChanged: (v) {
-                        final canEnable =
-                            state.currentUser.isBrand ||
-                            state.canUsePremiumExpress;
-                        if (v && !canEnable) {
-                          _showError(state.premiumExpressLimitExceededMessage);
-                          return;
-                        }
-                        setState(() => _isExpressMode = v);
-                      },
-                      activeColor: AppColors.gold,
-                      materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                    ),
-                  ],
-                ),
-              ),
-            )
-          else
-            GestureDetector(
-              onTap: () => PremiumGateSheet.show(
-                context,
-                featureName: '⚡ ${l10n.composeExpressDelivery}',
-                featureEmoji: '⚡',
-                description: l10n.composeExpressDeliveryDesc,
-              ),
-              child: Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 12,
-                  vertical: 10,
-                ),
-                decoration: BoxDecoration(
-                  color: AppColors.bgSurface,
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(
-                    color: AppColors.textMuted.withValues(alpha: 0.24),
-                  ),
-                ),
-                child: Row(
-                  children: [
-                    const Icon(
-                      Icons.lock_rounded,
-                      size: 16,
-                      color: AppColors.textMuted,
-                    ),
-                    const SizedBox(width: 8),
-                    Expanded(
-                      child: Text(
-                        '⚡ ${l10n.composeExpressLocked}',
-                        style: TextStyle(
-                          color: AppColors.textMuted,
-                          fontSize: 12,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ),
-                    Text(
-                      '👑 PRO',
-                      style: TextStyle(
-                        color: AppColors.gold,
-                        fontSize: 10,
-                        fontWeight: FontWeight.w800,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
         ],
       ),
     );
@@ -1969,6 +1915,133 @@ class _ComposeScreenState extends State<ComposeScreen>
     );
   }
 
+  /// Build 182: 이전까진 `_buildDestinationCard` 내부에 박혀 있던 ⚡ 특송 토글을
+  /// 밖으로 분리. main build() 에서 대량발송 섹션 바로 아래(프리미엄 특급배송
+  /// "위"는 bulk 토글이, 그 아래가 이 express) 에 배치되도록 한다.
+  Widget _buildExpressToggle(AppState state, bool hasPremium) {
+    final l10n = AppL10n.of(state.currentUser.languageCode);
+    if (hasPremium) {
+      return GestureDetector(
+        onTap: () {
+          final canEnable =
+              state.currentUser.isBrand || state.canUsePremiumExpress;
+          if (!canEnable && !_isExpressMode) {
+            _showError(state.premiumExpressLimitExceededMessage);
+            return;
+          }
+          setState(() => _isExpressMode = !_isExpressMode);
+        },
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+          decoration: BoxDecoration(
+            color: _isExpressMode
+                ? AppColors.gold.withValues(alpha: 0.12)
+                : AppColors.bgSurface,
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(
+              color: _isExpressMode
+                  ? AppColors.gold.withValues(alpha: 0.65)
+                  : AppColors.textMuted.withValues(alpha: 0.24),
+              width: _isExpressMode ? 1.4 : 1.0,
+            ),
+          ),
+          child: Row(
+            children: [
+              Icon(
+                Icons.bolt_rounded,
+                size: 18,
+                color: _isExpressMode ? AppColors.gold : AppColors.textMuted,
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  state.currentUser.isBrand
+                      ? (_isExpressMode
+                            ? '⚡ ${l10n.composeBrandExpressOn}'
+                            : '⚡ ${l10n.composeBrandExpress}')
+                      : (_isExpressMode
+                            ? '⚡ ${l10n.composePremiumExpressOn(state.todayPremiumExpressSentCount, state.premiumExpressDailyLimit)}'
+                            : '⚡ ${l10n.composePremiumExpress(state.premiumExpressDailyLimit)}'),
+                  style: TextStyle(
+                    color: _isExpressMode
+                        ? AppColors.gold
+                        : AppColors.textSecondary,
+                    fontSize: 12,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ),
+              Switch(
+                value: _isExpressMode,
+                onChanged: (v) {
+                  final canEnable = state.currentUser.isBrand ||
+                      state.canUsePremiumExpress;
+                  if (v && !canEnable) {
+                    _showError(state.premiumExpressLimitExceededMessage);
+                    return;
+                  }
+                  setState(() => _isExpressMode = v);
+                },
+                activeColor: AppColors.gold,
+                materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+    return GestureDetector(
+      onTap: () => PremiumGateSheet.show(
+        context,
+        featureName: '⚡ ${l10n.composeExpressDelivery}',
+        featureEmoji: '⚡',
+        description: l10n.composeExpressDeliveryDesc,
+      ),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+        decoration: BoxDecoration(
+          color: AppColors.bgSurface,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(
+            color: AppColors.textMuted.withValues(alpha: 0.24),
+          ),
+        ),
+        child: Row(
+          children: [
+            const Icon(
+              Icons.lock_rounded,
+              size: 16,
+              color: AppColors.textMuted,
+            ),
+            const SizedBox(width: 8),
+            Expanded(
+              child: Text(
+                '⚡ ${l10n.composeExpressLocked}',
+                style: const TextStyle(
+                  color: AppColors.textMuted,
+                  fontSize: 12,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ),
+            const Text(
+              '👑 PRO',
+              style: TextStyle(
+                color: AppColors.gold,
+                fontSize: 10,
+                fontWeight: FontWeight.w800,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // Build 182: ExactDrop 버튼은 이제 목적지 카드 내부 보조 옵션으로 이동.
+  // 아래 standalone 은 향후 다른 진입점 (브랜드 캠페인 대시보드 등) 재사용을
+  // 대비해 보존. 현재 compose 메인 빌드에서는 호출하지 않음.
+  // ignore: unused_element
   Widget _buildExactDropButton(AppState state) {
     final l = AppL10n.of(state.currentUser.languageCode);
     return InkWell(
@@ -2818,9 +2891,10 @@ class _ComposeScreenState extends State<ComposeScreen>
     }
   }
 
-  /// Build 128: Free/Premium 이 🎟 할인권 / 🎁 교환권 칩을 탭했을 때
-  /// "이건 Brand 가 뿌리는 편지예요" 를 알리는 업그레이드 안내 시트.
-  /// `PremiumGateSheet` 를 재사용 — CTA 는 Premium 화면으로 이동.
+  /// Build 128: Free/Premium 이 🎟 할인권 / 🎁 교환권 칩을 탭했을 때 안내.
+  /// Build 182: Premium 유저에게 PremiumGateSheet (Premium 업그레이드 유도) 가
+  /// 뜨던 오류 수정 — Premium 은 이미 Premium 이므로 Brand 전용 안내 시트
+  /// (`BrandOnlyGateSheet`) 를 띄운다. Free 는 기존 Premium 게이트 유지.
   void _showBrandOnlyCategorySheet(
     BuildContext ctx,
     AppL10n l10n,
@@ -2830,12 +2904,25 @@ class _ComposeScreenState extends State<ComposeScreen>
         ? l10n.composeBrandCategoryCoupon
         : l10n.composeBrandCategoryVoucher;
     final emoji = c == LetterCategory.coupon ? '🎟' : '🎁';
-    PremiumGateSheet.show(
-      ctx,
-      featureName: name,
-      featureEmoji: emoji,
-      description: l10n.categoryHelpBrandOnlyNote,
-    );
+    final state = ctx.read<AppState>();
+    final purchase = ctx.read<PurchaseService>();
+    final viewerIsPremium = state.currentUser.isPremium || purchase.isPremium;
+    if (viewerIsPremium) {
+      BrandOnlyGateSheet.show(
+        ctx,
+        featureName: name,
+        featureEmoji: emoji,
+        description: l10n.categoryHelpBrandOnlyNote,
+        viewerIsPremium: true,
+      );
+    } else {
+      PremiumGateSheet.show(
+        ctx,
+        featureName: name,
+        featureEmoji: emoji,
+        description: l10n.categoryHelpBrandOnlyNote,
+      );
+    }
   }
 
   /// Build 127: 편지 종류 사용법 바텀시트.
@@ -3483,8 +3570,11 @@ class _ComposeScreenState extends State<ComposeScreen>
     );
   }
 
-  // ── 브랜드 특송 토글 ─────────────────────────────────────────────────────
-  Widget _buildExpressToggle() {
+  // ── 브랜드 특송 토글 (legacy, 미사용) ─────────────────────────────────────
+  // Build 182: 새 `_buildExpressToggle(state, hasPremium)` 로 대체. 기존
+  // zero-arg 구현은 dead code. 외부 reference 가 발견되지 않아 rename 으로 충돌만 해소.
+  // ignore: unused_element
+  Widget _buildExpressToggleLegacy() {
     final l10n = AppL10n.of(context.read<AppState>().currentUser.languageCode);
     return GestureDetector(
       onTap: () => setState(() => _isExpressMode = !_isExpressMode),

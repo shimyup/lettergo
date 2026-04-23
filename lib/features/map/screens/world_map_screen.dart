@@ -460,13 +460,22 @@ class _WorldMapScreenState extends State<WorldMapScreen>
                     behavior: HitTestBehavior.opaque,
                     onTap: () {
                       HapticFeedback.lightImpact();
-                      _mapController.move(
-                        ll.LatLng(
-                          hint.letter.destinationLocation.latitude,
-                          hint.letter.destinationLocation.longitude,
-                        ),
-                        14.0,
+                      // 필터가 "주변만" 상태면 대상 편지가 숨겨져 두 번째 이후
+                      // 탭부터 위치가 안 보임 — 전체보기로 강제 전환.
+                      final target = ll.LatLng(
+                        hint.letter.destinationLocation.latitude,
+                        hint.letter.destinationLocation.longitude,
                       );
+                      setState(() {
+                        _showNearbyOnly = false;
+                      });
+                      // 이미 같은 위치/줌 이면 move 가 시각적 변화를 일으키지
+                      // 못할 수 있음 — 줌을 살짝 흔들어 카메라 재이동 강제.
+                      final curZoom = _mapController.camera.zoom;
+                      if ((curZoom - 14.0).abs() < 0.01) {
+                        _mapController.move(target, 13.6);
+                      }
+                      _mapController.move(target, 14.0);
                     },
                     child: Container(
                       padding: const EdgeInsets.symmetric(

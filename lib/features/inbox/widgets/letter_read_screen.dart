@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'dart:math' as math;
@@ -55,6 +56,15 @@ class _LetterReadScreenState extends State<LetterReadScreen>
   @override
   void initState() {
     super.initState();
+    // Build 182: content 가 비어 있으면 Firestore 에서 재조회 (백그라운드).
+    // 성공 시 AppState notifyListeners → Consumer 가 본문을 다시 렌더한다.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      final state = context.read<AppState>();
+      if (widget.letter.content.trim().isEmpty) {
+        unawaited(state.refetchLetterContentIfEmpty(widget.letter.id));
+      }
+    });
     // 3단계 개봉 시퀀스 — 총 1500ms
     //   Phase 1 (0 → 0.3, 400ms) : 봉투가 살짝 나타남 + light haptic
     //   Phase 2 (0.3 → 0.6, 350ms): 봉인 터짐 느낌 + medium haptic
@@ -1265,12 +1275,25 @@ class _LetterReadScreenState extends State<LetterReadScreen>
   }
 
   Widget _buildLetterContent(Letter letter) {
-    final l10n = AppL10n.of(context.read<AppState>().currentUser.languageCode);
+    // Build 182: content 가 비어 있을 가능성 대비 — inbox 에서 최신 letter 를
+    // watch. refetchLetterContentIfEmpty 후 AppState 가 notifyListeners 하면
+    // 여기가 재빌드되면서 본문이 채워진다.
+    final state = context.watch<AppState>();
+    final fresh = state.inbox.firstWhere(
+      (l) => l.id == letter.id,
+      orElse: () => letter,
+    );
+    letter = fresh;
+    final l10n = AppL10n.of(state.currentUser.languageCode);
     final paper = LetterStyles.paper(letter.paperStyle);
     final font = LetterStyles.font(letter.fontStyle);
     final fromLang = LanguageConfig.getLanguageCode(letter.senderCountry);
     final toLang = widget.userLanguageCode;
     final canTranslate = fromLang != toLang;
+    final body = _isTranslated && _translatedText != null
+        ? _translatedText!
+        : letter.content;
+    final hasBody = body.trim().isNotEmpty;
     return ClipRRect(
       borderRadius: BorderRadius.circular(20),
       child: CustomPaint(
@@ -1377,12 +1400,36 @@ class _LetterReadScreenState extends State<LetterReadScreen>
               ],
               const SizedBox(height: 20),
               // 편지 내용 (원문 또는 번역)
-              Text(
-                _isTranslated && _translatedText != null
-                    ? _translatedText!
-                    : letter.content,
-                style: font.textStyle.copyWith(color: paper.inkColor),
-              ),
+              if (hasBody)
+                Text(
+                  body,
+                  style: font.textStyle.copyWith(color: paper.inkColor),
+                )
+              else
+                // Build 182: content 누락 방어 — 빈 본문일 때 명시적 상태 표시.
+                // 쿠폰/교환권 편지는 redemptionInfo/image 가 본문 대신 핵심이므로
+                // 아래 섹션에서 이어 렌더된다.
+                Row(
+                  children: [
+                    const SizedBox(width: 2),
+                    Icon(
+                      Icons.sync_rounded,
+                      size: 15,
+                      color: paper.inkColor.withValues(alpha: 0.45),
+                    ),
+                    const SizedBox(width: 8),
+                    Flexible(
+                      child: Text(
+                        l10n.letterReadBodyUnavailable,
+                        style: font.textStyle.copyWith(
+                          color: paper.inkColor.withValues(alpha: 0.6),
+                          fontStyle: FontStyle.italic,
+                          fontSize: 13,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               if (canTranslate && _isTranslated && _translatedText != null)
                 Padding(
                   padding: const EdgeInsets.only(top: 8),

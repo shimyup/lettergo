@@ -6446,6 +6446,98 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
     }
   }
 
+  /// Build 182: 픽업한 편지의 `content` 가 어떤 이유로든 비어 있을 때
+  /// Firestore 에서 원본 문서를 재조회해 본문/이미지/쿠폰코드를 채운다.
+  /// - 이전 버전에서 쓰인 후 Firestore 에 도착한 편지 (sync 누락)
+  /// - 로컬 prefs 만 남은 잔존 문서
+  /// - 네트워크 타이밍 문제로 `content` 가 sync 전에 저장된 경우
+  ///
+  /// Letter 필드는 final 이라 inbox 항목을 새 인스턴스로 **교체** 해야 한다.
+  /// status·readAt 등 이미 mutate 된 상태는 유지.
+  /// 반환값 true = 업데이트 발생 (UI 는 notifyListeners 로 리빌드됨).
+  Future<bool> refetchLetterContentIfEmpty(String letterId) async {
+    if (!FirebaseConfig.kFirebaseEnabled) return false;
+    final idx = _inbox.indexWhere((l) => l.id == letterId);
+    if (idx == -1) return false;
+    final letter = _inbox[idx];
+    final needsContent = letter.content.trim().isEmpty;
+    final needsRedemption = (letter.category != LetterCategory.general) &&
+        (letter.redemptionInfo == null || letter.redemptionInfo!.isEmpty);
+    final needsImage = (letter.category == LetterCategory.voucher) &&
+        (letter.imageUrl == null || letter.imageUrl!.isEmpty);
+    if (!needsContent && !needsRedemption && !needsImage) return false;
+
+    try {
+      final doc = await FirestoreService.getDocument('letters/$letterId');
+      if (doc == null) return false;
+      final map = FirestoreService.fromFirestoreDoc(doc);
+      final serverContent = (map['content'] as String?)?.trim() ?? '';
+      final serverRed = (map['redemptionInfo'] as String?)?.trim() ?? '';
+      final serverImg = (map['imageUrl'] as String?)?.trim() ?? '';
+
+      final fillContent = needsContent && serverContent.isNotEmpty;
+      final fillRed = needsRedemption && serverRed.isNotEmpty;
+      final fillImg = needsImage && serverImg.isNotEmpty;
+      if (!fillContent && !fillRed && !fillImg) return false;
+
+      // Letter 필드 대부분 final — clone 후 신규 인스턴스로 교체. mutate 된
+      // inbox 전용 status/readAt 은 유지.
+      final updated = Letter(
+        id: letter.id,
+        senderId: letter.senderId,
+        senderName: letter.senderName,
+        senderCountry: letter.senderCountry,
+        senderCountryFlag: letter.senderCountryFlag,
+        content: fillContent ? serverContent : letter.content,
+        originLocation: letter.originLocation,
+        destinationLocation: letter.destinationLocation,
+        destinationCountry: letter.destinationCountry,
+        destinationCountryFlag: letter.destinationCountryFlag,
+        destinationCity: letter.destinationCity,
+        destinationDisplayAddress: letter.destinationDisplayAddress,
+        segments: letter.segments,
+        currentSegmentIndex: letter.currentSegmentIndex,
+        status: letter.status,
+        sentAt: letter.sentAt,
+        arrivedAt: letter.arrivedAt,
+        readAt: letter.readAt,
+        arrivalTime: letter.arrivalTime,
+        isAnonymous: letter.isAnonymous,
+        socialLink: letter.socialLink,
+        estimatedTotalMinutes: letter.estimatedTotalMinutes,
+        isReadByRecipient: letter.isReadByRecipient,
+        letterType: letter.letterType,
+        reportCount: letter.reportCount,
+        reportedBy: Set<String>.from(letter.reportedBy),
+        readCount: letter.readCount,
+        maxReaders: letter.maxReaders,
+        likeCount: letter.likeCount,
+        ratingTotal: letter.ratingTotal,
+        ratingCount: letter.ratingCount,
+        paperStyle: letter.paperStyle,
+        fontStyle: letter.fontStyle,
+        deliveryEmoji: letter.deliveryEmoji,
+        hasReplied: letter.hasReplied,
+        imageUrl: fillImg ? serverImg : letter.imageUrl,
+        senderIsBrand: letter.senderIsBrand,
+        senderTier: letter.senderTier,
+        brandUniquePerUser: letter.brandUniquePerUser,
+        expiresAt: letter.expiresAt,
+        category: letter.category,
+        acceptsReplies: letter.acceptsReplies,
+        redemptionInfo: fillRed ? serverRed : letter.redemptionInfo,
+        redemptionExpiresAt: letter.redemptionExpiresAt,
+      );
+      _inbox[idx] = updated;
+      notifyListeners();
+      _saveToPrefs();
+      return true;
+    } catch (e) {
+      if (kDebugMode) debugPrint('[Refetch] letter content 실패: $e');
+      return false;
+    }
+  }
+
   // ── 잠금 해제 소비 ────────────────────────────────────────────────────────
   void consumeLetterUnlock() {
     _sentSinceLastUnlock = 0;

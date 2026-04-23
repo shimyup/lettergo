@@ -9,6 +9,7 @@ import 'core/theme/time_theme.dart';
 import 'core/data/country_cities.dart';
 import 'core/localization/language_config.dart';
 import 'core/services/auth_service.dart';
+import 'core/services/feedback_service.dart';
 import 'core/services/geocoding_service.dart';
 import 'core/services/notification_service.dart';
 import 'core/services/purchase_service.dart';
@@ -62,6 +63,8 @@ void main() async {
     NotificationService.loadPushMode(),
     CountryCities.init(),
     GeocodingService.instance.initialize(),
+    // Build 182: 사운드 효과 프리로드. asset 경로 에러는 silent fail.
+    FeedbackService.init(),
   ]);
   final results = await Future.wait<dynamic>([
     AuthService.isLoggedIn(),

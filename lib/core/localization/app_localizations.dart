@@ -13936,6 +13936,24 @@ class AppL10n {
     'th': 'ถึงคุณ',
   });
 
+  // Build 182: 본문이 네트워크 이슈로 비어 있을 때 fallback 라벨.
+  String get letterReadBodyUnavailable => _t({
+    'ko': '본문을 불러오는 중이에요…',
+    'en': 'Loading message…',
+    'ja': '本文を読み込み中…',
+    'zh': '正在加载内容…',
+    'fr': 'Chargement du message…',
+    'de': 'Nachricht wird geladen…',
+    'es': 'Cargando mensaje…',
+    'pt': 'A carregar mensagem…',
+    'ru': 'Загрузка сообщения…',
+    'tr': 'Mesaj yükleniyor…',
+    'ar': 'جارٍ تحميل الرسالة…',
+    'it': 'Caricamento messaggio…',
+    'hi': 'संदेश लोड हो रहा है…',
+    'th': 'กำลังโหลดข้อความ…',
+  });
+
   String letterReadTranslated(String lang) => _t({
     'ko': '🔤 번역됨 ($lang)',
     'en': '🔤 Translated ($lang)',
@@ -14470,6 +14488,58 @@ class AppL10n {
     'it': '🎟 Coupon e 🎁 Buoni solo da account Brand. Gli utenti Free/Premium li raccolgono dalla mappa.',
     'hi': '🎟 कूपन और 🎁 वाउचर केवल Brand खाते भेज सकते हैं। Free/Premium उपयोगकर्ता नक्शे पर उठाते हैं।',
     'th': '🎟 คูปองและ 🎁 บัตรกำนัลส่งได้เฉพาะบัญชี Brand. ผู้ใช้ฟรี/Premium เก็บจากแผนที่',
+  });
+
+  // Build 182: Brand 전용 게이트 시트 전용 문구 — Premium 과 구분하는 위계.
+  String get brandOnlyBadge => _t({
+    'ko': 'Brand 전용',
+    'en': 'Brand only',
+    'ja': 'Brand 限定',
+    'zh': 'Brand 专属',
+    'fr': 'Brand uniquement',
+    'de': 'Nur Brand',
+    'es': 'Solo Brand',
+    'pt': 'Só Brand',
+    'ru': 'Только Brand',
+    'tr': 'Sadece Brand',
+    'ar': 'Brand فقط',
+    'it': 'Solo Brand',
+    'hi': 'केवल Brand',
+    'th': 'Brand เท่านั้น',
+  });
+
+  String get brandOnlyPremiumNote => _t({
+    'ko': 'Premium 이 이미 활성화되어 있어요. Brand 는 업그레이드가 아니라 사업자 광고주 계정으로 별도 등록이 필요한 트랙이에요.',
+    'en': 'Premium is already active. Brand is a separate advertiser track — not an upgrade, it needs a business registration.',
+    'ja': 'Premium は既に有効です。Brand はアップグレードではなく、別途事業者登録が必要な広告主アカウントです。',
+    'zh': 'Premium 已激活。Brand 不是升级路径，而是需另行注册的商业广告主账号。',
+    'fr': 'Premium est déjà actif. Brand n\'est pas une mise à niveau mais un compte annonceur distinct nécessitant une vérification professionnelle.',
+    'de': 'Premium ist bereits aktiv. Brand ist kein Upgrade, sondern ein separates Werbekonto mit Unternehmensprüfung.',
+    'es': 'Premium ya está activo. Brand no es una mejora, es una cuenta de anunciante independiente con verificación empresarial.',
+    'pt': 'Premium já está ativo. Brand não é um upgrade, é uma conta de anunciante separada com verificação empresarial.',
+    'ru': 'Premium уже активен. Brand — это отдельный рекламодательский аккаунт, а не апгрейд.',
+    'tr': 'Premium zaten aktif. Brand bir yükseltme değil, ayrı bir reklamveren hesabıdır ve iş doğrulaması gerektirir.',
+    'ar': 'Premium مفعّل مسبقًا. Brand ليس ترقية بل حساب معلن منفصل يتطلّب التحقق التجاري.',
+    'it': 'Premium è già attivo. Brand non è un upgrade: è un account inserzionista separato con verifica aziendale.',
+    'hi': 'Premium पहले से सक्रिय है। Brand अपग्रेड नहीं है, अलग विज्ञापनदाता खाता है जिसे व्यावसायिक सत्यापन चाहिए।',
+    'th': 'Premium เปิดใช้งานอยู่แล้ว Brand ไม่ใช่การอัปเกรดแต่เป็นบัญชีผู้ลงโฆษณาแยกที่ต้องยืนยันธุรกิจ',
+  });
+
+  String get brandOnlyAcknowledge => _t({
+    'ko': '알겠어요',
+    'en': 'Got it',
+    'ja': 'わかりました',
+    'zh': '我知道了',
+    'fr': 'Compris',
+    'de': 'Verstanden',
+    'es': 'Entendido',
+    'pt': 'Entendido',
+    'ru': 'Понятно',
+    'tr': 'Anladım',
+    'ar': 'فهمت',
+    'it': 'Capito',
+    'hi': 'समझ गया',
+    'th': 'เข้าใจแล้ว',
   });
 
   // 카테고리별 redemption 필드 설명 + 힌트 (할인권 코드 vs 교환권 이미지).

@@ -6,6 +6,7 @@ import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../core/config/app_keys.dart';
 import '../../core/theme/app_theme.dart';
+import '../../core/services/feedback_service.dart';
 import '../../core/services/purchase_service.dart';
 import '../../core/localization/app_localizations.dart';
 import 'premium_collections.dart';
@@ -286,6 +287,9 @@ class PremiumScreen extends StatelessWidget {
                             if (!ok || !context.mounted) return;
                           }
                           final bought = await purchase.buyPremium();
+                          if (bought) {
+                            FeedbackService.onPurchaseSuccess();
+                          }
                           if (!context.mounted) return;
                           _showPurchaseResultToast(
                             context,
@@ -352,6 +356,9 @@ class PremiumScreen extends StatelessWidget {
                               if (!ok || !context.mounted) return;
                             }
                             final bought = await purchase.buyBrand();
+                            if (bought) {
+                              FeedbackService.onPurchaseSuccess();
+                            }
                             if (!context.mounted) return;
                             _showPurchaseResultToast(
                               context,
