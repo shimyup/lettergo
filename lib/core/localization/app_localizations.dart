@@ -12072,6 +12072,24 @@ class AppL10n {
     'th': 'หอคอย',
   });
 
+  /// Build 164: 지도에서 유저 GPS 기준 가장 가까운 편지 마커 상단 라벨.
+  String get mapNearestLetterLabel => _t({
+    'ko': '가장 가까운',
+    'en': 'Nearest',
+    'ja': '最も近い',
+    'zh': '最近',
+    'fr': 'Plus proche',
+    'de': 'Am nächsten',
+    'es': 'Más cercana',
+    'pt': 'Mais próxima',
+    'ru': 'Ближайшее',
+    'tr': 'En yakın',
+    'ar': 'الأقرب',
+    'it': 'Più vicina',
+    'hi': 'सबसे नज़दीक',
+    'th': 'ใกล้ที่สุด',
+  });
+
   /// Build 163: Free/Premium 전용 탭 라벨 — 타워 대신 "레터" 캐릭터 성장
   /// 경험. Brand 는 `navTower` 유지.
   String get navLetter => _t({

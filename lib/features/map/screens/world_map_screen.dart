@@ -783,23 +783,47 @@ class _WorldMapScreenState extends State<WorldMapScreen>
     final viewerIsPremiumOrBrand =
         state.currentUser.isPremium || state.currentUser.isBrand;
 
+    // Build 164: 유저 GPS 위치 기준 "가장 가까운 편지" 식별.
+    // delivered/nearYou 상태의 편지 중 거리 최소 1개만 highlight.
+    // 픽업 가능 반경 안·밖 무관 — 지도에서 "어디가 가장 가까운지" 명시.
+    final myPos = LatLng(
+      state.currentUser.latitude,
+      state.currentUser.longitude,
+    );
+    String? nearestLetterId;
+    double nearestDist = double.infinity;
+    for (final l in letters) {
+      if (l.status != DeliveryStatus.delivered &&
+          l.status != DeliveryStatus.nearYou) continue;
+      if (l.isReadByRecipient) continue;
+      final d = l.destinationLocation.distanceTo(myPos);
+      if (d < nearestDist) {
+        nearestDist = d;
+        nearestLetterId = l.id;
+      }
+    }
+
     for (final letter in letters) {
       // 도착 후 미열람 편지: 도착지에 '📮 대기중' 마커로 표시
       if (letter.status == DeliveryStatus.delivered &&
           !letter.isReadByRecipient) {
         final destLoc = letter.destinationLocation;
         final isBrandLetter = letter.senderTier == LetterSenderTier.brand;
+        final isNearest = letter.id == nearestLetterId;
         markers.add(
           Marker(
             point: ll.LatLng(destLoc.latitude, destLoc.longitude),
-            width: 40,
-            height: isBrandLetter && viewerIsPremiumOrBrand ? 62 : 48,
+            width: isNearest ? 80 : 40,
+            height: (isBrandLetter && viewerIsPremiumOrBrand ? 62 : 48) +
+                (isNearest ? 22 : 0),
             child: GestureDetector(
               onTap: () => _onLetterTap(context, letter, state, l10n, langCode),
               child: _UnreadDeliveredMarker(
                 letter: letter,
                 pulseController: _pulseController,
                 viewerIsPremiumOrBrand: viewerIsPremiumOrBrand,
+                isNearest: isNearest,
+                nearestLabel: l10n.mapNearestLetterLabel,
               ),
             ),
           ),
@@ -811,17 +835,21 @@ class _WorldMapScreenState extends State<WorldMapScreen>
       if (letter.status == DeliveryStatus.nearYou) {
         final destLoc = letter.destinationLocation;
         final isBrandLetter = letter.senderTier == LetterSenderTier.brand;
+        final isNearest = letter.id == nearestLetterId;
         markers.add(
           Marker(
             point: ll.LatLng(destLoc.latitude, destLoc.longitude),
-            width: 40,
-            height: isBrandLetter && viewerIsPremiumOrBrand ? 62 : 48,
+            width: isNearest ? 80 : 40,
+            height: (isBrandLetter && viewerIsPremiumOrBrand ? 62 : 48) +
+                (isNearest ? 22 : 0),
             child: GestureDetector(
               onTap: () => _onLetterTap(context, letter, state, l10n, langCode),
               child: _UnreadDeliveredMarker(
                 letter: letter,
                 pulseController: _pulseController,
                 viewerIsPremiumOrBrand: viewerIsPremiumOrBrand,
+                isNearest: isNearest,
+                nearestLabel: l10n.mapNearestLetterLabel,
               ),
             ),
           ),
@@ -2752,10 +2780,17 @@ class _UnreadDeliveredMarker extends StatelessWidget {
   /// false → 브랜드 편지: 💌 (프리미엄과 동일하게 표시)
   final bool viewerIsPremiumOrBrand;
 
+  /// Build 164: 유저 GPS 기준 가장 가까운 편지 여부.
+  /// true 면 상단에 "가장 가까운" 라벨 + gold halo 추가.
+  final bool isNearest;
+  final String nearestLabel;
+
   const _UnreadDeliveredMarker({
     required this.letter,
     required this.pulseController,
     this.viewerIsPremiumOrBrand = false,
+    this.isNearest = false,
+    this.nearestLabel = '',
   });
 
   @override
@@ -2814,9 +2849,53 @@ class _UnreadDeliveredMarker extends StatelessWidget {
         return Column(
           mainAxisSize: MainAxisSize.min,
           children: [
+            // Build 164: "가장 가까운" 라벨 — 최단 편지에만 마커 상단 표시.
+            if (isNearest) ...[
+              Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 6,
+                  vertical: 2,
+                ),
+                decoration: BoxDecoration(
+                  color: AppColors.gold,
+                  borderRadius: BorderRadius.circular(AppRadius.chip),
+                  boxShadow: [
+                    BoxShadow(
+                      color: AppColors.gold.withValues(alpha: 0.5),
+                      blurRadius: 8,
+                    ),
+                  ],
+                ),
+                child: Text(
+                  '📍 $nearestLabel',
+                  style: AppText.caption.copyWith(
+                    color: AppColors.bgDeep,
+                    fontWeight: FontWeight.w900,
+                    fontSize: 9.5,
+                    letterSpacing: 0.3,
+                  ),
+                ),
+              ),
+              const SizedBox(height: 2),
+            ],
             Stack(
               alignment: Alignment.center,
               children: [
+                // Build 164: 최단 편지 전용 추가 halo (width 44+pulse, gold)
+                if (isNearest)
+                  Container(
+                    width: 44 + pulse * 8,
+                    height: 44 + pulse * 8,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      border: Border.all(
+                        color: AppColors.gold.withValues(
+                          alpha: 0.3 + pulse * 0.35,
+                        ),
+                        width: 2,
+                      ),
+                    ),
+                  ),
                 // 맥동 링
                 Container(
                   width: 32 + pulse * 6,
