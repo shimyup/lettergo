@@ -2302,39 +2302,45 @@ class _MapQuickActionButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final timeColors = AppTimeColors.of(context);
-    return Tooltip(
-      message: tooltip,
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          onTap: onTap,
-          borderRadius: BorderRadius.circular(14),
-          child: Ink(
-            width: 46,
-            height: 46,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(14),
-              gradient: LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                colors: [
-                  AppColors.bgCard.withValues(alpha: 0.96),
-                  timeColors.bgSurface.withValues(alpha: 0.9),
+    // Build 161: Tooltip 은 이미 mouse-hover 라벨 제공, Semantics 는 터치
+    // 접근성 (스크린리더) 전용. 동일 텍스트 재사용.
+    return Semantics(
+      label: tooltip,
+      button: true,
+      child: Tooltip(
+        message: tooltip,
+        child: Material(
+          color: Colors.transparent,
+          child: InkWell(
+            onTap: onTap,
+            borderRadius: BorderRadius.circular(14),
+            child: Ink(
+              width: 46,
+              height: 46,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(14),
+                gradient: LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [
+                    AppColors.bgCard.withValues(alpha: 0.96),
+                    timeColors.bgSurface.withValues(alpha: 0.9),
+                  ],
+                ),
+                border: Border.all(
+                  color: timeColors.accent.withValues(alpha: 0.42),
+                  width: 1.2,
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.35),
+                    blurRadius: 10,
+                    offset: const Offset(0, 3),
+                  ),
                 ],
               ),
-              border: Border.all(
-                color: timeColors.accent.withValues(alpha: 0.42),
-                width: 1.2,
-              ),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.35),
-                  blurRadius: 10,
-                  offset: const Offset(0, 3),
-                ),
-              ],
+              child: Icon(icon, color: timeColors.accent, size: 22),
             ),
-            child: Icon(icon, color: timeColors.accent, size: 22),
           ),
         ),
       ),
@@ -3842,7 +3848,11 @@ class _StatBtn extends StatelessWidget {
     final valueFont = primary ? 14.5 : 12.5;
     final labelFont = primary ? 9.5 : 9.0;
     final iconFont = primary ? 15.0 : 13.0;
-    return GestureDetector(
+    // Build 161: Semantics — "근처 3통" 같은 full-sentence 라벨 제공.
+    return Semantics(
+      label: '$label · $value',
+      button: active,
+      child: GestureDetector(
       onTap: onTap,
       behavior: HitTestBehavior.opaque,
       child: AnimatedContainer(
@@ -3920,6 +3930,7 @@ class _StatBtn extends StatelessWidget {
               ),
           ],
         ),
+      ),
       ),
     );
   }

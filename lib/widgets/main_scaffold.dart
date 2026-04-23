@@ -269,7 +269,11 @@ class _ComposeNavItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
+    // Build 161: Semantics 라벨 — 스크린리더 대응.
+    return Semantics(
+      label: label,
+      button: true,
+      child: GestureDetector(
       onTap: onTap,
       behavior: HitTestBehavior.opaque,
       child: Padding(
@@ -302,6 +306,7 @@ class _ComposeNavItem extends StatelessWidget {
           ],
         ),
       ),
+      ),
     );
   }
 }
@@ -322,7 +327,12 @@ class _NavItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
+    // Build 161: Semantics — tab role + selected state.
+    return Semantics(
+      label: label,
+      button: true,
+      selected: isSelected,
+      child: GestureDetector(
       onTap: () {
         HapticFeedback.selectionClick();
         onTap();
@@ -371,6 +381,7 @@ class _NavItem extends StatelessWidget {
           ],
         ),
       ),
+      ),
     );
   }
 }
@@ -392,7 +403,12 @@ class _NavItemWithBadge extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
+    // Build 161: Semantics — tab with badge count 수집첩 hint.
+    return Semantics(
+      label: badgeCount > 0 ? '$label · $badgeCount' : label,
+      button: true,
+      selected: isSelected,
+      child: GestureDetector(
       onTap: () {
         HapticFeedback.selectionClick();
         onTap();
@@ -467,6 +483,7 @@ class _NavItemWithBadge extends StatelessWidget {
             ),
           ],
         ),
+      ),
       ),
     );
   }
