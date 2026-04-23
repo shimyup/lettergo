@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -390,46 +391,57 @@ class _TowerScreenState extends State<TowerScreen>
               ],
             ),
           ),
-          const SizedBox(height: 6),
-          // 레벨 라벨 (예: "🌱 견습 집배원")
-          Text(
-            state.levelLabel,
-            style: AppText.title.copyWith(color: accent),
-            textAlign: TextAlign.center,
+          const SizedBox(height: 4),
+          // Build 177: 레벨 라벨 + Lv N 한 줄 통합 (separate rows 3개 → 1줄).
+          Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                state.levelLabel,
+                style: AppText.title.copyWith(color: accent),
+              ),
+              const SizedBox(width: 8),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                decoration: BoxDecoration(
+                  color: accent.withValues(alpha: 0.12),
+                  borderRadius: BorderRadius.circular(AppRadius.pill),
+                ),
+                child: Text(
+                  'Lv $level',
+                  style: AppText.caption.copyWith(
+                    color: accent,
+                    fontWeight: FontWeight.w900,
+                  ),
+                ),
+              ),
+            ],
           ),
           const SizedBox(height: 10),
-          // 진척 바
+          // 진척 바 (얇아짐 6→4px)
           SizedBox(
             width: 220,
             child: ClipRRect(
               borderRadius: BorderRadius.circular(AppRadius.chip / 2),
               child: LinearProgressIndicator(
                 value: progress,
-                minHeight: 6,
+                minHeight: 4,
                 backgroundColor: AppColors.bgSurface,
                 valueColor: AlwaysStoppedAnimation(accent),
               ),
             ),
           ),
-          const SizedBox(height: 6),
-          Text(
-            'Lv $level',
-            style: AppText.small.copyWith(
-              color: AppColors.textMuted,
-              fontWeight: FontWeight.w800,
-            ),
-          ),
-          // Build 171: 다음 해금 로드맵 (동반자·악세사리·캐릭터 중 가장 가까운 것)
-          const SizedBox(height: 14),
-          _buildNextUnlockRow(state, accent, user.languageCode),
-          // Build 173: 레터 생일 · 가입 기념일. 오늘이 생일이면 🎂 배너,
-          // 그 외엔 "Letter 와 함께한 N일" 또는 "D-N" pill.
-          const SizedBox(height: 8),
-          _buildBirthdayOrAgeRow(state, accent, user.languageCode),
+          // Build 177: 3개 pill (로드맵·생일·나이) → 1 rotating tip 으로 merge.
+          const SizedBox(height: 12),
+          _LetterTipRotator(state: state, accent: accent, lang: user.languageCode),
         ],
       ),
     );
   }
+
+  /// Build 177: 레터 진행 관련 pill 3개 (생일·경과일·로드맵) 를 4초 간격
+  /// 자동 순환하는 단일 tip pill 로 merge. AnimatedSwitcher fade.
+  /// — 생일 당일은 우선순위 1 로 계속 고정.
 
   /// Build 174: 레터 캐릭터 갤러리 — 10 티어 진화 그리드 회고.
   /// 이미 지나온 티어는 풀 컬러 + 체크 오버레이, 현재 티어는 pulse glow,
@@ -439,9 +451,10 @@ class _TowerScreenState extends State<TowerScreen>
     final tiers = AppState.characterTierEmojis;
     final currentLvl = state.currentLevel;
     final currentTierIdx = ((currentLvl - 1) ~/ 5).clamp(0, tiers.length - 1);
+    // Build 177: 갤러리 ExpansionTile 로 wrap — 기본 접힘 상태.
+    // 유저가 원할 때만 10 티어 그리드 펼쳐보기.
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16),
-      padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
         color: AppColors.bgCard,
         borderRadius: BorderRadius.circular(AppRadius.card),
@@ -450,10 +463,14 @@ class _TowerScreenState extends State<TowerScreen>
           width: 0.8,
         ),
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
+      child: Theme(
+        data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
+        child: ExpansionTile(
+          tilePadding: const EdgeInsets.symmetric(horizontal: 14),
+          childrenPadding: const EdgeInsets.fromLTRB(14, 0, 14, 14),
+          iconColor: AppColors.textMuted,
+          collapsedIconColor: AppColors.textMuted,
+          title: Row(
             children: [
               Text(
                 l.letterGalleryTitle,
@@ -462,27 +479,37 @@ class _TowerScreenState extends State<TowerScreen>
                   fontSize: 14,
                 ),
               ),
-              const Spacer(),
-              Text(
-                '${currentTierIdx + 1} / ${tiers.length}',
-                style: AppText.caption.copyWith(
-                  color: AppColors.textMuted,
-                  fontWeight: FontWeight.w700,
+              const SizedBox(width: 8),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 1),
+                decoration: BoxDecoration(
+                  color: AppColors.gold.withValues(alpha: 0.12),
+                  borderRadius: BorderRadius.circular(AppRadius.pill),
+                ),
+                child: Text(
+                  '${currentTierIdx + 1} / ${tiers.length}',
+                  style: AppText.caption.copyWith(
+                    color: AppColors.gold,
+                    fontWeight: FontWeight.w800,
+                    fontSize: 10,
+                  ),
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 4),
-          Text(
-            l.letterGallerySubtitle,
-            style: AppText.caption.copyWith(
-              color: AppColors.textMuted,
-              fontSize: 11,
+          subtitle: Padding(
+            padding: const EdgeInsets.only(top: 2),
+            child: Text(
+              l.letterGallerySubtitle,
+              style: AppText.caption.copyWith(
+                color: AppColors.textMuted,
+                fontSize: 10.5,
+              ),
             ),
           ),
-          const SizedBox(height: 12),
-          // 10개 티어 그리드 (5×2)
-          GridView.builder(
+          children: [
+            // 10개 티어 그리드 (5×2)
+            GridView.builder(
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
             gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
@@ -555,142 +582,12 @@ class _TowerScreenState extends State<TowerScreen>
               );
             },
           ),
-        ],
-      ),
-    );
+          ],  // ExpansionTile children
+        ),    // ExpansionTile
+      ),      // Theme
+    );        // Container
   }
 
-  /// Build 173: 레터 생일 축하 배너 또는 경과일/D-N 칩.
-  Widget _buildBirthdayOrAgeRow(AppState state, Color accent, String lang) {
-    final l = AppL10n.of(lang);
-    if (state.isLetterBirthdayToday) {
-      // 생일 축하 — pink 배경 + 🎂 이모지
-      final years = state.letterAgeYears;
-      return Container(
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            colors: [
-              const Color(0xFFFFB86B).withValues(alpha: 0.25),
-              AppColors.gold.withValues(alpha: 0.12),
-            ],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-          ),
-          borderRadius: BorderRadius.circular(AppRadius.pill),
-          border: Border.all(
-            color: const Color(0xFFFFB86B).withValues(alpha: 0.6),
-            width: 1.2,
-          ),
-        ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const Text('🎂', style: TextStyle(fontSize: 16)),
-            const SizedBox(width: 6),
-            Text(
-              years > 0
-                  ? l.letterBirthdayAnniversary(years)
-                  : l.letterBirthdayFirstDay,
-              style: AppText.small.copyWith(
-                color: const Color(0xFFFFB86B),
-                fontWeight: FontWeight.w800,
-              ),
-            ),
-          ],
-        ),
-      );
-    }
-    // 평일 — 경과일 + 다음 생일 D-N
-    final days = state.daysSinceJoined;
-    final untilBday = state.daysUntilNextBirthday;
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Text(
-          l.letterAgeDays(days),
-          style: AppText.caption.copyWith(
-            color: AppColors.textMuted,
-            fontWeight: FontWeight.w600,
-          ),
-        ),
-        if (untilBday <= 30) ...[
-          const SizedBox(width: 6),
-          Text(
-            '·',
-            style: TextStyle(color: AppColors.textMuted.withValues(alpha: 0.5)),
-          ),
-          const SizedBox(width: 6),
-          Text(
-            l.letterBirthdayUpcoming(untilBday),
-            style: AppText.caption.copyWith(
-              color: accent.withValues(alpha: 0.85),
-              fontWeight: FontWeight.w700,
-            ),
-          ),
-        ],
-      ],
-    );
-  }
-
-  /// Build 171: 가장 가까운 미해금 마일스톤 (동반자·악세사리·캐릭터 중) 을
-  /// "다음 해금: Lv N (—N 남음)" 로 표시. 없으면 null (Lv 50 달성) .
-  Widget _buildNextUnlockRow(AppState state, Color accent, String lang) {
-    final lvl = state.currentLevel;
-    final l = AppL10n.of(lang);
-    // 다음 해금 후보 (레벨, 설명) 수집
-    final candidates = <(int, String)>[];
-    for (final k in AppState.letterCompanionLevels) {
-      if (k > lvl) candidates.add((k, l.letterRoadmapCompanion(k)));
-    }
-    for (final k in AppState.letterAccessoryLevels) {
-      if (k > lvl) candidates.add((k, l.letterRoadmapAccessory(k)));
-    }
-    // 캐릭터 진화 — 현재 티어 다음 경계점
-    final nextCharLvl = (((lvl ~/ 5) + 1) * 5) + 1;
-    if (nextCharLvl <= 50) {
-      candidates.add((nextCharLvl - 1, l.letterRoadmapCharacter(nextCharLvl - 1)));
-    }
-    if (candidates.isEmpty) return const SizedBox.shrink();
-    candidates.sort((a, b) => a.$1.compareTo(b.$1));
-    final next = candidates.first;
-    final remaining = next.$1 - lvl;
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
-      decoration: BoxDecoration(
-        color: accent.withValues(alpha: 0.08),
-        borderRadius: BorderRadius.circular(AppRadius.pill),
-        border: Border.all(
-          color: accent.withValues(alpha: 0.25),
-          width: 0.8,
-        ),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Text(
-            l.letterRoadmapTitle,
-            style: AppText.caption.copyWith(
-              color: accent,
-              fontWeight: FontWeight.w800,
-            ),
-          ),
-          const SizedBox(width: 8),
-          Flexible(
-            child: Text(
-              '${next.$2} · -$remaining',
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: AppText.caption.copyWith(
-                color: AppColors.textSecondary,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
 
   // ── 타워 시각화 섹션 ─────────────────────────────────────────────────────────
   Widget _buildTowerVisualization(
@@ -3486,6 +3383,133 @@ class _StatCard extends StatelessWidget {
               color: color.withValues(alpha: 0.7),
               fontSize: 10,
               fontWeight: FontWeight.w600,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// Build 177: 3개 정보 pill (생일·경과일·로드맵) 을 4초 순환 단일 pill 로 merge.
+/// 생일 당일은 고정, 그 외엔 [경과일, 로드맵] 2개만 순환.
+class _LetterTipRotator extends StatefulWidget {
+  final AppState state;
+  final Color accent;
+  final String lang;
+  const _LetterTipRotator({
+    required this.state,
+    required this.accent,
+    required this.lang,
+  });
+
+  @override
+  State<_LetterTipRotator> createState() => _LetterTipRotatorState();
+}
+
+class _LetterTipRotatorState extends State<_LetterTipRotator> {
+  int _idx = 0;
+  Timer? _timer;
+
+  @override
+  void initState() {
+    super.initState();
+    _timer = Timer.periodic(const Duration(seconds: 4), (_) {
+      if (!mounted) return;
+      setState(() => _idx = (_idx + 1) % 2);
+    });
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l = AppL10n.of(widget.lang);
+    final state = widget.state;
+    // 생일 당일 → 고정 표시 (최고 우선순위).
+    if (state.isLetterBirthdayToday) {
+      return _pill(
+        text: state.letterAgeYears > 0
+            ? l.letterBirthdayAnniversary(state.letterAgeYears)
+            : l.letterBirthdayFirstDay,
+        color: const Color(0xFFFFB86B),
+        emoji: '🎂',
+      );
+    }
+    // 순환 tip — 0: 경과일, 1: 로드맵
+    final lvl = state.currentLevel;
+    String? roadmapText;
+    int? roadmapLvl;
+    final candidates = <(int, String)>[];
+    for (final k in AppState.letterCompanionLevels) {
+      if (k > lvl) candidates.add((k, l.letterRoadmapCompanion(k)));
+    }
+    for (final k in AppState.letterAccessoryLevels) {
+      if (k > lvl) candidates.add((k, l.letterRoadmapAccessory(k)));
+    }
+    final nextCharLvl = (((lvl ~/ 5) + 1) * 5) + 1;
+    if (nextCharLvl <= 50) {
+      candidates.add((nextCharLvl - 1, l.letterRoadmapCharacter(nextCharLvl - 1)));
+    }
+    if (candidates.isNotEmpty) {
+      candidates.sort((a, b) => a.$1.compareTo(b.$1));
+      final next = candidates.first;
+      roadmapLvl = next.$1;
+      roadmapText = next.$2;
+    }
+    // 로드맵 없을 땐 (Lv 50 달성) 경과일만.
+    final showRoadmap = _idx == 1 && roadmapText != null;
+    return AnimatedSwitcher(
+      duration: const Duration(milliseconds: 320),
+      transitionBuilder: (child, anim) => FadeTransition(opacity: anim, child: child),
+      child: showRoadmap
+          ? _pill(
+              key: const ValueKey('roadmap'),
+              emoji: '🎯',
+              text: '$roadmapText · -${roadmapLvl! - lvl}',
+              color: widget.accent,
+            )
+          : _pill(
+              key: const ValueKey('age'),
+              emoji: '📫',
+              text: l.letterAgeDays(state.daysSinceJoined),
+              color: AppColors.textMuted,
+            ),
+    );
+  }
+
+  Widget _pill({
+    required String emoji,
+    required String text,
+    required Color color,
+    Key? key,
+  }) {
+    return Container(
+      key: key,
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.08),
+        borderRadius: BorderRadius.circular(AppRadius.pill),
+        border: Border.all(color: color.withValues(alpha: 0.25), width: 0.8),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(emoji, style: const TextStyle(fontSize: 12)),
+          const SizedBox(width: 6),
+          Flexible(
+            child: Text(
+              text,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: AppText.caption.copyWith(
+                color: color,
+                fontWeight: FontWeight.w700,
+              ),
             ),
           ),
         ],
