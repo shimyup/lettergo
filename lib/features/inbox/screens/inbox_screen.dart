@@ -17,6 +17,15 @@ import '../../dm/dm_conversation_screen.dart';
 // 필터 바의 표시 목록에서만 빠진다.
 enum LetterFilterType { all, read, inTransit, waitingPickup, brand, coupon, voucher }
 
+/// Build 169: 수집첩 정렬 옵션.
+/// 쿠폰 수십 통 쌓인 파워 유저가 원하는 것 빨리 찾도록.
+enum InboxSortType {
+  newest,        // 최신 도착순 (기본) — reversed order
+  expiringSoon,  // 만료 임박순 — redemptionExpiresAt 오름차순, null 은 끝
+  byBrand,       // 브랜드명 가나다순
+  byCategory,    // 카테고리별 (general → coupon → voucher)
+}
+
 /// 필터 바에 노출되는 4개 타입. enum 전체가 아니라 이 목록만 렌더링.
 const List<LetterFilterType> _visibleFilters = [
   LetterFilterType.all,
@@ -89,12 +98,43 @@ class _InboxScreenState extends State<InboxScreen>
   final ScrollController _inboxScrollController = ScrollController();
   LetterFilterType _inboxFilter = LetterFilterType.all;
   LetterFilterType _sentFilter = LetterFilterType.all;
+  // Build 169: 수집첩 정렬 상태 (받은 편지 탭 전용).
+  InboxSortType _inboxSort = InboxSortType.newest;
   String _searchQuery = '';
   bool _searchMode = false;
   final TextEditingController _searchController = TextEditingController();
 
   AppL10n _l10n(BuildContext context) =>
       AppL10n.of(context.read<AppState>().currentUser.languageCode);
+
+  /// Build 169: 정렬 적용 — 원본 list 복사해 sort.
+  List<Letter> _applySort(List<Letter> letters, InboxSortType sort) {
+    final sorted = List<Letter>.from(letters);
+    switch (sort) {
+      case InboxSortType.newest:
+        // 기본 — 이미 `.reversed` 상태로 넘어옴, 건드리지 않음.
+        return sorted;
+      case InboxSortType.expiringSoon:
+        // redemptionExpiresAt null 은 맨 뒤, 있는 것끼리 오름차순.
+        sorted.sort((a, b) {
+          final ax = a.redemptionExpiresAt;
+          final bx = b.redemptionExpiresAt;
+          if (ax == null && bx == null) return 0;
+          if (ax == null) return 1;
+          if (bx == null) return -1;
+          return ax.compareTo(bx);
+        });
+        return sorted;
+      case InboxSortType.byBrand:
+        sorted.sort((a, b) =>
+            a.senderName.toLowerCase().compareTo(b.senderName.toLowerCase()));
+        return sorted;
+      case InboxSortType.byCategory:
+        int k(Letter l) => l.category.index;
+        sorted.sort((a, b) => k(a).compareTo(k(b)));
+        return sorted;
+    }
+  }
 
   List<Letter> _applySearch(List<Letter> letters) {
     final q = _searchQuery.trim().toLowerCase();
@@ -352,25 +392,33 @@ class _InboxScreenState extends State<InboxScreen>
                     controller: _tabController,
                     children: [
                       _InboxTab(
-                        letters: _applyFilter(
-                          // 뮤트된 브랜드 편지는 인박스 리스트에서 숨김
-                          // (카드 자체 제거 — 필터와 무관하게 모든 탭에서).
-                          // Build 115: 팔로우한 브랜드 편지는 상단 고정.
-                          _sortFollowedFirst(
-                            state,
-                            state.inbox
-                                .where((l) => !(l.senderIsBrand &&
-                                    state.isBrandMuted(l.senderId)))
-                                .toList()
-                                .reversed
-                                .toList(),
+                        letters: _applySort(
+                          _applyFilter(
+                            // 뮤트된 브랜드 편지는 인박스 리스트에서 숨김
+                            // (카드 자체 제거 — 필터와 무관하게 모든 탭에서).
+                            // Build 115: 팔로우한 브랜드 편지는 상단 고정.
+                            _sortFollowedFirst(
+                              state,
+                              state.inbox
+                                  .where((l) => !(l.senderIsBrand &&
+                                      state.isBrandMuted(l.senderId)))
+                                  .toList()
+                                  .reversed
+                                  .toList(),
+                            ),
+                            filter: _inboxFilter,
+                            isInbox: true,
                           ),
-                          filter: _inboxFilter,
-                          isInbox: true,
+                          _inboxSort,
                         ),
                         activeFilter: _inboxFilter,
                         onFilterChanged: (next) {
                           setState(() => _inboxFilter = next);
+                        },
+                        // Build 169: 정렬 상태 + 변경 콜백.
+                        activeSort: _inboxSort,
+                        onSortChanged: (next) {
+                          setState(() => _inboxSort = next);
                         },
                         onTap: (letter) => _openLetter(context, letter, state),
                         sentSinceLastUnlock: state.sentSinceLastUnlock,
@@ -794,6 +842,9 @@ class _InboxTab extends StatelessWidget {
   final List<Letter> letters;
   final LetterFilterType activeFilter;
   final ValueChanged<LetterFilterType> onFilterChanged;
+  // Build 169: 정렬 상태.
+  final InboxSortType activeSort;
+  final ValueChanged<InboxSortType> onSortChanged;
   final void Function(Letter) onTap;
   final int sentSinceLastUnlock;
   final bool canViewNext;
@@ -803,6 +854,8 @@ class _InboxTab extends StatelessWidget {
     required this.letters,
     required this.activeFilter,
     required this.onFilterChanged,
+    required this.activeSort,
+    required this.onSortChanged,
     required this.onTap,
     required this.sentSinceLastUnlock,
     required this.canViewNext,
@@ -819,6 +872,12 @@ class _InboxTab extends StatelessWidget {
         _LetterFilterBar(
           activeFilter: activeFilter,
           onChanged: onFilterChanged,
+        ),
+        // Build 169: 정렬 선택 칩 row — 필터 아래 얇은 띠.
+        _InboxSortBar(
+          activeSort: activeSort,
+          onChanged: onSortChanged,
+          l10n: l10n,
         ),
         if (letters.isEmpty)
           Expanded(
@@ -1505,6 +1564,116 @@ class _LetterCard extends StatelessWidget {
                 ),
               ),
             ),
+        ],
+      ),
+    );
+  }
+}
+
+/// Build 169: 수집첩 정렬 선택 바 — 4 가지 옵션 수평 chip.
+/// Filter 바 아래 얇은 띠로 배치. 기본 선택은 최신순.
+class _InboxSortBar extends StatelessWidget {
+  final InboxSortType activeSort;
+  final ValueChanged<InboxSortType> onChanged;
+  final AppL10n l10n;
+
+  const _InboxSortBar({
+    required this.activeSort,
+    required this.onChanged,
+    required this.l10n,
+  });
+
+  String _label(InboxSortType type) {
+    switch (type) {
+      case InboxSortType.newest:
+        return l10n.inboxSortNewest;
+      case InboxSortType.expiringSoon:
+        return l10n.inboxSortExpiring;
+      case InboxSortType.byBrand:
+        return l10n.inboxSortByBrand;
+      case InboxSortType.byCategory:
+        return l10n.inboxSortByCategory;
+    }
+  }
+
+  String _emoji(InboxSortType type) {
+    switch (type) {
+      case InboxSortType.newest:
+        return '🕐';
+      case InboxSortType.expiringSoon:
+        return '⏰';
+      case InboxSortType.byBrand:
+        return '🏢';
+      case InboxSortType.byCategory:
+        return '🎟';
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: 34,
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+      child: Row(
+        children: [
+          Text(
+            l10n.inboxSortLabel,
+            style: AppText.caption.copyWith(
+              color: AppColors.textMuted,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+          const SizedBox(width: 8),
+          Expanded(
+            child: ListView.separated(
+              scrollDirection: Axis.horizontal,
+              itemCount: InboxSortType.values.length,
+              separatorBuilder: (_, __) => const SizedBox(width: 5),
+              itemBuilder: (_, i) {
+                final type = InboxSortType.values[i];
+                final isActive = activeSort == type;
+                return InkWell(
+                  onTap: () => onChanged(type),
+                  borderRadius: BorderRadius.circular(AppRadius.pill),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 9,
+                      vertical: 4,
+                    ),
+                    decoration: BoxDecoration(
+                      color: isActive
+                          ? AppColors.gold.withValues(alpha: 0.15)
+                          : Colors.transparent,
+                      borderRadius: BorderRadius.circular(AppRadius.pill),
+                      border: Border.all(
+                        color: isActive
+                            ? AppColors.gold.withValues(alpha: 0.6)
+                            : AppColors.textMuted.withValues(alpha: 0.2),
+                        width: isActive ? 1.2 : 0.8,
+                      ),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(_emoji(type), style: const TextStyle(fontSize: 10)),
+                        const SizedBox(width: 3),
+                        Text(
+                          _label(type),
+                          style: AppText.caption.copyWith(
+                            color: isActive
+                                ? AppColors.gold
+                                : AppColors.textSecondary,
+                            fontWeight: FontWeight.w800,
+                            fontSize: 10.5,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              },
+            ),
+          ),
         ],
       ),
     );

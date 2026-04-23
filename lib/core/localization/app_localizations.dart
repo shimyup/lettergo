@@ -12072,6 +12072,39 @@ class AppL10n {
     'th': 'หอคอย',
   });
 
+  /// Build 169: 수집첩 정렬 UI.
+  String get inboxSortLabel => _t({
+    'ko': '정렬', 'en': 'Sort', 'ja': '並び替え', 'zh': '排序',
+    'fr': 'Tri', 'de': 'Sortieren', 'es': 'Ordenar', 'pt': 'Ordenar',
+    'ru': 'Сортировка', 'tr': 'Sırala', 'ar': 'فرز', 'it': 'Ordina',
+    'hi': 'छाँटें', 'th': 'เรียง',
+  });
+  String get inboxSortNewest => _t({
+    'ko': '최신순', 'en': 'Newest', 'ja': '新しい順', 'zh': '最新',
+    'fr': 'Récent', 'de': 'Neueste', 'es': 'Recientes', 'pt': 'Recentes',
+    'ru': 'Новые', 'tr': 'Yeni', 'ar': 'الأحدث', 'it': 'Recenti',
+    'hi': 'नया', 'th': 'ใหม่สุด',
+  });
+  String get inboxSortExpiring => _t({
+    'ko': '만료임박', 'en': 'Expiring', 'ja': '期限間近', 'zh': '即将到期',
+    'fr': 'Expire bientôt', 'de': 'Läuft bald ab', 'es': 'Por caducar',
+    'pt': 'Expira em breve', 'ru': 'Скоро истекает', 'tr': 'Süresi yakın',
+    'ar': 'قرب الانتهاء', 'it': 'In scadenza', 'hi': 'समाप्ति जल्द',
+    'th': 'ใกล้หมดอายุ',
+  });
+  String get inboxSortByBrand => _t({
+    'ko': '브랜드', 'en': 'Brand', 'ja': 'ブランド', 'zh': '品牌',
+    'fr': 'Marque', 'de': 'Marke', 'es': 'Marca', 'pt': 'Marca',
+    'ru': 'Бренд', 'tr': 'Marka', 'ar': 'علامة', 'it': 'Marca',
+    'hi': 'ब्रांड', 'th': 'แบรนด์',
+  });
+  String get inboxSortByCategory => _t({
+    'ko': '카테고리', 'en': 'Category', 'ja': 'カテゴリ', 'zh': '分类',
+    'fr': 'Catégorie', 'de': 'Kategorie', 'es': 'Categoría', 'pt': 'Categoria',
+    'ru': 'Категория', 'tr': 'Kategori', 'ar': 'فئة', 'it': 'Categoria',
+    'hi': 'श्रेणी', 'th': 'หมวดหมู่',
+  });
+
   /// Build 167: Premium Gate 소셜 증거 바.
   String premiumSocialProof(int count) {
     switch (languageCode) {
