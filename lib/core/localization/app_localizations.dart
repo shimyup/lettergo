@@ -4620,6 +4620,24 @@ class AppL10n {
     'th': 'โดย',
   });
 
+  // Build 157: Brand 대시보드 7일 발송 sparkline 라벨.
+  String get brandAnalytics7DaySent => _t({
+    'ko': '최근 7일 발송',
+    'en': 'Last 7 days sent',
+    'ja': '過去7日間の発送',
+    'zh': '最近 7 天发送',
+    'fr': '7 derniers jours',
+    'de': 'Letzte 7 Tage',
+    'es': 'Últimos 7 días',
+    'pt': 'Últimos 7 dias',
+    'ru': 'За 7 дней',
+    'tr': 'Son 7 gün',
+    'ar': 'آخر 7 أيام',
+    'it': 'Ultimi 7 giorni',
+    'hi': 'पिछले 7 दिन',
+    'th': '7 วันที่ผ่านมา',
+  });
+
   // Build 156: 신규 Brand 온보딩 체크리스트 카드.
   String get brandChecklistTitle => _t({
     'ko': '시작 가이드',

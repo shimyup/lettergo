@@ -161,6 +161,11 @@ class _BrandAnalyticsCardState extends State<BrandAnalyticsCard> {
             ),
           ],
         ),
+        // Build 157: 최근 7일 발송 리듬 sparkline — 총 > 0 일 때만 표시.
+        if (d.totalSent > 0) ...[
+          const SizedBox(height: 12),
+          _Sparkline(values: d.dailySent, label: l.brandAnalytics7DaySent),
+        ],
         const SizedBox(height: 12),
         // 전환율 + 리치율
         _rateRow(
@@ -331,3 +336,87 @@ class _BrandAnalyticsCardState extends State<BrandAnalyticsCard> {
     );
   }
 }
+
+/// Build 157: 최근 7일 발송량 미니 바 차트. 오렌지 브랜드 톤.
+class _Sparkline extends StatelessWidget {
+  final List<int> values; // length 7, index 0 = 6일 전, 6 = 오늘
+  final String label;
+  const _Sparkline({required this.values, required this.label});
+
+  @override
+  Widget build(BuildContext context) {
+    final maxVal = values.isEmpty ? 0 : values.reduce((a, b) => a > b ? a : b);
+    final total = values.fold<int>(0, (s, v) => s + v);
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Text(
+              label,
+              style: const TextStyle(
+                color: AppColors.textSecondary,
+                fontSize: 11,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+            const Spacer(),
+            Text(
+              'Σ $total',
+              style: const TextStyle(
+                color: Color(0xFFFF8A5C),
+                fontSize: 11,
+                fontWeight: FontWeight.w800,
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 6),
+        SizedBox(
+          height: 34,
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: List.generate(values.length, (i) {
+              final v = values[i];
+              final h = maxVal == 0 ? 0.0 : (v / maxVal) * 28.0;
+              final isToday = i == values.length - 1;
+              return Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 2),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      AnimatedContainer(
+                        duration: const Duration(milliseconds: 320),
+                        height: (h + 4).clamp(4.0, 32.0),
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            colors: isToday
+                                ? [
+                                    const Color(0xFFFF8A5C),
+                                    const Color(0xFFFFB86B),
+                                  ]
+                                : [
+                                    const Color(0xFFFF8A5C)
+                                        .withValues(alpha: 0.55),
+                                    const Color(0xFFFFB86B)
+                                        .withValues(alpha: 0.35),
+                                  ],
+                            begin: Alignment.topCenter,
+                            end: Alignment.bottomCenter,
+                          ),
+                          borderRadius: BorderRadius.circular(3),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            }),
+          ),
+        ),
+      ],
+    );
+  }
+}
+

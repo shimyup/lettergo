@@ -2914,6 +2914,12 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
       int couponSent = 0;
       int voucherSent = 0;
       final countryPicks = <String, int>{};
+      // Build 157: 최근 7일 일별 발송량. 오늘(=index 6) 까지 거슬러 7일치.
+      // 현재 Firestore 에 per-pickup timestamp 가 없어 "픽업 수" 는 일자별
+      // 귀속 불가 → 발송 리듬만 시각화 (brand activity 추이).
+      final now = DateTime.now();
+      final todayStart = DateTime(now.year, now.month, now.day);
+      final List<int> daily = List<int>.filled(7, 0);
       for (final doc in docs) {
         final map = FirestoreService.fromFirestoreDoc(doc);
         totalSent++;
@@ -2928,6 +2934,17 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
         if (country.isNotEmpty && picks > 0) {
           countryPicks[country] = (countryPicks[country] ?? 0) + picks;
         }
+        // sentAt 이 ISO 문자열 — Letter.toJson 직렬화 기준 (app_state.dart 2712)
+        final sentAtStr = map['sentAt'] as String? ?? '';
+        final sentAt = DateTime.tryParse(sentAtStr);
+        if (sentAt != null) {
+          final sentDay = DateTime(sentAt.year, sentAt.month, sentAt.day);
+          final delta = todayStart.difference(sentDay).inDays;
+          if (delta >= 0 && delta < 7) {
+            // delta=0 → 오늘 (index 6), delta=6 → 6일 전 (index 0)
+            daily[6 - delta]++;
+          }
+        }
       }
       return BrandAnalytics(
         totalSent: totalSent,
@@ -2936,6 +2953,7 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
         couponSent: couponSent,
         voucherSent: voucherSent,
         countryPicks: countryPicks,
+        dailySent: daily,
       );
     } catch (e, st) {
       if (kDebugMode) debugPrint('[Analytics] fetchBrandAnalytics 실패: $e\n$st');
@@ -6968,6 +6986,8 @@ class BrandAnalytics {
   final int couponSent;     // 할인권 발송 건수
   final int voucherSent;    // 교환권 발송 건수
   final Map<String, int> countryPicks; // 국가별 픽업 수
+  // Build 157: 최근 7일 일별 발송 횟수 (index 0 = 6일 전, index 6 = 오늘).
+  final List<int> dailySent;
 
   const BrandAnalytics({
     required this.totalSent,
@@ -6976,6 +6996,7 @@ class BrandAnalytics {
     required this.couponSent,
     required this.voucherSent,
     required this.countryPicks,
+    this.dailySent = const [0, 0, 0, 0, 0, 0, 0],
   });
 
   /// 픽업 대비 사용 전환율 (0.0 ~ 1.0). picks 가 0 이면 0.
