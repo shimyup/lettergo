@@ -78,21 +78,23 @@ class AppL10n {
   // Build 114: 스플래시 메인 태그라인 — 마케팅 기획서 Build 113 의 1순위
   // 후보 ("걸으면 쿠폰이 보여요" / "Walk close. Pick it up.") 로 교체.
   // 기존 "세상 어딘가의 당신에게" 는 펜팔 포지셔닝 잔재.
+  // Build 170: 포지셔닝 재구성 — "편지로 주고받는 공간 기반 글로벌 쿠폰 플랫폼".
+  // 메인 슬로건은 감성+실용 동시 전달. 짧게 유지 (한 줄).
   String get tagline => _t({
-    'ko': '걸으면 쿠폰이 보여요',
-    'en': 'Walk close. Pick it up.',
-    'ja': '歩けばクーポンが見える',
-    'zh': '走近就能捡到优惠',
-    'fr': 'Marche. Ramasse. Profite.',
-    'de': 'Geh hin. Hol es dir.',
-    'es': 'Camina. Recoge. Disfruta.',
-    'pt': 'Caminhe. Recolha. Use.',
-    'ru': 'Подойди. Подними. Используй.',
-    'tr': 'Yaklaş. Al. Kullan.',
-    'ar': 'اقترب. التقطها. استخدمها.',
-    'it': 'Avvicinati. Raccogli. Usa.',
-    'hi': 'चलो। उठाओ। बचाओ।',
-    'th': 'เดิน. เก็บ. ใช้ได้ทันที.',
+    'ko': '편지를 주워 바로 쓰세요',
+    'en': 'Pick up letters. Redeem on the spot.',
+    'ja': '手紙を拾って、その場で使う',
+    'zh': '拾起信件，即刻使用',
+    'fr': 'Ramasse une lettre. Utilise-la.',
+    'de': 'Brief aufheben. Sofort einlösen.',
+    'es': 'Recoge la carta. Úsala al instante.',
+    'pt': 'Apanha a carta. Usa na hora.',
+    'ru': 'Подбери письмо. Используй сразу.',
+    'tr': 'Mektubu al. Hemen kullan.',
+    'ar': 'التقط الرسالة. استخدمها الآن.',
+    'it': 'Raccogli la lettera. Usala subito.',
+    'hi': 'पत्र उठाएँ. तुरंत उपयोग करें.',
+    'th': 'เก็บจดหมาย ใช้ได้ทันที',
   });
 
   // ── Auth ──────────────────────────────────────────────────────────────────
@@ -685,50 +687,50 @@ class AppL10n {
 
   // Build 107 재포지셔닝 — "느린 편지 보물찾기" 보다 "할인·홍보 편지 유통" 강조.
   String get onboarding3Title => _t({
-    'ko': '🎟 할인·홍보 편지를 주워요',
-    'en': '🎟 Pick Up Coupon Letters',
-    'ja': '🎟 割引・プロモ手紙を拾う',
-    'zh': '🎟 拾起优惠促销信件',
-    'fr': '🎟 Ramasse les coupons',
-    'de': '🎟 Rabatt-Briefe aufsammeln',
-    'es': '🎟 Recoge cupones',
-    'pt': '🎟 Apanhe cupões',
-    'ru': '🎟 Подбирайте купоны',
-    'tr': '🎟 Kupon mektupları topla',
-    'ar': '🎟 التقط رسائل الخصومات',
-    'it': '🎟 Raccogli coupon',
-    'hi': '🎟 कूपन पत्र उठाएँ',
-    'th': '🎟 เก็บจดหมายส่วนลด',
+    'ko': '🎟 편지를 주워 바로 쓰세요',
+    'en': '🎟 Pick Up Letters. Redeem Instantly.',
+    'ja': '🎟 手紙を拾って、その場で使う',
+    'zh': '🎟 拾起信件，即刻使用',
+    'fr': '🎟 Ramasse la lettre. Utilise-la.',
+    'de': '🎟 Brief aufheben. Sofort einlösen.',
+    'es': '🎟 Recoge la carta. Úsala al instante.',
+    'pt': '🎟 Apanha a carta. Usa na hora.',
+    'ru': '🎟 Подбери письмо. Используй.',
+    'tr': '🎟 Mektubu al, hemen kullan.',
+    'ar': '🎟 التقط الرسالة. استخدمها فوراً.',
+    'it': '🎟 Raccogli la lettera. Usa subito.',
+    'hi': '🎟 पत्र उठाओ. तुरंत उपयोग करो.',
+    'th': '🎟 เก็บจดหมาย ใช้ทันที',
   });
+  // Build 170: "편지 포맷의 글로벌 공간 쿠폰 플랫폼" 포지셔닝 강조.
   String get onboarding3Body => _t({
-    // 모든 등급(Free/Premium/Brand) 이 주울 수 있음. Free 200m, Premium/Brand 1km.
-    'ko': '세계 곳곳에 뿌려진 할인·홍보 편지를 가까이 다가가서 주워 보세요. Free는 200m, Premium·Brand는 1km 반경에서 주울 수 있어요.',
+    'ko': '브랜드의 할인권이 편지가 되어 세계 곳곳 지도에 떨어집니다. 당신 주변 200m 안의 편지를 주워 매장에서 바로 쓰세요. 감성과 실용성이 공존하는 편지 포맷의 글로벌 공간 쿠폰 플랫폼.',
     'en':
-        'Walk close to promo and discount letters scattered across the map to pick them up. Free: 200m · Premium & Brand: 1km.',
+        'Brand coupons drop as letters on a worldwide map. Pick up letters within 200m of you and redeem them instantly. A global space-based coupon platform — in letter format.',
     'ja':
-        '世界に散らばる割引・プロモ手紙に近づいて拾いましょう。Free は 200m、Premium・Brand は 1km の範囲で拾えます。',
+        'ブランドの割引券が手紙になって世界中の地図に落ちます。あなたの周り 200m 以内の手紙を拾って、お店でその場で使おう。感性と実用性が共存する、手紙フォーマットのグローバル空間クーポンプラットフォーム。',
     'zh':
-        '走近散落世界各地的促销信件就能拾起它们。Free：200米，Premium 与 Brand：1公里。',
+        '品牌优惠券化作信件落在全球地图上。捡起你身边 200 米内的信件，即刻在门店使用。情感与实用兼具的信件式全球空间优惠券平台。',
     'fr':
-        'Approchez-vous des lettres de promo et de réduction sur la carte pour les ramasser. Free : 200 m · Premium & Brand : 1 km.',
+        'Les coupons des marques deviennent des lettres sur la carte mondiale. Ramasse les lettres dans un rayon de 200 m et utilise-les tout de suite en boutique. Plateforme mondiale de coupons spatiaux au format lettre.',
     'de':
-        'Geh nah an Promo- und Rabatt-Briefe auf der Karte heran, um sie aufzusammeln. Free: 200 m · Premium & Brand: 1 km.',
+        'Marken-Coupons fallen als Briefe auf die Weltkarte. Hebe Briefe im 200-m-Radius auf und löse sie sofort im Geschäft ein. Globale Coupon-Plattform im Briefformat.',
     'es':
-        'Acércate a las cartas de promo y descuento en el mapa para recogerlas. Free: 200 m · Premium y Brand: 1 km.',
+        'Los cupones de las marcas caen como cartas en el mapa mundial. Recoge las cartas a 200 m de ti y canjea al instante en tienda. Plataforma global de cupones espaciales en formato carta.',
     'pt':
-        'Aproxime-se de cartas de promoção e desconto no mapa para apanhá-las. Free: 200 m · Premium e Brand: 1 km.',
+        'Cupões de marcas caem como cartas no mapa mundial. Apanha as cartas a 200 m de ti e usa na loja imediatamente. Plataforma global de cupões espaciais em formato carta.',
     'ru':
-        'Подойдите ближе к промо- и скидочным письмам на карте, чтобы подобрать их. Free — 200 м, Premium и Brand — 1 км.',
+        'Купоны брендов падают письмами на мировой карте. Подбирайте письма в радиусе 200 м и используйте их сразу в магазине. Глобальная платформа купонов в формате писем.',
     'tr':
-        'Haritaya dağılmış promosyon ve indirim mektuplarına yaklaşarak topla. Free: 200 m · Premium ve Brand: 1 km.',
+        'Marka kuponları mektup olarak dünya haritasına düşer. Etrafındaki 200 m içindeki mektupları topla ve mağazada hemen kullan. Mektup formatında küresel konum tabanlı kupon platformu.',
     'ar':
-        'اقترب من رسائل العروض والخصومات المنتشرة على الخريطة لالتقاطها. Free: 200 م · Premium و Brand: 1 كم.',
+        'قسائم الماركات تسقط كرسائل على خريطة العالم. التقط الرسائل ضمن 200 م حولك واستخدمها فورًا في المتجر. منصة عالمية لقسائم مكانية بصيغة الرسائل.',
     'it':
-        'Avvicinati alle lettere promo e sconto sulla mappa per raccoglierle. Free: 200 m · Premium e Brand: 1 km.',
+        'I coupon dei brand cadono come lettere sulla mappa mondiale. Raccogli le lettere entro 200 m e usale subito in negozio. Piattaforma globale di coupon spaziali in formato lettera.',
     'hi':
-        'मानचित्र पर बिखरे प्रमोशन और छूट पत्रों के पास जाकर उन्हें उठाएँ. Free: 200 मी · Premium व Brand: 1 किमी.',
+        'ब्रांड कूपन पत्र बनकर विश्व मानचित्र पर गिरते हैं. 200 मी के भीतर पत्र उठाएँ और तुरंत दुकान में उपयोग करें. पत्र फ़ॉर्मेट का वैश्विक स्थान-आधारित कूपन प्लेटफ़ॉर्म.',
     'th':
-        'เข้าใกล้จดหมายโปรโมชั่นและส่วนลดบนแผนที่เพื่อเก็บ Free: 200 ม. · Premium และ Brand: 1 กม.',
+        'คูปองของแบรนด์ตกลงมาเป็นจดหมายบนแผนที่โลก เก็บจดหมายในรัศมี 200 ม. แล้วใช้ที่ร้านทันที แพลตฟอร์มคูปองเชิงพื้นที่ระดับโลกในรูปแบบจดหมาย',
   });
 
   // Build 140 재포지셔닝 — 새 3-티어 정체성에 맞춰 "📸 나만의 편지 뿌리기"
@@ -17366,21 +17368,23 @@ class AppL10n {
   /// 앱의 핵심 가치 한 줄 — Build 114 에서 "느린 소셜" 에서
   /// "지도 위 할인·홍보 편지 헌트" 로 전환. 마케팅 기획서 Build 113 의
   /// 포지셔닝과 완전 일치.
+  // Build 170: 보조 태그라인 — 포지셔닝 풀 (편지 포맷의 글로벌 공간 쿠폰 플랫폼).
+  // 스플래시에서 메인 tagline 아래 노출. 감성 + 실용 동시 강조.
   String get appSubTagline => _t({
-    'ko': '지도 위 브랜드 할인·홍보 편지 헌트',
-    'en': 'The map that drops discount letters near you',
-    'ja': '地図上の割引・プロモ手紙ハント',
-    'zh': '地图上的品牌优惠信件寻宝',
-    'fr': 'La carte qui dépose des coupons autour de toi',
-    'de': 'Die Karte voller Rabatt-Briefe in deiner Nähe',
-    'es': 'El mapa que deja cupones cerca de ti',
-    'pt': 'O mapa que deixa cupões perto de você',
-    'ru': 'Карта, которая оставляет купоны рядом',
-    'tr': 'Yanına indirim mektubu bırakan harita',
-    'ar': 'خريطة تترك رسائل الخصومات قربك',
-    'it': 'La mappa che lascia coupon vicino a te',
-    'hi': 'आपके पास कूपन गिराने वाला नक्शा',
-    'th': 'แผนที่ที่ทิ้งคูปองใกล้คุณ',
+    'ko': '편지 포맷의 글로벌 공간 쿠폰 플랫폼',
+    'en': 'The global space-based coupon platform — in letter format',
+    'ja': '手紙フォーマットのグローバル空間クーポンプラットフォーム',
+    'zh': '以信件形式的全球空间优惠券平台',
+    'fr': 'Plateforme mondiale de coupons spatiaux au format lettre',
+    'de': 'Globale Coupon-Plattform im Briefformat',
+    'es': 'Plataforma global de cupones espaciales en formato carta',
+    'pt': 'Plataforma global de cupões espaciais em formato carta',
+    'ru': 'Глобальная платформа купонов в формате писем',
+    'tr': 'Mektup formatında küresel konum tabanlı kupon platformu',
+    'ar': 'منصة القسائم المكانية العالمية بصيغة رسائل',
+    'it': 'Piattaforma globale di coupon spaziali in formato lettera',
+    'hi': 'पत्र फ़ॉर्मेट का वैश्विक स्थान-आधारित कूपन प्लेटफ़ॉर्म',
+    'th': 'แพลตฟอร์มคูปองเชิงพื้นที่ระดับโลกในรูปแบบจดหมาย',
   });
 
   // ── Hardcoded string l10n (formerly hardcoded) ─────────────────────────
