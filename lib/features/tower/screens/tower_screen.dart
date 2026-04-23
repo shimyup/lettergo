@@ -206,6 +206,11 @@ class _TowerScreenState extends State<TowerScreen>
                       _buildTowerVisualization(score, user, hasPremium)
                     else
                       _buildCharacterVisualization(state, user),
+                    // Build 174: 레터 캐릭터 갤러리 — 과거 티어 회고 (Free/Premium).
+                    if (!user.isBrand) ...[
+                      const SizedBox(height: 8),
+                      _buildCharacterGallery(state, user),
+                    ],
                     // ── 유저 정보 카드 ────────────────────────────────────────
                     _buildUserCard(context, user, score),
                     const SizedBox(height: 16),
@@ -421,6 +426,135 @@ class _TowerScreenState extends State<TowerScreen>
           // 그 외엔 "Letter 와 함께한 N일" 또는 "D-N" pill.
           const SizedBox(height: 8),
           _buildBirthdayOrAgeRow(state, accent, user.languageCode),
+        ],
+      ),
+    );
+  }
+
+  /// Build 174: 레터 캐릭터 갤러리 — 10 티어 진화 그리드 회고.
+  /// 이미 지나온 티어는 풀 컬러 + 체크 오버레이, 현재 티어는 pulse glow,
+  /// 미래 티어는 회색/잠금 아이콘. "내가 어디에서 왔고 어디로 가는지" 시각화.
+  Widget _buildCharacterGallery(AppState state, UserProfile user) {
+    final l = AppL10n.of(user.languageCode);
+    final tiers = AppState.characterTierEmojis;
+    final currentLvl = state.currentLevel;
+    final currentTierIdx = ((currentLvl - 1) ~/ 5).clamp(0, tiers.length - 1);
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 16),
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: AppColors.bgCard,
+        borderRadius: BorderRadius.circular(AppRadius.card),
+        border: Border.all(
+          color: AppColors.textMuted.withValues(alpha: 0.15),
+          width: 0.8,
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Text(
+                l.letterGalleryTitle,
+                style: AppText.title.copyWith(
+                  color: AppColors.textPrimary,
+                  fontSize: 14,
+                ),
+              ),
+              const Spacer(),
+              Text(
+                '${currentTierIdx + 1} / ${tiers.length}',
+                style: AppText.caption.copyWith(
+                  color: AppColors.textMuted,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 4),
+          Text(
+            l.letterGallerySubtitle,
+            style: AppText.caption.copyWith(
+              color: AppColors.textMuted,
+              fontSize: 11,
+            ),
+          ),
+          const SizedBox(height: 12),
+          // 10개 티어 그리드 (5×2)
+          GridView.builder(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 5,
+              mainAxisSpacing: 8,
+              crossAxisSpacing: 8,
+              childAspectRatio: 0.85,
+            ),
+            itemCount: tiers.length,
+            itemBuilder: (_, i) {
+              final emoji = tiers[i];
+              final tierStartLvl = (i * 5) + 1;
+              final passed = i < currentTierIdx;
+              final current = i == currentTierIdx;
+              final locked = i > currentTierIdx;
+              return Container(
+                decoration: BoxDecoration(
+                  color: current
+                      ? AppColors.gold.withValues(alpha: 0.12)
+                      : passed
+                          ? AppColors.bgSurface
+                          : AppColors.bgDeep.withValues(alpha: 0.5),
+                  borderRadius: BorderRadius.circular(AppRadius.chip),
+                  border: Border.all(
+                    color: current
+                        ? AppColors.gold.withValues(alpha: 0.6)
+                        : passed
+                            ? AppColors.teal.withValues(alpha: 0.3)
+                            : AppColors.textMuted.withValues(alpha: 0.15),
+                    width: current ? 1.4 : 0.8,
+                  ),
+                ),
+                alignment: Alignment.center,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Opacity(
+                      opacity: locked ? 0.25 : 1.0,
+                      child: ColorFiltered(
+                        colorFilter: locked
+                            ? const ColorFilter.matrix([
+                                0.2126, 0.7152, 0.0722, 0, 0,
+                                0.2126, 0.7152, 0.0722, 0, 0,
+                                0.2126, 0.7152, 0.0722, 0, 0,
+                                0,      0,      0,      1, 0,
+                              ])
+                            : const ColorFilter.mode(
+                                Colors.transparent, BlendMode.multiply),
+                        child: Text(
+                          emoji,
+                          style: const TextStyle(fontSize: 24),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      'Lv $tierStartLvl',
+                      style: AppText.caption.copyWith(
+                        color: current
+                            ? AppColors.gold
+                            : passed
+                                ? AppColors.teal.withValues(alpha: 0.8)
+                                : AppColors.textMuted.withValues(alpha: 0.5),
+                        fontWeight: FontWeight.w800,
+                        fontSize: 9,
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            },
+          ),
         ],
       ),
     );

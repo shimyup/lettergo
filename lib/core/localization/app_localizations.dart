@@ -12266,6 +12266,41 @@ class AppL10n {
     'th': 'ใกล้ที่สุด',
   });
 
+  /// Build 174: 레터 캐릭터 갤러리 (과거 티어 회고) 라벨.
+  String get letterGalleryTitle => _t({
+    'ko': '🧭 레터 진화 갤러리',
+    'en': '🧭 Letter Evolution',
+    'ja': '🧭 レター進化ギャラリー',
+    'zh': '🧭 Letter 进化画廊',
+    'fr': '🧭 Évolution Letter',
+    'de': '🧭 Letter-Entwicklung',
+    'es': '🧭 Evolución Letter',
+    'pt': '🧭 Evolução Letter',
+    'ru': '🧭 Эволюция Letter',
+    'tr': '🧭 Letter Evrimi',
+    'ar': '🧭 تطور ليتر',
+    'it': '🧭 Evoluzione Letter',
+    'hi': '🧭 Letter विकास',
+    'th': '🧭 วิวัฒนาการ Letter',
+  });
+
+  String get letterGallerySubtitle => _t({
+    'ko': '지나온 모습과 다가올 모습',
+    'en': 'Who you were and who you\'ll be',
+    'ja': 'これまでとこれから',
+    'zh': '曾经的你和将来的你',
+    'fr': 'Qui tu étais et qui tu seras',
+    'de': 'Wer du warst und wirst',
+    'es': 'Quien fuiste y serás',
+    'pt': 'Quem foste e serás',
+    'ru': 'Кем вы были и станете',
+    'tr': 'Eski ve gelecek halin',
+    'ar': 'من كنت ومن ستكون',
+    'it': 'Chi eri e chi sarai',
+    'hi': 'जो थे और जो होंगे',
+    'th': 'ตัวตนในอดีตและอนาคต',
+  });
+
   /// Build 173: 레터 생일 (가입 기념일) 카피.
   String letterBirthdayAnniversary(int years) {
     switch (languageCode) {
