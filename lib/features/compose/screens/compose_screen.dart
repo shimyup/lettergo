@@ -1,5 +1,7 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:geolocator/geolocator.dart';
@@ -354,13 +356,22 @@ class _ComposeScreenState extends State<ComposeScreen>
         }
       }
       _loadDraftIfExists();
-      // 3초마다 자동 저장 (앱 강제 종료 시 임시 저장 보장)
+      // Build 189: 3초마다 자동 저장. text 가 비었어도 brand/mode 상태가 바뀌어
+      // 있으면 저장 (이전엔 text 비면 저장 안 해서 bulk/express 상태가 휘발).
       _autoSaveTimer = Timer.periodic(const Duration(seconds: 3), (_) {
-        if (_contentController.text.isNotEmpty && !_isSending) _saveDraft();
+        if (_isSending) return;
+        if (_contentController.text.isNotEmpty ||
+            _isBulkMode ||
+            _isExpressMode ||
+            _bulkTargets.isNotEmpty ||
+            _selectedCountry.isNotEmpty) {
+          _saveDraft();
+        }
       });
     });
   }
 
+  /// Build 189: 브랜드 필드까지 저장. 창 닫아도 모드/나라 선택이 유지되도록.
   void _saveDraft() {
     SharedPreferences.getInstance().then((prefs) {
       final text = _contentController.text;
@@ -369,6 +380,36 @@ class _ComposeScreenState extends State<ComposeScreen>
       } else {
         prefs.setString('compose_draft', text);
       }
+      // Brand/compose 상태 스냅샷 — JSON 한 덩어리에 묶어 저장·복원.
+      final snapshot = <String, dynamic>{
+        'isBulkMode': _isBulkMode,
+        'isExpressMode': _isExpressMode,
+        'isRandom': _isRandom,
+        'selectedCountry': _selectedCountry,
+        'selectedFlag': _selectedFlag,
+        'selectedCity': _selectedCity,
+        'destLat': _destLat,
+        'destLng': _destLng,
+        'isExactDropped': _isExactDropped,
+        'sendPerCountry': _sendPerCountry,
+        'isBulkRandom': _isBulkRandom,
+        'bulkTargets': _bulkTargets,
+        'attachSocial': _attachSocial,
+        'socialLink': _socialLinkController.text,
+        'brandCategory': _brandCategory.key,
+        'redemptionInfo': _redemptionInfoController.text,
+      };
+      final hasState = _isBulkMode ||
+          _isExpressMode ||
+          _bulkTargets.isNotEmpty ||
+          _selectedCountry.isNotEmpty;
+      if (hasState) {
+        try {
+          prefs.setString('compose_draft_brand', jsonEncode(snapshot));
+        } catch (_) {}
+      } else {
+        prefs.remove('compose_draft_brand');
+      }
     });
   }
 
@@ -376,7 +417,8 @@ class _ComposeScreenState extends State<ComposeScreen>
     if (_isReply) return;
     final prefs = await SharedPreferences.getInstance();
     final draft = prefs.getString('compose_draft') ?? '';
-    if (draft.isEmpty) return;
+    final brandRaw = prefs.getString('compose_draft_brand');
+    if (draft.isEmpty && brandRaw == null) return;
     if (!mounted) return;
     showDialog(
       context: context,
@@ -401,8 +443,57 @@ class _ComposeScreenState extends State<ComposeScreen>
           TextButton(
             onPressed: () {
               setState(() {
-                _contentController.text = draft;
-                _charCount = draft.length;
+                if (draft.isNotEmpty) {
+                  _contentController.text = draft;
+                  _charCount = draft.length;
+                }
+                // Build 189: Brand/compose 상태 복원.
+                if (brandRaw != null && brandRaw.isNotEmpty) {
+                  try {
+                    final snap =
+                        jsonDecode(brandRaw) as Map<String, dynamic>;
+                    _isBulkMode = snap['isBulkMode'] as bool? ?? false;
+                    _isExpressMode =
+                        snap['isExpressMode'] as bool? ?? false;
+                    _isRandom = snap['isRandom'] as bool? ?? true;
+                    _selectedCountry =
+                        snap['selectedCountry'] as String? ?? '';
+                    _selectedFlag = snap['selectedFlag'] as String? ?? '';
+                    _selectedCity = snap['selectedCity'] as String? ?? '';
+                    _destLat =
+                        (snap['destLat'] as num?)?.toDouble() ?? 0.0;
+                    _destLng =
+                        (snap['destLng'] as num?)?.toDouble() ?? 0.0;
+                    _isExactDropped =
+                        snap['isExactDropped'] as bool? ?? false;
+                    _sendPerCountry =
+                        (snap['sendPerCountry'] as num?)?.toInt() ?? 5;
+                    _isBulkRandom =
+                        snap['isBulkRandom'] as bool? ?? false;
+                    _bulkTargets.clear();
+                    final rawTargets = snap['bulkTargets'];
+                    if (rawTargets is List) {
+                      for (final t in rawTargets) {
+                        if (t is Map) {
+                          _bulkTargets.add(
+                            Map<String, dynamic>.from(t),
+                          );
+                        }
+                      }
+                    }
+                    _attachSocial = snap['attachSocial'] as bool? ?? false;
+                    final sns = snap['socialLink'] as String? ?? '';
+                    if (sns.isNotEmpty) _socialLinkController.text = sns;
+                    final catKey = snap['brandCategory'] as String?;
+                    if (catKey != null) {
+                      _brandCategory = LetterCategoryExt.fromKey(catKey);
+                    }
+                    final ri = snap['redemptionInfo'] as String? ?? '';
+                    if (ri.isNotEmpty) {
+                      _redemptionInfoController.text = ri;
+                    }
+                  } catch (_) {}
+                }
               });
               Navigator.pop(ctx);
             },
@@ -416,6 +507,7 @@ class _ComposeScreenState extends State<ComposeScreen>
   void _clearDraft() {
     SharedPreferences.getInstance().then((prefs) {
       prefs.remove('compose_draft');
+      prefs.remove('compose_draft_brand');
     });
   }
 
@@ -535,7 +627,9 @@ class _ComposeScreenState extends State<ComposeScreen>
   @override
   void dispose() {
     _autoSaveTimer?.cancel();
-    if (_contentController.text.isNotEmpty && !_isSending) {
+    // Build 189: dispose 시 항상 저장 (text 비어도 bulk/express/나라 상태 유지).
+    // 이전엔 text 가 empty 면 save 안 해서 "작성 중간 화면 나가면 모드가 날아감".
+    if (!_isSending) {
       _saveDraft();
     }
     _contentController.dispose();
@@ -1027,6 +1121,14 @@ class _ComposeScreenState extends State<ComposeScreen>
     final langCode = state.currentUser.languageCode;
     final l = AppL10n.of(langCode);
 
+    // Build 189: 디버그/테스트 빌드 에서는 크레딧 0 이어도 ExactDrop 을 열 수
+    // 있게 자동 부여 5 통. 개발자/QA 가 실결제 없이 UX 검증 가능.
+    if (kDebugMode &&
+        state.currentUser.isBrand &&
+        state.brandExactDropCredits == 0) {
+      await state.adminGrantExactDropCredits(5);
+    }
+
     // 크레딧 체크 — 0 이면 유료 안내 다이얼로그로 이탈.
     if (!state.canUseExactDrop) {
       await showDialog(
@@ -1224,49 +1326,49 @@ class _ComposeScreenState extends State<ComposeScreen>
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             const SizedBox(height: 14),
-                            // ── STEP 1: 목적지 선택 — Build 182 재배치 ──────
-                            // (1) 🌍 나라 선택 (primary, 카드 상단)
-                            //     └ 🎲 랜덤 / 🎯 정확한 위치 지정(Brand) 은 그
-                            //       "밑"의 보조 옵션 (DestinationCard 내부).
-                            // (2) 🎟/🎁/✉️ 브랜드 카테고리 (Brand 선택 · 나머지 잠금).
-                            // (3) 📦 대량 발송 토글 (Brand 전용) — Express "위".
-                            // (4) 📦 대량 발송 패널 (Brand, _isBulkMode 때).
-                            // (5) ⚡ 프리미엄 특급 배송 토글.
-                            if (!_isReply && !_isBulkMode)
+                            // Build 189: Brand compose flow 5 버그 수정 (재구성).
+                            // (1) 🌍 나라 선택 카드 — **항상** 표시 (bulk 토글해도
+                            //     유지). 기존엔 bulk 모드 ON 이면 destination card
+                            //     자체가 사라져 선택 국가가 UI 에서 없어짐.
+                            // (2) 🎟/🎁/✉️ 브랜드 카테고리 — 항상.
+                            // (3) ✍️ 편지 본문 — **위로 이동**. 대량 발송 패널이
+                            //     아래로 커져도 본문은 항상 viewport 상단에 고정.
+                            // (4) 📦 대량 발송 토글 (Brand) + 패널 — 본문 아래.
+                            // (5) ⚡ 특급 배송 토글 — 항상.
+                            if (!_isReply)
                               _buildDestinationCard(state, hasPremium),
-                            if (!_isReply && !_isBulkMode)
-                              const SizedBox(height: 8),
+                            if (!_isReply) const SizedBox(height: 8),
                             // Build 113: 브랜드는 destination 바로 아래에서
                             // 🎟/🎁/✉️ 중 하나를 한 탭으로 선택.
                             // Build 128: Free/Premium 에게도 카테고리 패널을
                             // 노출해 "할인권/교환권은 Brand 에서 발송" 임을
                             // 명시. 쿠폰/교환권 칩은 비활성 + 탭 시 업그레이드
                             // 안내 시트 오픈.
-                            if (!_isReply && !_isBulkMode)
-                              _buildBrandCategoryPanel(state),
-                            if (!_isReply && !_isBulkMode)
-                              const SizedBox(height: 8),
-                            // 대량 발송 — Brand 전용, Express 토글 바로 위.
-                            if (!_isReply && isBrand) _buildBulkModeToggle(),
-                            if (!_isReply && isBrand)
-                              const SizedBox(height: 8),
-                            if (!_isReply && isBrand && _isBulkMode)
-                              _buildBulkSendPanel(state),
-                            if (!_isReply && isBrand && _isBulkMode)
-                              const SizedBox(height: 8),
-                            // 프리미엄 특급 배송 — 대량 아래 (Free 는 잠금 카드).
-                            if (!_isReply && !_isBulkMode)
-                              _buildExpressToggle(state, hasPremium),
-                            if (!_isReply && !_isBulkMode)
-                              const SizedBox(height: 8),
+                            if (!_isReply) _buildBrandCategoryPanel(state),
+                            if (!_isReply) const SizedBox(height: 8),
 
-                            // ── STEP 2: 편지 본문 (destination 직하) ──────────
-                            // 보내기 모달을 열자마자 사용자가 "어디에 쓰지?" 혼동하지
-                            // 않도록 편지지 영역을 destination 바로 아래로 끌어올린다.
-                            // 기존에는 10+ 개 옵션을 스크롤해야 본문에 도달했다.
-                            const SizedBox(height: 4),
+                            // ── STEP 2: 편지 본문 — Build 189 에서 bulk 패널
+                            // 위로 재배치. bulk 모드 ON 시 본문이 아래로 밀려
+                            // 안 보이던 버그 해소.
                             _buildLetterBody(),
                             const SizedBox(height: 16),
+
+                            // ── STEP 3: 대량 발송 — Brand 전용 (본문 뒤) ─────
+                            // Build 189: 대량 발송 토글에 명시적 "끄기" X 버튼
+                            // 추가 (bulk 모드 활성 시 상단 banner) — 창 닫기 외
+                            // 에도 모드 해제가 명확.
+                            if (!_isReply && isBrand) ...[
+                              if (_isBulkMode) _buildActiveModeBanner(state),
+                              _buildBulkModeToggle(),
+                              const SizedBox(height: 8),
+                              if (_isBulkMode) ...[
+                                _buildBulkSendPanel(state),
+                                const SizedBox(height: 8),
+                              ],
+                            ],
+                            // 프리미엄 특급 배송 — 항상 노출 (bulk 모드와 독립).
+                            if (!_isReply) _buildExpressToggle(state, hasPremium),
+                            if (!_isReply) const SizedBox(height: 8),
 
                             // ── STEP 3: 부가 옵션 (접히는 섹션) ─────────────
                             // 목적지 + 본문이 가장 중요한 결정이므로 나머지
@@ -3764,6 +3866,78 @@ class _ComposeScreenState extends State<ComposeScreen>
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  /// Build 189: bulk/express 모드가 켜진 상태에서 명시적 "끄기" 를 제공하는 배너.
+  /// 모드를 모르고 닫아 버려서 발송 실수가 나는 걸 방지 + 되돌리기 가능.
+  Widget _buildActiveModeBanner(AppState state) {
+    final l10n = AppL10n.of(state.currentUser.languageCode);
+    final orange = const Color(0xFFFF8A5C);
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 8),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+        decoration: BoxDecoration(
+          color: orange.withValues(alpha: 0.12),
+          borderRadius: BorderRadius.circular(10),
+          border: Border.all(
+            color: orange.withValues(alpha: 0.55),
+            width: 1,
+          ),
+        ),
+        child: Row(
+          children: [
+            const Text('📦', style: TextStyle(fontSize: 15)),
+            const SizedBox(width: 8),
+            Expanded(
+              child: Text(
+                l10n.composeBulkModeActive,
+                style: TextStyle(
+                  color: orange,
+                  fontSize: 12,
+                  fontWeight: FontWeight.w800,
+                ),
+              ),
+            ),
+            InkWell(
+              onTap: () {
+                setState(() {
+                  _isBulkMode = false;
+                  _bulkTargets.clear();
+                  _isExpressMode = false;
+                });
+              },
+              borderRadius: BorderRadius.circular(6),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 8,
+                  vertical: 4,
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      Icons.close_rounded,
+                      color: orange,
+                      size: 14,
+                    ),
+                    const SizedBox(width: 3),
+                    Text(
+                      l10n.composeDisableMode,
+                      style: TextStyle(
+                        color: orange,
+                        fontSize: 11.5,
+                        fontWeight: FontWeight.w800,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

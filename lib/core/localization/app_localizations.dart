@@ -10294,6 +10294,41 @@ class AppL10n {
     'hi': 'Brand', 'th': 'Brand',
   });
 
+  // Build 189: Brand compose 의 대량 발송 활성 배너.
+  String get composeBulkModeActive => _t({
+    'ko': '대량 발송 모드 · 여러 나라 일괄 발송',
+    'en': 'Bulk mode · multi-country blast',
+    'ja': '一括送信モード · 複数国同時送信',
+    'zh': '群发模式 · 多国同时发送',
+    'fr': 'Mode envoi groupé · multi-pays',
+    'de': 'Massenversand · mehrere Länder',
+    'es': 'Modo envío masivo · varios países',
+    'pt': 'Envio em massa · vários países',
+    'ru': 'Массовая рассылка · несколько стран',
+    'tr': 'Toplu gönderim · çoklu ülke',
+    'ar': 'إرسال جماعي · عدة دول',
+    'it': 'Invio di massa · più paesi',
+    'hi': 'बल्क भेजें · बहु-देश',
+    'th': 'ส่งจำนวนมาก · หลายประเทศ',
+  });
+
+  String get composeDisableMode => _t({
+    'ko': '끄기',
+    'en': 'Turn off',
+    'ja': 'オフ',
+    'zh': '关闭',
+    'fr': 'Désactiver',
+    'de': 'Aus',
+    'es': 'Desactivar',
+    'pt': 'Desativar',
+    'ru': 'Выкл',
+    'tr': 'Kapat',
+    'ar': 'إيقاف',
+    'it': 'Disattiva',
+    'hi': 'बंद',
+    'th': 'ปิด',
+  });
+
   // Build 186: 픽업 쿨다운 상시 pill — MM:SS 로 남은 시간 표시.
   String mapCooldownPill(String mmss) => _t({
     'ko': '다음 줍기까지 $mmss',
