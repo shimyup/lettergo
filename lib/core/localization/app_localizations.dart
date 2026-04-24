@@ -10294,6 +10294,58 @@ class AppL10n {
     'hi': 'Brand', 'th': 'Brand',
   });
 
+  // Build 189.1: compose 닫기 확인 다이얼로그.
+  String get composeCloseConfirmTitle => _t({
+    'ko': '작성 중인 편지가 있어요',
+    'en': 'You have unsent content',
+    'ja': '作成中の手紙があります',
+    'zh': '有未发送的内容',
+    'fr': 'Contenu non envoyé',
+    'de': 'Nicht gesendeter Inhalt',
+    'es': 'Contenido sin enviar',
+    'pt': 'Conteúdo não enviado',
+    'ru': 'Неотправленный черновик',
+    'tr': 'Gönderilmemiş içerik',
+    'ar': 'محتوى غير مُرسل',
+    'it': 'Contenuto non inviato',
+    'hi': 'बिना भेजा गया सामग्री',
+    'th': 'ยังไม่ได้ส่ง',
+  });
+
+  String get composeCloseConfirmBody => _t({
+    'ko': '지금 닫으면 저장하거나 삭제할 수 있어요. 저장하면 다음에 이어쓸 수 있어요.',
+    'en': 'Save your draft to continue later, or discard it now.',
+    'ja': '下書きとして保存すればあとで続きを書けます。破棄するとこのまま閉じます。',
+    'zh': '保存为草稿可稍后继续，放弃则不保留。',
+    'fr': 'Sauvegarder le brouillon pour continuer plus tard ou l\'abandonner.',
+    'de': 'Entwurf speichern, um später fortzufahren, oder verwerfen.',
+    'es': 'Guarda el borrador para continuar luego, o descártalo.',
+    'pt': 'Guarda o rascunho para continuar depois, ou descarta.',
+    'ru': 'Сохраните черновик или удалите.',
+    'tr': 'Taslağı kaydet veya sil.',
+    'ar': 'احفظ المسودة أو احذفها.',
+    'it': 'Salva la bozza o scartala.',
+    'hi': 'ड्राफ़्ट सहेजें या हटाएं।',
+    'th': 'บันทึกแบบร่างหรือทิ้ง',
+  });
+
+  String get composeSaveDraftAndClose => _t({
+    'ko': '저장하고 닫기',
+    'en': 'Save & close',
+    'ja': '保存して閉じる',
+    'zh': '保存并关闭',
+    'fr': 'Sauvegarder et fermer',
+    'de': 'Speichern & schließen',
+    'es': 'Guardar y cerrar',
+    'pt': 'Guardar e fechar',
+    'ru': 'Сохранить',
+    'tr': 'Kaydet ve kapat',
+    'ar': 'حفظ وإغلاق',
+    'it': 'Salva e chiudi',
+    'hi': 'सहेजें और बंद करें',
+    'th': 'บันทึก & ปิด',
+  });
+
   // Build 189: Brand compose 의 대량 발송 활성 배너.
   String get composeBulkModeActive => _t({
     'ko': '대량 발송 모드 · 여러 나라 일괄 발송',

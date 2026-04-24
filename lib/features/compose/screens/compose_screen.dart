@@ -1438,6 +1438,72 @@ class _ComposeScreenState extends State<ComposeScreen>
     );
   }
 
+  /// Build 189.1: 닫기 버튼 안전장치. 본문/모드 상태 있을 때만 확인. 있으면
+  /// 1) 임시 저장 후 닫기 (기본)
+  /// 2) 초안 삭제 후 닫기
+  /// 3) 취소
+  Future<void> _tryClose(BuildContext ctx) async {
+    final l10n = AppL10n.of(ctx.read<AppState>().currentUser.languageCode);
+    final hasContent = _contentController.text.trim().isNotEmpty ||
+        _isBulkMode ||
+        _isExpressMode ||
+        _bulkTargets.isNotEmpty ||
+        (_selectedCountry.isNotEmpty && !_isRandom) ||
+        (_redemptionInfoController.text.trim().isNotEmpty);
+    if (!hasContent) {
+      Navigator.pop(ctx);
+      return;
+    }
+    final choice = await showDialog<String>(
+      context: ctx,
+      builder: (dCtx) => AlertDialog(
+        backgroundColor: AppColors.bgCard,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: Text(
+          l10n.composeCloseConfirmTitle,
+          style: const TextStyle(color: AppColors.textPrimary, fontSize: 16),
+        ),
+        content: Text(
+          l10n.composeCloseConfirmBody,
+          style: const TextStyle(color: AppColors.textSecondary, fontSize: 13),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dCtx, 'cancel'),
+            child: Text(
+              l10n.inboxCancel,
+              style: const TextStyle(color: AppColors.textMuted),
+            ),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(dCtx, 'discard'),
+            child: Text(
+              l10n.composeDiscard,
+              style: const TextStyle(color: Color(0xFFFF6B6B)),
+            ),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(dCtx, 'save'),
+            child: Text(
+              l10n.composeSaveDraftAndClose,
+              style: const TextStyle(
+                color: AppColors.gold,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+    if (choice == null || choice == 'cancel') return;
+    if (choice == 'discard') {
+      _clearDraft();
+    } else {
+      _saveDraft();
+    }
+    if (ctx.mounted) Navigator.pop(ctx);
+  }
+
   Widget _buildHeader(BuildContext ctx, AppState state) {
     final l10n = AppL10n.of(state.currentUser.languageCode);
     return Padding(
@@ -1445,7 +1511,7 @@ class _ComposeScreenState extends State<ComposeScreen>
       child: Row(
         children: [
           IconButton(
-            onPressed: () => Navigator.pop(ctx),
+            onPressed: () => _tryClose(ctx),
             icon: const Icon(
               Icons.close_rounded,
               color: AppColors.textSecondary,
@@ -2023,6 +2089,11 @@ class _ComposeScreenState extends State<ComposeScreen>
   Widget _buildExpressToggle(AppState state, bool hasPremium) {
     final l10n = AppL10n.of(state.currentUser.languageCode);
     if (hasPremium) {
+      // Build 189.1: 특급 한도 0 일 때 토글 비활성 시각 상태 (Premium only).
+      // 이전엔 토글이 켜져 보이나 탭하면 에러 뜨고 원복 — 사용자에게 이유 불명확.
+      final expressExhausted = !state.currentUser.isBrand &&
+          state.remainingPremiumExpressCount == 0 &&
+          !_isExpressMode;
       return GestureDetector(
         onTap: () {
           final canEnable =
@@ -2033,7 +2104,9 @@ class _ComposeScreenState extends State<ComposeScreen>
           }
           setState(() => _isExpressMode = !_isExpressMode);
         },
-        child: Container(
+        child: Opacity(
+          opacity: expressExhausted ? 0.55 : 1.0,
+          child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
           decoration: BoxDecoration(
             color: _isExpressMode
@@ -2096,20 +2169,23 @@ class _ComposeScreenState extends State<ComposeScreen>
               ),
               Switch(
                 value: _isExpressMode,
-                onChanged: (v) {
-                  final canEnable = state.currentUser.isBrand ||
-                      state.canUsePremiumExpress;
-                  if (v && !canEnable) {
-                    _showError(state.premiumExpressLimitExceededMessage);
-                    return;
-                  }
-                  setState(() => _isExpressMode = v);
-                },
+                onChanged: expressExhausted
+                    ? null
+                    : (v) {
+                        final canEnable = state.currentUser.isBrand ||
+                            state.canUsePremiumExpress;
+                        if (v && !canEnable) {
+                          _showError(state.premiumExpressLimitExceededMessage);
+                          return;
+                        }
+                        setState(() => _isExpressMode = v);
+                      },
                 activeColor: AppColors.gold,
                 materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
               ),
             ],
           ),
+        ),
         ),
       );
     }
