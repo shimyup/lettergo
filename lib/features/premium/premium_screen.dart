@@ -6,8 +6,10 @@ import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../core/config/app_keys.dart';
 import '../../core/theme/app_theme.dart';
+import '../../core/services/feedback_service.dart';
 import '../../core/services/purchase_service.dart';
 import '../../core/localization/app_localizations.dart';
+import 'premium_collections.dart';
 import '../../state/app_state.dart';
 
 class PremiumScreen extends StatelessWidget {
@@ -60,19 +62,17 @@ class PremiumScreen extends StatelessWidget {
         final autoRenewDateText = purchase.nextBillingDate != null
             ? _formatDate(purchase.nextBillingDate!, langCode)
             : null;
-        final premiumFeatures = state.useValueBasedPremiumCopy
-            ? [
-                '🚀  ${l.premiumValueFeature1}',
-                '📬  ${l.premiumValueFeature2}',
-                '📸  ${l.premiumValueFeature3}',
-                '⚡  ${l.premiumValueFeature4}',
-              ]
-            : [
-                '✉️  ${l.premiumFeature1}',
-                '📸  ${l.premiumFeature2}',
-                '🗼  ${l.premiumFeature3}',
-                '⚡  ${l.premiumFeature4}',
-              ];
+        // Build 137: Premium 의 핵심 가치는 "본인 홍보 편지 발송" 이라는
+        // 유저 결정에 맞춰 순서 재조정. 📸 사진 + 🔗 링크 편지를 최상단으로
+        // 올려 "Premium = 나를 알리는 도구" 포지셔닝을 1스캔에 전달.
+        // Free 는 줍기만 — 보내기 탭 자체가 Premium Gate.
+        final premiumFeatures = [
+          '📸  ${l.premiumFeature3}', // 하루 30통 + 사진·링크 (promotion primary)
+          '📍  ${l.premiumFeature1}', // 줍기 반경 1km
+          '⏱  ${l.premiumFeature2}', // 쿨다운 10분
+          // Build 185: 🎨 이모지는 l10n 본문에 포함됨. prefix 제거.
+          l.premiumFeature4,
+        ];
 
         return Scaffold(
           backgroundColor: AppColors.bgDeep,
@@ -145,7 +145,14 @@ class PremiumScreen extends StatelessWidget {
                     ),
                 ] else
                   _PremiumHeroBanner(),
-                const SizedBox(height: 24),
+                const SizedBox(height: 20),
+
+                // 비구독자에게만 컬렉션 스토리를 먼저 노출 — 기능 나열 대신
+                // "라이프스타일 패키지"로 감성 프레이밍
+                if (!isPremium && !isBrand) ...[
+                  const PremiumCollectionsPreview(),
+                  const SizedBox(height: 20),
+                ],
 
                 // 디버그 전용: 프리미엄 상태 토글
                 if (kDebugMode) ...[
@@ -162,8 +169,10 @@ class PremiumScreen extends StatelessWidget {
                   badge: isFree ? l.premiumCurrentPlan : '',
                   badgeColor: AppColors.teal,
                   features: [
-                    '✉️  ${l.premiumFreeFeature1}',
-                    '🗺️  ${l.premiumFreeFeature2}',
+                    // Build 118: Free 플랜도 픽업 제약 (반경·쿨다운) 부터
+                    // 노출해 Premium 업그레이드 동기를 시각적으로 만든다.
+                    '📍  ${l.premiumFreeFeature1}',
+                    '✉️  ${l.premiumFreeFeature2}',
                   ],
                   isActive: false,
                   onTap: (isFree || purchase.loading)
@@ -279,6 +288,9 @@ class PremiumScreen extends StatelessWidget {
                             if (!ok || !context.mounted) return;
                           }
                           final bought = await purchase.buyPremium();
+                          if (bought) {
+                            FeedbackService.onPurchaseSuccess();
+                          }
                           if (!context.mounted) return;
                           _showPurchaseResultToast(
                             context,
@@ -345,6 +357,9 @@ class PremiumScreen extends StatelessWidget {
                               if (!ok || !context.mounted) return;
                             }
                             final bought = await purchase.buyBrand();
+                            if (bought) {
+                              FeedbackService.onPurchaseSuccess();
+                            }
                             if (!context.mounted) return;
                             _showPurchaseResultToast(
                               context,

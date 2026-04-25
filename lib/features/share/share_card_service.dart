@@ -413,10 +413,10 @@ class ShareCardService {
     // 배경: 재사용
     _paintBackground(canvas, size);
 
-    // 상단 헤더
+    // 상단 헤더 — 헌트 포지셔닝에 맞춰 📬(우편함) → 🗺(지도/여정).
     _drawText(
       canvas,
-      '📬  ${l10n.journeyTitle}',
+      '🗺  ${l10n.journeyTitle}',
       offset: const Offset(80, 180),
       fontSize: 56,
       color: const Color(0xFFF0C35A),
@@ -441,27 +441,20 @@ class ShareCardService {
       Paint()..color = const Color(0xFF1F2D44).withValues(alpha: 0.85),
     );
 
-    // 3열 통계
+    // 2열 통계 — 펜팔식 "답장" 지표 제거 후 발송·방문국만 노출.
     _drawJourneyStatCell(
       canvas,
-      x: 140, y: 440,
+      x: 240, y: 440,
       emoji: '✉️',
       value: '${stats.totalSent}',
       label: l10n.journeyStatSent,
     );
     _drawJourneyStatCell(
       canvas,
-      x: 455, y: 440,
+      x: 640, y: 440,
       emoji: '🌍',
       value: '${stats.countriesFrom + stats.countriesTo}',
       label: l10n.journeyStatCountries,
-    );
-    _drawJourneyStatCell(
-      canvas,
-      x: 770, y: 440,
-      emoji: '💬',
-      value: '${stats.totalReplies}',
-      label: l10n.journeyStatReplies,
     );
 
     // 하단 카드 내부: 최장 거리 강조
@@ -556,5 +549,204 @@ class ShareCardService {
       color: const Color(0xFFE8E8E0).withValues(alpha: 0.6),
       maxWidth: 220,
     );
+  }
+
+  // ╔══════════════════════════════════════════════════════════════════════╗
+  // ║ Build 175 — Letter Character Card (레터 캐릭터 공유 이미지)           ║
+  // ╚══════════════════════════════════════════════════════════════════════╝
+
+  /// 레터 캐릭터 (이모지 + 컴패니언 + 악세사리 + 레벨 + 닉네임 + 경과일) 을
+  /// 1080×1920 이미지로 렌더링해 SNS 공유. Build 155 의 텍스트-only 공유를
+  /// 대체해 실제 스토리·피드에 올릴 수 있는 비주얼 카드 제공.
+  static Future<bool> shareCharacterCard({
+    required String characterEmoji,
+    String? companionEmoji,
+    String? accessoryEmoji,
+    required int level,
+    required String levelLabel,
+    required String letterName,
+    required int daysSinceJoined,
+    required int collectedLetters,
+    required String langCode,
+    String brandName = 'Letter Go',
+  }) async {
+    try {
+      final bytes = await _renderCharacterCardBytes(
+        characterEmoji: characterEmoji,
+        companionEmoji: companionEmoji,
+        accessoryEmoji: accessoryEmoji,
+        level: level,
+        levelLabel: levelLabel,
+        letterName: letterName,
+        daysSinceJoined: daysSinceJoined,
+        collectedLetters: collectedLetters,
+        langCode: langCode,
+        brandName: brandName,
+      );
+      if (bytes == null) return false;
+      final dir = await getTemporaryDirectory();
+      final path =
+          '${dir.path}/lettergo_character_${DateTime.now().millisecondsSinceEpoch}.png';
+      final file = await File(path).writeAsBytes(bytes);
+      final l10n = AppL10n.of(langCode);
+      await Share.shareXFiles(
+        [XFile(file.path, mimeType: 'image/png')],
+        text: l10n.shareMyLevelText(
+          level: level,
+          trail: characterEmoji,
+          collected: collectedLetters,
+        ),
+      );
+      return true;
+    } catch (e, st) {
+      if (kDebugMode) debugPrint('[ShareCardService/character] $e\n$st');
+      return false;
+    }
+  }
+
+  static Future<Uint8List?> _renderCharacterCardBytes({
+    required String characterEmoji,
+    String? companionEmoji,
+    String? accessoryEmoji,
+    required int level,
+    required String levelLabel,
+    required String letterName,
+    required int daysSinceJoined,
+    required int collectedLetters,
+    required String langCode,
+    required String brandName,
+  }) async {
+    final l10n = AppL10n.of(langCode);
+    final recorder = ui.PictureRecorder();
+    final canvas = Canvas(recorder);
+    final size = Size(_cardWidth.toDouble(), _cardHeight.toDouble());
+
+    _paintBackground(canvas, size);
+
+    // 상단 — 앱 브랜드 뱃지
+    _drawText(
+      canvas,
+      '🧭  ${l10n.letterGalleryTitle}',
+      offset: const Offset(80, 160),
+      fontSize: 40,
+      color: const Color(0xFFF0C35A).withValues(alpha: 0.85),
+      weight: FontWeight.w700,
+    );
+
+    // 중앙 캐릭터 원형 카드
+    final centerX = size.width / 2;
+    final centerY = 720.0;
+    final radius = 340.0;
+    // 외곽 링
+    canvas.drawCircle(
+      Offset(centerX, centerY),
+      radius,
+      Paint()
+        ..color = const Color(0xFFF0C35A).withValues(alpha: 0.35)
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = 8,
+    );
+    // 내부 원 (어두운 배경)
+    canvas.drawCircle(
+      Offset(centerX, centerY),
+      radius - 20,
+      Paint()..color = const Color(0xFF1F2D44).withValues(alpha: 0.85),
+    );
+    // 중앙 캐릭터 이모지 (큰 크기)
+    const charFontSize = 380.0;
+    _drawText(
+      canvas,
+      characterEmoji,
+      offset: Offset(centerX - charFontSize / 2 - 10,
+          centerY - charFontSize / 2 - 40),
+      fontSize: charFontSize,
+      maxLines: 1,
+    );
+    // 머리 위 악세사리 (있으면)
+    if (accessoryEmoji != null) {
+      _drawText(
+        canvas,
+        accessoryEmoji,
+        offset: Offset(centerX - 110, centerY - 360),
+        fontSize: 180,
+        maxLines: 1,
+      );
+    }
+    // 오른쪽 아래 컴패니언 (있으면)
+    if (companionEmoji != null) {
+      _drawText(
+        canvas,
+        companionEmoji,
+        offset: Offset(centerX + 170, centerY + 140),
+        fontSize: 170,
+        maxLines: 1,
+      );
+    }
+
+    // 닉네임 (중앙)
+    _drawText(
+      canvas,
+      letterName,
+      offset: const Offset(80, 1180),
+      fontSize: 56,
+      color: const Color(0xFFE8E8E0),
+      weight: FontWeight.w900,
+      maxWidth: size.width - 160,
+      maxLines: 1,
+    );
+    // 레벨 라벨
+    _drawText(
+      canvas,
+      levelLabel,
+      offset: const Offset(80, 1260),
+      fontSize: 40,
+      color: const Color(0xFFF0C35A),
+      weight: FontWeight.w800,
+      maxWidth: size.width - 160,
+      maxLines: 1,
+    );
+    // "Lv N · 레터와 함께 M일째"
+    _drawText(
+      canvas,
+      'Lv $level  ·  ${l10n.letterAgeDays(daysSinceJoined)}',
+      offset: const Offset(80, 1340),
+      fontSize: 32,
+      color: const Color(0xFFE8E8E0).withValues(alpha: 0.65),
+      weight: FontWeight.w500,
+    );
+    // 수집 편지 수
+    _drawText(
+      canvas,
+      '📮  $collectedLetters',
+      offset: const Offset(80, 1410),
+      fontSize: 36,
+      color: const Color(0xFFE8E8E0),
+      weight: FontWeight.w700,
+    );
+
+    // 하단 — 메인 tagline + 브랜드
+    _drawText(
+      canvas,
+      l10n.tagline,
+      offset: const Offset(80, 1660),
+      fontSize: 36,
+      color: const Color(0xFFE8E8E0).withValues(alpha: 0.8),
+      weight: FontWeight.w500,
+      maxWidth: size.width - 160,
+      maxLines: 2,
+    );
+    _drawText(
+      canvas,
+      '〰️  $brandName',
+      offset: const Offset(80, 1780),
+      fontSize: 44,
+      color: const Color(0xFFF0C35A),
+      weight: FontWeight.w800,
+    );
+
+    final picture = recorder.endRecording();
+    final image = await picture.toImage(_cardWidth, _cardHeight);
+    final byteData = await image.toByteData(format: ui.ImageByteFormat.png);
+    return byteData?.buffer.asUint8List();
   }
 }

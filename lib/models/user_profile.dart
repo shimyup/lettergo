@@ -442,6 +442,19 @@ class UserProfile {
   String? phoneNumber; // 핸드폰 번호 (선택)
   String verifyMethod; // 인증 수단 ('email' or 'phone')
 
+  // ── Brand 인증 필드 (Build 127) ─────────────────────────────────────────
+  // Brand 계정이 "정식 등록 사업자" 임을 증명하기 위한 3종 세트. 인증 완료된
+  // Brand 는 지도 아바타 플래그 앞에 ✅ 인증 마크 노출.
+  // - businessRegistrationNumber: 사업자 등록번호 (예: "123-45-67890")
+  // - businessRegistrationDocUrl: 사업자 등록증 스캔/사진 URL
+  // - businessContactPhone: 담당자 연락처
+  // - brandVerifiedAt: 관리자 승인 완료 시점 (null = 미인증)
+  // 관리자 승인 플로우는 후속 스코프 — 현재 클라이언트는 입력·저장·상태 표시만.
+  String? businessRegistrationNumber;
+  String? businessRegistrationDocUrl;
+  String? businessContactPhone;
+  DateTime? brandVerifiedAt;
+
   UserProfile({
     required this.id,
     required this.username,
@@ -469,6 +482,10 @@ class UserProfile {
     this.towerWindowStyle = 0,
     this.phoneNumber,
     this.verifyMethod = 'email',
+    this.businessRegistrationNumber,
+    this.businessRegistrationDocUrl,
+    this.businessContactPhone,
+    this.brandVerifiedAt,
   }) : activityScore = activityScore ?? ActivityScore(),
        joinedAt = joinedAt ?? DateTime.now(),
        followingIds = followingIds ?? [],

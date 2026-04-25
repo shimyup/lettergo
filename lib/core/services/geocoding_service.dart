@@ -280,6 +280,43 @@ class GeocodingService {
     }
   }
 
+  /// 공용 역지오코딩. Brand 전용 "정확한 좌표 드롭" UI 가 핀 좌표에서 국가·
+  /// 도시·국기 이모지를 얻는 용도. 실패 시 null — caller 가 좌표만으로
+  /// 발송을 계속 진행할 수 있다.
+  Future<Map<String, String>?> reverseLookup(
+    double lat,
+    double lng, {
+    String? languageCode,
+  }) async {
+    try {
+      final addr = await _reverseRequest(lat, lng, languageCode: languageCode);
+      if (addr == null) return null;
+      final country = (addr['country'] as String?) ?? '';
+      final city = (addr['city'] as String?) ??
+          (addr['town'] as String?) ??
+          (addr['village'] as String?) ??
+          (addr['county'] as String?) ??
+          '';
+      final countryCode = (addr['country_code'] as String?)?.toUpperCase() ?? '';
+      String flag = '';
+      if (countryCode.length == 2) {
+        // ISO-3166-1 alpha-2 → regional indicator emoji
+        final base = 0x1F1E6 - 'A'.codeUnitAt(0);
+        flag = String.fromCharCodes([
+          base + countryCode.codeUnitAt(0),
+          base + countryCode.codeUnitAt(1),
+        ]);
+      }
+      return {
+        'country': country,
+        'city': city,
+        'flag': flag,
+      };
+    } catch (_) {
+      return null;
+    }
+  }
+
   static Future<Map<String, dynamic>?> _reverseRequest(
     double lat,
     double lng, {

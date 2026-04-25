@@ -1,11 +1,15 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import '../../../core/services/feedback_service.dart';
 import 'package:gal/gal.dart';
 import 'package:http/http.dart' as http;
 import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
+import 'package:screen_protector/screen_protector.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/theme/letter_style.dart';
@@ -20,6 +24,9 @@ import '../../dm/dm_conversation_screen.dart';
 import '../../share/share_card_service.dart';
 import 'letter_context_badge.dart';
 import 'scarcity_indicator.dart';
+import 'sender_moment_line.dart';
+// 펜팔 배지 UI 제거 — import 도 제거. 데이터 통계 로직은 _PenpalStats 내부에서만 사용.
+// import '../../penpal/penpal_tier.dart';
 
 class LetterReadScreen extends StatefulWidget {
   final Letter letter;
@@ -47,31 +54,63 @@ class _LetterReadScreenState extends State<LetterReadScreen>
   bool _hasLiked = false;
   int _userRating = 0; // 0 = 미선택, 1-5 = 별점
 
+  bool _voucherProtectOn = false;
+
   @override
   void initState() {
     super.initState();
-    // 더 긴 개봉 시간 + easeOutCubic 으로 자연스러운 종료
+    // Build 183: 교환권 편지 화면 전체도 스크린샷/recording 차단. 본문 보기
+    // 단계에서 먼저 활성 → 풀스크린 뷰어도 자체적으로 재-활성 (중첩 안전).
+    if (widget.letter.category == LetterCategory.voucher) {
+      _voucherProtectOn = true;
+      ScreenProtector.preventScreenshotOn();
+      ScreenProtector.protectDataLeakageWithBlur();
+    }
+    // Build 182: content 가 비어 있으면 Firestore 에서 재조회 (백그라운드).
+    // 성공 시 AppState notifyListeners → Consumer 가 본문을 다시 렌더한다.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      final state = context.read<AppState>();
+      if (widget.letter.content.trim().isEmpty) {
+        unawaited(state.refetchLetterContentIfEmpty(widget.letter.id));
+      }
+    });
+    // 3단계 개봉 시퀀스 — 총 1500ms
+    //   Phase 1 (0 → 0.3, 400ms) : 봉투가 살짝 나타남 + light haptic
+    //   Phase 2 (0.3 → 0.6, 350ms): 봉인 터짐 느낌 + medium haptic
+    //   Phase 3 (0.6 → 1.0, 750ms): 편지 본문 펼침 (scale + opacity)
+    //
+    // 각 단계 시작 시 다른 햅틱 강도로 "줍기 → 개봉" 분리감을 강화한다.
+    // 전체 controller 는 0~1 의 연속값이지만, 본문의 AnimatedBuilder 가
+    // value 구간별로 다른 변환을 적용하므로 시각적으로 3단 분리된다.
     _openController = AnimationController(
-      duration: const Duration(milliseconds: 1200),
+      duration: const Duration(milliseconds: 1500),
       vsync: this,
     );
     _openAnimation = CurvedAnimation(
       parent: _openController,
       curve: Curves.easeOutCubic,
     );
-    // 봉투 열기 시퀀스 — 햅틱 2단계로 "종이 접힘 풀리는" 촉각 표현
-    Future.delayed(const Duration(milliseconds: 350), () async {
+    Future.delayed(const Duration(milliseconds: 300), () async {
       if (!mounted) return;
-      // 1단계: 봉투 꺼내는 순간 — 부드러운 햅틱
-      await HapticFeedback.lightImpact();
+      // Phase 1: 봉투가 떠오름
+      HapticFeedback.lightImpact();
       await _openController.animateTo(
-        0.5,
-        duration: const Duration(milliseconds: 450),
+        0.3,
+        duration: const Duration(milliseconds: 400),
         curve: Curves.easeOutCubic,
       );
-      // 2단계: 편지 펼쳐지는 순간 — 약간 더 강한 햅틱
       if (!mounted) return;
-      await HapticFeedback.mediumImpact();
+      // Phase 2: 봉인 터짐 — FeedbackService 의 onLetterOpen 이 medium + click
+      FeedbackService.onLetterOpen();
+      await _openController.animateTo(
+        0.6,
+        duration: const Duration(milliseconds: 350),
+        curve: Curves.easeOutCubic,
+      );
+      if (!mounted) return;
+      // Phase 3: 편지 펼침 — 가장 길게, 여유 있게
+      await HapticFeedback.heavyImpact();
       await _openController.animateTo(
         1.0,
         duration: const Duration(milliseconds: 750),
@@ -83,6 +122,10 @@ class _LetterReadScreenState extends State<LetterReadScreen>
 
   @override
   void dispose() {
+    if (_voucherProtectOn) {
+      ScreenProtector.preventScreenshotOff();
+      ScreenProtector.protectDataLeakageWithBlurOff();
+    }
     _openController.dispose();
     super.dispose();
   }
@@ -189,14 +232,37 @@ class _LetterReadScreenState extends State<LetterReadScreen>
                             // 발신자 정보 카드
                             _buildSenderCard(letter),
                             const SizedBox(height: 20),
-                            // 편지 본문
-                            Transform.scale(
-                              scale: _openAnimation.value.clamp(0.8, 1.0),
-                              child: Opacity(
-                                opacity: _openAnimation.value.clamp(0.0, 1.0),
-                                child: _buildLetterContent(letter),
-                              ),
-                            ),
+                            // 편지 본문 — 3단계 개봉 연출
+                            //  0.0-0.3: 봉투가 바닥에서 떠오름 (translateY + fade)
+                            //  0.3-0.6: 봉인 터짐 (가벼운 흔들림 + 점진 노출)
+                            //  0.6-1.0: 편지지가 펼쳐짐 (scale up to full)
+                            Builder(builder: (_) {
+                              final v = _openAnimation.value;
+                              // Phase 1: 진입 — 아래에서 위로 + 투명도 상승
+                              final enterT = (v / 0.3).clamp(0.0, 1.0);
+                              final translateY = (1 - enterT) * 40;
+                              final enterOpacity = enterT;
+                              // Phase 2: 봉인 파열 — 좌우 wobble (0.3~0.6)
+                              final wobbleT = ((v - 0.3) / 0.3).clamp(0.0, 1.0);
+                              final wobbleX = wobbleT > 0 && wobbleT < 1
+                                  ? math.sin(wobbleT * 8 * math.pi) * 2.5
+                                  : 0.0;
+                              // Phase 3: 펼침 — scale 0.85 → 1.0
+                              final openT = ((v - 0.6) / 0.4).clamp(0.0, 1.0);
+                              final scale = 0.85 + openT * 0.15;
+                              final contentOpacity = 0.3 + wobbleT * 0.4 + openT * 0.3;
+                              return Transform.translate(
+                                offset: Offset(wobbleX, translateY),
+                                child: Transform.scale(
+                                  scale: scale,
+                                  child: Opacity(
+                                    opacity: (enterOpacity * contentOpacity)
+                                        .clamp(0.0, 1.0),
+                                    child: _buildLetterContent(letter),
+                                  ),
+                                ),
+                              );
+                            }),
                             const SizedBox(height: 12),
                             if (_isOpened) LetterContextBadge(letter: letter),
                             if (_isOpened) ScarcityIndicator(letter: letter),
@@ -225,8 +291,37 @@ class _LetterReadScreenState extends State<LetterReadScreen>
                             // 배송 여정
                             if (_isOpened) _buildJourneyCard(letter),
                             const SizedBox(height: 24),
-                            // 답장 버튼
-                            if (_isOpened) _buildReplyButton(context, letter),
+                            // 🎁 쿠폰/교환권 사용 안내 — 브랜드 발송 + redemptionInfo 존재 시만
+                            if (_isOpened &&
+                                letter.senderIsBrand &&
+                                (letter.redemptionInfo ?? '').trim().isNotEmpty)
+                              _buildRedemptionBox(context, letter),
+                            // 답장 버튼 (AI 편지는 "닿지 않음" 카드로 대체)
+                            if (_isOpened) _buildAiLetterNotice(context, letter),
+                            // 브랜드 발송인이 답장 미수락으로 설정한 편지는
+                            // 답장 버튼 대신 안내만 노출.
+                            if (_isOpened &&
+                                !letter.senderId.startsWith('ai_') &&
+                                !(letter.senderIsBrand && !letter.acceptsReplies))
+                              _buildReplyButton(context, letter),
+                            if (_isOpened &&
+                                letter.senderIsBrand &&
+                                !letter.acceptsReplies)
+                              _buildBrandNoReplyNotice(context),
+                            // ❤️/🔕 브랜드 팔로우·뮤트 쌍 — 브랜드 발송일 때만 노출.
+                            // 본인 발송 편지(sent 탭)에는 보이지 않도록 `senderId != myId` 체크.
+                            // Build 115: follow 토글 추가 (뮤트 반대 개념).
+                            if (_isOpened &&
+                                letter.senderIsBrand &&
+                                letter.senderId != context.read<AppState>().currentUser.id)
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  _buildFollowBrandButton(context, letter),
+                                  const SizedBox(width: 8),
+                                  _buildMuteBrandButton(context, letter),
+                                ],
+                              ),
                             const SizedBox(height: 40),
                           ],
                         ),
@@ -854,6 +949,10 @@ class _LetterReadScreenState extends State<LetterReadScreen>
                         ),
                       ),
                     ),
+                    // 펜팔 등급 배지 (🌱/🕊️/📜) 제거됨 — 포지셔닝 변경으로
+                    // "같은 사람과 주고받을수록 친밀도 오름" 컨셉은 숨김 처리.
+                    // PenpalStats/PenpalTier 클래스는 남겨둠 (데이터 통계에
+                    // 재활용 여지 있음) — UI 에만 노출 안 함.
                     // 브랜드 인증 배지
                     if (letter.senderIsBrand) ...[
                       const SizedBox(width: 6),
@@ -877,6 +976,27 @@ class _LetterReadScreenState extends State<LetterReadScreen>
                           l10n.letterReadVerifiedBadge,
                           style: TextStyle(
                             color: Color(0xFFFF8A5C),
+                            fontSize: 10,
+                            fontWeight: FontWeight.w800,
+                          ),
+                        ),
+                      ),
+                    ],
+                    if (letter.senderId.startsWith('ai_')) ...[
+                      const SizedBox(width: 6),
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 7,
+                          vertical: 3,
+                        ),
+                        decoration: BoxDecoration(
+                          color: AppColors.textMuted.withValues(alpha: 0.15),
+                          borderRadius: BorderRadius.circular(6),
+                        ),
+                        child: Text(
+                          l10n.labelAiCurated,
+                          style: const TextStyle(
+                            color: AppColors.textMuted,
                             fontSize: 10,
                             fontWeight: FontWeight.w800,
                           ),
@@ -911,6 +1031,7 @@ class _LetterReadScreenState extends State<LetterReadScreen>
                     fontSize: 11,
                   ),
                 ),
+                SenderMomentLine(letter: letter),
                 // SNS 링크 + 팔로우 버튼 (하단 행)
                 if (letter.socialLink != null || !letter.isAnonymous) ...[
                   const SizedBox(height: 8),
@@ -1168,12 +1289,25 @@ class _LetterReadScreenState extends State<LetterReadScreen>
   }
 
   Widget _buildLetterContent(Letter letter) {
-    final l10n = AppL10n.of(context.read<AppState>().currentUser.languageCode);
+    // Build 182: content 가 비어 있을 가능성 대비 — inbox 에서 최신 letter 를
+    // watch. refetchLetterContentIfEmpty 후 AppState 가 notifyListeners 하면
+    // 여기가 재빌드되면서 본문이 채워진다.
+    final state = context.watch<AppState>();
+    final fresh = state.inbox.firstWhere(
+      (l) => l.id == letter.id,
+      orElse: () => letter,
+    );
+    letter = fresh;
+    final l10n = AppL10n.of(state.currentUser.languageCode);
     final paper = LetterStyles.paper(letter.paperStyle);
     final font = LetterStyles.font(letter.fontStyle);
     final fromLang = LanguageConfig.getLanguageCode(letter.senderCountry);
     final toLang = widget.userLanguageCode;
     final canTranslate = fromLang != toLang;
+    final body = _isTranslated && _translatedText != null
+        ? _translatedText!
+        : letter.content;
+    final hasBody = body.trim().isNotEmpty;
     return ClipRRect(
       borderRadius: BorderRadius.circular(20),
       child: CustomPaint(
@@ -1280,12 +1414,36 @@ class _LetterReadScreenState extends State<LetterReadScreen>
               ],
               const SizedBox(height: 20),
               // 편지 내용 (원문 또는 번역)
-              Text(
-                _isTranslated && _translatedText != null
-                    ? _translatedText!
-                    : letter.content,
-                style: font.textStyle.copyWith(color: paper.inkColor),
-              ),
+              if (hasBody)
+                Text(
+                  body,
+                  style: font.textStyle.copyWith(color: paper.inkColor),
+                )
+              else
+                // Build 182: content 누락 방어 — 빈 본문일 때 명시적 상태 표시.
+                // 쿠폰/교환권 편지는 redemptionInfo/image 가 본문 대신 핵심이므로
+                // 아래 섹션에서 이어 렌더된다.
+                Row(
+                  children: [
+                    const SizedBox(width: 2),
+                    Icon(
+                      Icons.sync_rounded,
+                      size: 15,
+                      color: paper.inkColor.withValues(alpha: 0.45),
+                    ),
+                    const SizedBox(width: 8),
+                    Flexible(
+                      child: Text(
+                        l10n.letterReadBodyUnavailable,
+                        style: font.textStyle.copyWith(
+                          color: paper.inkColor.withValues(alpha: 0.6),
+                          fontStyle: FontStyle.italic,
+                          fontSize: 13,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               if (canTranslate && _isTranslated && _translatedText != null)
                 Padding(
                   padding: const EdgeInsets.only(top: 8),
@@ -1568,58 +1726,626 @@ class _LetterReadScreenState extends State<LetterReadScreen>
     );
   }
 
-  Widget _buildReplyButton(BuildContext ctx, Letter letter) {
+  Widget _buildAiLetterNotice(BuildContext ctx, Letter letter) {
+    if (!letter.senderId.startsWith('ai_')) return const SizedBox.shrink();
     final l10n = AppL10n.of(ctx.read<AppState>().currentUser.languageCode);
-    final alreadyReplied = letter.hasReplied;
-    return SizedBox(
-      width: double.infinity,
-      height: 54,
-      child: ElevatedButton(
-        onPressed: alreadyReplied
-            ? null
-            : () => Navigator.push(
-                ctx,
-                MaterialPageRoute(
-                  builder: (_) => ComposeScreen(
-                    replyToId: letter.id,
-                    replyToName: letter.isAnonymous ? l10n.letterReadAnonymous : letter.senderName,
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+      decoration: BoxDecoration(
+        color: AppColors.bgCard,
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(
+          color: AppColors.textMuted.withValues(alpha: 0.25),
+          width: 1,
+        ),
+      ),
+      child: Row(
+        children: [
+          const Text('🤖', style: TextStyle(fontSize: 18)),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  l10n.aiLetterNoticeTitle,
+                  style: const TextStyle(
+                    color: AppColors.textPrimary,
+                    fontSize: 13,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  l10n.aiLetterNoticeBody,
+                  style: const TextStyle(
+                    color: AppColors.textMuted,
+                    fontSize: 11,
+                    height: 1.4,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  /// ❤️ "브랜드 팔로우" 토글 — 뮤트의 반대 (Build 115).
+  /// 팔로우된 브랜드는 인박스 상단에 해당 브랜드 편지가 고정된다.
+  /// 팔로우와 뮤트는 상호배타 — 팔로우 시 뮤트 자동 해제.
+  Widget _buildFollowBrandButton(BuildContext ctx, Letter letter) {
+    final l10n = AppL10n.of(ctx.read<AppState>().currentUser.languageCode);
+    return Builder(builder: (inner) {
+      final state = inner.watch<AppState>();
+      final followed = state.isBrandFollowed(letter.senderId);
+      return TextButton.icon(
+        icon: Icon(
+          followed ? Icons.favorite : Icons.favorite_border,
+          size: 16,
+          color: followed ? AppColors.gold : AppColors.textMuted,
+        ),
+        label: Text(
+          followed ? l10n.letterReadUnfollowBrand : l10n.letterReadFollowBrand,
+          style: TextStyle(
+            color: followed ? AppColors.gold : AppColors.textMuted,
+            fontSize: 12,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+        onPressed: () async {
+          await ctx.read<AppState>().toggleBrandFollow(letter.senderId);
+          if (!inner.mounted) return;
+          // 방금 팔로우한 경우에만 토스트 — 해제 시 조용히.
+          if (!followed) {
+            ScaffoldMessenger.of(inner).showSnackBar(
+              SnackBar(
+                content: Text(
+                  l10n.letterReadFollowedToast,
+                  style: const TextStyle(color: Colors.white),
+                ),
+                backgroundColor: const Color(0xFF1A1A2A),
+                behavior: SnackBarBehavior.floating,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+              ),
+            );
+          }
+        },
+      );
+    });
+  }
+
+  /// 🔕 "이 브랜드 편지 받지 않기" 텍스트 버튼 — 스팸 방지 도구.
+  /// 탭 시 AppState 에 senderId 추가/제거, SharedPreferences 영속, 이후
+  /// 수집첩에서 해당 브랜드 편지는 숨겨짐. 이미 받은 편지는 남음 (쿠폰 등).
+  Widget _buildMuteBrandButton(BuildContext ctx, Letter letter) {
+    final l10n = AppL10n.of(ctx.read<AppState>().currentUser.languageCode);
+    return Builder(builder: (inner) {
+      final state = inner.watch<AppState>();
+      final muted = state.isBrandMuted(letter.senderId);
+      return Padding(
+        padding: const EdgeInsets.symmetric(vertical: 6),
+        child: TextButton.icon(
+          icon: Icon(
+            muted ? Icons.notifications_active_outlined : Icons.notifications_off_outlined,
+            size: 16,
+            color: muted ? AppColors.teal : AppColors.textMuted,
+          ),
+          label: Text(
+            muted ? l10n.letterReadUnmuteBrand : l10n.letterReadMuteBrand,
+            style: TextStyle(
+              color: muted ? AppColors.teal : AppColors.textMuted,
+              fontSize: 12,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          onPressed: () async {
+            await ctx.read<AppState>().toggleBrandMute(letter.senderId);
+            if (!inner.mounted) return;
+            // 방금 뮤트한 경우에만 토스트 — 해제 시 조용히.
+            if (!muted) {
+              ScaffoldMessenger.of(inner).showSnackBar(
+                SnackBar(
+                  content: Text(
+                    l10n.letterReadMutedToast,
+                    style: const TextStyle(color: Colors.white),
+                  ),
+                  backgroundColor: const Color(0xFF1A1A2A),
+                  behavior: SnackBarBehavior.floating,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
+              );
+            }
+          },
+        ),
+      );
+    });
+  }
+
+  /// 🎁 쿠폰/교환권 사용 안내 박스 — 브랜드가 composeBrandRedemptionLabel
+  /// 필드에 입력한 자유 텍스트를 본문 아래 티일 강조 박스로 보여준다.
+  /// 하단에 "🎫 사용 완료" 버튼 추가 (Build 108) — 수신자가 혜택을 실제로
+  /// 쓰고 나면 탭해서 영구적으로 "사용됨" 으로 표시. 브랜드 측에서 전환율
+  /// 집계에 활용 가능 (같은 디바이스 기준 로컬, 서버 집계는 후속).
+  Widget _buildRedemptionBox(BuildContext ctx, Letter letter) {
+    final l10n = AppL10n.of(ctx.read<AppState>().currentUser.languageCode);
+    return Builder(builder: (inner) {
+      final state = inner.watch<AppState>();
+      final redeemed = state.isLetterRedeemed(letter.id);
+      // Build 133: 사용 기한 체크 — 만료된 쿠폰은 사용 완료된 것과 동일하게
+      // 비활성 + 취소선. Mark-used 버튼도 숨긴다 (이미 쓸 수 없으므로).
+      final expired = letter.isRedemptionExpired;
+      final disabled = redeemed || expired;
+      // 만료 임박(3일 이내) — 노란 경고 톤으로 카운트다운 강조.
+      final expiresAt = letter.redemptionExpiresAt;
+      final daysLeft = expiresAt?.difference(DateTime.now()).inDays;
+      final expiringSoon =
+          !expired && daysLeft != null && daysLeft <= 3;
+      return Container(
+        margin: const EdgeInsets.symmetric(vertical: 10),
+        padding: const EdgeInsets.all(14),
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: disabled
+                ? [
+                    const Color(0xFF4A5A75).withValues(alpha: 0.22),
+                    const Color(0xFF4A5A75).withValues(alpha: 0.08),
+                  ]
+                : expiringSoon
+                    ? [
+                        const Color(0xFFFFB86B).withValues(alpha: 0.16),
+                        const Color(0xFFFFB86B).withValues(alpha: 0.04),
+                      ]
+                    : [
+                        AppColors.teal.withValues(alpha: 0.14),
+                        AppColors.teal.withValues(alpha: 0.04),
+                      ],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(
+            color: disabled
+                ? const Color(0xFF4A5A75).withValues(alpha: 0.45)
+                : expiringSoon
+                    ? const Color(0xFFFFB86B).withValues(alpha: 0.55)
+                    : AppColors.teal.withValues(alpha: 0.45),
+            width: 1.2,
+          ),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    expired
+                        ? l10n.letterReadRedemptionExpiredHeader
+                        : redeemed
+                            ? l10n.letterReadRedemptionUsedHeader
+                            : l10n.letterReadRedemptionHeader,
+                    style: TextStyle(
+                      color: disabled
+                          ? AppColors.textMuted
+                          : expiringSoon
+                              ? const Color(0xFFFFB86B)
+                              : AppColors.teal,
+                      fontSize: 12,
+                      fontWeight: FontWeight.w800,
+                      letterSpacing: 0.5,
+                    ),
+                  ),
+                ),
+                if (redeemed)
+                  _statusBadge(
+                    icon: Icons.check_circle_rounded,
+                    label: l10n.letterReadRedemptionUsedBadge,
+                    color: AppColors.teal,
+                  )
+                else if (expired)
+                  _statusBadge(
+                    icon: Icons.timer_off_rounded,
+                    label: l10n.letterReadRedemptionExpiredBadge,
+                    color: const Color(0xFFE07A5F),
+                  ),
+              ],
+            ),
+            // Build 133: 유효기간 카운트다운 — 만료 상태가 아니면서 만료일이
+            // 있을 때만. 임박(≤3일)이면 주황색, 그 외엔 teal.
+            if (expiresAt != null && !redeemed) ...[
+              const SizedBox(height: 6),
+              _buildExpiryCountdown(expiresAt, expired, expiringSoon, l10n),
+            ],
+            const SizedBox(height: 8),
+            // Build 131: 카테고리별 분기 렌더링.
+            //   voucher → URL/로컬 경로 감지 → 이미지 인라인 (탭 시 풀스크린)
+            //   coupon  → 코드 텍스트 + 📋 복사 버튼
+            //   그 외   → 기존 SelectableText (하위 호환)
+            _buildRedemptionContent(ctx, inner, letter, l10n, disabled),
+            if (!disabled) ...[
+              const SizedBox(height: 12),
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton.icon(
+                  onPressed: () async {
+                    await ctx.read<AppState>().markLetterRedeemed(letter.id);
+                    if (!inner.mounted) return;
+                    ScaffoldMessenger.of(inner).showSnackBar(
+                      SnackBar(
+                        content: Text(
+                          l10n.letterReadRedemptionMarkedToast,
+                          style: const TextStyle(color: Colors.white),
+                        ),
+                        backgroundColor: AppColors.teal,
+                        behavior: SnackBarBehavior.floating,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                    );
+                  },
+                  icon: const Icon(Icons.check_circle_outline_rounded, size: 16),
+                  label: Text(
+                    l10n.letterReadRedemptionMarkUsed,
+                    style: const TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.teal,
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(vertical: 10),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
                   ),
                 ),
               ),
-        style: ElevatedButton.styleFrom(
-          backgroundColor: alreadyReplied
-              ? AppColors.bgSurface
-              : AppColors.bgCard,
-          foregroundColor: alreadyReplied
-              ? AppColors.textMuted
-              : AppColors.gold,
-          side: BorderSide(
-            color: alreadyReplied ? const Color(0xFF1F2D44) : AppColors.gold,
-            width: 1.5,
-          ),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(14),
-          ),
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(
-              alreadyReplied ? '✅' : '💌',
-              style: const TextStyle(fontSize: 18),
-            ),
-            const SizedBox(width: 8),
-            Text(
-              alreadyReplied ? l10n.letterReadReplied : l10n.letterReadReply,
-              style: const TextStyle(
-                fontSize: 15,
-                fontWeight: FontWeight.w700,
-                letterSpacing: 0.5,
-              ),
-            ),
+            ],
           ],
         ),
+      );
+    });
+  }
+
+  /// 브랜드 발송인이 "답장 받지 않음" 으로 설정한 편지에 표시되는 안내.
+  /// Build 133: redemption box 우상단 뱃지 (used / expired 공통 템플릿).
+  Widget _statusBadge({
+    required IconData icon,
+    required String label,
+    required Color color,
+  }) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.15),
+        borderRadius: BorderRadius.circular(6),
       ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, size: 12, color: color),
+          const SizedBox(width: 4),
+          Text(
+            label,
+            style: TextStyle(
+              color: color,
+              fontSize: 10,
+              fontWeight: FontWeight.w800,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  /// Build 133: 유효기간 카운트다운 — 날짜 + "N일 남음". 만료일이 있을 때만
+  /// 렌더. 임박(≤3일)이면 주황, 그 외 teal. 만료됐거나 사용완료면 숨김.
+  Widget _buildExpiryCountdown(
+    DateTime expiresAt,
+    bool expired,
+    bool expiringSoon,
+    AppL10n l10n,
+  ) {
+    final dateStr =
+        '${expiresAt.year}.${expiresAt.month.toString().padLeft(2, '0')}.${expiresAt.day.toString().padLeft(2, '0')}';
+    final daysLeft = expiresAt.difference(DateTime.now()).inDays;
+    final color = expired
+        ? AppColors.textMuted
+        : expiringSoon
+            ? const Color(0xFFFFB86B)
+            : AppColors.teal;
+    return Row(
+      children: [
+        Icon(Icons.schedule_rounded, size: 12, color: color),
+        const SizedBox(width: 4),
+        Text(
+          l10n.letterReadRedemptionExpiresOn(dateStr),
+          style: TextStyle(
+            color: color,
+            fontSize: 10.5,
+            fontWeight: FontWeight.w700,
+          ),
+        ),
+        if (!expired) ...[
+          const SizedBox(width: 6),
+          Text(
+            '·',
+            style: TextStyle(color: color.withValues(alpha: 0.5)),
+          ),
+          const SizedBox(width: 6),
+          Text(
+            daysLeft == 0
+                ? l10n.letterReadRedemptionTodayOnly
+                : l10n.letterReadRedemptionDaysLeft(daysLeft),
+            style: TextStyle(
+              color: color,
+              fontSize: 10.5,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+        ],
+      ],
+    );
+  }
+
+  /// Build 131: redemption box 내부 본문 — 카테고리별 분기 렌더링.
+  ///   voucher → redemptionInfo 가 URL/로컬경로처럼 보이면 이미지 인라인,
+  ///              아니면 SelectableText fallback
+  ///   coupon  → 코드 텍스트 + 📋 복사 버튼
+  ///   general → 기존 SelectableText (하위 호환)
+  Widget _buildRedemptionContent(
+    BuildContext ctx,
+    BuildContext inner,
+    Letter letter,
+    AppL10n l10n,
+    bool redeemed,
+  ) {
+    final info = letter.redemptionInfo ?? '';
+    final baseStyle = TextStyle(
+      color: redeemed ? AppColors.textMuted : AppColors.textPrimary,
+      fontSize: 14,
+      height: 1.45,
+      fontWeight: FontWeight.w600,
+      decoration: redeemed ? TextDecoration.lineThrough : TextDecoration.none,
+      decorationColor: AppColors.textMuted.withValues(alpha: 0.5),
+    );
+
+    if (letter.category == LetterCategory.voucher && _looksLikeImageRef(info)) {
+      return _buildRedemptionImage(ctx, info, redeemed, l10n);
+    }
+    if (letter.category == LetterCategory.coupon && info.trim().isNotEmpty) {
+      return _buildRedemptionCoupon(inner, info, baseStyle, redeemed, l10n);
+    }
+    return SelectableText(info, style: baseStyle);
+  }
+
+  bool _looksLikeImageRef(String v) {
+    final t = v.trim();
+    if (t.isEmpty) return false;
+    if (t.startsWith('http://') || t.startsWith('https://')) return true;
+    // 절대경로(로컬 파일) — iOS·Android 모두 `/` 시작.
+    if (t.startsWith('/') || t.startsWith('file://')) return true;
+    return false;
+  }
+
+  Widget _buildRedemptionImage(
+    BuildContext ctx,
+    String info,
+    bool redeemed,
+    AppL10n l10n,
+  ) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        GestureDetector(
+          onTap: () => _openFullscreenImage(ctx, info),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(10),
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxHeight: 260),
+              child: Opacity(
+                opacity: redeemed ? 0.55 : 1.0,
+                child: _buildLetterImage(info),
+              ),
+            ),
+          ),
+        ),
+        const SizedBox(height: 6),
+        Text(
+          l10n.letterReadVoucherShowAtCounter,
+          style: const TextStyle(
+            color: AppColors.textMuted,
+            fontSize: 10.5,
+            fontWeight: FontWeight.w500,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildRedemptionCoupon(
+    BuildContext inner,
+    String code,
+    TextStyle baseStyle,
+    bool redeemed,
+    AppL10n l10n,
+  ) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Expanded(
+          child: SelectableText(
+            code,
+            style: baseStyle.copyWith(
+              fontFamily: 'monospace',
+              letterSpacing: 0.8,
+            ),
+          ),
+        ),
+        const SizedBox(width: 10),
+        InkWell(
+          onTap: redeemed
+              ? null
+              : () async {
+                  await Clipboard.setData(ClipboardData(text: code.trim()));
+                  if (!inner.mounted) return;
+                  ScaffoldMessenger.of(inner).showSnackBar(
+                    SnackBar(
+                      content: Text(
+                        l10n.letterReadCouponCopied,
+                        style: const TextStyle(color: Colors.white),
+                      ),
+                      backgroundColor: AppColors.teal,
+                      behavior: SnackBarBehavior.floating,
+                      duration: const Duration(seconds: 2),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                  );
+                },
+          borderRadius: BorderRadius.circular(8),
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+            decoration: BoxDecoration(
+              color: redeemed
+                  ? AppColors.bgSurface
+                  : AppColors.teal.withValues(alpha: 0.15),
+              borderRadius: BorderRadius.circular(8),
+              border: Border.all(
+                color: redeemed
+                    ? AppColors.textMuted.withValues(alpha: 0.3)
+                    : AppColors.teal.withValues(alpha: 0.5),
+              ),
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(
+                  Icons.copy_rounded,
+                  size: 13,
+                  color: redeemed ? AppColors.textMuted : AppColors.teal,
+                ),
+                const SizedBox(width: 4),
+                Text(
+                  l10n.letterReadCouponCopyBtn,
+                  style: TextStyle(
+                    color: redeemed ? AppColors.textMuted : AppColors.teal,
+                    fontSize: 11,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  /// 답장 버튼 자리를 대신해 "이 캠페인은 답장을 받지 않아요" 한 줄 카드.
+  Widget _buildBrandNoReplyNotice(BuildContext ctx) {
+    final l10n = AppL10n.of(ctx.read<AppState>().currentUser.languageCode);
+    return Container(
+      margin: const EdgeInsets.symmetric(vertical: 4),
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+      decoration: BoxDecoration(
+        color: AppColors.bgCard,
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: const Color(0xFF1F2D44)),
+      ),
+      child: Row(
+        children: [
+          const Text('🔕', style: TextStyle(fontSize: 16)),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Text(
+              l10n.letterReadBrandNoReply,
+              style: const TextStyle(
+                color: AppColors.textSecondary,
+                fontSize: 12,
+                height: 1.35,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildReplyButton(BuildContext ctx, Letter letter) {
+    final l10n = AppL10n.of(ctx.read<AppState>().currentUser.languageCode);
+    // 답장 1회 제한을 제거 — 유저는 같은 편지에 여러 번 답장 가능.
+    // `hasReplied` 플래그는 UI 상에서 "최근 답장함" 힌트로만 쓰고, 버튼 자체는
+    // 항상 활성 상태로 둔다.
+    final recentlyReplied = letter.hasReplied;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        SizedBox(
+          width: double.infinity,
+          height: 54,
+          child: ElevatedButton(
+            onPressed: () => Navigator.push(
+              ctx,
+              MaterialPageRoute(
+                builder: (_) => ComposeScreen(
+                  replyToId: letter.id,
+                  replyToName: letter.isAnonymous
+                      ? l10n.letterReadAnonymous
+                      : letter.senderName,
+                ),
+              ),
+            ),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.bgCard,
+              foregroundColor: AppColors.gold,
+              side: const BorderSide(color: AppColors.gold, width: 1.5),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(14),
+              ),
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Text('💌', style: TextStyle(fontSize: 18)),
+                const SizedBox(width: 8),
+                Text(
+                  recentlyReplied
+                      ? l10n.letterReadReplyAgain
+                      : l10n.letterReadReply,
+                  style: const TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w700,
+                    letterSpacing: 0.5,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+        if (recentlyReplied)
+          Padding(
+            padding: const EdgeInsets.only(top: 6),
+            child: Text(
+              l10n.letterReadRepliedHint,
+              textAlign: TextAlign.center,
+              style: const TextStyle(
+                color: AppColors.textMuted,
+                fontSize: 11,
+                fontStyle: FontStyle.italic,
+              ),
+            ),
+          ),
+      ],
     );
   }
 
@@ -1635,12 +2361,14 @@ class _LetterReadScreenState extends State<LetterReadScreen>
   /// 이미지 URL이 로컬 파일 경로인지 네트워크 URL인지 판별하여 적절한 위젯 반환
   // ── 풀스크린 이미지 뷰어 ──────────────────────────────────────────────────
   void _openFullscreenImage(BuildContext context, String imageUrl) {
+    final isVoucher = widget.letter.category == LetterCategory.voucher;
     Navigator.of(context).push(
       MaterialPageRoute(
         fullscreenDialog: true,
         builder: (_) => _FullscreenImageViewer(
           imageUrl: imageUrl,
           heroTag: 'letter_image_${widget.letter.id}',
+          isVoucher: isVoucher,
         ),
       ),
     );
@@ -1761,8 +2489,14 @@ class _LetterBgPainter extends CustomPainter {
 class _FullscreenImageViewer extends StatefulWidget {
   final String imageUrl;
   final String heroTag;
+  // Build 183: 교환권 이미지 전용 플래그 — screenshot/recording 차단 활성.
+  final bool isVoucher;
 
-  const _FullscreenImageViewer({required this.imageUrl, required this.heroTag});
+  const _FullscreenImageViewer({
+    required this.imageUrl,
+    required this.heroTag,
+    this.isVoucher = false,
+  });
 
   @override
   State<_FullscreenImageViewer> createState() => _FullscreenImageViewerState();
@@ -1771,6 +2505,26 @@ class _FullscreenImageViewer extends StatefulWidget {
 class _FullscreenImageViewerState extends State<_FullscreenImageViewer> {
   bool _isSaving = false;
   bool _savedOk = false;
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.isVoucher) {
+      // Android: FLAG_SECURE — 시스템 레벨 스크린샷/recording 차단.
+      // iOS: capture 감지 시 내부 blur overlay (플러그인 제공).
+      ScreenProtector.preventScreenshotOn();
+      ScreenProtector.protectDataLeakageWithBlur();
+    }
+  }
+
+  @override
+  void dispose() {
+    if (widget.isVoucher) {
+      ScreenProtector.preventScreenshotOff();
+      ScreenProtector.protectDataLeakageWithBlurOff();
+    }
+    super.dispose();
+  }
 
   Future<void> _saveImage() async {
     if (_isSaving) return;

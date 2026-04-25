@@ -5,6 +5,7 @@ import '../../core/localization/app_localizations.dart';
 import '../../core/localization/language_config.dart';
 import '../../core/services/auth_service.dart';
 import '../../core/services/notification_service.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class OnboardingScreen extends StatefulWidget {
   const OnboardingScreen({super.key});
@@ -28,8 +29,10 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
   AppL10n get _l => AppL10n.of(_langCode);
 
+  // Build 140: intro 슬라이드를 4개 → 2개 로 축약. 새 티어 정체성을
+  // (🎟 줍기 → 📸 홍보 → 🚀 시작) 3 단계로 간결 설명.
   static const int _totalPages =
-      7; // page 0 = country, 1 = location, 2-5 = intro, 6 = coming soon
+      6; // page 0 = country, 1 = location, 2-4 = intro (🎟 📸 🚀), 5 = premium
 
   static const List<Map<String, String>> _popularCountries = [
     {'name': '대한민국', 'flag': '🇰🇷', 'lang': 'ko'},
@@ -116,8 +119,24 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     await AuthService.setOnboardingComplete();
 
     // 알림 권한 요청 (선택적 — 거부해도 진행 가능)
+    // 먼저 커스텀 프리프롬프트로 "왜" 필요한지 설명 → 시스템 권한 팝업 →
+    // 허용 시 매일 오전 8시 리마인더 자동 예약. 이 프리프롬프트 패턴은
+    // 시스템 팝업에서 곧바로 거부되는 비율을 크게 낮춰준다.
     try {
-      await NotificationService.requestPermissions();
+      final wantsReminder = await _showReminderPrePrompt();
+      if (wantsReminder) {
+        final granted = await NotificationService.requestPermissions();
+        if (granted) {
+          final prefs = await SharedPreferences.getInstance();
+          await prefs.setBool('notify_daily_letter', true);
+          await NotificationService.scheduleDailyLetterReminder(
+            langCode: _langCode,
+          );
+        }
+      } else {
+        // 거부해도 앱 전반의 알림 권한은 요청해 둔다 (편지 도착 알림 등)
+        await NotificationService.requestPermissions();
+      }
     } catch (_) {}
 
     if (mounted) {
@@ -129,6 +148,64 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
         ).pushReplacementNamed(loggedIn ? '/home' : '/auth');
       }
     }
+  }
+
+  Future<bool> _showReminderPrePrompt() async {
+    if (!mounted) return false;
+    final granted = await showDialog<bool>(
+      context: context,
+      barrierDismissible: false,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: AppColors.bgCard,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Text('☀️', style: TextStyle(fontSize: 32)),
+            const SizedBox(width: 10),
+            Flexible(
+              child: Text(
+                _l.reminderPrepromptTitle,
+                style: const TextStyle(
+                  color: AppColors.textPrimary,
+                  fontSize: 18,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+            ),
+          ],
+        ),
+        content: Text(
+          _l.reminderPrepromptBody,
+          textAlign: TextAlign.center,
+          style: const TextStyle(
+            color: AppColors.textSecondary,
+            fontSize: 14,
+            height: 1.5,
+          ),
+        ),
+        actionsAlignment: MainAxisAlignment.center,
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(false),
+            child: Text(
+              _l.reminderPrepromptLater,
+              style: const TextStyle(color: AppColors.textMuted),
+            ),
+          ),
+          FilledButton(
+            style: FilledButton.styleFrom(
+              backgroundColor: AppColors.teal,
+              foregroundColor: Colors.white,
+              padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 10),
+            ),
+            onPressed: () => Navigator.of(ctx).pop(true),
+            child: Text(_l.reminderPrepromptYes),
+          ),
+        ],
+      ),
+    );
+    return granted ?? false;
   }
 
   String _getKoreanName(String displayName) {
@@ -174,8 +251,66 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     }
   }
 
-  /// 위치 권한 없이 다음으로 건너뜀 (앱스토어 가이드라인 준수)
-  void _skipLocationPermission() {
+  /// Build 166: 위치 권한 건너뛰기 전 강한 경고 모달.
+  /// "GPS 미동의 시 편지 줍기·보내기 불가" 를 명시하고 유저가 명시적으로
+  /// "제한 모드로 진행" 을 탭해야만 skip. App Store 가이드라인 준수 + 사용성
+  /// 저하 방지 (빈 앱 경험).
+  Future<void> _skipLocationPermission() async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      barrierDismissible: false,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: AppColors.bgCard,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: Row(
+          children: [
+            const Text('⚠️', style: TextStyle(fontSize: 26)),
+            const SizedBox(width: 10),
+            Flexible(
+              child: Text(
+                _l.gpsSkipWarningTitle,
+                style: const TextStyle(
+                  color: AppColors.error,
+                  fontSize: 16,
+                  fontWeight: FontWeight.w800,
+                ),
+              ),
+            ),
+          ],
+        ),
+        content: Text(
+          _l.gpsSkipWarningBody,
+          style: const TextStyle(
+            color: AppColors.textSecondary,
+            fontSize: 13.5,
+            height: 1.6,
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(false),
+            child: Text(
+              _l.gpsSkipBack,
+              style: const TextStyle(
+                color: AppColors.gold,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(true),
+            child: Text(
+              _l.gpsSkipContinueLimited,
+              style: const TextStyle(
+                color: AppColors.textMuted,
+                fontSize: 12.5,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+    if (confirmed != true || !mounted) return;
     _pageCtrl.nextPage(
       duration: const Duration(milliseconds: 400),
       curve: Curves.easeInOut,
@@ -212,24 +347,38 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 onRequest: _requestLocationPermission,
                 langCode: _langCode,
               ),
-              // Pages 2-5: Intro slides
+              // Build 140: Intro 슬라이드 3개 — 새 3-티어 정체성을 한 흐름에
+              // 전달.
+              //   Page 2 (🎟) — 줍기 (Free 의 핵심 활동)
+              //   Page 3 (📸) — 홍보 (Premium + Brand 의 가치 제안)
+              //   Page 4 (🚀) — 시작
+              // ✈️ 배송 메커니즘 + 🎁 혜택 설명은 "픽업하면 알아서 보인다"
+              // 로 inline 교육으로 위임 — 온보딩은 짧게.
               _IntroPage(
-                emoji: '✈️',
-                title: _l.onboarding2Title,
-                body: _l.onboarding2Body,
-                gradient: const [Color(0xFF0A1628), Color(0xFF0D2040)],
-              ),
-              _IntroPage(
-                emoji: '📬',
+                emoji: '🎟',
                 title: _l.onboarding3Title,
                 body: _l.onboarding3Body,
                 gradient: const [Color(0xFF0F1A30), Color(0xFF1A2A50)],
+                // Build 186: 줍기는 모든 티어 가능 — "Free + Premium + Brand".
+                tiers: [
+                  _TierBadge(_l.tierLabelFree, AppColors.teal),
+                  _TierBadge(_l.tierLabelPremium, AppColors.gold),
+                  _TierBadge(_l.tierLabelBrand, const Color(0xFFFF8A5C)),
+                ],
               ),
               _IntroPage(
-                emoji: '🌗',
+                // Build 140: 기존 onboarding4 (🎁 benefits) 슬롯 재활용, 카피
+                // 는 Premium/Brand 의 홍보 편지 발송 가치 제안으로 리프레임.
+                emoji: '📸',
                 title: _l.onboarding4Title,
                 body: _l.onboarding4Body,
                 gradient: const [Color(0xFF15102A), Color(0xFF2A1A50)],
+                // Build 186: 편지 뿌리기는 Premium + Brand 만. Free 배제를
+                // 시각적으로 명시해 gate 시 혼선 예방.
+                tiers: [
+                  _TierBadge(_l.tierLabelPremium, AppColors.gold),
+                  _TierBadge(_l.tierLabelBrand, const Color(0xFFFF8A5C)),
+                ],
               ),
               _IntroPage(
                 emoji: '🚀',
@@ -237,7 +386,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 body: _l.onboarding5Body,
                 gradient: const [Color(0xFF0A1628), Color(0xFF162040)],
               ),
-              // Page 6: Premium 소개
+              // Page 5: Premium 소개
               _PremiumPage(l: _l),
             ],
           ),
@@ -595,7 +744,57 @@ class _LocationPermissionPage extends StatelessWidget {
                 ),
               ),
               if (!isGranted && !isChecking) ...[
-                const SizedBox(height: 32),
+                const SizedBox(height: 24),
+                // Build 166: GPS 필수 동의 — 약관·제한사항 명시 박스.
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 12,
+                  ),
+                  decoration: BoxDecoration(
+                    color: AppColors.bgCard.withValues(alpha: 0.7),
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(
+                      color: AppColors.gold.withValues(alpha: 0.4),
+                    ),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          const Icon(
+                            Icons.privacy_tip_rounded,
+                            color: AppColors.gold,
+                            size: 16,
+                          ),
+                          const SizedBox(width: 6),
+                          Flexible(
+                            child: Text(
+                              l.gpsTermsHeader,
+                              style: const TextStyle(
+                                color: AppColors.gold,
+                                fontSize: 12,
+                                fontWeight: FontWeight.w800,
+                                letterSpacing: 0.3,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        l.gpsTermsBody,
+                        style: const TextStyle(
+                          color: AppColors.textSecondary,
+                          fontSize: 11.5,
+                          height: 1.55,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 16),
                 GestureDetector(
                   onTap: onRequest,
                   child: Container(
@@ -604,27 +803,24 @@ class _LocationPermissionPage extends StatelessWidget {
                       vertical: 14,
                     ),
                     decoration: BoxDecoration(
-                      color: AppColors.gold.withValues(alpha: 0.15),
+                      color: AppColors.gold,
                       borderRadius: BorderRadius.circular(14),
-                      border: Border.all(
-                        color: AppColors.gold.withValues(alpha: 0.4),
-                      ),
                     ),
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         const Icon(
-                          Icons.location_on_rounded,
-                          color: AppColors.gold,
+                          Icons.check_circle_rounded,
+                          color: AppColors.bgDeep,
                           size: 20,
                         ),
                         const SizedBox(width: 8),
                         Text(
-                          l.locationAllow,
+                          l.gpsAgreeAndContinue,
                           style: const TextStyle(
-                            color: AppColors.gold,
+                            color: AppColors.bgDeep,
                             fontSize: 15,
-                            fontWeight: FontWeight.w700,
+                            fontWeight: FontWeight.w800,
                           ),
                         ),
                       ],
@@ -633,6 +829,8 @@ class _LocationPermissionPage extends StatelessWidget {
                 ),
               ],
               if (isChecking)
+                // Build 160: AppLoading.medium — 기존 CircularProgressIndicator
+                // 직접 정의 → 캐노니컬 토큰.
                 const Padding(
                   padding: EdgeInsets.only(top: 32),
                   child: CircularProgressIndicator(
@@ -665,16 +863,17 @@ class _PremiumPage extends StatelessWidget {
       l.onboardingFreeFeat4,
     ];
 
-    // 프리미엄 전용 기능 (실제 한도와 동일하게 유지)
+    // Build 119: 픽업-퍼스트 리오더. 반경 📍 → 쿨다운 ⏱ → 발송 묶음 ✈️ →
+    // 꾸미기 묶음 🎨 순서로 페이월(premium_screen) 과 통일.
     final premiumFeatures = [
       {
-        'emoji': '✉️',
+        'emoji': '📍',
         'text': l.onboardingPremiumFeat1,
         'color': const Color(0xFFFF6B9D),
       },
-      {'emoji': '📸', 'text': l.onboardingPremiumFeat2, 'color': AppColors.teal},
-      {'emoji': '⚡', 'text': l.onboardingPremiumFeat3, 'color': AppColors.gold},
-      {'emoji': '🗼', 'text': l.onboardingPremiumFeat4, 'color': const Color(0xFFFF8A5C)},
+      {'emoji': '⏱', 'text': l.onboardingPremiumFeat2, 'color': AppColors.teal},
+      {'emoji': '✈️', 'text': l.onboardingPremiumFeat3, 'color': AppColors.gold},
+      {'emoji': '🎨', 'text': l.onboardingPremiumFeat4, 'color': const Color(0xFFFF8A5C)},
     ];
     final dayTimeline = [
       {
@@ -1085,12 +1284,17 @@ class _IntroPage extends StatelessWidget {
   final String title;
   final String body;
   final List<Color> gradient;
+  // Build 186: 티어 뱃지 칩 (선택). 해당 슬라이드가 어느 tier 에게 적용되는지
+  // 한 눈에 표현. 예: 🎟 줍기 = [Free, Premium, Brand] / 📸 홍보 = [Premium, Brand].
+  // null 이면 렌더 안 함 (기존 동작).
+  final List<_TierBadge>? tiers;
 
   const _IntroPage({
     required this.emoji,
     required this.title,
     required this.body,
     required this.gradient,
+    this.tiers,
   });
 
   @override
@@ -1124,7 +1328,7 @@ class _IntroPage extends StatelessWidget {
                   child: Text(emoji, style: const TextStyle(fontSize: 56)),
                 ),
               ),
-              const SizedBox(height: 40),
+              const SizedBox(height: 32),
               Text(
                 title,
                 textAlign: TextAlign.center,
@@ -1135,6 +1339,15 @@ class _IntroPage extends StatelessWidget {
                   height: 1.3,
                 ),
               ),
+              if (tiers != null) ...[
+                const SizedBox(height: 12),
+                Wrap(
+                  alignment: WrapAlignment.center,
+                  spacing: 6,
+                  runSpacing: 6,
+                  children: tiers!.map((t) => _tierChip(t)).toList(),
+                ),
+              ],
               const SizedBox(height: 20),
               Text(
                 body,
@@ -1151,4 +1364,35 @@ class _IntroPage extends StatelessWidget {
       ),
     );
   }
+
+  Widget _tierChip(_TierBadge t) {
+    final color = t.color;
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.14),
+        borderRadius: BorderRadius.circular(999),
+        border: Border.all(
+          color: color.withValues(alpha: 0.55),
+          width: 1,
+        ),
+      ),
+      child: Text(
+        t.label,
+        style: TextStyle(
+          color: color,
+          fontSize: 11,
+          fontWeight: FontWeight.w800,
+          letterSpacing: 0.3,
+        ),
+      ),
+    );
+  }
+}
+
+/// Build 186: 온보딩 슬라이드에서 "이 기능은 어느 티어용?" 를 시각 표현.
+class _TierBadge {
+  final String label;
+  final Color color;
+  const _TierBadge(this.label, this.color);
 }

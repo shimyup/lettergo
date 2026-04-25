@@ -13,6 +13,10 @@ class FirestoreService {
     _idToken = token;
   }
 
+  /// Build 136: StorageService 가 같은 ID 토큰으로 Firebase Storage REST
+  /// 호출을 인증하기 위해 토큰을 읽을 수 있도록 노출. 다른 곳에서 쓰지 말 것.
+  static String? get idToken => _idToken;
+
   static Map<String, String> get _headers => {
     'Content-Type': 'application/json',
     if (_idToken != null) 'Authorization': 'Bearer $_idToken',
@@ -48,6 +52,15 @@ class FirestoreService {
   }
 
   // ── 문서 쓰기/업데이트 ───────────────────────────────────────────────────────
+  //
+  // Firestore REST API 의 PATCH 는 updateMask 를 명시하지 않으면 요청 body 에
+  // 없는 기존 필드들을 "삭제" 처리한다. 이 서비스의 caller 들은 모두 "부분
+  // 업데이트" 를 기대하므로, 전달받은 필드만 updateMask 로 지정해
+  // 다른 필드가 동시에 살아남도록 한다.
+  //
+  // 이 가드가 없으면 위도/경도 저장과 초대코드 저장이 병렬로 날아가 서로의
+  // 필드를 덮어 쓰는 경쟁 상태가 발생, 지도에서 좌표가 0,0 으로 보이는
+  // 문제가 재현된다.
   static Future<bool> setDocument(
     String path,
     Map<String, dynamic> data,
@@ -56,9 +69,15 @@ class FirestoreService {
     await FirebaseAuthService.ensureValidToken();
     try {
       final body = jsonEncode({'fields': _toFirestoreFields(data)});
+      final maskParams = data.keys
+          .map((k) => 'updateMask.fieldPaths=${Uri.encodeQueryComponent(k)}')
+          .join('&');
+      final separator = maskParams.isEmpty ? '' : '?$maskParams';
       final res = await http
           .patch(
-            Uri.parse('${FirebaseConfig.firestoreBase}/$path'),
+            Uri.parse(
+              '${FirebaseConfig.firestoreBase}/$path$separator',
+            ),
             headers: _headers,
             body: body,
           )
@@ -126,6 +145,53 @@ class FirestoreService {
       if (kDebugMode) debugPrint('[FirestoreService] 에러: $e\n$st');
     }
     return [];
+  }
+
+  /// Build 138: 문서의 정수 필드를 원자적으로 증감. Firestore `:commit`
+  /// 엔드포인트 + `fieldTransforms.increment` 사용. 여러 유저가 동시에
+  /// 같은 편지를 주워도 counter 가 안전하게 증가.
+  ///
+  /// [path] 예: `letters/sent_123`
+  /// [field] 예: `pickupCount`
+  /// [by]  증감량 (음수 가능)
+  static Future<bool> incrementField({
+    required String path,
+    required String field,
+    int by = 1,
+  }) async {
+    if (!FirebaseConfig.kFirebaseEnabled) return false;
+    await FirebaseAuthService.ensureValidToken();
+    try {
+      final docName =
+          'projects/${FirebaseConfig.projectId}/databases/(default)/documents/$path';
+      final body = jsonEncode({
+        'writes': [
+          {
+            'transform': {
+              'document': docName,
+              'fieldTransforms': [
+                {
+                  'fieldPath': field,
+                  'increment': {'integerValue': by.toString()},
+                },
+              ],
+            },
+          },
+        ],
+      });
+      final commitUrl =
+          'https://firestore.googleapis.com/v1/projects/${FirebaseConfig.projectId}'
+          '/databases/(default)/documents:commit';
+      final res = await http
+          .post(Uri.parse(commitUrl), headers: _headers, body: body)
+          .timeout(const Duration(seconds: 10));
+      return res.statusCode == 200;
+    } catch (e, st) {
+      if (kDebugMode) {
+        debugPrint('[FirestoreService] incrementField 에러: $e\n$st');
+      }
+    }
+    return false;
   }
 
   // ── 문서 삭제 ────────────────────────────────────────────────────────────────

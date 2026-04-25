@@ -75,21 +75,27 @@ class AppL10n {
     'th': 'ข้อความในขวด',
   });
 
+  // Build 114: 스플래시 메인 태그라인 — 마케팅 기획서 Build 113 의 1순위
+  // 후보 ("걸으면 쿠폰이 보여요" / "Walk close. Pick it up.") 로 교체.
+  // 기존 "세상 어딘가의 당신에게" 는 펜팔 포지셔닝 잔재.
+  // Build 172: 감성적 톤으로 리라이트. 실용성 (action verb) 보다 "편지가 나를
+  // 기다리는" 감성 앵커를 우선. "주워 쓰세요" 는 onboarding/CTA 에서 계속 등장.
+  // 메인 스플래시에는 한 번 만나는 순간이라 여운 있는 카피.
   String get tagline => _t({
-    'ko': '세상 어딘가의 당신에게',
-    'en': 'To you, somewhere in the world',
-    'ja': 'どこかの誰かへ',
-    'zh': '致世界某处的你',
-    'fr': 'À toi, quelque part dans le monde',
-    'de': 'An dich, irgendwo auf der Welt',
-    'es': 'A ti, en algún lugar del mundo',
-    'pt': 'Para você, em algum lugar do mundo',
-    'ru': 'Тебе, где-то в мире',
-    'tr': 'Dünyanın bir yerindeki sana',
-    'ar': 'إليك، في مكان ما في العالم',
-    'it': 'A te, da qualche parte nel mondo',
-    'hi': 'दुनिया में कहीं तुम्हारे लिए',
-    'th': 'ถึงคุณ ที่ไหนสักแห่งในโลก',
+    'ko': '오늘, 편지가 당신을 기다려요',
+    'en': 'A letter is waiting for you today',
+    'ja': '今日、手紙があなたを待っています',
+    'zh': '今天，有一封信在等你',
+    'fr': "Aujourd'hui, une lettre vous attend",
+    'de': 'Heute wartet ein Brief auf dich',
+    'es': 'Hoy, una carta te espera',
+    'pt': 'Hoje, uma carta espera por ti',
+    'ru': 'Сегодня вас ждёт письмо',
+    'tr': 'Bugün seni bir mektup bekliyor',
+    'ar': 'اليوم، رسالة تنتظرك',
+    'it': 'Oggi, una lettera ti aspetta',
+    'hi': 'आज आपका एक पत्र इंतज़ार कर रहा है',
+    'th': 'วันนี้ มีจดหมายรอคุณอยู่',
   });
 
   // ── Auth ──────────────────────────────────────────────────────────────────
@@ -273,6 +279,95 @@ class AppL10n {
     'it': 'Profilo',
     'hi': 'प्रोफ़ाइल',
     'th': 'โปรไฟล์',
+  });
+
+  // ── 하단 네비 전용 라벨 (보물찾기 컨셉) ─────────────────────────────
+  // 기존 `map` / `inbox` 는 다른 컨텍스트(대화상자·에러 메시지 등)에서도
+  // 쓰이므로 전역 변경은 부작용이 크다. 네비바에서만 쓸 새 키를 별도로
+  // 두어 "지도 → 탐험", "편지함 → 수집첩" 으로 브랜드 톤을 바꾼다.
+  String get navExplore => _t({
+    'ko': '탐험',
+    'en': 'Explore',
+    'ja': '探検',
+    'zh': '探索',
+    'fr': 'Explorer',
+    'de': 'Erkunden',
+    'es': 'Explorar',
+    'pt': 'Explorar',
+    'ru': 'Карта',
+    'tr': 'Keşfet',
+    'ar': 'استكشاف',
+    'it': 'Esplora',
+    'hi': 'खोजें',
+    'th': 'สำรวจ',
+  });
+  String get navCollection => _t({
+    'ko': '수집첩',
+    'en': 'Collection',
+    'ja': 'コレクション',
+    'zh': '收藏簿',
+    'fr': 'Collection',
+    'de': 'Sammlung',
+    'es': 'Colección',
+    'pt': 'Coleção',
+    'ru': 'Коллекция',
+    'tr': 'Koleksiyon',
+    'ar': 'المجموعة',
+    'it': 'Collezione',
+    'hi': 'संग्रह',
+    'th': 'สะสม',
+  });
+  String get navSend => _t({
+    'ko': '보내기',
+    'en': 'Send',
+    'ja': '送る',
+    'zh': '寄出',
+    'fr': 'Envoyer',
+    'de': 'Senden',
+    'es': 'Enviar',
+    'pt': 'Enviar',
+    'ru': 'Отправить',
+    'tr': 'Gönder',
+    'ar': 'إرسال',
+    'it': 'Invia',
+    'hi': 'भेजें',
+    'th': 'ส่ง',
+  });
+
+  // Build 139: Brand 유저 전용 중앙 탭 라벨.
+  String get navCampaign => _t({
+    'ko': '캠페인',
+    'en': 'Campaign',
+    'ja': 'キャンペーン',
+    'zh': '活动',
+    'fr': 'Campagne',
+    'de': 'Kampagne',
+    'es': 'Campaña',
+    'pt': 'Campanha',
+    'ru': 'Кампания',
+    'tr': 'Kampanya',
+    'ar': 'حملة',
+    'it': 'Campagna',
+    'hi': 'अभियान',
+    'th': 'แคมเปญ',
+  });
+
+  // Build 139: Free 유저 전용 중앙 탭 라벨 — 업그레이드 CTA.
+  String get navUpgradeShort => _t({
+    'ko': '업그레이드',
+    'en': 'Upgrade',
+    'ja': 'アップグレード',
+    'zh': '升级',
+    'fr': 'Upgrade',
+    'de': 'Upgrade',
+    'es': 'Mejora',
+    'pt': 'Upgrade',
+    'ru': 'Апгрейд',
+    'tr': 'Yükselt',
+    'ar': 'ترقية',
+    'it': 'Upgrade',
+    'hi': 'अपग्रेड',
+    'th': 'อัปเกรด',
   });
 
   // ── Inbox ─────────────────────────────────────────────────────────────────
@@ -561,119 +656,130 @@ class AppL10n {
     'hi': '✈️ वास्तविक डिलीवरी रूट',
     'th': '✈️ เส้นทางการส่งจดหมายจริง',
   });
+  // Build 119: 배송 경로 페이지를 픽업과 묶어 재작성. "내가 주운 편지"도
+  // 지도 위에서 출발지→내 위치로 여행한 여정이 시각화된다는 연결 고리로
+  // 헌트 포지셔닝에 정렬. 보낸 편지만 이동하는 것 아님을 명시.
   String get onboarding2Body => _t({
-    'ko': '편지는 트럭 🚚 → 공항 ✈️ → 목적지 트럭 🚚 순서로 세계지도에서 이동합니다. 실제 우편 시간을 반영합니다.',
+    'ko': '주운 편지도, 보낸 편지도 🚚 → ✈️ → 🚚 순서로 지도 위를 이동해요. 실제 우편 이동 시간이 그대로 반영됩니다.',
     'en':
-        'Letters travel 🚚 → ✈️ → 🚚 on a world map, reflecting real postal delivery times.',
-    'ja': '手紙は🚚→✈️→🚚の順で世界地図を移動します。実際の郵便時間を反映します。',
-    'zh': '信件在世界地图上沿🚚→✈️→🚚路线移动，反映真实邮递时间。',
+        'Both picked-up and sent letters travel 🚚 → ✈️ → 🚚 across the map, reflecting real postal transit times.',
+    'ja': '拾った手紙も送った手紙も🚚→✈️→🚚の順で地図を移動します。実際の郵便時間を反映します。',
+    'zh': '拾起的信和寄出的信都会沿🚚→✈️→🚚路线在地图上移动，反映真实邮递时间。',
     'fr':
-        'Les lettres voyagent 🚚→✈️→🚚 sur la carte du monde, reflétant les délais postaux réels.',
+        'Les lettres ramassées et envoyées voyagent 🚚→✈️→🚚 sur la carte, selon les délais postaux réels.',
     'de':
-        'Briefe reisen 🚚→✈️→🚚 auf der Weltkarte, entsprechend echter Postzeiten.',
+        'Aufgesammelte wie gesendete Briefe reisen 🚚→✈️→🚚 auf der Karte — in echter Postzeit.',
     'es':
-        'Las cartas viajan 🚚→✈️→🚚 en el mapa del mundo, reflejando tiempos postales reales.',
+        'Tanto las cartas recogidas como las enviadas viajan 🚚→✈️→🚚 por el mapa, con tiempos postales reales.',
     'pt':
-        'As cartas viajam 🚚→✈️→🚚 no mapa mundial, refletindo tempos postais reais.',
+        'As cartas apanhadas e enviadas viajam 🚚→✈️→🚚 no mapa, em tempos postais reais.',
     'ru':
-        'Письма путешествуют 🚚→✈️→🚚 на карте мира, отражая реальные сроки доставки.',
+        'И поднятые, и отправленные письма идут по карте 🚚→✈️→🚚 — в реальных сроках доставки.',
     'tr':
-        'Mektuplar dünya haritasında 🚚→✈️→🚚 seyahat eder, gerçek posta sürelerini yansıtır.',
+        'Toplanan ve gönderilen mektuplar haritada 🚚→✈️→🚚 ilerler — gerçek posta sürelerinde.',
     'ar':
-        'تسافر الرسائل 🚚→✈️→🚚 على الخريطة العالمية، مما يعكس أوقات البريد الحقيقية.',
+        'الرسائل الملتقطة والمرسلة تتنقل 🚚→✈️→🚚 على الخريطة بأوقات بريد حقيقية.',
     'it':
-        'Le lettere viaggiano 🚚→✈️→🚚 sulla mappa del mondo, riflettendo i tempi postali reali.',
+        'Le lettere raccolte e inviate viaggiano 🚚→✈️→🚚 sulla mappa, in tempi postali reali.',
     'hi':
-        'पत्र विश्व मानचित्र पर 🚚→✈️→🚚 यात्रा करते हैं, वास्तविक डाक समय को दर्शाते हैं।',
-    'th': 'จดหมายเดินทาง 🚚→✈️→🚚 บนแผนที่โลก สะท้อนเวลาส่งไปรษณีย์จริง',
+        'उठाए गए और भेजे गए पत्र दोनों नक्शे पर 🚚→✈️→🚚 यात्रा करते हैं — असली डाक समय में।',
+    'th': 'ทั้งจดหมายที่คุณเก็บและส่งจะเดินทาง 🚚→✈️→🚚 บนแผนที่ ตามเวลาไปรษณีย์จริง',
   });
 
+  // Build 107 재포지셔닝 — "느린 편지 보물찾기" 보다 "할인·홍보 편지 유통" 강조.
   String get onboarding3Title => _t({
-    'ko': '📬 편지 교환 규칙',
-    'en': '📬 Letter Exchange Rules',
-    'ja': '📬 手紙交換ルール',
-    'zh': '📬 信件交换规则',
-    'fr': '📬 Règles d\'échange de lettres',
-    'de': '📬 Briefaustauschregeln',
-    'es': '📬 Reglas de intercambio de cartas',
-    'pt': '📬 Regras de troca de cartas',
-    'ru': '📬 Правила обмена письмами',
-    'tr': '📬 Mektup alışverişi kuralları',
-    'ar': '📬 قواعد تبادل الرسائل',
-    'it': '📬 Regole di scambio lettere',
-    'hi': '📬 पत्र विनिमय नियम',
-    'th': '📬 กฎการแลกจดหมาย',
+    'ko': '🎟 편지를 주워 바로 쓰세요',
+    'en': '🎟 Pick Up Letters. Redeem Instantly.',
+    'ja': '🎟 手紙を拾って、その場で使う',
+    'zh': '🎟 拾起信件，即刻使用',
+    'fr': '🎟 Ramasse la lettre. Utilise-la.',
+    'de': '🎟 Brief aufheben. Sofort einlösen.',
+    'es': '🎟 Recoge la carta. Úsala al instante.',
+    'pt': '🎟 Apanha a carta. Usa na hora.',
+    'ru': '🎟 Подбери письмо. Используй.',
+    'tr': '🎟 Mektubu al, hemen kullan.',
+    'ar': '🎟 التقط الرسالة. استخدمها فوراً.',
+    'it': '🎟 Raccogli la lettera. Usa subito.',
+    'hi': '🎟 पत्र उठाओ. तुरंत उपयोग करो.',
+    'th': '🎟 เก็บจดหมาย ใช้ทันที',
   });
+  // Build 170: "편지 포맷의 글로벌 공간 쿠폰 플랫폼" 포지셔닝 강조.
   String get onboarding3Body => _t({
-    'ko': '편지를 3개 보내야 다음 받은 편지를 읽을 수 있어요. 공정한 교환을 통해 모두가 편지를 받을 수 있습니다!',
+    'ko': '브랜드의 할인권이 편지가 되어 세계 곳곳 지도에 떨어집니다. 당신 주변 200m 안의 편지를 주워 매장에서 바로 쓰세요. 감성과 실용성이 공존하는 편지 포맷의 글로벌 공간 쿠폰 플랫폼.',
     'en':
-        'You must send 3 letters before reading the next received one. Fair exchange keeps letters flowing for everyone!',
-    'ja': '次の受信した手紙を読む前に3通送る必要があります。公平な交換でみんなに手紙が届きます！',
-    'zh': '阅读下一封收到的信件前，必须发送3封信。公平交换，让每个人都能收到信！',
+        'Brand coupons drop as letters on a worldwide map. Pick up letters within 200m of you and redeem them instantly. A global space-based coupon platform — in letter format.',
+    'ja':
+        'ブランドの割引券が手紙になって世界中の地図に落ちます。あなたの周り 200m 以内の手紙を拾って、お店でその場で使おう。感性と実用性が共存する、手紙フォーマットのグローバル空間クーポンプラットフォーム。',
+    'zh':
+        '品牌优惠券化作信件落在全球地图上。捡起你身边 200 米内的信件，即刻在门店使用。情感与实用兼具的信件式全球空间优惠券平台。',
     'fr':
-        'Vous devez envoyer 3 lettres avant de lire la suivante. L\'échange équitable garde les lettres en circulation!',
+        'Les coupons des marques deviennent des lettres sur la carte mondiale. Ramasse les lettres dans un rayon de 200 m et utilise-les tout de suite en boutique. Plateforme mondiale de coupons spatiaux au format lettre.',
     'de':
-        'Sie müssen 3 Briefe senden, bevor Sie den nächsten lesen. Fairer Austausch hält Briefe für alle fließen!',
+        'Marken-Coupons fallen als Briefe auf die Weltkarte. Hebe Briefe im 200-m-Radius auf und löse sie sofort im Geschäft ein. Globale Coupon-Plattform im Briefformat.',
     'es':
-        'Debes enviar 3 cartas antes de leer la siguiente recibida. ¡El intercambio justo mantiene las cartas fluyendo para todos!',
+        'Los cupones de las marcas caen como cartas en el mapa mundial. Recoge las cartas a 200 m de ti y canjea al instante en tienda. Plataforma global de cupones espaciales en formato carta.',
     'pt':
-        'Você deve enviar 3 cartas antes de ler a próxima recebida. Troca justa mantém as cartas fluindo para todos!',
+        'Cupões de marcas caem como cartas no mapa mundial. Apanha as cartas a 200 m de ti e usa na loja imediatamente. Plataforma global de cupões espaciais em formato carta.',
     'ru':
-        'Вы должны отправить 3 письма, прежде чем прочитать следующее. Справедливый обмен держит письма в движении!',
+        'Купоны брендов падают письмами на мировой карте. Подбирайте письма в радиусе 200 м и используйте их сразу в магазине. Глобальная платформа купонов в формате писем.',
     'tr':
-        'Bir sonrakini okumadan önce 3 mektup göndermeniz gerekiyor. Adil değişim mektupları herkes için akıyor tutar!',
+        'Marka kuponları mektup olarak dünya haritasına düşer. Etrafındaki 200 m içindeki mektupları topla ve mağazada hemen kullan. Mektup formatında küresel konum tabanlı kupon platformu.',
     'ar':
-        'يجب عليك إرسال 3 رسائل قبل قراءة التالية. التبادل العادل يبقي الرسائل تتدفق للجميع!',
+        'قسائم الماركات تسقط كرسائل على خريطة العالم. التقط الرسائل ضمن 200 م حولك واستخدمها فورًا في المتجر. منصة عالمية لقسائم مكانية بصيغة الرسائل.',
     'it':
-        'Devi inviare 3 lettere prima di leggere la prossima ricevuta. Lo scambio equo mantiene le lettere in circolazione per tutti!',
+        'I coupon dei brand cadono come lettere sulla mappa mondiale. Raccogli le lettere entro 200 m e usale subito in negozio. Piattaforma globale di coupon spaziali in formato lettera.',
     'hi':
-        'अगली प्राप्त पत्र पढ़ने से पहले 3 पत्र भेजने होंगे। उचित विनिमय सभी के लिए पत्र प्रवाहित रखता है!',
+        'ब्रांड कूपन पत्र बनकर विश्व मानचित्र पर गिरते हैं. 200 मी के भीतर पत्र उठाएँ और तुरंत दुकान में उपयोग करें. पत्र फ़ॉर्मेट का वैश्विक स्थान-आधारित कूपन प्लेटफ़ॉर्म.',
     'th':
-        'คุณต้องส่งจดหมาย 3 ฉบับก่อนอ่านฉบับถัดไปที่ได้รับ การแลกเปลี่ยนที่เป็นธรรมทำให้จดหมายไหลเวียนสำหรับทุกคน!',
+        'คูปองของแบรนด์ตกลงมาเป็นจดหมายบนแผนที่โลก เก็บจดหมายในรัศมี 200 ม. แล้วใช้ที่ร้านทันที แพลตฟอร์มคูปองเชิงพื้นที่ระดับโลกในรูปแบบจดหมาย',
   });
 
+  // Build 140 재포지셔닝 — 새 3-티어 정체성에 맞춰 "📸 나만의 편지 뿌리기"
+  // 로 전면 개편. Free 는 줍기, Premium 은 홍보, Brand 는 캠페인 이라는
+  // 3 단 역할 분리를 이 한 슬라이드에서 요약.
   String get onboarding4Title => _t({
-    'ko': '🌗 시간대별 화면',
-    'en': '🌗 Time-Based Themes',
-    'ja': '🌗 時間帯のテーマ',
-    'zh': '🌗 时间主题',
-    'fr': '🌗 Thèmes selon l\'heure',
-    'de': '🌗 Zeitbasierte Designs',
-    'es': '🌗 Temas según la hora',
-    'pt': '🌗 Temas baseados na hora',
-    'ru': '🌗 Темы по времени суток',
-    'tr': '🌗 Saate göre temalar',
-    'ar': '🌗 مظاهر حسب الوقت',
-    'it': '🌗 Temi basati sull\'ora',
-    'hi': '🌗 समय-आधारित थीम',
-    'th': '🌗 ธีมตามเวลา',
+    'ko': '📸 내 편지를 세계에 뿌리다',
+    'en': '📸 Drop Your Own Letters',
+    'ja': '📸 自分の手紙を世界に届ける',
+    'zh': '📸 向世界投放自己的信件',
+    'fr': '📸 Lance tes lettres',
+    'de': '📸 Eigene Briefe verteilen',
+    'es': '📸 Lanza tus propias cartas',
+    'pt': '📸 Espalha as tuas cartas',
+    'ru': '📸 Распространяйте свои письма',
+    'tr': '📸 Kendi mektuplarını bırak',
+    'ar': '📸 انشر رسائلك',
+    'it': '📸 Lancia le tue lettere',
+    'hi': '📸 अपने पत्र बिखेरें',
+    'th': '📸 ส่งจดหมายของคุณ',
   });
   String get onboarding4Body => _t({
-    'ko': '앱 화면이 내 나라의 현재 시간에 맞춰 낮☀️, 저녁🌅, 밤🌙으로 자동 변경됩니다.',
+    'ko': 'Premium은 📸 사진과 🔗 채널 링크로 나를 홍보하고, Brand는 🎟 할인권·🎁 교환권 캠페인으로 비즈니스를 알려요. Free는 줍는 데 집중!',
     'en':
-        'The app automatically changes to morning☀️, evening🌅, or night🌙 based on your country\'s local time.',
-    'ja': 'アプリは自国の現地時刻に合わせて朝☀️・夕方🌅・夜🌙に自動変更されます。',
-    'zh': '应用根据您所在国家的当地时间自动切换为早晨☀️、傍晚🌅或夜晚🌙。',
+        'Premium promotes you with 📸 photos and 🔗 channel links. Brand runs 🎟 coupon & 🎁 voucher campaigns. Free focuses on picking up.',
+    'ja':
+        'Premium は 📸 写真と 🔗 チャンネルリンクで自己PR。Brand は 🎟 割引券・🎁 交換券キャンペーン。Free は拾うことに集中！',
+    'zh': 'Premium 用 📸 照片和 🔗 频道链接自我推广。Brand 开展 🎟 优惠券·🎁 代金券活动。Free 专注拾取！',
     'fr':
-        "L'app change automatiquement en matin☀️, soir🌅, nuit🌙 selon l'heure locale de votre pays.",
+        'Premium te met en avant avec 📸 photos et 🔗 liens. Brand lance 🎟 coupons & 🎁 bons. Free se concentre sur le ramassage.',
     'de':
-        'Die App wechselt automatisch zu Morgen☀️, Abend🌅 oder Nacht🌙 entsprechend der Ortszeit.',
+        'Premium präsentiert dich mit 📸 Fotos und 🔗 Kanal-Links. Brand schaltet 🎟 Coupon- & 🎁 Gutschein-Kampagnen. Free sammelt auf.',
     'es':
-        'La app cambia automáticamente a mañana☀️, tarde🌅 o noche🌙 según la hora local de tu país.',
+        'Premium te promociona con 📸 fotos y 🔗 enlaces. Brand lanza campañas 🎟 cupones & 🎁 vales. Free se dedica a recoger.',
     'pt':
-        'O app muda automaticamente para manhã☀️, tarde🌅 ou noite🌙 conforme a hora local.',
+        'Premium promove-te com 📸 fotos e 🔗 links. Brand lança campanhas 🎟 cupões & 🎁 vales. Free foca-se em apanhar.',
     'ru':
-        'Приложение автоматически меняется на утро☀️, вечер🌅 или ночь🌙 по местному времени.',
+        'Premium продвигает вас через 📸 фото и 🔗 ссылки на канал. Brand запускает кампании 🎟 купонов и 🎁 ваучеров. Free собирает.',
     'tr':
-        'Uygulama ülkenizin yerel saatine göre otomatik olarak sabah☀️, akşam🌅 veya gece🌙ya dönüşür.',
+        "Premium seni 📸 fotoğraf ve 🔗 kanal bağlantılarıyla tanıtır. Brand 🎟 kupon ve 🎁 çeki kampanyaları yayınlar. Free toplamaya odaklanır.",
     'ar':
-        'يتغير التطبيق تلقائياً إلى صباح☀️ أو مساء🌅 أو ليل🌙 حسب التوقيت المحلي لبلدك.',
+        'Premium يروج لك بـ 📸 الصور و 🔗 روابط القناة. Brand يطلق حملات 🎟 القسائم و 🎁 الكوبونات. Free يركز على الالتقاط.',
     'it':
-        "L'app cambia automaticamente in mattina☀️, sera🌅 o notte🌙 in base all'ora locale.",
+        'Premium ti promuove con 📸 foto e 🔗 link. Brand lancia campagne 🎟 coupon & 🎁 buoni. Free si concentra sulla raccolta.',
     'hi':
-        'ऐप स्वचालित रूप से आपके देश के स्थानीय समय के अनुसार सुबह☀️, शाम🌅 या रात🌙 में बदल जाता है।',
+        'Premium आपको 📸 फ़ोटो और 🔗 चैनल लिंक से प्रमोट करता है. Brand 🎟 कूपन & 🎁 वाउचर अभियान चलाता है. Free उठाने पर केंद्रित.',
     'th':
-        'แอปเปลี่ยนเป็นเช้า☀️ เย็น🌅 หรือกลางคืน🌙 โดยอัตโนมัติตามเวลาท้องถิ่นของประเทศคุณ',
+        'Premium โปรโมตคุณด้วย 📸 รูปและ 🔗 ลิงก์ช่อง. Brand จัดแคมเปญ 🎟 คูปอง·🎁 วาวเชอร์. Free เน้นเก็บ!',
   });
 
   String get onboarding5Title => _t({
@@ -693,29 +799,35 @@ class AppL10n {
     'th': '🚀 เริ่มต้น',
   });
   String get onboarding5Body => _t({
-    'ko': '지금 바로 가입하고 세계 어딘가의 누군가와 특별한 편지를 교환해 보세요!',
+    // Build 107 재포지셔닝 — 브랜드 쿠폰/홍보 유통이 메인, 편지 보내기는
+    // 부차적. 네비 소개보다 "지도에서 혜택 줍기" 를 최우선 메시지로.
+    'ko': '지도를 열어 근처의 할인·홍보 편지를 주워보세요. 받은 편지 안 코드·링크로 바로 혜택을 사용할 수 있어요.',
     'en':
-        'Sign up now and start exchanging special letters with someone, somewhere in the world!',
-    'ja': '今すぐ登録して、世界のどこかにいる誰かと特別な手紙を交換しましょう！',
-    'zh': '立即注册，开始与世界某处的某人交换特别的信件！',
+        'Open the map and pick up nearby promo and coupon letters. Use the code or link inside each letter right away.',
+    'ja':
+        '地図を開いて近くの割引・プロモ手紙を拾いましょう。中のコードやリンクですぐに特典を使えます。',
+    'zh':
+        '打开地图拾取附近的优惠促销信件。使用信件中的代码或链接立即享受优惠。',
     'fr':
-        'Inscrivez-vous maintenant et commencez à échanger des lettres avec quelqu\'un dans le monde!',
+        'Ouvre la carte et ramasse les lettres promo et coupons à proximité. Utilise le code ou le lien à l\'intérieur immédiatement.',
     'de':
-        'Registrieren Sie sich jetzt und tauschen Sie besondere Briefe mit jemandem auf der Welt aus!',
+        'Öffne die Karte und sammle Rabatt- und Aktionsbriefe in deiner Nähe. Code oder Link im Brief sofort nutzen.',
     'es':
-        '¡Regístrate ahora y empieza a intercambiar cartas especiales con alguien en el mundo!',
+        'Abre el mapa y recoge cupones y cartas promocionales cercanas. Usa el código o enlace al instante.',
     'pt':
-        'Cadastre-se agora e comece a trocar cartas especiais com alguém no mundo!',
+        'Abre o mapa e apanha cartas promocionais e cupões próximos. Usa o código ou link imediatamente.',
     'ru':
-        'Зарегистрируйтесь сейчас и начните обмениваться особыми письмами с кем-то в мире!',
+        'Откройте карту и подбирайте промо- и купонные письма рядом. Используйте код или ссылку сразу.',
     'tr':
-        'Şimdi kaydolun ve dünyadaki biriyle özel mektuplar alışverişi yapmaya başlayın!',
-    'ar': 'سجّل الآن وابدأ تبادل رسائل خاصة مع شخص ما في العالم!',
+        'Haritayı aç, yakınındaki indirim ve kupon mektuplarını topla. İçindeki kod veya bağlantıyı hemen kullan.',
+    'ar':
+        'افتح الخريطة والتقط رسائل العروض والقسائم القريبة. استخدم الرمز أو الرابط داخلها فوراً.',
     'it':
-        'Registrati ora e inizia a scambiare lettere speciali con qualcuno nel mondo!',
+        'Apri la mappa e raccogli le lettere promo e coupon vicine. Usa subito il codice o il link contenuto.',
     'hi':
-        'अभी साइन अप करें और दुनिया में किसी के साथ विशेष पत्र आदान-प्रदान शुरू करें!',
-    'th': 'สมัครเดี๋ยวนี้และเริ่มแลกจดหมายพิเศษกับใครบางคนในโลก!',
+        'मानचित्र खोलें और पास के प्रमोशन और कूपन पत्र उठाएँ. अंदर के कोड या लिंक का तुरंत उपयोग करें.',
+    'th':
+        'เปิดแผนที่และเก็บจดหมายส่วนลดใกล้ ๆ ใช้รหัสหรือลิงก์ข้างในได้ทันที',
   });
 
   String get getStarted => _t({
@@ -1065,21 +1177,23 @@ class AppL10n {
     'hi': 'आप सभी प्रीमियम सुविधाओं का उपयोग कर रहे हैं 🎉',
     'th': 'คุณกำลังใช้ฟีเจอร์พรีเมียมทั้งหมด 🎉',
   });
+  // Build 119: 페이월 히어로 카피 픽업-퍼스트. 기존 "더 넓은 세계로 편지를
+  // 보내보세요" → 5배 반경 · 6배 빠른 쿨다운 으로 핵심 가치 전환.
   String get premiumHeroTitle => _t({
-    'ko': '더 넓은 세계로\n편지를 보내보세요',
-    'en': 'Send letters\nto the wider world',
-    'ja': 'より広い世界へ\n手紙を送ってみましょう',
-    'zh': '向更广阔的世界\n发送信件',
-    'fr': 'Envoyez des lettres\nvers un monde plus vaste',
-    'de': 'Sende Briefe\nin die weite Welt',
-    'es': 'Envía cartas\nal mundo más amplio',
-    'pt': 'Envie cartas\npara o mundo mais amplo',
-    'ru': 'Отправляйте письма\nв большой мир',
-    'tr': 'Geniş dünyaya\nmektuplar gönderin',
-    'ar': 'أرسل رسائل\nإلى العالم الأوسع',
-    'it': 'Invia lettere\nal mondo più ampio',
-    'hi': 'विस्तृत दुनिया में\nपत्र भेजें',
-    'th': 'ส่งจดหมาย\nสู่โลกที่กว้างขึ้น',
+    'ko': '더 넓은 반경으로\n쿠폰을 주워보세요',
+    'en': 'Pick up coupons\nacross a wider radius',
+    'ja': 'より広い範囲で\nクーポンを拾おう',
+    'zh': '在更大范围内\n拾起优惠券',
+    'fr': 'Ramasse des coupons\ndans un rayon plus large',
+    'de': 'Sammle Coupons\nin einem größeren Umkreis',
+    'es': 'Recoge cupones\nen un radio más amplio',
+    'pt': 'Apanha cupões\nnum raio maior',
+    'ru': 'Подбирайте купоны\nв большем радиусе',
+    'tr': 'Daha geniş alanda\nkupon topla',
+    'ar': 'التقط كوبونات\nفي نطاق أوسع',
+    'it': 'Raccogli coupon\nin un raggio più ampio',
+    'hi': 'बड़े दायरे में\nकूपन उठाओ',
+    'th': 'เก็บคูปอง\nในรัศมีที่กว้างขึ้น',
   });
   String get premiumActivePlanLabel => _t({
     'ko': '현재 이용 중인 플랜',
@@ -1546,6 +1660,733 @@ class AppL10n {
     'it': 'Notifica lettera vicina',
     'hi': 'पास के पत्र की सूचना',
     'th': 'การแจ้งเตือนจดหมายใกล้เคียง',
+  });
+  String senderMomentLine(int hour) {
+    // 시간대 라벨 + "에 쓴 편지" 구조
+    final label = _hourToPartOfDay(hour);
+    switch (languageCode) {
+      case 'ko': return '$label $hour시에 쓴 편지';
+      case 'ja': return '$label $hour時に書かれた手紙';
+      case 'zh': return '在$label $hour点写下的信';
+      case 'fr': return "Lettre écrite $label à ${hour}h";
+      case 'de': return 'Brief geschrieben $label um $hour Uhr';
+      case 'es': return "Carta escrita $label a las $hour";
+      case 'pt': return "Carta escrita $label às $hour";
+      case 'ru': return 'Письмо написано $label в $hour:00';
+      case 'tr': return '$label saat $hour\'da yazıldı';
+      case 'ar': return 'رسالة كُتبت $label عند الساعة $hour';
+      case 'it': return "Lettera scritta $label alle $hour";
+      case 'hi': return '$label $hour बजे लिखा पत्र';
+      case 'th': return 'จดหมายที่เขียนใน$labelเวลา $hour นาฬิกา';
+      case 'en':
+      default: return 'Written $label at $hour:00';
+    }
+  }
+
+  String _hourToPartOfDay(int hour) {
+    if (hour >= 5 && hour < 11) {
+      return _t({
+        'ko': '아침', 'en': 'in the morning', 'ja': '朝',
+        'zh': '早晨', 'fr': 'le matin', 'de': 'morgens',
+        'es': 'por la mañana', 'pt': 'de manhã', 'ru': 'утром',
+        'tr': 'sabah', 'ar': 'صباحاً', 'it': 'di mattina',
+        'hi': 'सुबह', 'th': 'ช่วงเช้า',
+      });
+    }
+    if (hour >= 11 && hour < 17) {
+      return _t({
+        'ko': '낮', 'en': 'in the afternoon', 'ja': '昼',
+        'zh': '白天', 'fr': "dans l'après-midi", 'de': 'nachmittags',
+        'es': 'por la tarde', 'pt': 'à tarde', 'ru': 'днём',
+        'tr': 'öğleden sonra', 'ar': 'ظهراً', 'it': 'di pomeriggio',
+        'hi': 'दोपहर', 'th': 'ช่วงบ่าย',
+      });
+    }
+    if (hour >= 17 && hour < 21) {
+      return _t({
+        'ko': '저녁', 'en': 'in the evening', 'ja': '夕方',
+        'zh': '傍晚', 'fr': 'le soir', 'de': 'abends',
+        'es': 'por la tarde', 'pt': 'à noite', 'ru': 'вечером',
+        'tr': 'akşam', 'ar': 'مساءً', 'it': 'di sera',
+        'hi': 'शाम', 'th': 'ช่วงเย็น',
+      });
+    }
+    return _t({
+      'ko': '밤', 'en': 'late at night', 'ja': '夜',
+      'zh': '深夜', 'fr': 'tard le soir', 'de': 'spätnachts',
+      'es': 'de madrugada', 'pt': 'tarde da noite', 'ru': 'ночью',
+      'tr': 'gece', 'ar': 'ليلاً', 'it': 'di notte',
+      'hi': 'रात', 'th': 'ช่วงค่ำคืน',
+    });
+  }
+
+  String penpalBadgeCount(int n) {
+    switch (languageCode) {
+      case 'ko': return '$n번째';
+      case 'ja': return '$n通目';
+      case 'zh': return '第 $n 封';
+      case 'fr': return '${n}e échange';
+      case 'de': return '$n. Brief';
+      case 'es': return '${n}º intercambio';
+      case 'pt': return '${n}º intercâmbio';
+      case 'ru': return '$n-е письмо';
+      case 'tr': return '$n. mektup';
+      case 'ar': return 'الرسالة ${n}';
+      case 'it': return '${n}º scambio';
+      case 'hi': return '${n}वाँ आदान-प्रदान';
+      case 'th': return 'ฉบับที่ $n';
+      case 'en':
+      default: return '#$n exchange';
+    }
+  }
+
+  String xpLevelBadge(int level) {
+    switch (languageCode) {
+      case 'ko': return 'Lv. $level';
+      case 'ja': return 'Lv. $level';
+      case 'zh': return 'Lv. $level';
+      default: return 'Lv. $level';
+    }
+  }
+
+  String xpLevelNextIn(int currentXp, int remaining) {
+    switch (languageCode) {
+      case 'ko': return '현재 $currentXp XP · 다음 레벨까지 $remaining XP';
+      case 'ja': return '現在 $currentXp XP · 次のレベルまで $remaining XP';
+      case 'zh': return '当前 $currentXp XP · 距离下一级 $remaining XP';
+      case 'fr': return '$currentXp XP · $remaining XP jusqu\'au niveau suivant';
+      case 'de': return '$currentXp XP · $remaining XP bis zum nächsten Level';
+      case 'es': return '$currentXp XP · $remaining XP hasta el siguiente nivel';
+      case 'pt': return '$currentXp XP · $remaining XP até o próximo nível';
+      case 'ru': return '$currentXp XP · $remaining XP до следующего уровня';
+      case 'tr': return '$currentXp XP · sonraki seviyeye $remaining XP';
+      case 'ar': return '$currentXp XP · $remaining XP حتى المستوى التالي';
+      case 'it': return '$currentXp XP · $remaining XP al prossimo livello';
+      case 'hi': return '$currentXp XP · अगले स्तर तक $remaining XP';
+      case 'th': return '$currentXp XP · อีก $remaining XP ถึงเลเวลถัดไป';
+      case 'en':
+      default: return '$currentXp XP · $remaining XP to next level';
+    }
+  }
+
+  String xpLevelMaxed(int currentXp) {
+    switch (languageCode) {
+      case 'ko': return '$currentXp XP · 최고 레벨 도달 👑';
+      case 'ja': return '$currentXp XP · 最高レベル達成 👑';
+      case 'zh': return '$currentXp XP · 已达最高等级 👑';
+      case 'fr': return '$currentXp XP · niveau maximum atteint 👑';
+      case 'de': return '$currentXp XP · Höchstlevel erreicht 👑';
+      case 'es': return '$currentXp XP · nivel máximo alcanzado 👑';
+      case 'pt': return '$currentXp XP · nível máximo alcançado 👑';
+      case 'ru': return '$currentXp XP · достигнут высший уровень 👑';
+      case 'tr': return '$currentXp XP · en yüksek seviye 👑';
+      case 'ar': return '$currentXp XP · وصلت إلى أعلى مستوى 👑';
+      case 'it': return '$currentXp XP · livello massimo raggiunto 👑';
+      case 'hi': return '$currentXp XP · सर्वोच्च स्तर पर पहुँचे 👑';
+      case 'th': return '$currentXp XP · ถึงเลเวลสูงสุดแล้ว 👑';
+      case 'en':
+      default: return '$currentXp XP · max level reached 👑';
+    }
+  }
+
+  String get premiumCollectionsHeader => _t({
+    'ko': 'Air Mail Pass 컬렉션',
+    'en': 'Air Mail Pass Collections',
+    'ja': 'Air Mail Pass コレクション',
+    'zh': 'Air Mail Pass 合集',
+    'fr': 'Collections Air Mail Pass',
+    'de': 'Air Mail Pass Kollektionen',
+    'es': 'Colecciones Air Mail Pass',
+    'pt': 'Coleções Air Mail Pass',
+    'ru': 'Коллекции Air Mail Pass',
+    'tr': 'Air Mail Pass Koleksiyonları',
+    'ar': 'مجموعات Air Mail Pass',
+    'it': 'Collezioni Air Mail Pass',
+    'hi': 'Air Mail Pass कलेक्शन',
+    'th': 'คอลเลกชัน Air Mail Pass',
+  });
+  String get premiumCollectionsSub => _t({
+    'ko': '하나의 패스 안에, 편지의 결을 바꾸는 세 가지 컬렉션.',
+    'en': 'One pass, three collections that change the grain of your letters.',
+    'ja': '一つのパスで、手紙の質感を変える3つのコレクション。',
+    'zh': '一张通行证，三种改变信件质地的合集。',
+    'fr': 'Un seul Pass, trois collections qui changent la texture de vos lettres.',
+    'de': 'Ein Pass, drei Kollektionen, die die Textur deiner Briefe verändern.',
+    'es': 'Un solo pase, tres colecciones que cambian la textura de tus cartas.',
+    'pt': 'Um passe, três coleções que mudam a textura das suas cartas.',
+    'ru': 'Один Pass, три коллекции, меняющие текстуру ваших писем.',
+    'tr': 'Tek bir pass, mektuplarınızın dokusunu değiştiren üç koleksiyon.',
+    'ar': 'باقة واحدة، ثلاث مجموعات تغيّر ملمس رسائلك.',
+    'it': 'Un solo pass, tre collezioni che cambiano la trama delle tue lettere.',
+    'hi': 'एक पास, तीन कलेक्शन — आपके पत्रों का बनावट बदलते हैं।',
+    'th': 'พาสหนึ่งใบ สามคอลเลกชันที่เปลี่ยนสัมผัสของจดหมาย',
+  });
+  String get premiumCollectionAuroraName => _t({
+    'ko': '🌌 Aurora',
+    'en': '🌌 Aurora',
+    'ja': '🌌 Aurora',
+    'zh': '🌌 Aurora',
+    'fr': '🌌 Aurora',
+    'de': '🌌 Aurora',
+    'es': '🌌 Aurora',
+    'pt': '🌌 Aurora',
+    'ru': '🌌 Aurora',
+    'tr': '🌌 Aurora',
+    'ar': '🌌 Aurora',
+    'it': '🌌 Aurora',
+    'hi': '🌌 Aurora',
+    'th': '🌌 Aurora',
+  });
+  String get premiumCollectionAuroraTagline => _t({
+    'ko': '밤의 언어로 쓰는 편지',
+    'en': 'Letters in the language of the night',
+    'ja': '夜の言葉で綴る手紙',
+    'zh': '以夜的语言写成的信',
+    'fr': 'Des lettres dans la langue de la nuit',
+    'de': 'Briefe in der Sprache der Nacht',
+    'es': 'Cartas en el idioma de la noche',
+    'pt': 'Cartas na língua da noite',
+    'ru': 'Письма на языке ночи',
+    'tr': 'Gecenin dilinde mektuplar',
+    'ar': 'رسائل بلغة الليل',
+    'it': 'Lettere nella lingua della notte',
+    'hi': 'रात की भाषा में पत्र',
+    'th': 'จดหมายในภาษาของราตรี',
+  });
+  String get premiumCollectionAuroraBullet1 => _t({
+    'ko': '야간 감성 편지지 · 이미지 무제한',
+    'en': 'Night-themed stationery · unlimited images',
+    'ja': '夜の便箋 · 画像無制限',
+    'zh': '夜间主题信纸 · 无限图片',
+    'fr': 'Papeterie nocturne · images illimitées',
+    'de': 'Nachtbriefpapier · unbegrenzte Bilder',
+    'es': 'Papel nocturno · imágenes ilimitadas',
+    'pt': 'Papel noturno · imagens ilimitadas',
+    'ru': 'Ночной дизайн · безлимитные изображения',
+    'tr': 'Gece temalı kırtasiye · sınırsız görsel',
+    'ar': 'قرطاسية ليلية · صور بلا حدود',
+    'it': 'Cancelleria notturna · immagini illimitate',
+    'hi': 'रात्रि स्टेशनरी · असीमित छवियाँ',
+    'th': 'กระดาษจดหมายธีมกลางคืน · รูปภาพไม่จำกัด',
+  });
+  String get premiumCollectionAuroraBullet2 => _t({
+    'ko': '오로라·별·달빛 페이퍼 스타일',
+    'en': 'Aurora, starlight, and moonlight paper styles',
+    'ja': 'オーロラ・星・月光の用紙スタイル',
+    'zh': '极光、星光、月光纸样',
+    'fr': "Aurores, étoiles, clair de lune",
+    'de': 'Aurora-, Sternen- und Mondlicht-Papier',
+    'es': 'Estilos aurora, estrellas, luz de luna',
+    'pt': 'Estilos aurora, estrelas, luar',
+    'ru': 'Стили: полярное сияние, звёзды, лунный свет',
+    'tr': 'Aurora, yıldız ışığı, ay ışığı tasarımları',
+    'ar': 'تصاميم: الشفق، النجوم، ضوء القمر',
+    'it': 'Stili aurora, stelle, chiaro di luna',
+    'hi': 'ऑरोरा, तारों, चाँदनी वाले पेपर',
+    'th': 'แบบกระดาษแสงเหนือ ดาว แสงจันทร์',
+  });
+  String get premiumCollectionHarvestName => _t({
+    'ko': '🌾 Harvest',
+    'en': '🌾 Harvest',
+    'ja': '🌾 Harvest',
+    'zh': '🌾 Harvest',
+    'fr': '🌾 Harvest',
+    'de': '🌾 Harvest',
+    'es': '🌾 Harvest',
+    'pt': '🌾 Harvest',
+    'ru': '🌾 Harvest',
+    'tr': '🌾 Harvest',
+    'ar': '🌾 Harvest',
+    'it': '🌾 Harvest',
+    'hi': '🌾 Harvest',
+    'th': '🌾 Harvest',
+  });
+  String get premiumCollectionHarvestTagline => _t({
+    'ko': '계절이 지나가는 속도로',
+    'en': 'Paced by the seasons',
+    'ja': '季節の歩みとともに',
+    'zh': '以季节的节奏',
+    'fr': 'Au rythme des saisons',
+    'de': 'Im Takt der Jahreszeiten',
+    'es': 'Al ritmo de las estaciones',
+    'pt': 'No ritmo das estações',
+    'ru': 'В ритме времён года',
+    'tr': 'Mevsimlerin temposuyla',
+    'ar': 'بإيقاع الفصول',
+    'it': 'Al ritmo delle stagioni',
+    'hi': 'ऋतुओं की लय में',
+    'th': 'ตามจังหวะของฤดูกาล',
+  });
+  String get premiumCollectionHarvestBullet1 => _t({
+    'ko': '봄·여름·가을·겨울 편지지 + 특급 배송',
+    'en': 'Seasonal stationery + express delivery',
+    'ja': '四季の便箋 + 特急配送',
+    'zh': '四季信纸 + 特快寄送',
+    'fr': 'Papeterie saisonnière + livraison express',
+    'de': 'Saisonale Briefe + Express-Zustellung',
+    'es': 'Papel estacional + entrega exprés',
+    'pt': 'Papel sazonal + entrega expressa',
+    'ru': 'Сезонный дизайн + экспресс-доставка',
+    'tr': 'Mevsimlik kırtasiye + hızlı teslimat',
+    'ar': 'قرطاسية موسمية + توصيل سريع',
+    'it': 'Cancelleria stagionale + consegna express',
+    'hi': 'मौसमी स्टेशनरी + एक्सप्रेस डिलिवरी',
+    'th': 'กระดาษตามฤดูกาล + จัดส่งด่วน',
+  });
+  String get premiumCollectionHarvestBullet2 => _t({
+    'ko': '이번 달의 도시 자동 테마 적용',
+    'en': 'City-of-the-month themes applied automatically',
+    'ja': '今月の都市テーマを自動適用',
+    'zh': '自动套用本月之城主题',
+    'fr': 'Thèmes "ville du mois" appliqués automatiquement',
+    'de': 'Stadt-des-Monats-Themen automatisch angewendet',
+    'es': 'Temas de "ciudad del mes" automáticos',
+    'pt': 'Temas da "cidade do mês" automaticamente',
+    'ru': 'Темы "город месяца" автоматически',
+    'tr': 'Ayın şehri temaları otomatik uygulanır',
+    'ar': 'مواضيع مدينة الشهر تلقائياً',
+    'it': 'Temi "città del mese" automatici',
+    'hi': '"महीने का शहर" थीम स्वतः लगते हैं',
+    'th': 'ธีม "เมืองประจำเดือน" ติดอัตโนมัติ',
+  });
+  String get premiumCollectionPostmasterName => _t({
+    'ko': '💌 Postmaster',
+    'en': '💌 Postmaster',
+    'ja': '💌 Postmaster',
+    'zh': '💌 Postmaster',
+    'fr': '💌 Postmaster',
+    'de': '💌 Postmaster',
+    'es': '💌 Postmaster',
+    'pt': '💌 Postmaster',
+    'ru': '💌 Postmaster',
+    'tr': '💌 Postmaster',
+    'ar': '💌 Postmaster',
+    'it': '💌 Postmaster',
+    'hi': '💌 Postmaster',
+    'th': '💌 Postmaster',
+  });
+  String get premiumCollectionPostmasterTagline => _t({
+    'ko': '공식 발송인의 권한',
+    'en': 'The Official Sender tier',
+    'ja': '公式発送人の権限',
+    'zh': '官方寄件人权限',
+    'fr': "Les privilèges du Postmaster",
+    'de': 'Die Rechte des offiziellen Absenders',
+    'es': 'Los privilegios del remitente oficial',
+    'pt': 'Privilégios de remetente oficial',
+    'ru': 'Привилегии официального отправителя',
+    'tr': 'Resmi gönderici ayrıcalıkları',
+    'ar': 'امتيازات المرسل الرسمي',
+    'it': 'Privilegi di mittente ufficiale',
+    'hi': 'आधिकारिक प्रेषक के विशेषाधिकार',
+    'th': 'สิทธิของผู้ส่งทางการ',
+  });
+  String get premiumCollectionPostmasterBullet1 => _t({
+    'ko': '무제한 하늘길 · 답장 우선 도착',
+    'en': 'Unlimited skyways · priority reply delivery',
+    'ja': '無制限エアルート · 返信が優先到着',
+    'zh': '无限空邮 · 回信优先送达',
+    'fr': 'Voies aériennes illimitées · priorité des réponses',
+    'de': 'Unbegrenzte Luftwege · Antworten mit Vorrang',
+    'es': 'Vías aéreas ilimitadas · respuestas prioritarias',
+    'pt': 'Vias aéreas ilimitadas · respostas prioritárias',
+    'ru': 'Неограниченные авиапути · ответы в приоритете',
+    'tr': 'Sınırsız hava yolu · cevaplar önceliklidir',
+    'ar': 'خطوط جوية غير محدودة · أولوية للردود',
+    'it': 'Rotte aeree illimitate · risposte prioritarie',
+    'hi': 'असीमित एयरवे · जवाब प्राथमिकता से',
+    'th': 'สายการบินไม่จำกัด · คำตอบส่งก่อน',
+  });
+  String get premiumCollectionPostmasterBullet2 => _t({
+    'ko': '공식 발송인 배지 · SNS 링크 첨부',
+    'en': 'Official Sender badge · attach your SNS link',
+    'ja': '公式発送人バッジ · SNSリンク添付',
+    'zh': '官方寄件人徽章 · SNS 链接附加',
+    'fr': 'Badge Postmaster · lien SNS joint',
+    'de': 'Postmaster-Abzeichen · SNS-Link anhängen',
+    'es': 'Insignia de remitente oficial · enlace SNS',
+    'pt': 'Selo de remetente oficial · link SNS',
+    'ru': 'Значок официального отправителя · ссылка SNS',
+    'tr': 'Resmi gönderici rozeti · SNS bağlantısı',
+    'ar': 'شارة المرسل الرسمي · رابط التواصل الاجتماعي',
+    'it': 'Badge mittente ufficiale · link SNS',
+    'hi': 'आधिकारिक प्रेषक बैज · SNS लिंक',
+    'th': 'ตราผู้ส่งทางการ · แนบลิงก์ SNS',
+  });
+  String get weeklyReflectionTitle => _t({
+    'ko': '이번 주의 회고',
+    'en': 'This Week in Letters',
+    'ja': '今週のふりかえり',
+    'zh': '本周回顾',
+    'fr': 'La semaine en lettres',
+    'de': 'Diese Woche in Briefen',
+    'es': 'Esta semana en cartas',
+    'pt': 'Esta semana em cartas',
+    'ru': 'Неделя в письмах',
+    'tr': 'Mektuplarla bu hafta',
+    'ar': 'هذا الأسبوع في الرسائل',
+    'it': 'La settimana in lettere',
+    'hi': 'इस हफ़्ते के पत्र',
+    'th': 'สัปดาห์นี้ในจดหมาย',
+  });
+
+  String weeklyReflectionSummary(int letters, int countries, int continents) {
+    switch (languageCode) {
+      case 'ko':
+        return '이번 주 당신의 편지 $letters통이 $countries개 나라·$continents개 대륙으로 떠났어요 🌍';
+      case 'ja':
+        return '今週、あなたの手紙$letters通が$countriesヶ国・$continents大陸へと旅立ちました 🌍';
+      case 'zh':
+        return '本周你的 $letters 封信飞往了 $countries 个国家 · $continents 个大洲 🌍';
+      case 'fr':
+        return 'Cette semaine, $letters de vos lettres sont parties vers $countries pays et $continents continents 🌍';
+      case 'de':
+        return 'Diese Woche reisten $letters Briefe in $countries Länder auf $continents Kontinenten 🌍';
+      case 'es':
+        return 'Esta semana, $letters cartas tuyas partieron a $countries países · $continents continentes 🌍';
+      case 'pt':
+        return 'Esta semana, $letters cartas suas partiram para $countries países · $continents continentes 🌍';
+      case 'ru':
+        return 'На этой неделе $letters ваших писем ушли в $countries стран · $continents континентов 🌍';
+      case 'tr':
+        return 'Bu hafta $letters mektubunuz $countries ülkeye · $continents kıtaya gitti 🌍';
+      case 'ar':
+        return 'هذا الأسبوع، $letters من رسائلك سافرت إلى $countries دولة · $continents قارة 🌍';
+      case 'it':
+        return 'Questa settimana $letters tue lettere sono partite verso $countries paesi · $continents continenti 🌍';
+      case 'hi':
+        return 'इस हफ़्ते आपके $letters पत्र $countries देशों · $continents महाद्वीपों को गए 🌍';
+      case 'th':
+        return 'สัปดาห์นี้ จดหมาย $letters ฉบับของคุณเดินทางไปยัง $countries ประเทศ · $continents ทวีป 🌍';
+      case 'en':
+      default:
+        return 'This week, $letters of your letters traveled to $countries countries across $continents continents 🌍';
+    }
+  }
+
+  String weeklyReflectionLongest(int km) {
+    switch (languageCode) {
+      case 'ko': return '가장 멀리 떠난 편지는 ${km}km를 여행했어요 ✈️';
+      case 'ja': return '最も遠く旅した手紙は${km}kmを旅しました ✈️';
+      case 'zh': return '最远的那封信旅行了 ${km} 公里 ✈️';
+      case 'fr': return 'Votre lettre la plus lointaine a parcouru ${km} km ✈️';
+      case 'de': return 'Der weiteste Brief reiste ${km} km ✈️';
+      case 'es': return 'La carta más lejana viajó ${km} km ✈️';
+      case 'pt': return 'A carta mais distante viajou ${km} km ✈️';
+      case 'ru': return 'Самое дальнее письмо преодолело ${km} км ✈️';
+      case 'tr': return 'En uzun yolculuk ${km} km oldu ✈️';
+      case 'ar': return 'أبعد رسالة سافرت ${km} كم ✈️';
+      case 'it': return 'La lettera più lontana ha percorso ${km} km ✈️';
+      case 'hi': return 'सबसे दूर गया पत्र ${km} किमी चला ✈️';
+      case 'th': return 'จดหมายที่ไปไกลที่สุดเดินทาง ${km} กม. ✈️';
+      case 'en':
+      default: return 'Your farthest letter traveled ${km} km ✈️';
+    }
+  }
+
+  String get replyAlreadyNotice => _t({
+    'ko': '이 편지엔 이미 답장을 보냈어요 · 한 편지에 한 번만 답장할 수 있어요',
+    'en': 'You\'ve already replied to this letter — one reply per letter',
+    'ja': 'この手紙にはすでに返信済みです — 1通につき1回のみ',
+    'zh': '你已经回复过这封信 · 每封信只能回复一次',
+    'fr': 'Vous avez déjà répondu à cette lettre — une réponse par lettre',
+    'de': 'Du hast auf diesen Brief bereits geantwortet — eine Antwort pro Brief',
+    'es': 'Ya respondiste a esta carta — una respuesta por carta',
+    'pt': 'Você já respondeu a esta carta — uma resposta por carta',
+    'ru': 'Вы уже ответили на это письмо — один ответ на письмо',
+    'tr': 'Bu mektuba zaten cevap verdin — mektup başına bir cevap',
+    'ar': 'لقد رددت على هذه الرسالة مسبقاً — رد واحد لكل رسالة',
+    'it': 'Hai già risposto a questa lettera — una risposta per lettera',
+    'hi': 'आप इस पत्र का पहले ही जवाब दे चुके हैं — एक पत्र, एक जवाब',
+    'th': 'คุณตอบจดหมายฉบับนี้ไปแล้ว · ตอบได้ครั้งเดียวต่อจดหมาย',
+  });
+  String get replyOnePerLetterTip => _t({
+    'ko': '한 편지에 한 번만 답장할 수 있어요',
+    'en': 'One reply per letter',
+    'ja': '1通につき1回のみ返信できます',
+    'zh': '每封信只能回复一次',
+    'fr': 'Une seule réponse par lettre',
+    'de': 'Eine Antwort pro Brief',
+    'es': 'Una respuesta por carta',
+    'pt': 'Uma resposta por carta',
+    'ru': 'Один ответ на письмо',
+    'tr': 'Mektup başına bir cevap',
+    'ar': 'رد واحد لكل رسالة',
+    'it': 'Una risposta per lettera',
+    'hi': 'एक पत्र, एक जवाब',
+    'th': 'ตอบได้ครั้งเดียวต่อจดหมาย',
+  });
+  String get labelAiCurated => _t({
+    'ko': '문학 봇',
+    'en': 'CURATED',
+    'ja': '文学Bot',
+    'zh': '文学机器人',
+    'fr': 'CURATION',
+    'de': 'KURATIERT',
+    'es': 'CURADO',
+    'pt': 'CURADO',
+    'ru': 'АВТОР-БОТ',
+    'tr': 'SEÇİLMİŞ',
+    'ar': 'منتقاة',
+    'it': 'SELEZIONATA',
+    'hi': 'क्यूरेटेड',
+    'th': 'บอตวรรณกรรม',
+  });
+  String get aiLetterNoticeTitle => _t({
+    'ko': '창작 편지예요',
+    'en': 'A curated letter',
+    'ja': '創作の手紙です',
+    'zh': '这是一封创作信件',
+    'fr': 'Une lettre de curation',
+    'de': 'Ein kuratierter Brief',
+    'es': 'Una carta curada',
+    'pt': 'Uma carta curada',
+    'ru': 'Письмо-миниатюра',
+    'tr': 'Seçilmiş bir mektup',
+    'ar': 'رسالة منتقاة',
+    'it': 'Una lettera selezionata',
+    'hi': 'एक क्यूरेटेड पत्र',
+    'th': 'จดหมายคัดสรร',
+  });
+  String get aiLetterNoticeBody => _t({
+    'ko': '실제 사람이 아닌 문학 봇이 보낸 편지라, 답장은 전달되지 않아요. 다른 편지에 답장해보세요.',
+    'en': 'This letter was written by a literary bot, so replies won\'t reach anyone. Try replying to a real letter instead.',
+    'ja': '文学Botが書いた手紙なので、返信は届きません。他の手紙に返信してみてください。',
+    'zh': '这封信由文学机器人撰写，回复不会被送达。可以回复其他信件。',
+    'fr': 'Cette lettre vient d\'un bot littéraire — les réponses n\'atteindront personne. Répondez plutôt à une vraie lettre.',
+    'de': 'Dieser Brief kommt von einem Literatur-Bot — Antworten erreichen niemanden. Beantworte lieber einen echten Brief.',
+    'es': 'Esta carta la escribió un bot literario, así que las respuestas no llegan a nadie. Responde a una carta real.',
+    'pt': 'Esta carta veio de um bot literário — respostas não chegam a ninguém. Responda a uma carta real.',
+    'ru': 'Это письмо написал литературный бот, поэтому ответы никуда не дойдут. Ответьте на реальное письмо.',
+    'tr': 'Bu mektup bir edebiyat botundan — cevaplar kimseye ulaşmaz. Gerçek bir mektuba cevap verin.',
+    'ar': 'كُتبت هذه الرسالة بواسطة بوت أدبي، لذا لن تصل الردود. جرب الرد على رسالة حقيقية.',
+    'it': 'Questa lettera viene da un bot letterario — le risposte non arrivano a nessuno. Rispondi a una lettera reale.',
+    'hi': 'यह पत्र एक साहित्यिक बॉट ने लिखा है, जवाब किसी तक नहीं पहुँचेंगे। असली पत्र का जवाब दें।',
+    'th': 'จดหมายนี้เขียนโดยบอตวรรณกรรม คำตอบจะไม่ถึงใคร ลองตอบจดหมายจริงแทน',
+  });
+  String get replyFomoHint => _t({
+    'ko': '이 사람은 당신의 답을 기다리고 있을지 몰라요',
+    'en': 'Someone, somewhere, may be waiting for your reply',
+    'ja': 'この人はあなたの返事を待っているかもしれません',
+    'zh': '这个人也许正在等待你的回信',
+    'fr': 'Cette personne attend peut-être votre réponse',
+    'de': 'Jemand wartet vielleicht gerade auf deine Antwort',
+    'es': 'Alguien podría estar esperando tu respuesta',
+    'pt': 'Alguém pode estar esperando sua resposta',
+    'ru': 'Возможно, кто-то ждёт вашего ответа',
+    'tr': 'Biri cevabını bekliyor olabilir',
+    'ar': 'ربما ينتظر هذا الشخص ردك',
+    'it': 'Qualcuno potrebbe star aspettando la tua risposta',
+    'hi': 'शायद कोई आपकी प्रतिक्रिया का इंतज़ार कर रहा है',
+    'th': 'อาจมีใครบางคนกำลังรอคำตอบของคุณ',
+  });
+  String get reminderPrepromptTitle => _t({
+    'ko': '매일 아침 8시에 알려드릴까요?',
+    'en': 'Nudge at 8 AM every morning?',
+    'ja': '毎朝8時にお知らせしますか？',
+    'zh': '每天早上 8 点温柔提醒你？',
+    'fr': 'Un rappel tous les jours à 8h ?',
+    'de': 'Jeden Morgen um 8 Uhr erinnern?',
+    'es': '¿Aviso suave a las 8 cada mañana?',
+    'pt': 'Lembrete todos os dias às 8h?',
+    'ru': 'Напоминать каждое утро в 8:00?',
+    'tr': 'Her sabah 8\'de hatırlatalım mı?',
+    'ar': 'تذكير كل صباح الساعة 8؟',
+    'it': 'Promemoria ogni mattina alle 8?',
+    'hi': 'हर सुबह 8 बजे याद दिलाएँ?',
+    'th': 'เตือนทุกเช้าเวลา 8 โมง?',
+  });
+  String get reminderPrepromptBody => _t({
+    'ko': '"오늘 나에게 편지가 왔을까?"\n매일 아침 8시에 편지함을 열어보도록 조용히 알려드릴게요.',
+    'en': '"Did a letter arrive for me today?"\nA quiet 8 AM nudge to open your mailbox — nothing noisy.',
+    'ja': '「今日、手紙は届いたかな？」\n毎朝8時に、そっと手紙箱を開くようお知らせします。',
+    'zh': '"今天有我的信吗？"\n每天早上 8 点轻轻提醒你打开信箱——不喧哗。',
+    'fr': '"Ai-je reçu une lettre aujourd\'hui ?"\nUn rappel doux à 8h pour ouvrir votre boîte.',
+    'de': '"Ist heute ein Brief für mich da?"\nEin leiser 8-Uhr-Hinweis, den Briefkasten zu öffnen.',
+    'es': '"¿Hoy me ha llegado una carta?"\nUn aviso suave a las 8 para abrir tu buzón.',
+    'pt': '"Chegou uma carta pra mim hoje?"\nUm lembrete sutil às 8h para abrir sua caixa.',
+    'ru': '"Пришло ли мне сегодня письмо?"\nЛёгкое напоминание в 8 утра открыть почтовый ящик.',
+    'tr': '"Bugün bana mektup geldi mi?"\nSabah 8\'de posta kutunu açman için sakin bir hatırlatma.',
+    'ar': '"هل وصلتني رسالة اليوم؟"\nتذكير هادئ الساعة 8 صباحاً لتفتح صندوق رسائلك.',
+    'it': '"Mi è arrivata una lettera oggi?"\nUn promemoria gentile alle 8 per aprire la tua buca.',
+    'hi': '"क्या आज मेरे लिए पत्र आया?"\nसुबह 8 बजे मेलबॉक्स खोलने की शांत याद।',
+    'th': '"วันนี้มีจดหมายถึงฉันไหม?"\nการเตือนเบา ๆ เวลา 8 โมงให้เปิดกล่องจดหมาย',
+  });
+  String get reminderPrepromptYes => _t({
+    'ko': '좋아요',
+    'en': "Yes, please",
+    'ja': 'はい',
+    'zh': '好的',
+    'fr': "D'accord",
+    'de': 'Gerne',
+    'es': 'Sí, por favor',
+    'pt': 'Sim, por favor',
+    'ru': 'Давайте',
+    'tr': 'Evet, lütfen',
+    'ar': 'نعم',
+    'it': 'Sì, grazie',
+    'hi': 'हाँ',
+    'th': 'ดีเลย',
+  });
+  String get reminderPrepromptLater => _t({
+    'ko': '나중에',
+    'en': 'Maybe later',
+    'ja': 'あとで',
+    'zh': '以后再说',
+    'fr': 'Plus tard',
+    'de': 'Später',
+    'es': 'Quizás después',
+    'pt': 'Talvez depois',
+    'ru': 'Позже',
+    'tr': 'Sonra',
+    'ar': 'لاحقاً',
+    'it': 'Più tardi',
+    'hi': 'बाद में',
+    'th': 'ไว้ทีหลัง',
+  });
+  String get pushModeLabel => _t({
+    'ko': '푸시 알림 수준',
+    'en': 'Notification Volume',
+    'ja': 'プッシュ通知のレベル',
+    'zh': '推送通知级别',
+    'fr': 'Niveau des notifications',
+    'de': 'Benachrichtigungs-Level',
+    'es': 'Nivel de notificaciones',
+    'pt': 'Nível de notificações',
+    'ru': 'Уровень уведомлений',
+    'tr': 'Bildirim düzeyi',
+    'ar': 'مستوى الإشعارات',
+    'it': 'Livello notifiche',
+    'hi': 'सूचना स्तर',
+    'th': 'ระดับการแจ้งเตือน',
+  });
+  String get pushModeQuiet => _t({
+    'ko': '조용히',
+    'en': 'Quiet',
+    'ja': '静か',
+    'zh': '安静',
+    'fr': 'Discret',
+    'de': 'Leise',
+    'es': 'Silencio',
+    'pt': 'Silencioso',
+    'ru': 'Тихо',
+    'tr': 'Sessiz',
+    'ar': 'هادئ',
+    'it': 'Silenzioso',
+    'hi': 'शांत',
+    'th': 'เงียบ',
+  });
+  String get pushModeStandard => _t({
+    'ko': '기본',
+    'en': 'Standard',
+    'ja': '標準',
+    'zh': '标准',
+    'fr': 'Standard',
+    'de': 'Standard',
+    'es': 'Estándar',
+    'pt': 'Padrão',
+    'ru': 'Обычный',
+    'tr': 'Standart',
+    'ar': 'افتراضي',
+    'it': 'Standard',
+    'hi': 'सामान्य',
+    'th': 'มาตรฐาน',
+  });
+  String get pushModeFull => _t({
+    'ko': '전체',
+    'en': 'Everything',
+    'ja': '全て',
+    'zh': '全部',
+    'fr': 'Tout',
+    'de': 'Alle',
+    'es': 'Todo',
+    'pt': 'Tudo',
+    'ru': 'Всё',
+    'tr': 'Hepsi',
+    'ar': 'الكل',
+    'it': 'Tutto',
+    'hi': 'सब',
+    'th': 'ทั้งหมด',
+  });
+  String get pushModeQuietDesc => _t({
+    'ko': '하루 1번의 아침 리마인더만 받아요',
+    'en': 'Only the once-a-day morning nudge',
+    'ja': '朝のリマインダーのみ（1日1回）',
+    'zh': '仅每天清晨一次提醒',
+    'fr': "Seulement le rappel matinal (une fois par jour)",
+    'de': 'Nur der morgendliche Hinweis (1 × pro Tag)',
+    'es': 'Solo el recordatorio matutino (una vez al día)',
+    'pt': 'Apenas o lembrete matinal (uma vez por dia)',
+    'ru': 'Только утреннее напоминание (раз в день)',
+    'tr': 'Yalnızca sabah hatırlatıcısı (günde 1 kez)',
+    'ar': 'فقط تذكير الصباح (مرة واحدة يومياً)',
+    'it': 'Solo il promemoria mattutino (una volta al giorno)',
+    'hi': 'केवल सुबह की याद (दिन में एक बार)',
+    'th': 'แค่การเตือนเช้า (วันละ 1 ครั้ง)',
+  });
+  String get pushModeStandardDesc => _t({
+    'ko': '편지 도착·DM·아침 리마인더',
+    'en': 'Arrivals, DMs, and the daily nudge',
+    'ja': '到着・DM・朝のリマインダー',
+    'zh': '信件到达·私信·清晨提醒',
+    'fr': 'Arrivées, messages et rappel quotidien',
+    'de': 'Ankünfte, DMs und tägliche Erinnerung',
+    'es': 'Llegadas, DMs y recordatorio diario',
+    'pt': 'Chegadas, DMs e lembrete diário',
+    'ru': 'Приходы, сообщения и утреннее напоминание',
+    'tr': 'Varışlar, DM\'ler ve günlük hatırlatma',
+    'ar': 'الوصول، الرسائل، والتذكير اليومي',
+    'it': 'Arrivi, DM e promemoria quotidiano',
+    'hi': 'पत्र आगमन, DM, दैनिक याद',
+    'th': 'การมาถึง, DM, การเตือนรายวัน',
+  });
+  String get pushModeFullDesc => _t({
+    'ko': '근처 도착·쿨다운·카운트다운까지 전부',
+    'en': 'All alerts, including nearby and cooldown',
+    'ja': '近く・クールダウン・カウントダウンも含む全て',
+    'zh': '包括附近、冷却、倒计时的所有提醒',
+    'fr': 'Toutes les alertes (proximité, délai, compte à rebours)',
+    'de': 'Alle Benachrichtigungen (inkl. Umgebung und Cooldown)',
+    'es': 'Todas las alertas (cercanas, enfriamiento, cuenta atrás)',
+    'pt': 'Todos os alertas (proximidade, espera, contagem)',
+    'ru': 'Все уведомления (рядом, перезарядка, обратный отсчёт)',
+    'tr': 'Tüm bildirimler (yakın, bekleme, geri sayım)',
+    'ar': 'كل التنبيهات (القريبة، الانتظار، العد التنازلي)',
+    'it': 'Tutte le notifiche (vicinanze, attesa, countdown)',
+    'hi': 'सभी अलर्ट (पास, कूलडाउन, काउंटडाउन)',
+    'th': 'การแจ้งเตือนทั้งหมด (ใกล้เคียง, คูลดาวน์, นับถอยหลัง)',
+  });
+  String get settingsNotifyDaily => _t({
+    'ko': '오늘의 편지 리마인더',
+    'en': "Today's Letter Reminder",
+    'ja': '今日の手紙リマインダー',
+    'zh': '今日信件提醒',
+    'fr': 'Rappel des lettres du jour',
+    'de': 'Tägliche Brief-Erinnerung',
+    'es': 'Recordatorio de cartas de hoy',
+    'pt': 'Lembrete das cartas de hoje',
+    'ru': 'Напоминание о сегодняшних письмах',
+    'tr': 'Bugünkü mektup hatırlatıcısı',
+    'ar': 'تذكير برسائل اليوم',
+    'it': 'Promemoria lettere di oggi',
+    'hi': 'आज के पत्र की याद',
+    'th': 'การเตือนจดหมายวันนี้',
+  });
+  String get settingsNotifyDailyDesc => _t({
+    'ko': '매일 오전 8시에 편지함을 열어보도록 알려드려요',
+    'en': 'A gentle 8:00 AM nudge to check your mailbox',
+    'ja': '毎朝8時に手紙を確認するようお知らせします',
+    'zh': '每天早上 8 点温柔提醒你查看信箱',
+    'fr': 'Un rappel doux à 8h00 pour ouvrir votre boîte',
+    'de': 'Ein sanfter Hinweis um 8:00 Uhr, den Briefkasten zu öffnen',
+    'es': 'Un suave aviso a las 8:00 para revisar tu buzón',
+    'pt': 'Um lembrete gentil às 8h para abrir sua caixa de cartas',
+    'ru': 'Лёгкое напоминание в 8:00 открыть почтовый ящик',
+    'tr': 'Sabah 8\'de posta kutunuza bakmanız için nazik bir hatırlatma',
+    'ar': 'تذكير لطيف الساعة 8:00 صباحاً لفتح صندوق رسائلك',
+    'it': 'Un gentile promemoria alle 8:00 per aprire la tua buca',
+    'hi': 'सुबह 8 बजे मेलबॉक्स खोलने की कोमल याद',
+    'th': 'การเตือนเบา ๆ เวลา 8:00 น. ให้เปิดกล่องจดหมาย',
   });
   String get settingsLogout => _t({
     'ko': '로그아웃',
@@ -3445,6 +4286,25 @@ class AppL10n {
     'th': 'พรีเมียมด่วน เปิด · ใช้แล้ว $used/$limit',
   });
 
+  // Build 186: 프리미엄 특급 배송이 오늘 다 소진됐을 때 리셋 시각 안내.
+  // 현재 구현상 midnight local 리셋이므로 "내일 00시" 로 표시.
+  String get composePremiumExpressResetAt => _t({
+    'ko': '💫 내일 00시 자동 리필',
+    'en': '💫 Refills at midnight',
+    'ja': '💫 深夜0時にリフィル',
+    'zh': '💫 凌晨 0 点刷新',
+    'fr': '💫 Recharge à minuit',
+    'de': '💫 Setzt um Mitternacht zurück',
+    'es': '💫 Se recarga a medianoche',
+    'pt': '💫 Recarrega à meia-noite',
+    'ru': '💫 Сброс в полночь',
+    'tr': '💫 Gece yarısı yenilenir',
+    'ar': '💫 يُعاد عند منتصف الليل',
+    'it': '💫 Si ricarica a mezzanotte',
+    'hi': '💫 आधी रात को रिफिल',
+    'th': '💫 เติมใหม่เที่ยงคืน',
+  });
+
   String composePremiumExpress(int limit) => _t({
     'ko': '프리미엄 특급 배송 (하루 ${limit}통)',
     'en': 'Premium Express ($limit/day)',
@@ -3497,20 +4357,20 @@ class AppL10n {
   });
 
   String get composeExpressLocked => _t({
-    'ko': '특급 배송 (Premium 하루 3통)',
-    'en': 'Express Delivery (Premium 3/day)',
-    'ja': '特急配送（Premium 1日3通）',
-    'zh': '特快配送（Premium 每天3封）',
-    'fr': 'Livraison express (Premium 3/jour)',
-    'de': 'Expresslieferung (Premium 3/Tag)',
-    'es': 'Envío exprés (Premium 3/día)',
-    'pt': 'Entrega expressa (Premium 3/dia)',
-    'ru': 'Экспресс-доставка (Premium 3/день)',
-    'tr': 'Hızlı teslimat (Premium günde 3)',
-    'ar': 'توصيل سريع (Premium 3/يوم)',
-    'it': 'Consegna express (Premium 3/giorno)',
-    'hi': 'एक्सप्रेस डिलीवरी (Premium 3/दिन)',
-    'th': 'จัดส่งด่วน (Premium 3/วัน)',
+    'ko': '특급 배송 · Premium 하루 3통',
+    'en': 'Express Delivery · Premium · 3 / day',
+    'ja': '特急配送 · Premium · 1日3通',
+    'zh': '特快配送 · Premium · 每天3封',
+    'fr': 'Livraison express · Premium · 3 / jour',
+    'de': 'Expresslieferung · Premium · 3 / Tag',
+    'es': 'Envío exprés · Premium · 3 / día',
+    'pt': 'Entrega expressa · Premium · 3 / dia',
+    'ru': 'Экспресс-доставка · Premium · 3 / день',
+    'tr': 'Hızlı teslimat · Premium · 3 / gün',
+    'ar': 'توصيل سريع · Premium · 3 / يوم',
+    'it': 'Consegna express · Premium · 3 / giorno',
+    'hi': 'एक्सप्रेस डिलीवरी · Premium · 3 / दिन',
+    'th': 'จัดส่งด่วน · Premium · 3 / วัน',
   });
 
   String get composeLuckyApplied => _t({
@@ -3598,6 +4458,24 @@ class AppL10n {
     'th': 'ตอบ $name',
   });
 
+  // 컴포즈 "더 많은 옵션" 접이식 섹션 헤더 (본문 아래 부가 옵션 묶음)
+  String get composeOptionsSectionTitle => _t({
+    'ko': '더 많은 옵션',
+    'en': 'More options',
+    'ja': 'さらにオプション',
+    'zh': '更多选项',
+    'fr': 'Plus d\'options',
+    'de': 'Weitere Optionen',
+    'es': 'Más opciones',
+    'pt': 'Mais opções',
+    'ru': 'Дополнительно',
+    'tr': 'Daha fazla seçenek',
+    'ar': 'المزيد من الخيارات',
+    'it': 'Altre opzioni',
+    'hi': 'और विकल्प',
+    'th': 'ตัวเลือกเพิ่มเติม',
+  });
+
   String get composeLetterFlows => _t({
     'ko': '이 편지는 세상 어딘가로 흘러갑니다',
     'en': 'This letter will flow somewhere in the world',
@@ -3649,21 +4527,1138 @@ class AppL10n {
     'th': 'ถึงจำนวนขั้นต่ำแล้ว',
   });
 
+  String get composeBrandCategoryLabel => _t({
+    'ko': '편지 종류',
+    'en': 'Letter category',
+    'ja': '手紙の種類',
+    'zh': '信件类型',
+    'fr': 'Type de lettre',
+    'de': 'Briefkategorie',
+    'es': 'Tipo de carta',
+    'pt': 'Categoria da carta',
+    'ru': 'Категория письма',
+    'tr': 'Mektup türü',
+    'ar': 'فئة الرسالة',
+    'it': 'Categoria lettera',
+    'hi': 'पत्र श्रेणी',
+    'th': 'ประเภทจดหมาย',
+  });
+  String get composeBrandCategoryGeneral => _t({
+    'ko': '일반편지',
+    'en': 'Regular',
+    'ja': '通常',
+    'zh': '普通',
+    'fr': 'Ordinaire',
+    'de': 'Regulär',
+    'es': 'Regular',
+    'pt': 'Regular',
+    'ru': 'Обычное',
+    'tr': 'Normal',
+    'ar': 'عادية',
+    'it': 'Standard',
+    'hi': 'सामान्य',
+    'th': 'ทั่วไป',
+  });
+  String get composeBrandCategoryCoupon => _t({
+    'ko': '할인권',
+    'en': 'Discount',
+    'ja': '割引券',
+    'zh': '折扣券',
+    'fr': 'Réduction',
+    'de': 'Rabatt',
+    'es': 'Descuento',
+    'pt': 'Desconto',
+    'ru': 'Скидка',
+    'tr': 'İndirim',
+    'ar': 'خصم',
+    'it': 'Sconto',
+    'hi': 'छूट',
+    'th': 'ส่วนลด',
+  });
+  String get composeBrandCategoryVoucher => _t({
+    'ko': '교환권',
+    'en': 'Voucher',
+    'ja': '引換券',
+    'zh': '兑换券',
+    'fr': 'Bon',
+    'de': 'Gutschein',
+    'es': 'Vale',
+    'pt': 'Vale',
+    'ru': 'Ваучер',
+    'tr': 'Fiş',
+    'ar': 'قسيمة',
+    'it': 'Buono',
+    'hi': 'वाउचर',
+    'th': 'บัตรแลก',
+  });
+  String get composeExactDropToggle => _t({
+    'ko': '🎯 정확한 위치 지정',
+    'en': '🎯 Exact location',
+    'ja': '🎯 正確な位置',
+    'zh': '🎯 精确位置',
+    'fr': '🎯 Emplacement précis',
+    'de': '🎯 Genauer Standort',
+    'es': '🎯 Ubicación exacta',
+    'pt': '🎯 Local exato',
+    'ru': '🎯 Точное место',
+    'tr': '🎯 Tam konum',
+    'ar': '🎯 موقع دقيق',
+    'it': '🎯 Posizione esatta',
+    'hi': '🎯 सटीक स्थान',
+    'th': '🎯 ตำแหน่งที่แม่นยำ',
+  });
+  // 🎟 브랜드 홍보 티켓형 팝업 (Build 107) — 로그인 후 1회/세션
+  String get brandTicketTopLabel => _t({
+    'ko': '한정 혜택 도착',
+    'en': 'LIMITED OFFER',
+    'ja': '期間限定',
+    'zh': '限时优惠',
+    'fr': 'OFFRE LIMITÉE',
+    'de': 'LIMITIERTES ANGEBOT',
+    'es': 'OFERTA LIMITADA',
+    'pt': 'OFERTA LIMITADA',
+    'ru': 'ОГРАНИЧЕННОЕ ПРЕДЛОЖЕНИЕ',
+    'tr': 'SINIRLI TEKLİF',
+    'ar': 'عرض محدود',
+    'it': 'OFFERTA LIMITATA',
+    'hi': 'सीमित ऑफ़र',
+    'th': 'ข้อเสนอพิเศษ',
+  });
+
+  String get brandTicketBy => _t({
+    'ko': 'by',
+    'en': 'by',
+    'ja': 'by',
+    'zh': 'by',
+    'fr': 'par',
+    'de': 'von',
+    'es': 'de',
+    'pt': 'de',
+    'ru': 'от',
+    'tr': 'sunan',
+    'ar': 'من',
+    'it': 'di',
+    'hi': 'द्वारा',
+    'th': 'โดย',
+  });
+
+  // Build 157: Brand 대시보드 7일 발송 sparkline 라벨.
+  String get brandAnalytics7DaySent => _t({
+    'ko': '최근 7일 발송',
+    'en': 'Last 7 days sent',
+    'ja': '過去7日間の発送',
+    'zh': '最近 7 天发送',
+    'fr': '7 derniers jours',
+    'de': 'Letzte 7 Tage',
+    'es': 'Últimos 7 días',
+    'pt': 'Últimos 7 dias',
+    'ru': 'За 7 дней',
+    'tr': 'Son 7 gün',
+    'ar': 'آخر 7 أيام',
+    'it': 'Ultimi 7 giorni',
+    'hi': 'पिछले 7 दिन',
+    'th': '7 วันที่ผ่านมา',
+  });
+
+  // Build 156: 신규 Brand 온보딩 체크리스트 카드.
+  String get brandChecklistTitle => _t({
+    'ko': '시작 가이드',
+    'en': 'Getting Started',
+    'ja': 'スタートガイド',
+    'zh': '开始指南',
+    'fr': 'Pour commencer',
+    'de': 'Erste Schritte',
+    'es': 'Primeros pasos',
+    'pt': 'Primeiros passos',
+    'ru': 'С чего начать',
+    'tr': 'Başlangıç rehberi',
+    'ar': 'دليل البدء',
+    'it': 'Per iniziare',
+    'hi': 'शुरुआत',
+    'th': 'คู่มือเริ่มต้น',
+  });
+
+  String get brandChecklistStep1Title => _t({
+    'ko': '사업자 인증 제출',
+    'en': 'Submit business verification',
+    'ja': '事業者認証を提出',
+    'zh': '提交企业认证',
+    'fr': 'Vérification d\'entreprise',
+    'de': 'Geschäftsverifizierung',
+    'es': 'Verificación comercial',
+    'pt': 'Verificação empresarial',
+    'ru': 'Подтверждение бизнеса',
+    'tr': 'İşletme doğrulama',
+    'ar': 'التحقق من النشاط',
+    'it': 'Verifica aziendale',
+    'hi': 'व्यवसाय सत्यापन',
+    'th': 'ยืนยันธุรกิจ',
+  });
+  String get brandChecklistStep1Body => _t({
+    'ko': '프로필에 ✅ 뱃지가 붙어 수신자 신뢰도 상승',
+    'en': 'Get a ✅ badge — boosts recipient trust',
+    'ja': 'プロフィールに ✅ — 受信者の信頼度 UP',
+    'zh': '获得 ✅ 徽章，提升收件人信任度',
+    'fr': 'Obtiens le badge ✅ — gagne la confiance',
+    'de': '✅ Abzeichen — mehr Vertrauen',
+    'es': 'Consigue el badge ✅ — más confianza',
+    'pt': 'Ganha o badge ✅ — mais confiança',
+    'ru': 'Получите ✅ — повышение доверия',
+    'tr': '✅ rozeti al — güven artışı',
+    'ar': 'احصل على شارة ✅ — زيادة الثقة',
+    'it': 'Ottieni il badge ✅ — più fiducia',
+    'hi': '✅ बैज पाएँ — विश्वास बढ़ाएँ',
+    'th': 'รับป้าย ✅ — เพิ่มความน่าเชื่อถือ',
+  });
+
+  String get brandChecklistStep2Title => _t({
+    'ko': '첫 캠페인 발송',
+    'en': 'Send first campaign',
+    'ja': '最初のキャンペーンを発送',
+    'zh': '发送首个营销活动',
+    'fr': 'Lance ta première campagne',
+    'de': 'Erste Kampagne senden',
+    'es': 'Envía tu primera campaña',
+    'pt': 'Lança a primeira campanha',
+    'ru': 'Запустите первую кампанию',
+    'tr': 'İlk kampanyanı gönder',
+    'ar': 'أطلق أول حملة',
+    'it': 'Lancia la prima campagna',
+    'hi': 'पहला अभियान भेजें',
+    'th': 'ส่งแคมเปญแรก',
+  });
+  String get brandChecklistStep2Body => _t({
+    'ko': '🎟 할인권 / 🎁 교환권 / ✉️ 일반 중 골라 보내기 탭 활용',
+    'en': 'Pick 🎟 coupon / 🎁 voucher / ✉️ general, tap Send',
+    'ja': '🎟 / 🎁 / ✉️ から選んで送信タブで配布',
+    'zh': '选择 🎟 优惠券 / 🎁 代金券 / ✉️ 普通，点击发送',
+    'fr': 'Choisis 🎟 / 🎁 / ✉️ et envoie via Envoyer',
+    'de': 'Wähle 🎟 / 🎁 / ✉️ und sende',
+    'es': 'Elige 🎟 / 🎁 / ✉️ y envía',
+    'pt': 'Escolhe 🎟 / 🎁 / ✉️ e envia',
+    'ru': 'Выберите 🎟/🎁/✉️ и отправьте',
+    'tr': '🎟/🎁/✉️ seç ve gönder',
+    'ar': 'اختر 🎟 / 🎁 / ✉️ وأرسل',
+    'it': 'Scegli 🎟 / 🎁 / ✉️ e invia',
+    'hi': '🎟 / 🎁 / ✉️ चुनें और भेजें',
+    'th': 'เลือก 🎟 / 🎁 / ✉️ แล้วส่ง',
+  });
+
+  String get brandChecklistStep3Title => _t({
+    'ko': '첫 픽업 받기',
+    'en': 'Reach first pickup',
+    'ja': '最初のピックアップ獲得',
+    'zh': '获得首次拾取',
+    'fr': 'Premier ramassage',
+    'de': 'Erster Aufpickung',
+    'es': 'Primera recogida',
+    'pt': 'Primeira apanha',
+    'ru': 'Первое получение',
+    'tr': 'İlk toplama',
+    'ar': 'أول التقاط',
+    'it': 'Primo ritiro',
+    'hi': 'पहला पिकअप',
+    'th': 'ได้รับการเก็บครั้งแรก',
+  });
+  String get brandChecklistStep3Body => _t({
+    'ko': '아래 대시보드에 픽업·사용·전환율이 실시간 업데이트',
+    'en': 'Dashboard below updates picks · uses · conversion live',
+    'ja': '下のダッシュボードでピック・使用・転換率をリアルタイム確認',
+    'zh': '下方仪表板实时更新拾取·使用·转化率',
+    'fr': 'Le tableau de bord ci-dessous se met à jour en direct',
+    'de': 'Dashboard unten aktualisiert Picks/Nutzung/Konversion live',
+    'es': 'El panel debajo se actualiza en vivo',
+    'pt': 'O painel abaixo atualiza em tempo real',
+    'ru': 'Панель ниже обновляется в реальном времени',
+    'tr': 'Aşağıdaki panel canlı güncellenir',
+    'ar': 'اللوحة أدناه تُحدَّث مباشرة',
+    'it': 'Il pannello sotto si aggiorna dal vivo',
+    'hi': 'नीचे डैशबोर्ड लाइव अपडेट होता है',
+    'th': 'แดชบอร์ดด้านล่างอัปเดตแบบเรียลไทม์',
+  });
+
+  // Build 155: 내 레벨 SNS 공유 텍스트.
+  String shareMyLevelText({
+    required int level,
+    required String trail,
+    required int collected,
+  }) {
+    switch (languageCode) {
+      case 'ko':
+        return 'Letter Go 에서 Level $level 도달 $trail\n지금까지 편지 $collected 통 수집 중!\nhttps://letter-go.com';
+      case 'ja':
+        return 'Letter Go でレベル $level に到達 $trail\n今までに手紙 $collected 通を収集中！\nhttps://letter-go.com';
+      case 'zh':
+        return 'Letter Go 达到 Level $level $trail\n目前收集了 $collected 封信件！\nhttps://letter-go.com';
+      case 'fr':
+        return 'Niveau $level atteint sur Letter Go $trail\n$collected lettres collectées !\nhttps://letter-go.com';
+      case 'de':
+        return 'Level $level in Letter Go erreicht $trail\n$collected Briefe gesammelt!\nhttps://letter-go.com';
+      case 'es':
+        return 'Nivel $level en Letter Go $trail\n$collected cartas recogidas!\nhttps://letter-go.com';
+      case 'pt':
+        return 'Nível $level no Letter Go $trail\n$collected cartas apanhadas!\nhttps://letter-go.com';
+      case 'ru':
+        return 'Достигнут уровень $level в Letter Go $trail\nСобрано $collected писем!\nhttps://letter-go.com';
+      case 'tr':
+        return "Letter Go'da Level $level $trail\n$collected mektup topladım!\nhttps://letter-go.com";
+      case 'ar':
+        return 'وصلت إلى المستوى $level في Letter Go $trail\nجمعت $collected رسالة!\nhttps://letter-go.com';
+      case 'it':
+        return 'Livello $level su Letter Go $trail\n$collected lettere raccolte!\nhttps://letter-go.com';
+      case 'hi':
+        return 'Letter Go पर स्तर $level $trail\n$collected पत्र एकत्र!\nhttps://letter-go.com';
+      case 'th':
+        return 'ถึง Level $level ใน Letter Go $trail\nเก็บจดหมายแล้ว $collected ฉบับ!\nhttps://letter-go.com';
+      default:
+        return 'Level $level on Letter Go $trail\n$collected letters collected!\nhttps://letter-go.com';
+    }
+  }
+
+  String get shareMyLevelSubject => _t({
+    'ko': 'Letter Go 내 레벨',
+    'en': 'My Letter Go level',
+    'ja': 'Letter Go の私のレベル',
+    'zh': '我的 Letter Go 等级',
+    'fr': 'Mon niveau Letter Go',
+    'de': 'Mein Letter Go Level',
+    'es': 'Mi nivel en Letter Go',
+    'pt': 'Meu nível Letter Go',
+    'ru': 'Мой уровень в Letter Go',
+    'tr': 'Letter Go seviyem',
+    'ar': 'مستواي في Letter Go',
+    'it': 'Il mio livello su Letter Go',
+    'hi': 'मेरा Letter Go स्तर',
+    'th': 'เลเวลของฉันใน Letter Go',
+  });
+
+  String get shareFailed => _t({
+    'ko': '공유 실패 — 잠시 후 다시 시도해주세요',
+    'en': 'Share failed — please try again',
+    'ja': '共有に失敗しました — 後でもう一度お試しください',
+    'zh': '分享失败 — 请稍后重试',
+    'fr': "Échec du partage — réessayez",
+    'de': 'Teilen fehlgeschlagen — erneut versuchen',
+    'es': 'Error al compartir — reintenta',
+    'pt': 'Falha ao partilhar — tenta de novo',
+    'ru': 'Не удалось поделиться — попробуйте позже',
+    'tr': 'Paylaşım başarısız — tekrar dene',
+    'ar': 'فشل المشاركة — حاول مرة أخرى',
+    'it': 'Condivisione fallita — riprova',
+    'hi': 'शेयर विफल — पुनः प्रयास करें',
+    'th': 'แชร์ไม่สำเร็จ — ลองอีกครั้ง',
+  });
+
+  // Build 154: 주말 부스트 칩.
+  String get weekendBoostLabel => _t({
+    'ko': '주말 부스트',
+    'en': 'Weekend Boost',
+    'ja': '週末ブースト',
+    'zh': '周末加成',
+    'fr': 'Boost Week-end',
+    'de': 'Wochenend-Boost',
+    'es': 'Boost Finde',
+    'pt': 'Boost de FDS',
+    'ru': 'Буст выходных',
+    'tr': 'Hafta Sonu Boost',
+    'ar': 'دفعة نهاية الأسبوع',
+    'it': 'Boost Weekend',
+    'hi': 'वीकेंड बूस्ट',
+    'th': 'บูสต์สุดสัปดาห์',
+  });
+
+  String get weekendBoostDesc => _t({
+    'ko': '🌈 주말에는 더 많은 브랜드가 편지를 뿌려요. 오늘 더 많이 주워보세요!',
+    'en': '🌈 Brands drop more letters on weekends — pick up extra today!',
+    'ja': '🌈 週末はブランドが多くの手紙を届けます — 今日はたくさん拾おう！',
+    'zh': '🌈 周末品牌投放更多信件 — 今天多拾取一些吧！',
+    'fr': '🌈 Les marques larguent plus de lettres le week-end — ramasse plus aujourd\'hui !',
+    'de': '🌈 Marken lassen am Wochenende mehr Briefe fallen — heute extra sammeln!',
+    'es': '🌈 Las marcas sueltan más cartas los fines de semana — recoge más hoy!',
+    'pt': '🌈 Marcas largam mais cartas ao fim-de-semana — apanha mais hoje!',
+    'ru': '🌈 По выходным бренды разбрасывают больше писем — собирайте сегодня!',
+    'tr': '🌈 Markalar hafta sonu daha fazla mektup bırakıyor — bugün ekstra topla!',
+    'ar': '🌈 العلامات التجارية تسقط المزيد من الرسائل في عطلة نهاية الأسبوع — التقط المزيد اليوم!',
+    'it': '🌈 I brand lasciano più lettere nei weekend — raccogli di più oggi!',
+    'hi': '🌈 वीकेंड पर ब्रांड अधिक पत्र गिराते हैं — आज अधिक उठाएँ!',
+    'th': '🌈 แบรนด์ทิ้งจดหมายมากขึ้นในสุดสัปดาห์ — เก็บเพิ่มวันนี้!',
+  });
+
+  // Build 153: 수집첩 월간 목표 진척 라벨 — "이번 달 32 / 50".
+  String inboxMonthlyGoalLabel(int collected, int target) {
+    switch (languageCode) {
+      case 'ko':
+        return '이번 달 $collected / $target';
+      case 'ja':
+        return '今月 $collected / $target';
+      case 'zh':
+        return '本月 $collected / $target';
+      case 'fr':
+        return 'Ce mois-ci $collected / $target';
+      case 'de':
+        return 'Diesen Monat $collected / $target';
+      case 'es':
+        return 'Este mes $collected / $target';
+      case 'pt':
+        return 'Este mês $collected / $target';
+      case 'ru':
+        return 'В этом месяце $collected / $target';
+      case 'tr':
+        return 'Bu ay $collected / $target';
+      case 'ar':
+        return 'هذا الشهر $collected / $target';
+      case 'it':
+        return 'Questo mese $collected / $target';
+      case 'hi':
+        return 'इस माह $collected / $target';
+      case 'th':
+        return 'เดือนนี้ $collected / $target';
+      default:
+        return 'This month $collected / $target';
+    }
+  }
+
+  // Build 152: 시간대별 인사 pill — 반경 안에 편지 있을 때 표시.
+  String get dailyGreetingMorning => _t({
+    'ko': '좋은 아침',
+    'en': 'Good morning',
+    'ja': 'おはよう',
+    'zh': '早上好',
+    'fr': 'Bonjour',
+    'de': 'Guten Morgen',
+    'es': 'Buenos días',
+    'pt': 'Bom dia',
+    'ru': 'Доброе утро',
+    'tr': 'Günaydın',
+    'ar': 'صباح الخير',
+    'it': 'Buongiorno',
+    'hi': 'सुप्रभात',
+    'th': 'อรุณสวัสดิ์',
+  });
+  String get dailyGreetingAfternoon => _t({
+    'ko': '오후의 한 템포',
+    'en': 'Afternoon check',
+    'ja': '午後のひと休み',
+    'zh': '下午时光',
+    'fr': 'Pause de l\'après-midi',
+    'de': 'Nachmittagspause',
+    'es': 'Pausa de la tarde',
+    'pt': 'Pausa da tarde',
+    'ru': 'Полуденная пауза',
+    'tr': 'Öğleden sonra molası',
+    'ar': 'استراحة العصر',
+    'it': 'Pausa pomeridiana',
+    'hi': 'दोपहर की जाँच',
+    'th': 'ช่วงบ่าย',
+  });
+  String get dailyGreetingEvening => _t({
+    'ko': '오늘의 마무리',
+    'en': 'Evening wrap-up',
+    'ja': '今日の締めくくり',
+    'zh': '傍晚收尾',
+    'fr': 'Fin de journée',
+    'de': 'Feierabend-Check',
+    'es': 'Final del día',
+    'pt': 'Fim de dia',
+    'ru': 'Завершение дня',
+    'tr': 'Akşam özeti',
+    'ar': 'ختام اليوم',
+    'it': 'Chiusura di giornata',
+    'hi': 'दिन का अंत',
+    'th': 'สรุปเย็นนี้',
+  });
+  String get dailyGreetingNight => _t({
+    'ko': '심야 탐험',
+    'en': 'Late-night hunt',
+    'ja': '深夜の探索',
+    'zh': '深夜探索',
+    'fr': 'Chasse de nuit',
+    'de': 'Nacht-Suche',
+    'es': 'Caza nocturna',
+    'pt': 'Caça noturna',
+    'ru': 'Ночная охота',
+    'tr': 'Gece avı',
+    'ar': 'صيد ليلي',
+    'it': 'Caccia notturna',
+    'hi': 'देर रात की खोज',
+    'th': 'สำรวจดึก',
+  });
+
+  /// 시간대 인사 + "근처 N통" 결합 포맷.
+  String dailyGreetingCount(String greeting, int count) {
+    switch (languageCode) {
+      case 'ko':
+        return '$greeting · 근처 $count통 대기';
+      case 'ja':
+        return '$greeting · 近くに $count 通待機';
+      case 'zh':
+        return '$greeting · 附近 $count 封待拾';
+      case 'fr':
+        return '$greeting · $count lettres à proximité';
+      case 'de':
+        return '$greeting · $count in der Nähe';
+      case 'es':
+        return '$greeting · $count cerca';
+      case 'pt':
+        return '$greeting · $count perto';
+      case 'ru':
+        return '$greeting · $count рядом';
+      case 'tr':
+        return '$greeting · yakında $count';
+      case 'ar':
+        return '$greeting · $count قريبة';
+      case 'it':
+        return '$greeting · $count vicino';
+      case 'hi':
+        return '$greeting · $count पास में';
+      case 'th':
+        return '$greeting · $count ฉบับใกล้';
+      default:
+        return '$greeting · $count nearby';
+    }
+  }
+
+  // Build 149: 첫 실행 시 자동 배치되는 튜토리얼 환영 편지 — 반경 안에 1통
+  // 반드시 줍기 가능한 상태로 지도에 뿌려 빈 지도 경험 해소.
+  String get tutorialLetterSenderName => _t({
+    'ko': 'Letter Go',
+    'en': 'Letter Go',
+    'ja': 'Letter Go',
+    'zh': 'Letter Go',
+    'fr': 'Letter Go',
+    'de': 'Letter Go',
+    'es': 'Letter Go',
+    'pt': 'Letter Go',
+    'ru': 'Letter Go',
+    'tr': 'Letter Go',
+    'ar': 'Letter Go',
+    'it': 'Letter Go',
+    'hi': 'Letter Go',
+    'th': 'Letter Go',
+  });
+
+  String get tutorialLetterContent => _t({
+    'ko': '환영합니다! ✨\n\nLetter Go 에 오신 걸 환영해요. 이 편지를 주우면 줍기 경험을 미리 체험할 수 있어요.\n\n가까이 다가가서 편지를 탭해보세요. 지도 아래 📍 근처 카운터가 함께 반응할 거예요.\n\n앞으로 전 세계 브랜드들이 뿌리는 할인·이벤트 편지를 만나보세요!',
+    'en': 'Welcome to Letter Go! ✨\n\nPick up this letter to try the hunt experience. Walk close and tap it.\n\nThe 📍 Nearby counter on the map will light up as soon as you\'re in range.\n\nBrands from around the world drop coupons and event letters — happy hunting!',
+    'ja': 'Letter Go へようこそ！✨\n\nこの手紙を拾って体験を始めましょう。近づいてタップしてください。\n\n範囲に入ると地図の 📍 近くのカウンターが反応します。\n\n世界中のブランドが落とす割引・イベント手紙をお楽しみください！',
+    'zh': '欢迎来到 Letter Go！✨\n\n拾起这封信体验"拾取"玩法。靠近并点击它即可。\n\n进入范围后地图上的 📍 附近计数器会亮起。\n\n来自世界各地的品牌在此投放优惠与活动信件——祝你好运！',
+    'fr': 'Bienvenue dans Letter Go ! ✨\n\nRamasse cette lettre pour découvrir l\'expérience. Approche-toi et appuie dessus.\n\nLe compteur 📍 À proximité s\'allumera dès que tu seras à portée.\n\nDes marques du monde entier déposent coupons et lettres promo — bonne chasse !',
+    'de': 'Willkommen bei Letter Go! ✨\n\nHeb diesen Brief auf und probiere die Hunt-Erfahrung. Geh nah ran und tippe ihn an.\n\nDer 📍 In-der-Nähe-Zähler leuchtet auf, sobald du in Reichweite bist.\n\nMarken weltweit verteilen Rabatte und Event-Briefe — viel Spaß beim Sammeln!',
+    'es': '¡Bienvenido a Letter Go! ✨\n\nRecoge esta carta para probar la experiencia. Acércate y tócala.\n\nEl contador 📍 Cerca se iluminará en cuanto estés a tiro.\n\nMarcas de todo el mundo sueltan cupones y cartas de eventos — ¡buena caza!',
+    'pt': 'Bem-vindo ao Letter Go! ✨\n\nApanha esta carta para experimentar. Aproxima-te e toca.\n\nO contador 📍 Perto vai acender assim que estiveres no alcance.\n\nMarcas do mundo inteiro largam cupões e cartas de eventos — boa caça!',
+    'ru': 'Добро пожаловать в Letter Go! ✨\n\nПодберите это письмо, чтобы попробовать охоту. Подойдите и нажмите.\n\nСчётчик 📍 Рядом подсветится, как только вы окажетесь в зоне.\n\nБренды со всего мира разбрасывают купоны — удачной охоты!',
+    'tr': 'Letter Go\'ya hoş geldin! ✨\n\nBu mektubu toplayarak deneyimi başlat. Yaklaş ve dokun.\n\nMenzile girdiğin an 📍 Yakın sayacı parlayacak.\n\nDünya çapında markalar kuponlar bırakıyor — iyi avlanmalar!',
+    'ar': 'مرحبًا بك في Letter Go! ✨\n\nالتقط هذه الرسالة لتجربة اللعبة. اقترب واضغط عليها.\n\nعدّاد 📍 قريب سيضيء فور دخولك النطاق.\n\nعلامات تجارية من حول العالم تسقط القسائم — صيدًا موفقًا!',
+    'it': 'Benvenuto in Letter Go! ✨\n\nRaccogli questa lettera per provare l\'esperienza. Avvicinati e tocca.\n\nIl contatore 📍 Vicino si illuminerà appena sarai a portata.\n\nBrand di tutto il mondo lasciano coupon — buona caccia!',
+    'hi': 'Letter Go में आपका स्वागत है! ✨\n\nइस पत्र को उठाकर अनुभव शुरू करें. पास जाएँ और टैप करें.\n\nदायरे में आते ही नक्शे का 📍 पास काउंटर जलेगा.\n\nदुनिया भर के ब्रांड कूपन गिराते हैं — शुभ शिकार!',
+    'th': 'ยินดีต้อนรับสู่ Letter Go! ✨\n\nเก็บจดหมายฉบับนี้เพื่อทดลองใช้งาน เดินเข้าใกล้แล้วแตะ\n\nตัวนับ 📍 ใกล้ ๆ บนแผนที่จะสว่างเมื่อคุณอยู่ในรัศมี\n\nแบรนด์ทั่วโลกทิ้งคูปองไว้ — สนุกกับการค้นหา!',
+  });
+
+  String get brandTicketDefaultBrand => _t({
+    'ko': '공식 발송인',
+    'en': 'Official Sender',
+    'ja': '公式発信元',
+    'zh': '官方发送方',
+    'fr': 'Expéditeur officiel',
+    'de': 'Offizieller Absender',
+    'es': 'Remitente oficial',
+    'pt': 'Remetente oficial',
+    'ru': 'Официальный отправитель',
+    'tr': 'Resmi Gönderici',
+    'ar': 'المرسل الرسمي',
+    'it': 'Mittente ufficiale',
+    'hi': 'आधिकारिक प्रेषक',
+    'th': 'ผู้ส่งอย่างเป็นทางการ',
+  });
+
+  String get brandTicketFallbackTitle => _t({
+    'ko': '지금 바로 주워보세요',
+    'en': 'Go pick it up now',
+    'ja': '今すぐ手に入れよう',
+    'zh': '立即去拾取',
+    'fr': 'À ramasser tout de suite',
+    'de': 'Jetzt aufheben',
+    'es': 'Recógelo ya',
+    'pt': 'Apanhe agora',
+    'ru': 'Забирайте прямо сейчас',
+    'tr': 'Hemen topla',
+    'ar': 'التقطها الآن',
+    'it': 'Raccogli subito',
+    'hi': 'अभी उठाएँ',
+    'th': 'รีบเก็บเลย',
+  });
+
+  String get brandTicketNoExpiry => _t({
+    'ko': '기간 제한 없음',
+    'en': 'No expiry',
+    'ja': '期限なし',
+    'zh': '无限期',
+    'fr': 'Sans expiration',
+    'de': 'Ohne Ablauf',
+    'es': 'Sin caducidad',
+    'pt': 'Sem validade',
+    'ru': 'Без срока',
+    'tr': 'Süresiz',
+    'ar': 'بدون انتهاء',
+    'it': 'Senza scadenza',
+    'hi': 'कोई समाप्ति नहीं',
+    'th': 'ไม่มีหมดอายุ',
+  });
+
+  String get brandTicketExpired => _t({
+    'ko': '만료됨',
+    'en': 'Expired',
+    'ja': '期限切れ',
+    'zh': '已过期',
+    'fr': 'Expiré',
+    'de': 'Abgelaufen',
+    'es': 'Caducado',
+    'pt': 'Expirado',
+    'ru': 'Истёк',
+    'tr': 'Süresi doldu',
+    'ar': 'منتهي',
+    'it': 'Scaduto',
+    'hi': 'समाप्त',
+    'th': 'หมดอายุ',
+  });
+
+  String brandTicketHoursLeft(int h) {
+    switch (languageCode) {
+      case 'ko':
+        return '${h}시간 남음';
+      case 'en':
+        return '${h}h left';
+      case 'ja':
+        return '残り${h}時間';
+      case 'zh':
+        return '剩 $h 小时';
+      case 'fr':
+        return '${h}h restant';
+      case 'de':
+        return 'noch ${h}h';
+      case 'es':
+        return 'quedan ${h}h';
+      case 'pt':
+        return '${h}h restantes';
+      case 'ru':
+        return 'осталось ${h}ч';
+      case 'tr':
+        return '${h}s kaldı';
+      case 'ar':
+        return 'متبقي ${h} س';
+      case 'it':
+        return '${h}h rimaste';
+      case 'hi':
+        return '${h} घंटे शेष';
+      case 'th':
+        return 'เหลือ $h ชม.';
+      default:
+        return '${h}h left';
+    }
+  }
+
+  String brandTicketDaysLeft(int d) {
+    switch (languageCode) {
+      case 'ko':
+        return '${d}일 남음';
+      case 'en':
+        return '${d}d left';
+      case 'ja':
+        return '残り${d}日';
+      case 'zh':
+        return '剩 $d 天';
+      case 'fr':
+        return '${d}j restants';
+      case 'de':
+        return 'noch ${d}T';
+      case 'es':
+        return 'quedan ${d}d';
+      case 'pt':
+        return '${d}d restantes';
+      case 'ru':
+        return 'осталось ${d}д';
+      case 'tr':
+        return '${d}g kaldı';
+      case 'ar':
+        return 'متبقي ${d} أيام';
+      case 'it':
+        return '${d}g rimasti';
+      case 'hi':
+        return '${d} दिन शेष';
+      case 'th':
+        return 'เหลือ $d วัน';
+      default:
+        return '${d}d left';
+    }
+  }
+
+  String brandTicketExpiresAt(String remaining) {
+    switch (languageCode) {
+      case 'ko':
+        return '유효 기간 · $remaining';
+      case 'en':
+        return 'Valid · $remaining';
+      case 'ja':
+        return '有効期間 · $remaining';
+      case 'zh':
+        return '有效期 · $remaining';
+      case 'fr':
+        return 'Validité · $remaining';
+      case 'de':
+        return 'Gültig · $remaining';
+      case 'es':
+        return 'Válido · $remaining';
+      case 'pt':
+        return 'Válido · $remaining';
+      case 'ru':
+        return 'Действует · $remaining';
+      case 'tr':
+        return 'Geçerli · $remaining';
+      case 'ar':
+        return 'ساري · $remaining';
+      case 'it':
+        return 'Valido · $remaining';
+      case 'hi':
+        return 'मान्य · $remaining';
+      case 'th':
+        return 'ใช้ได้ · $remaining';
+      default:
+        return 'Valid · $remaining';
+    }
+  }
+
+  String get brandTicketCloseHint => _t({
+    'ko': '닫기 누르면 오늘은 안 보여요',
+    'en': 'Close to hide for today',
+    'ja': '閉じると今日は非表示',
+    'zh': '点击关闭今日不再显示',
+    'fr': 'Fermer pour masquer aujourd\'hui',
+    'de': 'Schließen verbirgt für heute',
+    'es': 'Cerrar oculta hoy',
+    'pt': 'Fechar oculta hoje',
+    'ru': 'Закрыть — скрыть на сегодня',
+    'tr': 'Kapat · bugün gizle',
+    'ar': 'أغلق · إخفاء اليوم',
+    'it': 'Chiudi per oggi',
+    'hi': 'बंद करें · आज के लिए छिपाएँ',
+    'th': 'ปิดเพื่อซ่อนวันนี้',
+  });
+
+  // (레거시) 🎁 브랜드 할인 편지 안내 팝업 문자열 — 티켓 팝업 전환으로 더 이상
+  // 표시 경로 없음. 롤백 대비 키만 유지.
+  String get brandPromoTitle => _t({
+    'ko': '브랜드 할인 편지가 도착하고 있어요',
+    'en': 'Brand coupon letters are on the map',
+    'ja': 'ブランド割引手紙が届いています',
+    'zh': '品牌折扣信件正在地图上传递',
+    'fr': 'Des lettres de coupons de marque arrivent',
+    'de': 'Marken-Coupon-Briefe sind unterwegs',
+    'es': 'Las cartas de cupón de marca están llegando',
+    'pt': 'Cartas de cupão de marca estão a chegar',
+    'ru': 'Письма-купоны брендов уже на карте',
+    'tr': 'Marka kupon mektupları haritada',
+    'ar': 'رسائل قسائم العلامات تصل الآن',
+    'it': 'Le lettere-coupon dei brand sono in arrivo',
+    'hi': 'ब्रांड कूपन पत्र मानचित्र पर आ रहे हैं',
+    'th': 'จดหมายคูปองแบรนด์กำลังมาถึง',
+  });
+
+  String get brandPromoBody => _t({
+    'ko': '지도에서 가까이 걸어가 편지를 주우면 즉시 사용 가능한 할인권·교환권이 나와요. 새로 도착한 편지가 있으면 수집첩에서 확인해보세요!',
+    'en': 'Walk close to letters on the map to pick up ready-to-use coupons and vouchers. Check your Collection for what\'s new.',
+    'ja': '地図上で手紙に近づいて拾うと、すぐ使える割引券や引換券がもらえます。コレクションで新着をチェック！',
+    'zh': '走近地图上的信件即可获得可立即使用的优惠券和兑换券。请到收藏查看。',
+    'fr': 'Rapprochez-vous des lettres sur la carte pour recevoir coupons et bons immédiatement utilisables. Consultez votre Collection !',
+    'de': 'Geh nah an Briefe auf der Karte, um sofort einlösbare Coupons und Gutscheine zu bekommen. Sieh in deiner Sammlung nach!',
+    'es': 'Acércate a las cartas en el mapa para recibir cupones y vales listos para usar. ¡Revisa tu Colección!',
+    'pt': 'Aproxima-te das cartas no mapa para receber cupões e vales prontos a usar. Vê a tua Coleção!',
+    'ru': 'Подойдите ближе к письмам на карте, чтобы получить готовые к использованию купоны и ваучеры. Проверьте Коллекцию!',
+    'tr': 'Haritadaki mektuplara yaklaşarak hazır kupon ve çek alın. Koleksiyonunuza göz atın!',
+    'ar': 'اقترب من الرسائل على الخريطة لاستلام قسائم وقسائم جاهزة للاستخدام. راجع مجموعتك!',
+    'it': 'Avvicinati alle lettere sulla mappa per ricevere coupon e buoni pronti all\'uso. Controlla la Collezione!',
+    'hi': 'मानचित्र पर पत्रों के पास जाकर तुरंत उपयोगी कूपन और वाउचर प्राप्त करें. कलेक्शन देखें!',
+    'th': 'เข้าใกล้จดหมายบนแผนที่เพื่อรับคูปองและบัตรกำนัลพร้อมใช้ ดูในคอลเลคชัน',
+  });
+
+  String get brandPromoContactHint => _t({
+    'ko': '브랜드 계정으로 광고·캠페인을 운영하고 싶으시면 관리자에게 문의해주세요.',
+    'en': 'Want to run brand campaigns? Contact the admin to set up a brand account.',
+    'ja': 'ブランドアカウントでキャンペーンを運営したい方は管理者までご連絡ください。',
+    'zh': '如需通过品牌账号开展活动，请联系管理员。',
+    'fr': 'Pour lancer des campagnes de marque, contactez l\'admin.',
+    'de': 'Für Marken-Kampagnen wende dich an den Admin.',
+    'es': 'Para campañas de marca, contacta al admin.',
+    'pt': 'Para campanhas de marca, contacta o admin.',
+    'ru': 'Хотите запустить бренд-кампанию? Напишите админу.',
+    'tr': 'Marka kampanyaları için yöneticiye ulaşın.',
+    'ar': 'لتشغيل حملات علامة تجارية تواصل مع المشرف.',
+    'it': 'Per campagne brand contatta l\'admin.',
+    'hi': 'ब्रांड अभियान के लिए व्यवस्थापक से संपर्क करें.',
+    'th': 'สนใจทำแคมเปญแบรนด์ ติดต่อผู้ดูแล',
+  });
+
+  String get brandPromoDismiss => _t({
+    'ko': '알겠어요',
+    'en': 'Got it',
+    'ja': '了解',
+    'zh': '知道了',
+    'fr': 'Compris',
+    'de': 'Verstanden',
+    'es': 'Entendido',
+    'pt': 'Entendi',
+    'ru': 'Понятно',
+    'tr': 'Anladım',
+    'ar': 'فهمت',
+    'it': 'Capito',
+    'hi': 'समझ गया',
+    'th': 'เข้าใจแล้ว',
+  });
+
+  String get brandPromoContactCta => _t({
+    'ko': '💼 관리자 문의',
+    'en': '💼 Contact admin',
+    'ja': '💼 管理者に連絡',
+    'zh': '💼 联系管理员',
+    'fr': '💼 Contacter l\'admin',
+    'de': '💼 Admin kontaktieren',
+    'es': '💼 Contactar admin',
+    'pt': '💼 Contactar admin',
+    'ru': '💼 Написать админу',
+    'tr': '💼 Yöneticiye ulaş',
+    'ar': '💼 تواصل مع المشرف',
+    'it': '💼 Contatta l\'admin',
+    'hi': '💼 व्यवस्थापक से संपर्क',
+    'th': '💼 ติดต่อผู้ดูแล',
+  });
+
+  // 🎯 ExactDrop 유료 전환 (Build 106) — 크레딧 부족 시 다이얼로그
+  String get composeExactDropPaywallTitle => _t({
+    'ko': '정확 좌표 드롭은 유료 기능이에요',
+    'en': 'Exact-coordinate drop is a paid feature',
+    'ja': '精確座標ドロップは有料機能です',
+    'zh': '精确坐标投放为付费功能',
+    'fr': 'Le dépôt aux coordonnées exactes est payant',
+    'de': 'Präzise Ablage ist kostenpflichtig',
+    'es': 'La entrega en coordenadas exactas es de pago',
+    'pt': 'A entrega em coordenadas exatas é paga',
+    'ru': 'Точная доставка — платная функция',
+    'tr': 'Tam koordinat teslimi ücretli',
+    'ar': 'توصيل الإحداثيات الدقيقة ميزة مدفوعة',
+    'it': 'Rilascio a coordinate esatte è a pagamento',
+    'hi': 'सटीक निर्देशांक ड्रॉप एक सशुल्क सुविधा है',
+    'th': 'การวางจุดพิกัดเป็นฟีเจอร์เสียเงิน',
+  });
+
+  String get composeExactDropPaywallBody => _t({
+    'ko': '원하는 매장·좌표에 편지를 정확히 뿌릴 수 있어요. 사용을 원하시면 관리자에게 문의해주세요.',
+    'en': 'Drop letters on exact store locations or coordinates. Contact the admin to enable this feature.',
+    'ja': '特定の店舗・座標に手紙を正確に配置できます。利用希望は管理者にお問い合わせください。',
+    'zh': '将信件精确投放到指定地点或坐标。如需使用请联系管理员。',
+    'fr': 'Déposez des lettres à des points de vente ou coordonnées précis. Contactez l\'admin pour activer.',
+    'de': 'Briefe an exakte Standorte oder Koordinaten ablegen. Admin für Freischaltung kontaktieren.',
+    'es': 'Deja cartas en ubicaciones o coordenadas exactas. Contacta al admin para activarlo.',
+    'pt': 'Deixe cartas em locais exatos ou coordenadas. Contacte o admin para ativar.',
+    'ru': 'Размещайте письма в точных местах или координатах. Обратитесь к админу.',
+    'tr': 'Belirli mağaza veya koordinatlara mektup bırakın. Aktifleştirmek için yöneticiye ulaşın.',
+    'ar': 'وزّع الرسائل على مواقع أو إحداثيات دقيقة. تواصل مع المشرف لتفعيلها.',
+    'it': 'Rilascia lettere in luoghi o coordinate esatte. Contatta l\'admin per abilitarla.',
+    'hi': 'सटीक स्थानों या निर्देशांक पर पत्र छोड़ें. सुविधा सक्षम करने के लिए व्यवस्थापक से संपर्क करें.',
+    'th': 'วางจดหมายที่ร้านค้าหรือพิกัดที่ต้องการ ติดต่อผู้ดูแลเพื่อเปิดใช้',
+  });
+
+  String get composeExactDropPaywallPricing => _t({
+    'ko': '100통 패키지 · 10,000원',
+    'en': '100-letter package · KRW 10,000',
+    'ja': '100通パッケージ · 10,000ウォン',
+    'zh': '100 封套餐 · 10,000 韩元',
+    'fr': '100 lettres · 10 000 KRW',
+    'de': '100er-Paket · 10.000 KRW',
+    'es': 'Paquete de 100 · 10.000 KRW',
+    'pt': 'Pacote de 100 · 10.000 KRW',
+    'ru': 'Пакет 100 писем · 10 000 KRW',
+    'tr': '100 mektup paketi · 10.000 KRW',
+    'ar': 'باقة 100 رسالة · 10,000 KRW',
+    'it': 'Pacchetto da 100 · 10.000 KRW',
+    'hi': '100 पत्र पैकेज · ₩10,000',
+    'th': 'แพ็คเกจ 100 ฉบับ · 10,000 วอน',
+  });
+
+  String get composeExactDropOutOfCredits => _t({
+    'ko': 'ExactDrop 크레딧이 부족해요. 관리자에게 문의하세요.',
+    'en': 'Not enough ExactDrop credits. Contact the admin.',
+    'ja': 'ExactDrop クレジットが不足しています。管理者にお問い合わせください。',
+    'zh': 'ExactDrop 额度不足，请联系管理员。',
+    'fr': 'Crédits ExactDrop insuffisants. Contactez l\'admin.',
+    'de': 'Nicht genug ExactDrop-Credits. Admin kontaktieren.',
+    'es': 'Créditos de ExactDrop insuficientes. Contacta al admin.',
+    'pt': 'Créditos ExactDrop insuficientes. Contacte o admin.',
+    'ru': 'Недостаточно кредитов ExactDrop. Свяжитесь с админом.',
+    'tr': 'ExactDrop kredisi yetersiz. Yöneticiye ulaşın.',
+    'ar': 'رصيد ExactDrop غير كافٍ. تواصل مع المشرف.',
+    'it': 'Crediti ExactDrop insufficienti. Contatta l\'admin.',
+    'hi': 'ExactDrop क्रेडिट अपर्याप्त. व्यवस्थापक से संपर्क करें.',
+    'th': 'เครดิต ExactDrop ไม่พอ ติดต่อผู้ดูแล',
+  });
+
+  String get composeExactDropHint => _t({
+    'ko': '빨간 핀이 떨어뜨릴 위치예요. 지도를 움직여 조정한 뒤 아래 버튼으로 확정하세요',
+    'en': 'The red pin marks the drop spot. Pan the map to adjust, then tap Confirm below',
+    'ja': '赤いピンが手紙を落とす位置です。地図を動かして調整し、下のボタンで確定してください',
+    'zh': '红色图钉即为投放位置。移动地图进行调整后，点击下方按钮确认',
+    'fr': "L'épingle rouge indique le point de dépôt. Déplacez la carte, puis appuyez sur Confirmer ci-dessous",
+    'de': 'Die rote Markierung zeigt den Ablageort. Karte verschieben, dann unten bestätigen',
+    'es': 'El pin rojo marca el punto de entrega. Mueve el mapa y pulsa Confirmar abajo',
+    'pt': 'O pino vermelho marca o ponto de entrega. Mova o mapa e toque em Confirmar abaixo',
+    'ru': 'Красная метка — место доставки. Сдвиньте карту и нажмите «Подтвердить» ниже',
+    'tr': 'Kırmızı iğne teslim noktasıdır. Haritayı kaydırıp aşağıda Onayla’ya dokunun',
+    'ar': 'الدبّوس الأحمر هو نقطة التسليم. حرّك الخريطة ثم اضغط تأكيد بالأسفل',
+    'it': 'Il perno rosso indica il punto di rilascio. Sposta la mappa e tocca Conferma qui sotto',
+    'hi': 'लाल पिन गिराने की जगह है. मानचित्र घुमाएँ और नीचे पुष्टि करें',
+    'th': 'หมุดสีแดงคือตำแหน่งวางจดหมาย เลื่อนแผนที่แล้วกดยืนยันด้านล่าง',
+  });
+  String get composeExactDropTitle => _t({
+    'ko': '편지 떨어뜨릴 위치',
+    'en': 'Letter drop location',
+    'ja': '手紙を落とす場所',
+    'zh': '投放信件位置',
+    'fr': "Lieu du dépôt",
+    'de': 'Ablageort',
+    'es': 'Lugar de entrega',
+    'pt': 'Local de entrega',
+    'ru': 'Место доставки',
+    'tr': 'Teslim yeri',
+    'ar': 'مكان وضع الرسالة',
+    'it': 'Luogo del rilascio',
+    'hi': 'पत्र गिराने का स्थान',
+    'th': 'ตำแหน่งวางจดหมาย',
+  });
+  String get composeExactDropConfirm => _t({
+    'ko': '이 위치로 확정',
+    'en': 'Confirm this location',
+    'ja': 'この場所に確定',
+    'zh': '确认此位置',
+    'fr': 'Confirmer ce lieu',
+    'de': 'Diesen Ort bestätigen',
+    'es': 'Confirmar este lugar',
+    'pt': 'Confirmar este local',
+    'ru': 'Подтвердить место',
+    'tr': 'Bu konumu onayla',
+    'ar': 'تأكيد هذا الموقع',
+    'it': 'Conferma questa posizione',
+    'hi': 'इस स्थान की पुष्टि करें',
+    'th': 'ยืนยันตำแหน่งนี้',
+  });
+  String get dayThemeBannerTitle => _t({
+    'ko': '오늘의 테마',
+    'en': "TODAY'S THEME",
+    'ja': '今日のテーマ',
+    'zh': '今日主题',
+    'fr': 'THÈME DU JOUR',
+    'de': 'TAGES-THEMA',
+    'es': 'TEMA DE HOY',
+    'pt': 'TEMA DE HOJE',
+    'ru': 'ТЕМА ДНЯ',
+    'tr': 'BUGÜNÜN TEMASI',
+    'ar': 'موضوع اليوم',
+    'it': 'TEMA DI OGGI',
+    'hi': 'आज का विषय',
+    'th': 'ธีมวันนี้',
+  });
+  String get dayThemeEastAsia => _t({
+    'ko': '월요일 · 동아시아로 편지를 써볼까요',
+    'en': 'Monday · write to East Asia',
+    'ja': '月曜日 · 東アジアに手紙を',
+    'zh': '周一 · 写信去东亚',
+    'fr': 'Lundi · écrivez vers l\'Asie de l\'Est',
+    'de': 'Montag · schreib nach Ostasien',
+    'es': 'Lunes · escribe a Asia Oriental',
+    'pt': 'Segunda · escreva para o Leste Asiático',
+    'ru': 'Понедельник · напишите в Восточную Азию',
+    'tr': 'Pazartesi · Doğu Asya\'ya yazın',
+    'ar': 'الاثنين · اكتب إلى شرق آسيا',
+    'it': 'Lunedì · scrivi nell\'Asia orientale',
+    'hi': 'सोमवार · पूर्व एशिया को पत्र',
+    'th': 'จันทร์ · เขียนไปเอเชียตะวันออก',
+  });
+  String get dayThemeEurope => _t({
+    'ko': '화요일 · 유럽으로 편지를 써볼까요',
+    'en': 'Tuesday · write to Europe',
+    'ja': '火曜日 · ヨーロッパに手紙を',
+    'zh': '周二 · 写信去欧洲',
+    'fr': 'Mardi · écrivez vers l\'Europe',
+    'de': 'Dienstag · schreib nach Europa',
+    'es': 'Martes · escribe a Europa',
+    'pt': 'Terça · escreva para a Europa',
+    'ru': 'Вторник · напишите в Европу',
+    'tr': 'Salı · Avrupa\'ya yazın',
+    'ar': 'الثلاثاء · اكتب إلى أوروبا',
+    'it': 'Martedì · scrivi in Europa',
+    'hi': 'मंगलवार · यूरोप को पत्र',
+    'th': 'อังคาร · เขียนไปยุโรป',
+  });
+  String get dayThemeAfrica => _t({
+    'ko': '수요일 · 아프리카로 편지를 써볼까요',
+    'en': 'Wednesday · write to Africa',
+    'ja': '水曜日 · アフリカに手紙を',
+    'zh': '周三 · 写信去非洲',
+    'fr': 'Mercredi · écrivez vers l\'Afrique',
+    'de': 'Mittwoch · schreib nach Afrika',
+    'es': 'Miércoles · escribe a África',
+    'pt': 'Quarta · escreva para a África',
+    'ru': 'Среда · напишите в Африку',
+    'tr': 'Çarşamba · Afrika\'ya yazın',
+    'ar': 'الأربعاء · اكتب إلى أفريقيا',
+    'it': 'Mercoledì · scrivi in Africa',
+    'hi': 'बुधवार · अफ्रीका को पत्र',
+    'th': 'พุธ · เขียนไปแอฟริกา',
+  });
+  String get dayThemeSouthAmerica => _t({
+    'ko': '목요일 · 남아메리카로 편지를 써볼까요',
+    'en': 'Thursday · write to South America',
+    'ja': '木曜日 · 南アメリカに手紙を',
+    'zh': '周四 · 写信去南美',
+    'fr': 'Jeudi · écrivez vers l\'Amérique du Sud',
+    'de': 'Donnerstag · schreib nach Südamerika',
+    'es': 'Jueves · escribe a Sudamérica',
+    'pt': 'Quinta · escreva para a América do Sul',
+    'ru': 'Четверг · напишите в Южную Америку',
+    'tr': 'Perşembe · Güney Amerika\'ya yazın',
+    'ar': 'الخميس · اكتب إلى أمريكا الجنوبية',
+    'it': 'Giovedì · scrivi in Sud America',
+    'hi': 'गुरुवार · दक्षिण अमेरिका को पत्र',
+    'th': 'พฤหัส · เขียนไปอเมริกาใต้',
+  });
+  String get dayThemeOceania => _t({
+    'ko': '금요일 · 오세아니아로 편지를 써볼까요',
+    'en': 'Friday · write to Oceania',
+    'ja': '金曜日 · オセアニアに手紙を',
+    'zh': '周五 · 写信去大洋洲',
+    'fr': 'Vendredi · écrivez vers l\'Océanie',
+    'de': 'Freitag · schreib nach Ozeanien',
+    'es': 'Viernes · escribe a Oceanía',
+    'pt': 'Sexta · escreva para a Oceania',
+    'ru': 'Пятница · напишите в Океанию',
+    'tr': 'Cuma · Okyanusya\'ya yazın',
+    'ar': 'الجمعة · اكتب إلى أوقيانوسيا',
+    'it': 'Venerdì · scrivi in Oceania',
+    'hi': 'शुक्रवार · ओशिनिया को पत्र',
+    'th': 'ศุกร์ · เขียนไปโอเชียเนีย',
+  });
+  String get dayThemeNorthAmerica => _t({
+    'ko': '토요일 · 북아메리카로 편지를 써볼까요',
+    'en': 'Saturday · write to North America',
+    'ja': '土曜日 · 北アメリカに手紙を',
+    'zh': '周六 · 写信去北美',
+    'fr': 'Samedi · écrivez vers l\'Amérique du Nord',
+    'de': 'Samstag · schreib nach Nordamerika',
+    'es': 'Sábado · escribe a Norteamérica',
+    'pt': 'Sábado · escreva para a América do Norte',
+    'ru': 'Суббота · напишите в Северную Америку',
+    'tr': 'Cumartesi · Kuzey Amerika\'ya yazın',
+    'ar': 'السبت · اكتب إلى أمريكا الشمالية',
+    'it': 'Sabato · scrivi in Nord America',
+    'hi': 'शनिवार · उत्तरी अमेरिका को पत्र',
+    'th': 'เสาร์ · เขียนไปอเมริกาเหนือ',
+  });
+  String get dayThemeMiddleEast => _t({
+    'ko': '일요일 · 중동으로 편지를 써볼까요',
+    'en': 'Sunday · write to the Middle East',
+    'ja': '日曜日 · 中東に手紙を',
+    'zh': '周日 · 写信去中东',
+    'fr': 'Dimanche · écrivez vers le Moyen-Orient',
+    'de': 'Sonntag · schreib in den Nahen Osten',
+    'es': 'Domingo · escribe a Oriente Medio',
+    'pt': 'Domingo · escreva para o Oriente Médio',
+    'ru': 'Воскресенье · напишите на Ближний Восток',
+    'tr': 'Pazar · Orta Doğu\'ya yazın',
+    'ar': 'الأحد · اكتب إلى الشرق الأوسط',
+    'it': 'Domenica · scrivi in Medio Oriente',
+    'hi': 'रविवार · मध्य पूर्व को पत्र',
+    'th': 'อาทิตย์ · เขียนไปตะวันออกกลาง',
+  });
+  String get composeQuickPickOpposite => _t({
+    'ko': '지구 반대편',
+    'en': 'Other side',
+    'ja': '地球の反対側',
+    'zh': '地球另一端',
+    'fr': "À l'opposé",
+    'de': 'Gegenseite',
+    'es': 'Otro lado',
+    'pt': 'Outro lado',
+    'ru': 'Другая сторона',
+    'tr': 'Karşı taraf',
+    'ar': 'الجانب الآخر',
+    'it': 'Altro lato',
+    'hi': 'दूसरी ओर',
+    'th': 'อีกฝั่ง',
+  });
+  String get composeQuickPickSunrise => _t({
+    'ko': '지금 아침인 곳',
+    'en': 'Sunrise now',
+    'ja': '今朝の国',
+    'zh': '此刻是清晨',
+    'fr': 'Au lever du jour',
+    'de': 'Sonnenaufgang jetzt',
+    'es': 'Al amanecer',
+    'pt': 'Amanhecer agora',
+    'ru': 'Сейчас утро',
+    'tr': 'Şu an sabah',
+    'ar': 'الشروق الآن',
+    'it': "All'alba adesso",
+    'hi': 'अभी सुबह',
+    'th': 'กำลังเป็นเช้า',
+  });
+  String get composeQuickPickUnvisited => _t({
+    'ko': '안 가본 대륙',
+    'en': 'New continent',
+    'ja': '未訪大陸',
+    'zh': '未到过的大洲',
+    'fr': 'Continent inédit',
+    'de': 'Neuer Kontinent',
+    'es': 'Nuevo continente',
+    'pt': 'Novo continente',
+    'ru': 'Новый континент',
+    'tr': 'Yeni kıta',
+    'ar': 'قارة جديدة',
+    'it': 'Nuovo continente',
+    'hi': 'नया महाद्वीप',
+    'th': 'ทวีปใหม่',
+  });
+  String get composeDailyPromptLabel => _t({
+    'ko': '오늘의 영감',
+    'en': "TODAY'S PROMPT",
+    'ja': '今日のひとこと',
+    'zh': '今日灵感',
+    'fr': "INSPIRATION DU JOUR",
+    'de': "TAGES-IMPULS",
+    'es': "INSPIRACIÓN DE HOY",
+    'pt': "INSPIRAÇÃO DE HOJE",
+    'ru': "ВДОХНОВЕНИЕ ДНЯ",
+    'tr': "BUGÜNÜN ESINI",
+    'ar': "إلهام اليوم",
+    'it': "SPUNTO DI OGGI",
+    'hi': "आज की प्रेरणा",
+    'th': "แรงบันดาลใจวันนี้",
+  });
+
+  // Build 117: 펜팔식 "처음 뵙겠어요" 자기소개 템플릿 → 헌트·브랜드 모두에
+  // 중립적인 열린 프롬프트로 교체. 브랜드는 프로모 헤드라인, 비브랜드는
+  // 메시지·인사를 자유롭게 쓰도록 유도.
   String get composeHint => _t({
-    'ko': '안녕하세요, 처음 뵙겠어요.\n저는 지금 이 편지를 쓰고 있는...',
-    'en': 'Hello, nice to meet you.\nI am writing this letter to...',
-    'ja': 'はじめまして。\n今この手紙を書いている...',
-    'zh': '你好，初次见面。\n我正在写这封信...',
-    'fr': 'Bonjour, enchanté(e).\nJ\'écris cette lettre pour...',
-    'de': 'Hallo, freut mich.\nIch schreibe diesen Brief...',
-    'es': 'Hola, mucho gusto.\nEstoy escribiendo esta carta...',
-    'pt': 'Olá, prazer em conhecê-lo.\nEstou escrevendo esta carta...',
-    'ru': 'Здравствуйте, приятно познакомиться.\nЯ пишу это письмо...',
-    'tr': 'Merhaba, tanıştığımıza memnun oldum.\nBu mektubu yazıyorum...',
-    'ar': 'مرحبًا، سعيد بلقائك.\nأنا أكتب هذه الرسالة...',
-    'it': 'Ciao, piacere di conoscerti.\nSto scrivendo questa lettera...',
-    'hi': 'नमस्ते, आपसे मिलकर खुशी हुई।\nमैं यह पत्र लिख रहा/रही हूं...',
-    'th': 'สวัสดี ยินดีที่ได้รู้จัก\nฉันกำลังเขียนจดหมายนี้...',
+    'ko': '이 편지에 담고 싶은 이야기를 적어보세요...',
+    'en': 'Write the message you want to send in this letter...',
+    'ja': 'この手紙で伝えたいことを書いてみましょう...',
+    'zh': '写下你想通过这封信传达的内容...',
+    'fr': "Écris ce que tu veux partager dans cette lettre...",
+    'de': 'Schreib, was du in diesem Brief mitteilen möchtest...',
+    'es': 'Escribe lo que quieres decir en esta carta...',
+    'pt': 'Escreve o que queres dizer nesta carta...',
+    'ru': 'Напишите, что хотите передать в этом письме...',
+    'tr': 'Bu mektupta paylaşmak istediklerini yaz...',
+    'ar': 'اكتب ما تودّ قوله في هذه الرسالة...',
+    'it': 'Scrivi ciò che vuoi dire in questa lettera...',
+    'hi': 'इस पत्र में जो संदेश भेजना चाहते हैं, लिखें...',
+    'th': 'เขียนสิ่งที่คุณอยากสื่อในจดหมายนี้...',
   });
 
   String get composeLinkAttach => _t({
@@ -4745,20 +6740,21 @@ class AppL10n {
   });
 
   String composeQuotaGeneral(int sent, int limit, int remaining) => _t({
-    'ko': '오늘 발송 $sent/${limit}통 · 남은 ${remaining}통',
-    'en': 'Today $sent/$limit sent · $remaining remaining',
-    'ja': '本日 $sent/${limit}通送信 · 残り${remaining}通',
-    'zh': '今日已发$sent/$limit封 · 剩余${remaining}封',
-    'fr': 'Aujourd\'hui $sent/$limit envoyés · $remaining restants',
-    'de': 'Heute $sent/$limit gesendet · $remaining übrig',
-    'es': 'Hoy $sent/$limit enviadas · $remaining restantes',
-    'pt': 'Hoje $sent/$limit enviadas · $remaining restantes',
-    'ru': 'Сегодня $sent/$limit отправлено · осталось $remaining',
-    'tr': 'Bugün $sent/$limit gönderildi · $remaining kaldı',
-    'ar': 'اليوم $sent/$limit مرسل · متبقي $remaining',
-    'it': 'Oggi $sent/$limit inviate · $remaining rimanenti',
-    'hi': 'आज $sent/$limit भेजे · $remaining शेष',
-    'th': 'วันนี้ส่ง $sent/$limit · เหลือ $remaining',
+    // "0/3 · 남은 3통" 은 중복 정보. 분수만 남겨 간결하게.
+    'ko': '오늘 발송 $sent/${limit}통',
+    'en': 'Today $sent / $limit sent',
+    'ja': '本日 $sent / ${limit}通送信',
+    'zh': '今日已发 $sent / $limit 封',
+    'fr': 'Aujourd\'hui $sent / $limit envoyés',
+    'de': 'Heute $sent / $limit gesendet',
+    'es': 'Hoy $sent / $limit enviadas',
+    'pt': 'Hoje $sent / $limit enviadas',
+    'ru': 'Сегодня $sent / $limit отправлено',
+    'tr': 'Bugün $sent / $limit gönderildi',
+    'ar': 'اليوم $sent / $limit مرسل',
+    'it': 'Oggi $sent / $limit inviate',
+    'hi': 'आज $sent / $limit भेजे',
+    'th': 'วันนี้ส่ง $sent / $limit',
   });
 
   String composeQuotaBrand(int sent, int limit, int monthlyRemaining) => _t({
@@ -5189,6 +7185,75 @@ class AppL10n {
     'th': 'ลบจดหมายแล้ว',
   });
 
+  // Build 183: 받은 편지 스와이프 — 우측(→) 사용 완료 라벨.
+  String get inboxMarkUsed => _t({
+    'ko': '사용 완료',
+    'en': 'Mark used',
+    'ja': '使用済み',
+    'zh': '标记已用',
+    'fr': 'Utilisé',
+    'de': 'Benutzt',
+    'es': 'Usar',
+    'pt': 'Usado',
+    'ru': 'Использовано',
+    'tr': 'Kullanıldı',
+    'ar': 'استخدم',
+    'it': 'Usato',
+    'hi': 'प्रयुक्त',
+    'th': 'ใช้แล้ว',
+  });
+
+  String get inboxAlreadyUsed => _t({
+    'ko': '이미 사용',
+    'en': 'Used',
+    'ja': '使用済',
+    'zh': '已使用',
+    'fr': 'Utilisé',
+    'de': 'Verwendet',
+    'es': 'Usado',
+    'pt': 'Usado',
+    'ru': 'Использ.',
+    'tr': 'Kullanıldı',
+    'ar': 'مستخدم',
+    'it': 'Usato',
+    'hi': 'प्रयुक्त',
+    'th': 'ใช้แล้ว',
+  });
+
+  String get inboxMarkedUsed => _t({
+    'ko': '✅ 사용 완료로 표시했어요',
+    'en': '✅ Marked as used',
+    'ja': '✅ 使用済みに設定しました',
+    'zh': '✅ 已标记为已使用',
+    'fr': '✅ Marqué comme utilisé',
+    'de': '✅ Als benutzt markiert',
+    'es': '✅ Marcado como usado',
+    'pt': '✅ Marcado como usado',
+    'ru': '✅ Отмечено как использованное',
+    'tr': '✅ Kullanıldı olarak işaretlendi',
+    'ar': '✅ تم التعليم كمستخدم',
+    'it': '✅ Contrassegnato come usato',
+    'hi': '✅ प्रयुक्त के रूप में चिह्नित',
+    'th': '✅ ทำเครื่องหมายว่าใช้แล้ว',
+  });
+
+  String get inboxAlreadyUsedSnack => _t({
+    'ko': '이미 사용 완료된 편지예요',
+    'en': 'Already marked as used',
+    'ja': '既に使用済みです',
+    'zh': '已是已使用状态',
+    'fr': 'Déjà marqué comme utilisé',
+    'de': 'Bereits als benutzt markiert',
+    'es': 'Ya marcado como usado',
+    'pt': 'Já marcado como usado',
+    'ru': 'Уже использовано',
+    'tr': 'Zaten kullanıldı',
+    'ar': 'تم تعليمه كمستخدم',
+    'it': 'Già contrassegnato come usato',
+    'hi': 'पहले से प्रयुक्त चिह्नित',
+    'th': 'ใช้แล้วอยู่แล้ว',
+  });
+
   String get inboxEmptyReceived => _t({
     'ko': '조건에 맞는 받은 편지가 없어요',
     'en': 'No received letters match the filter',
@@ -5221,6 +7286,251 @@ class AppL10n {
     'it': 'Prova un filtro diverso o trova nuove lettere sulla mappa!',
     'hi': 'कोई अलग फ़िल्टर आज़माएं या मानचित्र पर नए पत्र खोजें!',
     'th': 'ลองเปลี่ยนตัวกรองหรือค้นหาจดหมายใหม่บนแผนที่!',
+  });
+
+  /// 필터명을 받아 "아직 X 편지가 없어요" 식으로 조합. 빈 수집첩에서
+  /// 어떤 필터가 걸렸는지 명시적으로 알려준다. "편지" 를 공통 명사로 붙여
+  /// 한국어 조사 처리 ((이)가) 를 피하고 "할인권 편지가", "브랜드 편지가"
+  /// 식으로 매끄럽게 읽히도록 한다.
+  String inboxEmptyForFilter(String filterName) {
+    switch (languageCode) {
+      case 'ko':
+        return '아직 $filterName 편지가 없어요';
+      case 'en':
+        return 'No $filterName letters yet';
+      case 'ja':
+        return 'まだ$filterNameの手紙がありません';
+      case 'zh':
+        return '暂无$filterName信件';
+      case 'fr':
+        return 'Pas encore de lettres $filterName';
+      case 'de':
+        return 'Noch keine $filterName-Briefe';
+      case 'es':
+        return 'Aún no hay cartas de $filterName';
+      case 'pt':
+        return 'Ainda não há cartas de $filterName';
+      case 'ru':
+        return 'Писем категории «$filterName» пока нет';
+      case 'tr':
+        return 'Henüz $filterName mektubu yok';
+      case 'ar':
+        return 'لا توجد رسائل $filterName بعد';
+      case 'it':
+        return 'Ancora nessuna lettera $filterName';
+      case 'hi':
+        return 'अभी कोई $filterName पत्र नहीं';
+      case 'th':
+        return 'ยังไม่มีจดหมาย$filterName';
+      default:
+        return 'No $filterName letters yet';
+    }
+  }
+
+  // 회원탈퇴 다이얼로그 — 삭제되는 항목 헤더 · 항목 리스트 · 유저명 입력 안내
+  String get settingsWithdrawItemsHeader => _t({
+    'ko': '⚠️ 삭제되는 항목',
+    'en': '⚠️ What will be deleted',
+    'ja': '⚠️ 削除される項目',
+    'zh': '⚠️ 将被删除的内容',
+    'fr': '⚠️ Éléments supprimés',
+    'de': '⚠️ Was gelöscht wird',
+    'es': '⚠️ Qué se eliminará',
+    'pt': '⚠️ O que será apagado',
+    'ru': '⚠️ Что будет удалено',
+    'tr': '⚠️ Silinecekler',
+    'ar': '⚠️ ما الذي سيتم حذفه',
+    'it': '⚠️ Cosa verrà eliminato',
+    'hi': '⚠️ क्या हटाया जाएगा',
+    'th': '⚠️ สิ่งที่จะถูกลบ',
+  });
+
+  String get settingsWithdrawItemsList => _t({
+    'ko': '• 모든 편지 및 DM 기록\n• 타워 및 활동 점수\n• 스탬프 앨범\n• 계정 정보',
+    'en': '• All letters and DM history\n• Tower and activity score\n• Stamp album\n• Account info',
+    'ja': '• すべての手紙とDM履歴\n• タワーとアクティビティスコア\n• スタンプアルバム\n• アカウント情報',
+    'zh': '• 所有信件和私信记录\n• 塔和活跃度分数\n• 邮票收集册\n• 账号信息',
+    'fr': '• Toutes les lettres et DM\n• Tour et score d’activité\n• Album de timbres\n• Info du compte',
+    'de': '• Alle Briefe und DMs\n• Turm und Aktivitätsscore\n• Briefmarkenalbum\n• Kontodaten',
+    'es': '• Todas las cartas y DMs\n• Torre y puntuación\n• Álbum de sellos\n• Datos de cuenta',
+    'pt': '• Todas as cartas e DMs\n• Torre e pontuação\n• Álbum de selos\n• Dados da conta',
+    'ru': '• Все письма и ЛС\n• Башня и очки активности\n• Альбом марок\n• Данные аккаунта',
+    'tr': '• Tüm mektuplar ve DM\n• Kule ve etkinlik puanı\n• Pul albümü\n• Hesap bilgileri',
+    'ar': '• كل الرسائل والمحادثات الخاصة\n• البرج ونقاط النشاط\n• ألبوم الطوابع\n• بيانات الحساب',
+    'it': '• Tutte le lettere e DM\n• Torre e punteggio\n• Album dei francobolli\n• Dati account',
+    'hi': '• सभी पत्र और DM\n• टावर और गतिविधि स्कोर\n• स्टैम्प एल्बम\n• खाता जानकारी',
+    'th': '• จดหมายและ DM ทั้งหมด\n• หอและคะแนนกิจกรรม\n• อัลบั้มแสตมป์\n• ข้อมูลบัญชี',
+  });
+
+  String settingsWithdrawTypeUsernameToConfirm(String username) {
+    switch (languageCode) {
+      case 'ko':
+        return '확인을 위해 아이디 "$username"를 입력하세요:';
+      case 'ja':
+        return '確認のためユーザー名 "$username" を入力してください:';
+      case 'zh':
+        return '请输入用户名 "$username" 以确认：';
+      case 'fr':
+        return 'Saisissez "$username" pour confirmer :';
+      case 'de':
+        return 'Gib "$username" ein, um zu bestätigen:';
+      case 'es':
+        return 'Escribe "$username" para confirmar:';
+      case 'pt':
+        return 'Digite "$username" para confirmar:';
+      case 'ru':
+        return 'Введите "$username" для подтверждения:';
+      case 'tr':
+        return 'Onaylamak için "$username" yazın:';
+      case 'ar':
+        return 'اكتب "$username" للتأكيد:';
+      case 'it':
+        return 'Digita "$username" per confermare:';
+      case 'hi':
+        return 'पुष्टि करने के लिए "$username" टाइप करें:';
+      case 'th':
+        return 'พิมพ์ "$username" เพื่อยืนยัน:';
+      default:
+        return 'Type "$username" to confirm:';
+    }
+  }
+
+  // 설정 · 고객 지원 섹션
+  String get settingsSupport => _t({
+    'ko': '고객 지원',
+    'en': 'Support',
+    'ja': 'サポート',
+    'zh': '客户支持',
+    'fr': 'Assistance',
+    'de': 'Support',
+    'es': 'Soporte',
+    'pt': 'Suporte',
+    'ru': 'Поддержка',
+    'tr': 'Destek',
+    'ar': 'الدعم',
+    'it': 'Assistenza',
+    'hi': 'सहायता',
+    'th': 'ฝ่ายช่วยเหลือ',
+  });
+
+  String get settingsContactUs => _t({
+    'ko': '문의하기',
+    'en': 'Contact us',
+    'ja': 'お問い合わせ',
+    'zh': '联系我们',
+    'fr': 'Nous contacter',
+    'de': 'Kontakt',
+    'es': 'Contáctanos',
+    'pt': 'Fale conosco',
+    'ru': 'Связаться с нами',
+    'tr': 'Bize ulaşın',
+    'ar': 'تواصل معنا',
+    'it': 'Contattaci',
+    'hi': 'संपर्क करें',
+    'th': 'ติดต่อเรา',
+  });
+
+  String get settingsContactUsDesc => _t({
+    'ko': '오류 신고 · 기능 제안 · 기타 문의',
+    'en': 'Report a bug · Suggest a feature · Other',
+    'ja': '不具合報告・機能提案・その他',
+    'zh': '反馈问题 · 功能建议 · 其他',
+    'fr': 'Bug · Suggestion · Autre',
+    'de': 'Fehler · Vorschlag · Sonstiges',
+    'es': 'Error · Sugerencia · Otro',
+    'pt': 'Erro · Sugestão · Outro',
+    'ru': 'Ошибка · Предложение · Другое',
+    'tr': 'Hata · Öneri · Diğer',
+    'ar': 'إبلاغ عن خطأ · اقتراح · أخرى',
+    'it': 'Bug · Suggerimento · Altro',
+    'hi': 'बग · सुझाव · अन्य',
+    'th': 'แจ้งบัก · เสนอฟีเจอร์ · อื่น ๆ',
+  });
+
+  String get settingsManageSubscription => _t({
+    'ko': '구독 관리',
+    'en': 'Manage subscription',
+    'ja': 'サブスクリプション管理',
+    'zh': '管理订阅',
+    'fr': 'Gérer l\'abonnement',
+    'de': 'Abo verwalten',
+    'es': 'Gestionar suscripción',
+    'pt': 'Gerir subscrição',
+    'ru': 'Управление подпиской',
+    'tr': 'Aboneliği yönet',
+    'ar': 'إدارة الاشتراك',
+    'it': 'Gestisci abbonamento',
+    'hi': 'सदस्यता प्रबंधित करें',
+    'th': 'จัดการการสมัคร',
+  });
+
+  String get settingsManageSubscriptionDesc => _t({
+    'ko': 'App Store / Google Play에서 구독 변경',
+    'en': 'Change your plan in App Store / Google Play',
+    'ja': 'App Store / Google Playでプラン変更',
+    'zh': '在 App Store / Google Play 更改订阅',
+    'fr': 'Modifier dans App Store / Google Play',
+    'de': 'Im App Store / Google Play ändern',
+    'es': 'Cambiar en App Store / Google Play',
+    'pt': 'Alterar em App Store / Google Play',
+    'ru': 'Изменить в App Store / Google Play',
+    'tr': 'App Store / Google Play üzerinden değiştir',
+    'ar': 'تغيير عبر App Store / Google Play',
+    'it': 'Modifica in App Store / Google Play',
+    'hi': 'App Store / Google Play से बदलें',
+    'th': 'เปลี่ยนใน App Store / Google Play',
+  });
+
+  // 수집첩 상단의 숫자 칩 3개 — 새 편지 / 배달중 / 총 수신
+  String get inboxStatNew => _t({
+    'ko': '새 편지',
+    'en': 'New',
+    'ja': '新着',
+    'zh': '新信件',
+    'fr': 'Nouveau',
+    'de': 'Neu',
+    'es': 'Nuevo',
+    'pt': 'Novo',
+    'ru': 'Новые',
+    'tr': 'Yeni',
+    'ar': 'جديد',
+    'it': 'Nuovo',
+    'hi': 'नया',
+    'th': 'ใหม่',
+  });
+
+  String get inboxStatTransit => _t({
+    'ko': '배달중',
+    'en': 'In transit',
+    'ja': '配達中',
+    'zh': '投递中',
+    'fr': 'En route',
+    'de': 'Unterwegs',
+    'es': 'En camino',
+    'pt': 'A caminho',
+    'ru': 'В пути',
+    'tr': 'Yolda',
+    'ar': 'قيد التوصيل',
+    'it': 'In viaggio',
+    'hi': 'रास्ते में',
+    'th': 'กำลังจัดส่ง',
+  });
+
+  String get inboxStatTotal => _t({
+    'ko': '총 수신',
+    'en': 'Total received',
+    'ja': '総受信',
+    'zh': '累计收件',
+    'fr': 'Total reçu',
+    'de': 'Gesamt erhalten',
+    'es': 'Total recibidas',
+    'pt': 'Total recebidas',
+    'ru': 'Всего получено',
+    'tr': 'Toplam alınan',
+    'ar': 'إجمالي المستلم',
+    'it': 'Totale ricevute',
+    'hi': 'कुल प्राप्त',
+    'th': 'รับทั้งหมด',
   });
 
   String get inboxEmptySent => _t({
@@ -5391,6 +7701,74 @@ class AppL10n {
     'it': 'Marchio',
     'hi': 'ब्रांड',
     'th': 'แบรนด์',
+  });
+  String get inboxFilterCoupon => _t({
+    'ko': '할인권',
+    'en': 'Coupons',
+    'ja': '割引券',
+    'zh': '折扣券',
+    'fr': 'Réductions',
+    'de': 'Rabatte',
+    'es': 'Cupones',
+    'pt': 'Cupons',
+    'ru': 'Купоны',
+    'tr': 'Kuponlar',
+    'ar': 'قسائم',
+    'it': 'Sconti',
+    'hi': 'कूपन',
+    'th': 'คูปอง',
+  });
+  String get inboxFilterVoucher => _t({
+    'ko': '교환권',
+    'en': 'Vouchers',
+    'ja': '引換券',
+    'zh': '兑换券',
+    'fr': 'Bons',
+    'de': 'Gutscheine',
+    'es': 'Vales',
+    'pt': 'Vales',
+    'ru': 'Ваучеры',
+    'tr': 'Fişler',
+    'ar': 'قسائم التبادل',
+    'it': 'Buoni',
+    'hi': 'वाउचर',
+    'th': 'บัตรแลก',
+  });
+
+  // Build 183: 받은 편지 필터에서 brand 제거 후 일반(general) 필터 신설.
+  String get inboxFilterGeneral => _t({
+    'ko': '일반',
+    'en': 'General',
+    'ja': '一般',
+    'zh': '普通',
+    'fr': 'Général',
+    'de': 'Allgemein',
+    'es': 'General',
+    'pt': 'Geral',
+    'ru': 'Общие',
+    'tr': 'Genel',
+    'ar': 'عام',
+    'it': 'Generale',
+    'hi': 'सामान्य',
+    'th': 'ทั่วไป',
+  });
+
+  // Build 183: 수집첩 정렬에 "사용 완료" 추가. 이미 redeemed 된 편지만 보임.
+  String get inboxSortUsedOnly => _t({
+    'ko': '사용 완료',
+    'en': 'Used',
+    'ja': '使用済み',
+    'zh': '已使用',
+    'fr': 'Utilisé',
+    'de': 'Benutzt',
+    'es': 'Usados',
+    'pt': 'Usados',
+    'ru': 'Использованные',
+    'tr': 'Kullanılmış',
+    'ar': 'مستخدم',
+    'it': 'Usati',
+    'hi': 'प्रयुक्त',
+    'th': 'ใช้แล้ว',
   });
 
   String get inboxStatusInTransit => _t({
@@ -5736,6 +8114,24 @@ class AppL10n {
   // ── Premium Screen ──────────────────────────────────────────────────
   // ── premium_gate_sheet.dart ──
 
+  // Build 150: Premium Gate 가격 카드 안심 문구.
+  String get premiumGateAssurance => _t({
+    'ko': '언제든 해지 · 광고 없음',
+    'en': 'Cancel anytime · No ads',
+    'ja': 'いつでも解約可能 · 広告なし',
+    'zh': '随时取消 · 无广告',
+    'fr': 'Annulation à tout moment · Sans pub',
+    'de': 'Jederzeit kündbar · Keine Werbung',
+    'es': 'Cancela cuando quieras · Sin anuncios',
+    'pt': 'Cancela quando quiseres · Sem anúncios',
+    'ru': 'Отмена в любое время · Без рекламы',
+    'tr': 'İstediğin zaman iptal · Reklamsız',
+    'ar': 'إلغاء في أي وقت · بدون إعلانات',
+    'it': 'Cancella quando vuoi · Senza pubblicità',
+    'hi': 'कभी भी रद्द · बिना विज्ञापन',
+    'th': 'ยกเลิกเมื่อใดก็ได้ · ไม่มีโฆษณา',
+  });
+
   String get premiumGatePriceLabel => _t({
     'ko': '₩4,900 / 월',
     'en': '₩4,900 / mo',
@@ -5874,75 +8270,100 @@ class AppL10n {
     'th': 'จัดส่งด่วน 3/วัน + หอคอยกำหนดเองเพิ่มการมองเห็น',
   });
 
+  // Build 118: 기능 리스트 재배치 — 발송 중심 → 픽업 중심. 마케팅 기획서
+  // Build 113 의 "레벨업 = 실제 반경 확대" 차별화 축에 정렬. 1·2번이 헌트
+  // 핵심 차이 (반경·쿨다운), 3·4번은 발송·꾸미기 번들.
   String get premiumFeature1 => _t({
-    'ko': '하루 30통 편지 발송',
-    'en': '30 letters per day',
-    'ja': '1日30通の手紙を送信',
-    'zh': '每日发送30封信',
-    'fr': '30 lettres par jour',
-    'de': '30 Briefe pro Tag',
-    'es': '30 cartas por día',
-    'pt': '30 cartas por dia',
-    'ru': '30 писем в день',
-    'tr': 'Günde 30 mektup',
-    'ar': '30 رسالة يومياً',
-    'it': '30 lettere al giorno',
-    'hi': 'प्रतिदिन 30 पत्र',
-    'th': 'ส่งจดหมาย 30 ฉบับต่อวัน',
+    'ko': '줍기 반경 1km · Free 200m의 5배',
+    'en': '1 km pickup radius · 5× the free 200 m',
+    'ja': '拾える範囲 1km · 無料 200m の 5倍',
+    'zh': '拾取范围 1km · 免费 200m 的 5 倍',
+    'fr': 'Rayon de ramassage 1 km · 5× des 200 m gratuits',
+    'de': 'Aufsammelradius 1 km · 5× die kostenlosen 200 m',
+    'es': 'Radio de recogida 1 km · 5× los 200 m gratis',
+    'pt': 'Raio de recolha 1 km · 5× os 200 m grátis',
+    'ru': 'Радиус подбора 1 км · 5× бесплатных 200 м',
+    'tr': 'Toplama yarıçapı 1 km · ücretsiz 200 m’nin 5 katı',
+    'ar': 'نطاق الالتقاط 1 كم · 5 أضعاف 200 م المجانية',
+    'it': 'Raggio di raccolta 1 km · 5× i 200 m gratuiti',
+    'hi': 'पिकअप रेडियस 1 किमी · मुफ्त 200 मी का 5 गुना',
+    'th': 'รัศมีเก็บจดหมาย 1 กม. · 5 เท่าของ 200 ม. ฟรี',
   });
 
   String get premiumFeature2 => _t({
-    'ko': '이미지+링크 편지 (하루 20통)',
-    'en': 'Image+link letters (20/day)',
-    'ja': '画像+リンク付き手紙（1日20通）',
-    'zh': '图片+链接信件（每日20封）',
-    'fr': 'Lettres image+lien (20/jour)',
-    'de': 'Bild+Link-Briefe (20/Tag)',
-    'es': 'Cartas con imagen+enlace (20/día)',
-    'pt': 'Cartas com imagem+link (20/dia)',
-    'ru': 'Письма с фото+ссылкой (20/день)',
-    'tr': 'Resim+link mektuplar (günde 20)',
-    'ar': 'رسائل صور+روابط (20/يوم)',
-    'it': 'Lettere immagine+link (20/giorno)',
-    'hi': 'छवि+लिंक पत्र (20/दिन)',
-    'th': 'จดหมายภาพ+ลิงก์ (20/วัน)',
+    'ko': '10분 쿨다운 · Free 60분 대비 6배 빠른 픽업',
+    'en': '10-min cooldown · 6× faster than free',
+    'ja': '10分クールダウン · 無料60分より6倍速い',
+    'zh': '冷却 10 分钟 · 比免费 60 分钟快 6 倍',
+    'fr': 'Recharge 10 min · 6× plus rapide que le gratuit',
+    'de': '10 min Abklingzeit · 6× schneller als kostenlos',
+    'es': 'Enfriamiento 10 min · 6× más rápido que gratis',
+    'pt': 'Recarga 10 min · 6× mais rápido que o grátis',
+    'ru': 'Перезарядка 10 мин · в 6 раз быстрее бесплатной',
+    'tr': '10 dk bekleme · ücretsizden 6× hızlı',
+    'ar': 'تبريد 10 دقائق · أسرع 6 أضعاف من المجانية',
+    'it': 'Cooldown 10 min · 6× più veloce del gratuito',
+    'hi': '10 मिनट कूलडाउन · मुफ्त से 6× तेज़',
+    'th': 'คูลดาวน์ 10 นาที · เร็วกว่าฟรี 6 เท่า',
   });
 
   String get premiumFeature3 => _t({
-    'ko': '타워 커스텀 색상 & 이모지',
-    'en': 'Custom tower colors & emoji',
-    'ja': 'タワーカスタムカラー＆絵文字',
-    'zh': '塔楼自定义颜色和表情',
-    'fr': 'Couleurs de tour personnalisées & emoji',
-    'de': 'Benutzerdefinierte Turmfarben & Emoji',
-    'es': 'Colores de torre personalizados y emoji',
-    'pt': 'Cores de torre personalizadas e emoji',
-    'ru': 'Пользовательские цвета башни и эмодзи',
-    'tr': 'Özel kule renkleri ve emoji',
-    'ar': 'ألوان برج مخصصة ورموز تعبيرية',
-    'it': 'Colori torre personalizzati & emoji',
-    'hi': 'कस्टम टावर रंग और इमोजी',
-    'th': 'สีหอคอยกำหนดเองและอีโมจิ',
+    'ko': '📸 사진 + 🔗 채널 링크 홍보 편지 · 하루 30통',
+    'en': '📸 Photo + 🔗 channel-link promo letters · 30/day',
+    'ja': '📸 写真 + 🔗 チャンネルリンクPR手紙 · 1日30通',
+    'zh': '📸 照片 + 🔗 频道链接推广信件 · 每日 30 封',
+    'fr': '📸 Photo + 🔗 lien de chaîne promo · 30/jour',
+    'de': '📸 Foto + 🔗 Kanal-Link Promo-Briefe · 30/Tag',
+    'es': '📸 Foto + 🔗 enlace canal promo · 30/día',
+    'pt': '📸 Foto + 🔗 link de canal promo · 30/dia',
+    'ru': '📸 Фото + 🔗 ссылка на канал · 30/день',
+    'tr': '📸 Fotoğraf + 🔗 kanal bağlantısı · 30/gün',
+    'ar': '📸 صور + 🔗 روابط قناة ترويجية · 30/يوم',
+    'it': '📸 Foto + 🔗 link canale promo · 30/giorno',
+    'hi': '📸 फ़ोटो + 🔗 चैनल लिंक प्रोमो · 30/दिन',
+    'th': '📸 รูป + 🔗 ลิงก์ช่อง · 30/วัน',
   });
 
+  // Build 185: Premium 혜택에서 타워 언급 제거 — Premium = 레터 트랙.
+  // 캐릭터 커스터마이즈(컴패니언/악세사리)는 Build 125 이후 Premium 전용,
+  // 특급 배송은 이전부터 유지.
   String get premiumFeature4 => _t({
-    'ko': '특급 배송 (하루 3통)',
-    'en': 'Express delivery (3/day)',
-    'ja': '特急配送（1日3通）',
-    'zh': '特快配送（每日3封）',
-    'fr': 'Livraison express (3/jour)',
-    'de': 'Express-Zustellung (3/Tag)',
-    'es': 'Entrega exprés (3/día)',
-    'pt': 'Entrega expressa (3/dia)',
-    'ru': 'Экспресс-доставка (3/день)',
-    'tr': 'Ekspres teslimat (günde 3)',
-    'ar': 'توصيل سريع (3/يوم)',
-    'it': 'Consegna espressa (3/giorno)',
-    'hi': 'एक्सप्रेस डिलीवरी (3/दिन)',
-    'th': 'จัดส่งด่วน (3/วัน)',
+    'ko': '🎨 레터 캐릭터 커스터마이즈 · 특급 배송 3통/일',
+    'en': '🎨 Letter character customize · 3 express deliveries/day',
+    'ja': '🎨 Letter キャラカスタム · 特急配送 3/日',
+    'zh': '🎨 Letter 角色定制 · 特快配送 3/日',
+    'fr': '🎨 Personnalisation du Letter · 3 livraisons express/jour',
+    'de': '🎨 Letter-Charakter anpassen · 3 Express-Lieferungen/Tag',
+    'es': '🎨 Personaliza tu Letter · 3 entregas exprés/día',
+    'pt': '🎨 Personaliza o teu Letter · 3 entregas expressas/dia',
+    'ru': '🎨 Кастомизация Letter · 3 экспресса/день',
+    'tr': '🎨 Letter karakter özelleştirme · 3 ekspres/gün',
+    'ar': '🎨 تخصيص شخصية Letter · 3 توصيلات سريعة/يوم',
+    'it': '🎨 Personalizza il Letter · 3 espressi/giorno',
+    'hi': '🎨 Letter कस्टमाइज़ · 3 एक्सप्रेस/दिन',
+    'th': '🎨 ปรับแต่ง Letter · ด่วน 3/วัน',
   });
 
+  // Build 118: Free 플랜 카드도 픽업 중심으로 재배치 — 반경·쿨다운 제약을
+  // 먼저 보여 Premium 업그레이드 동기를 시각화.
   String get premiumFreeFeature1 => _t({
+    'ko': '줍기 반경 200m · 쿨다운 60분',
+    'en': '200 m pickup radius · 60-min cooldown',
+    'ja': '拾える範囲 200m · 60分クールダウン',
+    'zh': '拾取范围 200m · 冷却 60 分钟',
+    'fr': 'Rayon 200 m · recharge 60 min',
+    'de': '200 m Radius · 60 min Abklingzeit',
+    'es': 'Radio 200 m · enfriamiento 60 min',
+    'pt': 'Raio 200 m · recarga 60 min',
+    'ru': 'Радиус 200 м · перезарядка 60 мин',
+    'tr': '200 m yarıçap · 60 dk bekleme',
+    'ar': 'نطاق 200 م · تبريد 60 دقيقة',
+    'it': 'Raggio 200 m · cooldown 60 min',
+    'hi': '200 मी रेडियस · 60 मिनट कूलडाउन',
+    'th': 'รัศมี 200 ม. · คูลดาวน์ 60 นาที',
+  });
+
+  String get premiumFreeFeature2 => _t({
     'ko': '하루 3통 발송 · 월 100통',
     'en': '3 letters/day · 100/month',
     'ja': '1日3通 · 月100通',
@@ -5957,23 +8378,6 @@ class AppL10n {
     'it': '3 lettere/giorno · 100/mese',
     'hi': '3 पत्र/दिन · 100/माह',
     'th': '3 ฉบับ/วัน · 100/เดือน',
-  });
-
-  String get premiumFreeFeature2 => _t({
-    'ko': '지도 열람 · 기본 편지 기능',
-    'en': 'Map access · basic letter features',
-    'ja': 'マップ閲覧 · 基本手紙機能',
-    'zh': '地图浏览 · 基本信件功能',
-    'fr': 'Accès carte · fonctions de base',
-    'de': 'Kartenzugriff · grundlegende Brieffunktionen',
-    'es': 'Acceso al mapa · funciones básicas de cartas',
-    'pt': 'Acesso ao mapa · funções básicas de cartas',
-    'ru': 'Доступ к карте · базовые функции писем',
-    'tr': 'Harita erişimi · temel mektup özellikleri',
-    'ar': 'الوصول للخريطة · ميزات الرسائل الأساسية',
-    'it': 'Accesso mappa · funzioni base delle lettere',
-    'hi': 'मानचित्र पहुंच · बुनियादी पत्र सुविधाएं',
-    'th': 'ดูแผนที่ · ฟีเจอร์จดหมายพื้นฐาน',
   });
 
   String get premiumSwitchToFree => _t({
@@ -6977,11 +9381,12 @@ class AppL10n {
     'hi': '���ल्क भेजें', 'th': 'ส่งจำนวนมาก',
   });
 
+  // Build 185: 비교표 행 이름에서 타워 표현 제거. 레터 커스터마이즈로 통일.
   String get premiumCompareTowerCustom => _t({
-    'ko': '타워 커스텀', 'en': 'Tower custom', 'ja': 'タワーカスタム', 'zh': '塔楼自定义',
-    'fr': 'Tour personnalisée', 'de': 'Turm-Anpassung', 'es': 'Torre personalizada', 'pt': 'Torre personalizada',
-    'ru': 'Кастомная башня', 'tr': 'Özel kule', 'ar': 'برج مخصص', 'it': 'Torre personalizzata',
-    'hi': 'कस्टम टावर', 'th': 'หอคอยกำหนดเอง',
+    'ko': '커스터마이즈', 'en': 'Customize', 'ja': 'カスタマイズ', 'zh': '自定义',
+    'fr': 'Personnaliser', 'de': 'Anpassung', 'es': 'Personalización', 'pt': 'Personalizar',
+    'ru': 'Кастомизация', 'tr': 'Özelleştirme', 'ar': 'تخصيص', 'it': 'Personalizzazione',
+    'hi': 'कस्टमाइज़', 'th': 'ปรับแต่ง',
   });
 
   String get premiumCompareBadge => _t({
@@ -7779,21 +10184,23 @@ class AppL10n {
     'th': 'มีอะไรอยู่ที่นี่?',
   });
 
+  // Build 185: 지도 상단 공용 라벨 — 타워 표현 제거. 모든 티어에 "내 레터"
+  // 로 통일 (Brand 는 sender identity 로 해석 가능, Free/Premium 은 캐릭터).
   String get mapMyTower => _t({
-    'ko': '내 타워',
-    'en': 'My Tower',
-    'ja': 'マイタワー',
-    'zh': '我的塔',
-    'fr': 'Ma tour',
-    'de': 'Mein Turm',
-    'es': 'Mi torre',
-    'pt': 'Minha torre',
-    'ru': 'Моя башня',
-    'tr': 'Kulem',
-    'ar': 'برجي',
-    'it': 'La mia torre',
-    'hi': 'मेरा टावर',
-    'th': 'หอคอยของฉัน',
+    'ko': '내 레터',
+    'en': 'My Letter',
+    'ja': 'マイレター',
+    'zh': '我的 Letter',
+    'fr': 'Mon Letter',
+    'de': 'Mein Letter',
+    'es': 'Mi Letter',
+    'pt': 'Meu Letter',
+    'ru': 'Мой Letter',
+    'tr': 'Letter\'ım',
+    'ar': 'Letter الخاص بي',
+    'it': 'Il mio Letter',
+    'hi': 'मेरा Letter',
+    'th': 'Letter ของฉัน',
   });
 
   String get mapFloorUnit => _t({
@@ -7813,21 +10220,22 @@ class AppL10n {
     'th': 'ชั้น',
   });
 
+  // Build 185: 근처 타워 → 근처 Letter 사용자.
   String mapNearbyTowers(int count) => _t({
-    'ko': '근처 타워 $count개',
-    'en': '$count Nearby Towers',
-    'ja': '近くのタワー ${count}個',
-    'zh': '附近 $count 个塔',
-    'fr': '$count tours à proximité',
-    'de': '$count Türme in der Nähe',
-    'es': '$count torres cercanas',
-    'pt': '$count torres próximas',
-    'ru': '$count ближайших башен',
-    'tr': '$count yakın kule',
-    'ar': '$count أبراج قريبة',
-    'it': '$count torri vicine',
-    'hi': '$count पास के टॉवर',
-    'th': '$count หอคอยใกล้เคียง',
+    'ko': '근처 Letter $count명',
+    'en': '$count Nearby Letters',
+    'ja': '近くの Letter ${count}人',
+    'zh': '附近 $count 位 Letter',
+    'fr': '$count Letters à proximité',
+    'de': '$count Letters in der Nähe',
+    'es': '$count Letters cercanos',
+    'pt': '$count Letters próximos',
+    'ru': '$count ближайших Letter',
+    'tr': '$count yakın Letter',
+    'ar': '$count Letter قريبة',
+    'it': '$count Letter vicini',
+    'hi': '$count पास के Letter',
+    'th': 'Letter ใกล้เคียง $count',
   });
 
   String mapLetterFrom(String country) => _t({
@@ -7864,72 +10272,202 @@ class AppL10n {
     'th': '$readCount/$maxReaders อ่านแล้ว · แตะเพื่อรับ',
   });
 
+  // Build 186: 온보딩 슬라이드의 티어 뱃지 라벨 (일관된 브랜딩).
+  String get tierLabelFree => _t({
+    'ko': 'Free', 'en': 'Free', 'ja': 'Free', 'zh': 'Free',
+    'fr': 'Free', 'de': 'Free', 'es': 'Free', 'pt': 'Free',
+    'ru': 'Free', 'tr': 'Free', 'ar': 'Free', 'it': 'Free',
+    'hi': 'Free', 'th': 'Free',
+  });
+
+  String get tierLabelPremium => _t({
+    'ko': 'Premium', 'en': 'Premium', 'ja': 'Premium', 'zh': 'Premium',
+    'fr': 'Premium', 'de': 'Premium', 'es': 'Premium', 'pt': 'Premium',
+    'ru': 'Premium', 'tr': 'Premium', 'ar': 'Premium', 'it': 'Premium',
+    'hi': 'Premium', 'th': 'Premium',
+  });
+
+  String get tierLabelBrand => _t({
+    'ko': 'Brand', 'en': 'Brand', 'ja': 'Brand', 'zh': 'Brand',
+    'fr': 'Brand', 'de': 'Brand', 'es': 'Brand', 'pt': 'Brand',
+    'ru': 'Brand', 'tr': 'Brand', 'ar': 'Brand', 'it': 'Brand',
+    'hi': 'Brand', 'th': 'Brand',
+  });
+
+  // Build 189.1: compose 닫기 확인 다이얼로그.
+  String get composeCloseConfirmTitle => _t({
+    'ko': '작성 중인 편지가 있어요',
+    'en': 'You have unsent content',
+    'ja': '作成中の手紙があります',
+    'zh': '有未发送的内容',
+    'fr': 'Contenu non envoyé',
+    'de': 'Nicht gesendeter Inhalt',
+    'es': 'Contenido sin enviar',
+    'pt': 'Conteúdo não enviado',
+    'ru': 'Неотправленный черновик',
+    'tr': 'Gönderilmemiş içerik',
+    'ar': 'محتوى غير مُرسل',
+    'it': 'Contenuto non inviato',
+    'hi': 'बिना भेजा गया सामग्री',
+    'th': 'ยังไม่ได้ส่ง',
+  });
+
+  String get composeCloseConfirmBody => _t({
+    'ko': '지금 닫으면 저장하거나 삭제할 수 있어요. 저장하면 다음에 이어쓸 수 있어요.',
+    'en': 'Save your draft to continue later, or discard it now.',
+    'ja': '下書きとして保存すればあとで続きを書けます。破棄するとこのまま閉じます。',
+    'zh': '保存为草稿可稍后继续，放弃则不保留。',
+    'fr': 'Sauvegarder le brouillon pour continuer plus tard ou l\'abandonner.',
+    'de': 'Entwurf speichern, um später fortzufahren, oder verwerfen.',
+    'es': 'Guarda el borrador para continuar luego, o descártalo.',
+    'pt': 'Guarda o rascunho para continuar depois, ou descarta.',
+    'ru': 'Сохраните черновик или удалите.',
+    'tr': 'Taslağı kaydet veya sil.',
+    'ar': 'احفظ المسودة أو احذفها.',
+    'it': 'Salva la bozza o scartala.',
+    'hi': 'ड्राफ़्ट सहेजें या हटाएं।',
+    'th': 'บันทึกแบบร่างหรือทิ้ง',
+  });
+
+  String get composeSaveDraftAndClose => _t({
+    'ko': '저장하고 닫기',
+    'en': 'Save & close',
+    'ja': '保存して閉じる',
+    'zh': '保存并关闭',
+    'fr': 'Sauvegarder et fermer',
+    'de': 'Speichern & schließen',
+    'es': 'Guardar y cerrar',
+    'pt': 'Guardar e fechar',
+    'ru': 'Сохранить',
+    'tr': 'Kaydet ve kapat',
+    'ar': 'حفظ وإغلاق',
+    'it': 'Salva e chiudi',
+    'hi': 'सहेजें और बंद करें',
+    'th': 'บันทึก & ปิด',
+  });
+
+  // Build 189: Brand compose 의 대량 발송 활성 배너.
+  String get composeBulkModeActive => _t({
+    'ko': '대량 발송 모드 · 여러 나라 일괄 발송',
+    'en': 'Bulk mode · multi-country blast',
+    'ja': '一括送信モード · 複数国同時送信',
+    'zh': '群发模式 · 多国同时发送',
+    'fr': 'Mode envoi groupé · multi-pays',
+    'de': 'Massenversand · mehrere Länder',
+    'es': 'Modo envío masivo · varios países',
+    'pt': 'Envio em massa · vários países',
+    'ru': 'Массовая рассылка · несколько стран',
+    'tr': 'Toplu gönderim · çoklu ülke',
+    'ar': 'إرسال جماعي · عدة دول',
+    'it': 'Invio di massa · più paesi',
+    'hi': 'बल्क भेजें · बहु-देश',
+    'th': 'ส่งจำนวนมาก · หลายประเทศ',
+  });
+
+  String get composeDisableMode => _t({
+    'ko': '끄기',
+    'en': 'Turn off',
+    'ja': 'オフ',
+    'zh': '关闭',
+    'fr': 'Désactiver',
+    'de': 'Aus',
+    'es': 'Desactivar',
+    'pt': 'Desativar',
+    'ru': 'Выкл',
+    'tr': 'Kapat',
+    'ar': 'إيقاف',
+    'it': 'Disattiva',
+    'hi': 'बंद',
+    'th': 'ปิด',
+  });
+
+  // Build 186: 픽업 쿨다운 상시 pill — MM:SS 로 남은 시간 표시.
+  String mapCooldownPill(String mmss) => _t({
+    'ko': '다음 줍기까지 $mmss',
+    'en': 'Next pickup in $mmss',
+    'ja': '次の拾得まで $mmss',
+    'zh': '下次拾取 $mmss',
+    'fr': 'Prochain ramassage dans $mmss',
+    'de': 'Nächstes Aufsammeln in $mmss',
+    'es': 'Próxima recogida en $mmss',
+    'pt': 'Próxima recolha em $mmss',
+    'ru': 'Следующий сбор через $mmss',
+    'tr': 'Sonraki toplama $mmss',
+    'ar': 'الالتقاط التالي خلال $mmss',
+    'it': 'Prossimo ritiro in $mmss',
+    'hi': 'अगली पिकअप $mmss',
+    'th': 'เก็บครั้งถัดไปใน $mmss',
+  });
+
+  // Build 185: "커뮤니티 타워" → "커뮤니티 Letter" — 타 사용자 마커 라벨.
   String get mapCommunityTower => _t({
-    'ko': '커뮤니티 타워',
-    'en': 'Community Tower',
-    'ja': 'コミュニティタワー',
-    'zh': '社区塔',
-    'fr': 'Tour communautaire',
-    'de': 'Community-Turm',
-    'es': 'Torre comunitaria',
-    'pt': 'Torre comunitária',
-    'ru': 'Общественная башня',
-    'tr': 'Topluluk Kulesi',
-    'ar': 'برج المجتمع',
-    'it': 'Torre della comunità',
-    'hi': 'कम्युनिटी टावर',
-    'th': 'หอคอยชุมชน',
+    'ko': '커뮤니티 Letter',
+    'en': 'Community Letter',
+    'ja': 'コミュニティ Letter',
+    'zh': '社区 Letter',
+    'fr': 'Letter de la communauté',
+    'de': 'Community-Letter',
+    'es': 'Letter de la comunidad',
+    'pt': 'Letter da comunidade',
+    'ru': 'Letter сообщества',
+    'tr': 'Topluluk Letter',
+    'ar': 'Letter المجتمع',
+    'it': 'Letter della comunità',
+    'hi': 'कम्युनिटी Letter',
+    'th': 'Letter ชุมชน',
   });
 
+  // Build 183: "세계 랭킹" → "레터 순위" (letter-centric renaming).
   String get mapWorldRanking => _t({
-    'ko': '세계 랭킹',
-    'en': 'World Ranking',
-    'ja': '世界ランキング',
-    'zh': '世界排名',
-    'fr': 'Classement mondial',
-    'de': 'Weltrangliste',
-    'es': 'Ranking mundial',
-    'pt': 'Ranking mundial',
-    'ru': 'Мировой рейтинг',
-    'tr': 'Dünya Sıralaması',
-    'ar': 'التصنيف العالمي',
-    'it': 'Classifica mondiale',
-    'hi': 'विश्व रैंकिंग',
-    'th': 'อันดับโลก',
+    'ko': '레터 순위',
+    'en': 'Letter Ranking',
+    'ja': 'レターランキング',
+    'zh': '信使排名',
+    'fr': 'Classement Letter',
+    'de': 'Letter-Rangliste',
+    'es': 'Ranking de Letter',
+    'pt': 'Ranking de Letter',
+    'ru': 'Рейтинг Letter',
+    'tr': 'Letter Sıralaması',
+    'ar': 'تصنيف Letter',
+    'it': 'Classifica Letter',
+    'hi': 'Letter रैंकिंग',
+    'th': 'อันดับ Letter',
   });
 
+  // Build 185: 건물 층수 · 타워 높이 → 활동 레벨 (letter-centric metric).
   String get mapBuildingFloors => _t({
-    'ko': '건물 층수',
-    'en': 'Building Floors',
-    'ja': '建物の階数',
-    'zh': '建筑层数',
-    'fr': 'Étages du bâtiment',
-    'de': 'Gebäudestockwerke',
-    'es': 'Pisos del edificio',
-    'pt': 'Andares do prédio',
-    'ru': 'Этажи здания',
-    'tr': 'Bina Katları',
-    'ar': 'طوابق المبنى',
-    'it': 'Piani del palazzo',
-    'hi': 'भवन की मंज़िलें',
-    'th': 'ชั้นของอาคาร',
+    'ko': '활동 레벨',
+    'en': 'Activity Level',
+    'ja': 'アクティビティレベル',
+    'zh': '活跃等级',
+    'fr': 'Niveau d\'activité',
+    'de': 'Aktivitätsstufe',
+    'es': 'Nivel de actividad',
+    'pt': 'Nível de atividade',
+    'ru': 'Уровень активности',
+    'tr': 'Aktivite Seviyesi',
+    'ar': 'مستوى النشاط',
+    'it': 'Livello di attività',
+    'hi': 'गतिविधि स्तर',
+    'th': 'ระดับกิจกรรม',
   });
 
   String get mapTowerHeight => _t({
-    'ko': '타워 높이',
-    'en': 'Tower Height',
-    'ja': 'タワーの高さ',
-    'zh': '塔高',
-    'fr': 'Hauteur de la tour',
-    'de': 'Turmhöhe',
-    'es': 'Altura de la torre',
-    'pt': 'Altura da torre',
-    'ru': 'Высота башни',
-    'tr': 'Kule Yüksekliği',
-    'ar': 'ارتفاع البرج',
-    'it': 'Altezza della torre',
-    'hi': 'टावर की ऊँचाई',
-    'th': 'ความสูงหอคอย',
+    'ko': '활동 레벨',
+    'en': 'Activity Level',
+    'ja': 'アクティビティレベル',
+    'zh': '活跃等级',
+    'fr': 'Niveau d\'activité',
+    'de': 'Aktivitätsstufe',
+    'es': 'Nivel de actividad',
+    'pt': 'Nível de atividade',
+    'ru': 'Уровень активности',
+    'tr': 'Aktivite Seviyesi',
+    'ar': 'مستوى النشاط',
+    'it': 'Livello di attività',
+    'hi': 'गतिविधि स्तर',
+    'th': 'ระดับกิจกรรม',
   });
 
   String get mapClose => _t({
@@ -9131,6 +11669,73 @@ class AppL10n {
     'th': 'อ่านจดหมายนี้แล้ว 📖',
   });
 
+  String get inboxHuntHint => _t({
+    'ko': '주변에 뿌려진 할인권·이벤트 편지를 주워 활용해보세요',
+    'en': 'Pick up discount and event letters dropped nearby to redeem',
+    'ja': '近くに落ちている割引券・イベントの手紙を拾って使ってみて',
+    'zh': '拾取附近的折扣券和活动信件即可兑换',
+    'fr': 'Ramassez les réductions et événements lâchés près de vous',
+    'de': 'Sammle Rabatt- und Event-Briefe in deiner Nähe',
+    'es': 'Recoge cartas de descuento y eventos cercanas para usarlas',
+    'pt': 'Pegue cartas de desconto e eventos próximas para resgatar',
+    'ru': 'Подбирайте скидки и анонсы событий поблизости',
+    'tr': 'Yakındaki indirim ve etkinlik mektuplarını topla ve kullan',
+    'ar': 'التقط رسائل الخصومات والفعاليات القريبة واستفد منها',
+    'it': 'Raccogli lettere di sconti ed eventi vicino a te',
+    'hi': 'आसपास गिरे छूट/इवेंट पत्र उठाएँ और उपयोग करें',
+    'th': 'เก็บจดหมายส่วนลด/กิจกรรมรอบตัวเพื่อใช้สิทธิ์',
+  });
+
+  String get brandOnlySendTitle => _t({
+    'ko': '📣 발송 전용 브랜드 계정',
+    'en': '📣 Broadcast-only Brand account',
+    'ja': '📣 発信専用ブランドアカウント',
+    'zh': '📣 仅发送的品牌账号',
+    'fr': '📣 Compte Marque — envoi uniquement',
+    'de': '📣 Marke: Nur Versand',
+    'es': '📣 Cuenta Marca — solo envío',
+    'pt': '📣 Conta Marca — apenas envio',
+    'ru': '📣 Бренд — только отправка',
+    'tr': '📣 Yalnızca gönderim — Marka',
+    'ar': '📣 حساب علامة — إرسال فقط',
+    'it': '📣 Brand — solo invio',
+    'hi': '📣 ब्रांड — केवल भेजें',
+    'th': '📣 แบรนด์ — ส่งเท่านั้น',
+  });
+  String get brandOnlySendBody => _t({
+    'ko': '홍보·이벤트·할인 편지를 지구 곳곳에 뿌려보세요. 편지 줍기는 일반·프리미엄 회원의 메리트예요.',
+    'en': 'Drop promos, events, and discounts around the world. Picking letters up is the Free/Premium member\'s perk.',
+    'ja': '告知・イベント・割引の手紙を世界に配ってください。拾うのは一般・プレミアム会員の特典です。',
+    'zh': '把宣传、活动和折扣信件撒到世界各地。收取是普通/高级会员的专属福利。',
+    'fr': 'Diffusez promos, événements et réductions dans le monde. Le ramassage est l\'avantage Free/Premium.',
+    'de': 'Verbreite Promos, Events und Rabatte weltweit. Abholen bleibt Free/Premium-Mitgliedern vorbehalten.',
+    'es': 'Lanza promociones, eventos y descuentos por el mundo. Recoger es el privilegio Free/Premium.',
+    'pt': 'Espalhe promos, eventos e descontos pelo mundo. Recolher é o benefício Free/Premium.',
+    'ru': 'Рассыпайте акции, события и скидки по миру. Подбирать могут только Free/Premium.',
+    'tr': 'Promosyon, etkinlik ve indirim mektuplarını dünyaya yayın. Toplamak Free/Premium ayrıcalığı.',
+    'ar': 'انشر العروض والفعاليات والخصومات حول العالم. الالتقاط ميزة Free/Premium.',
+    'it': 'Distribuisci promo, eventi e sconti nel mondo. Il ritiro è vantaggio Free/Premium.',
+    'hi': 'प्रचार/इवेंट/छूट पत्र दुनिया में बिखेरें। उठाना Free/Premium सदस्यों का लाभ है।',
+    'th': 'กระจายโปร, กิจกรรม, ส่วนลดไปทั่วโลก การเก็บเป็นสิทธิ์ของสมาชิก Free/Premium',
+  });
+
+  String get statePickupBrandBlocked => _t({
+    'ko': '브랜드 계정은 편지를 보내는 데만 사용돼요 · 픽업은 일반·프리미엄 회원 전용이에요',
+    'en': 'Brand accounts can only send letters — pickup is for Free / Premium members',
+    'ja': 'ブランドアカウントは送信専用です — 受け取りは一般・プレミアム会員のみ',
+    'zh': '品牌账号只能发送信件 · 收取仅限普通/高级会员',
+    'fr': 'Les comptes Marque ne peuvent qu\'envoyer — le ramassage est réservé aux membres Free/Premium',
+    'de': 'Markenkonten können nur senden — Abholung ist für Free/Premium-Mitglieder',
+    'es': 'Las cuentas Marca solo pueden enviar — la recogida es solo para Free/Premium',
+    'pt': 'Contas Marca só podem enviar — coleta é apenas para membros Free/Premium',
+    'ru': 'Аккаунты брендов только отправляют — подбирать могут только Free/Premium',
+    'tr': 'Marka hesapları yalnızca gönderebilir — toplama Free/Premium üyelere özel',
+    'ar': 'حسابات العلامات التجارية للإرسال فقط — الالتقاط لأعضاء مجاني/بريميوم',
+    'it': 'Gli account Brand possono solo inviare — il ritiro è per membri Free/Premium',
+    'hi': 'ब्रांड खाते केवल भेज सकते हैं — उठाना Free/Premium सदस्यों के लिए',
+    'th': 'บัญชีแบรนด์ใช้เพื่อส่งเท่านั้น · การเก็บเฉพาะสมาชิก Free/Premium',
+  });
+
   String get stateAlreadyTaken => _t({
     'ko': '누군가 이미 가져간 편지예요 😢',
     'en': 'Someone already took this letter 😢',
@@ -9731,6 +12336,437 @@ class AppL10n {
     'th': 'หอคอย',
   });
 
+  /// Build 169: 수집첩 정렬 UI.
+  String get inboxSortLabel => _t({
+    'ko': '정렬', 'en': 'Sort', 'ja': '並び替え', 'zh': '排序',
+    'fr': 'Tri', 'de': 'Sortieren', 'es': 'Ordenar', 'pt': 'Ordenar',
+    'ru': 'Сортировка', 'tr': 'Sırala', 'ar': 'فرز', 'it': 'Ordina',
+    'hi': 'छाँटें', 'th': 'เรียง',
+  });
+  String get inboxSortNewest => _t({
+    'ko': '최신순', 'en': 'Newest', 'ja': '新しい順', 'zh': '最新',
+    'fr': 'Récent', 'de': 'Neueste', 'es': 'Recientes', 'pt': 'Recentes',
+    'ru': 'Новые', 'tr': 'Yeni', 'ar': 'الأحدث', 'it': 'Recenti',
+    'hi': 'नया', 'th': 'ใหม่สุด',
+  });
+  String get inboxSortExpiring => _t({
+    'ko': '만료임박', 'en': 'Expiring', 'ja': '期限間近', 'zh': '即将到期',
+    'fr': 'Expire bientôt', 'de': 'Läuft bald ab', 'es': 'Por caducar',
+    'pt': 'Expira em breve', 'ru': 'Скоро истекает', 'tr': 'Süresi yakın',
+    'ar': 'قرب الانتهاء', 'it': 'In scadenza', 'hi': 'समाप्ति जल्द',
+    'th': 'ใกล้หมดอายุ',
+  });
+  String get inboxSortByBrand => _t({
+    'ko': '브랜드', 'en': 'Brand', 'ja': 'ブランド', 'zh': '品牌',
+    'fr': 'Marque', 'de': 'Marke', 'es': 'Marca', 'pt': 'Marca',
+    'ru': 'Бренд', 'tr': 'Marka', 'ar': 'علامة', 'it': 'Marca',
+    'hi': 'ब्रांड', 'th': 'แบรนด์',
+  });
+  String get inboxSortByCategory => _t({
+    'ko': '카테고리', 'en': 'Category', 'ja': 'カテゴリ', 'zh': '分类',
+    'fr': 'Catégorie', 'de': 'Kategorie', 'es': 'Categoría', 'pt': 'Categoria',
+    'ru': 'Категория', 'tr': 'Kategori', 'ar': 'فئة', 'it': 'Categoria',
+    'hi': 'श्रेणी', 'th': 'หมวดหมู่',
+  });
+
+  /// Build 167: Premium Gate 소셜 증거 바.
+  String premiumSocialProof(int count) {
+    switch (languageCode) {
+      case 'ko': return '이번 주 $count명이 Premium 업그레이드';
+      case 'ja': return '今週 $count 人が Premium にアップグレード';
+      case 'zh': return '本周 $count 人升级到 Premium';
+      case 'fr': return 'Cette semaine, $count personnes passées Premium';
+      case 'de': return 'Diese Woche $count Upgrades zu Premium';
+      case 'es': return 'Esta semana $count pasaron a Premium';
+      case 'pt': return 'Esta semana $count passaram a Premium';
+      case 'ru': return 'На этой неделе $count перешли на Premium';
+      case 'tr': return 'Bu hafta $count kişi Premium\'a geçti';
+      case 'ar': return 'هذا الأسبوع $count ترقّوا إلى Premium';
+      case 'it': return 'Questa settimana $count sono passati a Premium';
+      case 'hi': return 'इस सप्ताह $count ने Premium अपग्रेड किया';
+      case 'th': return 'สัปดาห์นี้ $count คนอัปเกรด Premium';
+      default: return '$count upgraded to Premium this week';
+    }
+  }
+
+  /// Build 166: GPS 필수 동의 플로우 (약관 + skip 경고).
+  String get gpsTermsHeader => _t({
+    'ko': 'GPS 사용 동의',
+    'en': 'GPS Consent',
+    'ja': 'GPS 使用同意',
+    'zh': 'GPS 使用同意',
+    'fr': 'Consentement GPS',
+    'de': 'GPS-Einwilligung',
+    'es': 'Consentimiento GPS',
+    'pt': 'Consentimento GPS',
+    'ru': 'Согласие на GPS',
+    'tr': 'GPS İzni',
+    'ar': 'موافقة GPS',
+    'it': 'Consenso GPS',
+    'hi': 'GPS सहमति',
+    'th': 'ยินยอม GPS',
+  });
+
+  String get gpsTermsBody => _t({
+    'ko': '• 내 위치 주변의 편지를 주울 수 있어요\n• 내가 보낸 편지의 출발 지점을 기록해요\n• 위치 정보는 서비스 제공 외에 사용하지 않아요\n\n❗ 동의하지 않으면 편지를 보내거나 줍을 수 없어요.',
+    'en': '• Pick up letters dropped near you\n• Mark the origin of letters you send\n• Location is used only for this service\n\n❗ Without consent you cannot pick up or send letters.',
+    'ja': '• 周辺の手紙を拾えます\n• 送った手紙の出発地点を記録します\n• 位置情報はサービス提供以外に使用しません\n\n❗ 同意しないと手紙を送ったり拾ったりできません。',
+    'zh': '• 拾起你身边的信件\n• 记录你寄出信件的出发地\n• 位置信息仅用于本服务\n\n❗ 不同意将无法收发信件。',
+    'fr': '• Ramasser les lettres déposées près de toi\n• Marquer le point de départ des lettres envoyées\n• Utilisé uniquement pour ce service\n\n❗ Sans consentement, impossible d\'envoyer ou ramasser.',
+    'de': '• Briefe in deiner Nähe aufsammeln\n• Absendeort deiner Briefe markieren\n• Nur für diesen Dienst verwendet\n\n❗ Ohne Zustimmung kannst du keine Briefe senden oder aufsammeln.',
+    'es': '• Recoge cartas cerca de ti\n• Marca el origen de tus cartas\n• Solo se usa para este servicio\n\n❗ Sin consentimiento no puedes enviar ni recoger.',
+    'pt': '• Apanha cartas perto de ti\n• Marca a origem das tuas cartas\n• Usado só para este serviço\n\n❗ Sem consentimento não podes enviar nem apanhar.',
+    'ru': '• Подбирайте письма рядом\n• Отмечайте место отправки\n• Используется только для этого сервиса\n\n❗ Без согласия нельзя отправлять или подбирать.',
+    'tr': '• Yakınındaki mektupları topla\n• Gönderdiğin mektubun başlangıç noktasını işaretle\n• Yalnızca bu hizmet için\n\n❗ İzin vermeden gönderme / toplama yok.',
+    'ar': '• التقط الرسائل القريبة\n• سجّل نقطة إرسال رسائلك\n• تُستخدم لهذه الخدمة فقط\n\n❗ بدون الموافقة لا يمكنك الإرسال أو الالتقاط.',
+    'it': '• Raccogli lettere vicino a te\n• Segna il punto di partenza\n• Usata solo per questo servizio\n\n❗ Senza consenso non puoi inviare o raccogliere.',
+    'hi': '• आस-पास के पत्र उठाएँ\n• भेजे पत्रों का मूल चिह्नित\n• सेवा के लिए ही उपयोग\n\n❗ सहमति बिना भेजना/उठाना असंभव.',
+    'th': '• เก็บจดหมายรอบตัว\n• บันทึกจุดส่งของคุณ\n• ใช้เฉพาะบริการนี้\n\n❗ ไม่ยินยอม = ส่ง/เก็บไม่ได้',
+  });
+
+  String get gpsAgreeAndContinue => _t({
+    'ko': '동의하고 계속하기',
+    'en': 'Agree & Continue',
+    'ja': '同意して続ける',
+    'zh': '同意并继续',
+    'fr': 'Accepter & Continuer',
+    'de': 'Zustimmen & Weiter',
+    'es': 'Aceptar y Continuar',
+    'pt': 'Aceitar e Continuar',
+    'ru': 'Согласиться и продолжить',
+    'tr': 'Kabul Et ve Devam',
+    'ar': 'موافقة ومتابعة',
+    'it': 'Accetta e Continua',
+    'hi': 'सहमत व जारी',
+    'th': 'ยอมรับและต่อไป',
+  });
+
+  String get gpsSkipWarningTitle => _t({
+    'ko': '정말 건너뛸까요?',
+    'en': 'Skip location?',
+    'ja': '本当にスキップ?',
+    'zh': '真的跳过?',
+    'fr': 'Vraiment ignorer?',
+    'de': 'Wirklich überspringen?',
+    'es': '¿Saltar de verdad?',
+    'pt': 'Saltar mesmo?',
+    'ru': 'Точно пропустить?',
+    'tr': 'Gerçekten atla?',
+    'ar': 'تخطي حقًا؟',
+    'it': 'Saltare davvero?',
+    'hi': 'वास्तव में छोड़ें?',
+    'th': 'ข้ามจริง?',
+  });
+
+  String get gpsSkipWarningBody => _t({
+    'ko': 'GPS 동의 없이는 다음 기능을 사용할 수 없어요:\n\n• 📍 주변 편지 줍기 불가\n• ✉️ 편지 발송 불가 (Premium/Brand)\n• 🗺 내 위치 마커 표시 불가\n\n설정에서 언제든지 다시 허용할 수 있지만, 지금 동의하는 것을 강력히 권장합니다.',
+    'en': 'Without GPS consent the following are disabled:\n\n• 📍 Pick up nearby letters\n• ✉️ Send letters (Premium/Brand)\n• 🗺 Show your location marker\n\nYou can enable it later in Settings, but we strongly recommend consenting now.',
+    'ja': 'GPS 同意なしでは次の機能が使えません:\n\n• 📍 周辺の手紙を拾う\n• ✉️ 手紙を送る (Premium/Brand)\n• 🗺 自分の位置マーカー\n\n設定から後で許可できますが、今すぐ同意することを強くお勧めします。',
+    'zh': '没有 GPS 同意将无法使用:\n\n• 📍 拾起附近信件\n• ✉️ 发送信件 (Premium/Brand)\n• 🗺 显示我的位置\n\n可在设置中重新允许，但强烈建议现在同意。',
+    'fr': 'Sans consentement GPS, désactivé:\n\n• 📍 Ramasser des lettres\n• ✉️ Envoyer (Premium/Brand)\n• 🗺 Marqueur de position\n\nActivable plus tard dans Paramètres, mais nous recommandons fortement maintenant.',
+    'de': 'Ohne GPS deaktiviert:\n\n• 📍 Briefe aufsammeln\n• ✉️ Briefe senden (Premium/Brand)\n• 🗺 Eigene Position\n\nSpäter in Einstellungen aktivierbar, jetzt empfohlen.',
+    'es': 'Sin GPS estará deshabilitado:\n\n• 📍 Recoger cartas\n• ✉️ Enviar (Premium/Brand)\n• 🗺 Tu marcador\n\nActívalo luego en Ajustes, pero ahora es recomendable.',
+    'pt': 'Sem GPS fica desativado:\n\n• 📍 Apanhar cartas\n• ✉️ Enviar (Premium/Brand)\n• 🗺 Teu marcador\n\nPodes ativar depois, mas recomendamos agora.',
+    'ru': 'Без GPS недоступно:\n\n• 📍 Подбор писем\n• ✉️ Отправка (Premium/Brand)\n• 🗺 Ваш маркер\n\nМожно включить позже в настройках, но рекомендуем сейчас.',
+    'tr': 'GPS onayı olmadan kapalı:\n\n• 📍 Mektup toplama\n• ✉️ Gönderme (Premium/Brand)\n• 🗺 Konumun\n\nSonra ayarlardan açabilirsin, şimdi öneriyoruz.',
+    'ar': 'دون GPS معطل:\n\n• 📍 التقاط الرسائل\n• ✉️ الإرسال (Premium/Brand)\n• 🗺 موقعك\n\nيمكن تفعيله لاحقًا من الإعدادات، ولكن يُنصح الآن.',
+    'it': 'Senza GPS disabilitato:\n\n• 📍 Raccogli lettere\n• ✉️ Invia (Premium/Brand)\n• 🗺 Tuo marcatore\n\nAttivabile poi in Impostazioni, ma consigliato ora.',
+    'hi': 'GPS बिना अक्षम:\n\n• 📍 पत्र उठाना\n• ✉️ भेजना (Premium/Brand)\n• 🗺 आपका मार्कर\n\nसेटिंग्स में बाद में चालू करें, अभी सुझावित.',
+    'th': 'ไม่มี GPS จะปิดใช้:\n\n• 📍 เก็บจดหมาย\n• ✉️ ส่ง (Premium/Brand)\n• 🗺 ตำแหน่งของคุณ\n\nเปิดภายหลังในตั้งค่าได้ แต่แนะนำตอนนี้',
+  });
+
+  String get gpsSkipBack => _t({
+    'ko': '← 동의하기',
+    'en': '← Agree',
+    'ja': '← 同意',
+    'zh': '← 同意',
+    'fr': '← Accepter',
+    'de': '← Zustimmen',
+    'es': '← Aceptar',
+    'pt': '← Aceitar',
+    'ru': '← Согласиться',
+    'tr': '← Kabul',
+    'ar': '← موافقة',
+    'it': '← Accetta',
+    'hi': '← सहमत',
+    'th': '← ยอมรับ',
+  });
+
+  String get gpsSkipContinueLimited => _t({
+    'ko': '제한 모드로 진행',
+    'en': 'Continue limited',
+    'ja': '制限モードで続行',
+    'zh': '以受限模式继续',
+    'fr': 'Mode limité',
+    'de': 'Eingeschränkt fortfahren',
+    'es': 'Modo limitado',
+    'pt': 'Modo limitado',
+    'ru': 'Ограниченный режим',
+    'tr': 'Sınırlı devam',
+    'ar': 'متابعة محدودة',
+    'it': 'Modalità limitata',
+    'hi': 'सीमित जारी',
+    'th': 'ต่อแบบจำกัด',
+  });
+
+  /// Build 164: 지도에서 유저 GPS 기준 가장 가까운 편지 마커 상단 라벨.
+  String get mapNearestLetterLabel => _t({
+    'ko': '가장 가까운',
+    'en': 'Nearest',
+    'ja': '最も近い',
+    'zh': '最近',
+    'fr': 'Plus proche',
+    'de': 'Am nächsten',
+    'es': 'Más cercana',
+    'pt': 'Mais próxima',
+    'ru': 'Ближайшее',
+    'tr': 'En yakın',
+    'ar': 'الأقرب',
+    'it': 'Più vicina',
+    'hi': 'सबसे नज़दीक',
+    'th': 'ใกล้ที่สุด',
+  });
+
+  /// Build 174: 레터 캐릭터 갤러리 (과거 티어 회고) 라벨.
+  String get letterGalleryTitle => _t({
+    'ko': '🧭 레터 진화 갤러리',
+    'en': '🧭 Letter Evolution',
+    'ja': '🧭 レター進化ギャラリー',
+    'zh': '🧭 Letter 进化画廊',
+    'fr': '🧭 Évolution Letter',
+    'de': '🧭 Letter-Entwicklung',
+    'es': '🧭 Evolución Letter',
+    'pt': '🧭 Evolução Letter',
+    'ru': '🧭 Эволюция Letter',
+    'tr': '🧭 Letter Evrimi',
+    'ar': '🧭 تطور ليتر',
+    'it': '🧭 Evoluzione Letter',
+    'hi': '🧭 Letter विकास',
+    'th': '🧭 วิวัฒนาการ Letter',
+  });
+
+  String get letterGallerySubtitle => _t({
+    'ko': '지나온 모습과 다가올 모습',
+    'en': 'Who you were and who you\'ll be',
+    'ja': 'これまでとこれから',
+    'zh': '曾经的你和将来的你',
+    'fr': 'Qui tu étais et qui tu seras',
+    'de': 'Wer du warst und wirst',
+    'es': 'Quien fuiste y serás',
+    'pt': 'Quem foste e serás',
+    'ru': 'Кем вы были и станете',
+    'tr': 'Eski ve gelecek halin',
+    'ar': 'من كنت ومن ستكون',
+    'it': 'Chi eri e chi sarai',
+    'hi': 'जो थे और जो होंगे',
+    'th': 'ตัวตนในอดีตและอนาคต',
+  });
+
+  /// Build 173: 레터 생일 (가입 기념일) 카피.
+  String letterBirthdayAnniversary(int years) {
+    switch (languageCode) {
+      case 'ko': return '🎉 레터와 함께 $years주년!';
+      case 'ja': return '🎉 レターと $years 周年！';
+      case 'zh': return '🎉 与 Letter 同行 $years 周年！';
+      case 'fr': return '🎉 $years ans avec Letter !';
+      case 'de': return '🎉 $years Jahre mit Letter!';
+      case 'es': return '🎉 $years años con Letter!';
+      case 'pt': return '🎉 $years anos com Letter!';
+      case 'ru': return '🎉 $years лет с Letter!';
+      case 'tr': return '🎉 Letter ile $years. yıl!';
+      case 'ar': return '🎉 $years سنوات مع Letter!';
+      case 'it': return '🎉 $years anni con Letter!';
+      case 'hi': return '🎉 Letter के साथ $years साल!';
+      case 'th': return '🎉 $years ปีกับ Letter!';
+      default: return '🎉 $years years with Letter!';
+    }
+  }
+
+  String get letterBirthdayFirstDay => _t({
+    'ko': '🎂 오늘이 당신의 레터 생일이에요',
+    'en': '🎂 Today is your Letter\'s birthday',
+    'ja': '🎂 今日はあなたのレターの誕生日',
+    'zh': '🎂 今天是你 Letter 的生日',
+    'fr': "🎂 C'est l'anniversaire de ta lettre",
+    'de': '🎂 Heute ist dein Letter-Geburtstag',
+    'es': '🎂 Hoy es el cumple de tu Letter',
+    'pt': '🎂 Hoje é o aniversário do teu Letter',
+    'ru': '🎂 Сегодня день рождения вашего Letter',
+    'tr': "🎂 Bugün Letter'ının doğum günü",
+    'ar': '🎂 اليوم عيد ميلاد ليترك',
+    'it': '🎂 Oggi è il compleanno del tuo Letter',
+    'hi': '🎂 आज आपके Letter का जन्मदिन',
+    'th': '🎂 วันนี้ Letter ของคุณครบรอบ',
+  });
+
+  String letterAgeDays(int days) {
+    switch (languageCode) {
+      case 'ko': return '레터와 함께 $days일째';
+      case 'ja': return 'レターと $days 日目';
+      case 'zh': return '与 Letter 同行 $days 天';
+      case 'fr': return '$days jours avec Letter';
+      case 'de': return '$days Tage mit Letter';
+      case 'es': return '$days días con Letter';
+      case 'pt': return '$days dias com Letter';
+      case 'ru': return '$days дней с Letter';
+      case 'tr': return 'Letter ile $days gün';
+      case 'ar': return '$days أيام مع Letter';
+      case 'it': return '$days giorni con Letter';
+      case 'hi': return 'Letter के साथ $days दिन';
+      case 'th': return '$days วันกับ Letter';
+      default: return '$days days with Letter';
+    }
+  }
+
+  String letterBirthdayUpcoming(int daysRemaining) {
+    if (daysRemaining == 0) return letterBirthdayFirstDay;
+    switch (languageCode) {
+      case 'ko': return '생일까지 D-$daysRemaining';
+      case 'ja': return '誕生日まで D-$daysRemaining';
+      case 'zh': return '距生日 D-$daysRemaining';
+      case 'fr': return 'Anniv dans $daysRemaining j';
+      case 'de': return 'Geburtstag in $daysRemaining T';
+      case 'es': return 'Cumple en $daysRemaining d';
+      case 'pt': return 'Aniversário em $daysRemaining d';
+      case 'ru': return 'День рожд. через $daysRemaining д';
+      case 'tr': return 'Doğum günü $daysRemaining gün';
+      case 'ar': return 'عيد الميلاد بعد $daysRemaining يوم';
+      case 'it': return 'Compleanno tra $daysRemaining g';
+      case 'hi': return 'जन्मदिन D-$daysRemaining';
+      case 'th': return 'วันเกิดอีก $daysRemaining วัน';
+      default: return 'Birthday in $daysRemaining d';
+    }
+  }
+
+  /// Build 171: 레터 이름 수정 다이얼로그 라벨 (Free/Premium 전용).
+  String get profileDialogLetterNameTitle => _t({
+    'ko': '내 레터 이름',
+    'en': 'My Letter name',
+    'ja': 'レターの名前',
+    'zh': '我的信使名',
+    'fr': 'Nom de ma lettre',
+    'de': 'Mein Letter-Name',
+    'es': 'Nombre de mi Letter',
+    'pt': 'Nome do meu Letter',
+    'ru': 'Имя моего Letter',
+    'tr': "Letter'imin adı",
+    'ar': 'اسم ليتر الخاص بي',
+    'it': 'Nome del mio Letter',
+    'hi': 'मेरे Letter का नाम',
+    'th': 'ชื่อ Letter ของฉัน',
+  });
+
+  String get profileDialogLetterNameHint => _t({
+    'ko': '예: 우체부 루나', 'en': 'e.g. Mailman Luna', 'ja': '例: 郵便配達のルナ',
+    'zh': '例：邮差露娜', 'fr': 'ex. Facteur Luna', 'de': 'z.B. Briefträger Luna',
+    'es': 'ej. Cartero Luna', 'pt': 'ex. Carteiro Luna', 'ru': 'напр. Почтальон Луна',
+    'tr': 'örn. Postacı Luna', 'ar': 'مثل: ساعي البريد لونا', 'it': 'es. Postino Luna',
+    'hi': 'उदा. डाकिया Luna', 'th': 'เช่น บุรุษไปรษณีย์ลูน่า',
+  });
+
+  String get profileDialogLetterNameDesc => _t({
+    'ko': '내 레터 캐릭터에 이름을 붙여보세요. 최대 20자.',
+    'en': 'Give your Letter character a name. Max 20 chars.',
+    'ja': 'レターキャラクターに名前を付けよう。最大20文字。',
+    'zh': '给你的信使起个名字。最多 20 字符。',
+    'fr': 'Donne un nom à ta lettre. 20 caractères max.',
+    'de': 'Gib deinem Letter einen Namen. Max 20 Zeichen.',
+    'es': 'Ponle un nombre a tu Letter. Máx. 20 caracteres.',
+    'pt': 'Dá um nome ao teu Letter. Máx 20 caracteres.',
+    'ru': 'Назови своего Letter. Макс 20 символов.',
+    'tr': "Letter'ına isim ver. En fazla 20 karakter.",
+    'ar': 'سمّ ليترك الخاص. 20 حرفًا بحد أقصى.',
+    'it': 'Dai un nome al tuo Letter. Max 20 caratteri.',
+    'hi': 'अपने Letter का नाम दें. अधिकतम 20 वर्ण.',
+    'th': 'ตั้งชื่อ Letter ของคุณ สูงสุด 20 ตัวอักษร',
+  });
+
+  /// Build 171: 레터 캐릭터 로드맵 카드 (다음 해금까지).
+  String get letterRoadmapTitle => _t({
+    'ko': '🎯 다음 해금', 'en': '🎯 Next unlock', 'ja': '🎯 次の解放',
+    'zh': '🎯 下次解锁', 'fr': '🎯 Prochain déblocage', 'de': '🎯 Nächstes Freischalten',
+    'es': '🎯 Próximo desbloqueo', 'pt': '🎯 Próximo desbloqueio',
+    'ru': '🎯 Следующая разблокировка', 'tr': '🎯 Sonraki açılma',
+    'ar': '🎯 الفتح التالي', 'it': '🎯 Prossimo sblocco',
+    'hi': '🎯 अगला अनलॉक', 'th': '🎯 ปลดล็อกถัดไป',
+  });
+
+  String letterRoadmapCompanion(int level) {
+    switch (languageCode) {
+      case 'ko': return '$level 레벨에 새 동반자 해금';
+      case 'ja': return 'レベル $level で新しい仲間を解放';
+      case 'zh': return '等级 $level 解锁新伙伴';
+      case 'fr': return 'Nouveau compagnon au niveau $level';
+      case 'de': return 'Neuer Gefährte auf Level $level';
+      case 'es': return 'Nuevo compañero en el nivel $level';
+      case 'pt': return 'Novo companheiro no nível $level';
+      case 'ru': return 'Новый спутник на уровне $level';
+      case 'tr': return 'Seviye $level yeni yoldaş';
+      case 'ar': return 'رفيق جديد في المستوى $level';
+      case 'it': return 'Nuovo compagno al livello $level';
+      case 'hi': return 'स्तर $level पर नया साथी';
+      case 'th': return 'ปลดล็อกเพื่อนใหม่ระดับ $level';
+      default: return 'New companion at Level $level';
+    }
+  }
+
+  String letterRoadmapAccessory(int level) {
+    switch (languageCode) {
+      case 'ko': return '$level 레벨에 새 악세사리 해금';
+      case 'ja': return 'レベル $level で新しいアクセサリー';
+      case 'zh': return '等级 $level 解锁新配饰';
+      case 'fr': return 'Nouvel accessoire au niveau $level';
+      case 'de': return 'Neues Accessoire auf Level $level';
+      case 'es': return 'Nuevo accesorio en el nivel $level';
+      case 'pt': return 'Novo acessório no nível $level';
+      case 'ru': return 'Новый аксессуар на уровне $level';
+      case 'tr': return 'Seviye $level yeni aksesuar';
+      case 'ar': return 'إكسسوار جديد في المستوى $level';
+      case 'it': return 'Nuovo accessorio al livello $level';
+      case 'hi': return 'स्तर $level पर नया एक्सेसरी';
+      case 'th': return 'ปลดล็อกเครื่องประดับระดับ $level';
+      default: return 'New accessory at Level $level';
+    }
+  }
+
+  String letterRoadmapCharacter(int level) {
+    switch (languageCode) {
+      case 'ko': return '$level 레벨에 캐릭터 진화';
+      case 'ja': return 'レベル $level でキャラクター進化';
+      case 'zh': return '等级 $level 角色进化';
+      case 'fr': return 'Évolution du personnage au niveau $level';
+      case 'de': return 'Charakterentwicklung auf Level $level';
+      case 'es': return 'Evolución del personaje en nivel $level';
+      case 'pt': return 'Evolução do personagem no nível $level';
+      case 'ru': return 'Эволюция персонажа на уровне $level';
+      case 'tr': return 'Seviye $level karakter evrimi';
+      case 'ar': return 'تطور الشخصية في المستوى $level';
+      case 'it': return 'Evoluzione personaggio al livello $level';
+      case 'hi': return 'स्तर $level पर चरित्र विकास';
+      case 'th': return 'วิวัฒนาการตัวละครระดับ $level';
+      default: return 'Character evolves at Level $level';
+    }
+  }
+
+  /// Build 163: Free/Premium 전용 탭 라벨 — 타워 대신 "레터" 캐릭터 성장
+  /// 경험. Brand 는 `navTower` 유지.
+  String get navLetter => _t({
+    'ko': '레터',
+    'en': 'Letter',
+    'ja': 'レター',
+    'zh': '信使',
+    'fr': 'Lettre',
+    'de': 'Letter',
+    'es': 'Letter',
+    'pt': 'Letter',
+    'ru': 'Letter',
+    'tr': 'Letter',
+    'ar': 'ليتر',
+    'it': 'Letter',
+    'hi': 'लेटर',
+    'th': 'เลตเตอร์',
+  });
+
 // ── Offline Banner ──────────────────────────────────────────────────────────
 
   String get offlineDisconnected => _t({
@@ -10113,92 +13149,81 @@ class AppL10n {
     'th': 'ค้นหาประเทศ...',
   });
 
+  // Build 119: 온보딩 Premium 소개 페이지도 픽업-퍼스트. 타이틀·서브타이틀
+  // 모두 "반경·쿨다운" 의 구체 수치를 내세운다. 마케팅 기획서 Build 113 의
+  // "레벨업 = 실제 반경 확대" 축과 정렬.
   String get onboardingPremiumTitle => _t({
-    'ko': '더 넓은 세계로\n편지를 보내보세요',
-    'en': 'Send letters\nto the wider world',
-    'ja': 'もっと広い世界へ\n手紙を送ろう',
-    'zh': '向更广阔的世界\n寄出你的信',
-    'fr': 'Envoyez des lettres\nvers le monde entier',
-    'de': 'Senden Sie Briefe\nin die weite Welt',
-    'es': 'Envía cartas\nal mundo entero',
-    'pt': 'Envie cartas\npara o mundo todo',
-    'ru': 'Отправляйте письма\nв большой мир',
-    'tr': 'Daha geniş dünyaya\nmektup gönderin',
-    'ar': 'أرسل رسائل\nإلى العالم الأوسع',
-    'it': 'Invia lettere\nal mondo intero',
-    'hi': 'व्यापक दुनिया में\nपत्र भेजें',
-    'th': 'ส่งจดหมาย\nไปทั่วโลก',
+    'ko': '더 넓은 반경으로\n쿠폰을 주워보세요',
+    'en': 'Pick up coupons\nacross a wider radius',
+    'ja': 'より広い範囲で\nクーポンを拾おう',
+    'zh': '在更大范围内\n拾起优惠券',
+    'fr': 'Ramasse des coupons\ndans un rayon plus large',
+    'de': 'Sammle Coupons\nin einem größeren Umkreis',
+    'es': 'Recoge cupones\nen un radio más amplio',
+    'pt': 'Apanha cupões\nnum raio maior',
+    'ru': 'Подбирайте купоны\nв большем радиусе',
+    'tr': 'Daha geniş alanda\nkupon topla',
+    'ar': 'التقط كوبونات\nفي نطاق أوسع',
+    'it': 'Raccogli coupon\nin un raggio più ampio',
+    'hi': 'बड़े दायरे में\nकूपन उठाओ',
+    'th': 'เก็บคูปอง\nในรัศมีที่กว้างขึ้น',
   });
 
   String get onboardingPremiumSubtitle => _t({
-    'ko': '프리미엄으로 업그레이드하고\n특별한 편지 경험을 즐겨보세요',
-    'en': 'Upgrade to Premium\nand enjoy a special letter experience',
-    'ja': 'プレミアムにアップグレードして\n特別な手紙体験を楽しもう',
-    'zh': '升级到Premium\n享受特别的信件体验',
-    'fr': 'Passez à Premium\net profitez d\'une expérience épistolaire unique',
-    'de': 'Upgraden Sie auf Premium\nund genießen Sie ein besonderes Brieferlebnis',
-    'es': 'Mejora a Premium\ny disfruta de una experiencia epistolar especial',
-    'pt': 'Atualize para Premium\ne aproveite uma experiência especial de cartas',
-    'ru': 'Обновитесь до Premium\nи наслаждайтесь особым опытом писем',
-    'tr': "Premium'a yükseltin\nve özel mektup deneyiminin keyfini çıkarın",
-    'ar': 'قم بالترقية إلى Premium\nواستمتع بتجربة رسائل مميزة',
-    'it': 'Passa a Premium\ne goditi un\'esperienza speciale di lettere',
-    'hi': 'Premium में अपग्रेड करें\nऔर एक विशेष पत्र अनुभव का आनंद लें',
-    'th': 'อัปเกรดเป็น Premium\nและเพลิดเพลินกับประสบการณ์จดหมายพิเศษ',
+    'ko': '줍기 반경 1km · 쿨다운 10분\n— Free보다 5배 넓고 6배 빠르게',
+    'en': '1 km pickup radius · 10-min cooldown\n— 5× wider, 6× faster than Free',
+    'ja': '拾える範囲 1km · クールダウン 10分\n— Freeより5倍広く、6倍速く',
+    'zh': '拾取范围 1km · 冷却 10 分钟\n— 比 Free 大 5 倍、快 6 倍',
+    'fr': "Rayon 1 km · recharge 10 min\n— 5× plus large, 6× plus rapide que Free",
+    'de': '1 km Radius · 10 min Abklingzeit\n— 5× breiter, 6× schneller als Free',
+    'es': 'Radio 1 km · enfriamiento 10 min\n— 5× más amplio y 6× más rápido que Free',
+    'pt': 'Raio 1 km · recarga 10 min\n— 5× maior e 6× mais rápido que Free',
+    'ru': 'Радиус 1 км · перезарядка 10 мин\n— в 5 раз шире и в 6 раз быстрее Free',
+    'tr': '1 km yarıçap · 10 dk bekleme\n— Freeden 5× geniş, 6× hızlı',
+    'ar': 'نطاق 1 كم · تبريد 10 دقائق\n— أوسع بـ 5 أضعاف وأسرع بـ 6 أضعاف من Free',
+    'it': 'Raggio 1 km · cooldown 10 min\n— 5× più ampio, 6× più veloce di Free',
+    'hi': '1 किमी रेडियस · 10 मिनट कूलडाउन\n— Free से 5× बड़ा, 6× तेज़',
+    'th': 'รัศมี 1 กม. · คูลดาวน์ 10 นาที\n— กว้างกว่า 5 เท่า เร็วกว่า 6 เท่าของ Free',
   });
 
+  // Build 119: 온보딩 Free/Premium feature 리스트 재배치 — 양쪽 모두 픽업
+  // 지표(반경 · 쿨다운) 를 1번에 두고, 발송·기타 번들은 뒤로. 페이월과 구조
+  // 동일하게 맞춘다.
   String get onboardingFreeFeat1 => _t({
-    'ko': '하루 3통 편지 발송 (월 100통)',
-    'en': '3 letters/day (100/month)',
-    'ja': '1日3通の手紙 (月100通)',
-    'zh': '每天3封信 (每月100封)',
-    'fr': '3 lettres/jour (100/mois)',
-    'de': '3 Briefe/Tag (100/Monat)',
-    'es': '3 cartas/día (100/mes)',
-    'pt': '3 cartas/dia (100/mês)',
-    'ru': '3 письма/день (100/месяц)',
-    'tr': '3 mektup/gün (100/ay)',
-    'ar': '3 رسائل/يوم (100/شهر)',
-    'it': '3 lettere/giorno (100/mese)',
-    'hi': '3 पत्र/दिन (100/माह)',
-    'th': '3 ฉบับ/วัน (100/เดือน)',
+    'ko': '줍기 반경 200m · 쿨다운 60분',
+    'en': '200 m pickup radius · 60-min cooldown',
+    'ja': '拾える範囲 200m · 60分クールダウン',
+    'zh': '拾取范围 200m · 冷却 60 分钟',
+    'fr': 'Rayon 200 m · recharge 60 min',
+    'de': '200 m Radius · 60 min Abklingzeit',
+    'es': 'Radio 200 m · enfriamiento 60 min',
+    'pt': 'Raio 200 m · recarga 60 min',
+    'ru': 'Радиус 200 м · перезарядка 60 мин',
+    'tr': '200 m yarıçap · 60 dk bekleme',
+    'ar': 'نطاق 200 م · تبريد 60 دقيقة',
+    'it': 'Raggio 200 m · cooldown 60 min',
+    'hi': '200 मी रेडियस · 60 मिनट कूलडाउन',
+    'th': 'รัศมี 200 ม. · คูลดาวน์ 60 นาที',
   });
 
   String get onboardingFreeFeat2 => _t({
-    'ko': '기본 타워 스킨',
-    'en': 'Basic tower skin',
-    'ja': '基本タワースキン',
-    'zh': '基础塔皮肤',
-    'fr': 'Skin de tour basique',
-    'de': 'Basis-Turm-Skin',
-    'es': 'Skin de torre básico',
-    'pt': 'Skin de torre básica',
-    'ru': 'Базовый скин башни',
-    'tr': 'Temel kule görünümü',
-    'ar': 'مظهر برج أساسي',
-    'it': 'Skin torre base',
-    'hi': 'बेसिक टॉवर स्किन',
-    'th': 'สกินหอคอยพื้นฐาน',
+    'ko': '하루 3통 편지 발송 · 월 100통',
+    'en': '3 letters/day · 100/month',
+    'ja': '1日3通 · 月100通',
+    'zh': '每天3封 · 每月100封',
+    'fr': '3 lettres/jour · 100/mois',
+    'de': '3 Briefe/Tag · 100/Monat',
+    'es': '3 cartas/día · 100/mes',
+    'pt': '3 cartas/dia · 100/mês',
+    'ru': '3 письма/день · 100/месяц',
+    'tr': '3 mektup/gün · 100/ay',
+    'ar': '3 رسائل/يوم · 100/شهر',
+    'it': '3 lettere/giorno · 100/mese',
+    'hi': '3 पत्र/दिन · 100/माह',
+    'th': '3 ฉบับ/วัน · 100/เดือน',
   });
 
   String get onboardingFreeFeat3 => _t({
-    'ko': '받은 편지함 / DM',
-    'en': 'Inbox / DM',
-    'ja': '受信トレイ / DM',
-    'zh': '收件箱 / 私信',
-    'fr': 'Boîte de réception / DM',
-    'de': 'Posteingang / DM',
-    'es': 'Bandeja de entrada / DM',
-    'pt': 'Caixa de entrada / DM',
-    'ru': 'Входящие / ЛС',
-    'tr': 'Gelen kutusu / DM',
-    'ar': 'صندوق الوارد / رسائل مباشرة',
-    'it': 'Posta in arrivo / DM',
-    'hi': 'इनबॉक्स / DM',
-    'th': 'กล่องจดหมาย / DM',
-  });
-
-  String get onboardingFreeFeat4 => _t({
     'ko': '세계 지도 열람',
     'en': 'World map access',
     'ja': '世界地図の閲覧',
@@ -10215,72 +13240,89 @@ class AppL10n {
     'th': 'เข้าถึงแผนที่โลก',
   });
 
+  String get onboardingFreeFeat4 => _t({
+    'ko': '기본 타워 스킨',
+    'en': 'Basic tower skin',
+    'ja': '基本タワースキン',
+    'zh': '基础塔皮肤',
+    'fr': 'Skin de tour basique',
+    'de': 'Basis-Turm-Skin',
+    'es': 'Skin de torre básico',
+    'pt': 'Skin de torre básica',
+    'ru': 'Базовый скин башни',
+    'tr': 'Temel kule görünümü',
+    'ar': 'مظهر برج أساسي',
+    'it': 'Skin torre base',
+    'hi': 'बेसिक टॉवर स्किन',
+    'th': 'สกินหอคอยพื้นฐาน',
+  });
+
   String get onboardingPremiumFeat1 => _t({
-    'ko': '하루 30통 편지 · 월 500통',
-    'en': '30 letters/day · 500/month',
-    'ja': '1日30通 · 月500通',
-    'zh': '每天30封 · 每月500封',
-    'fr': '30 lettres/jour · 500/mois',
-    'de': '30 Briefe/Tag · 500/Monat',
-    'es': '30 cartas/día · 500/mes',
-    'pt': '30 cartas/dia · 500/mês',
-    'ru': '30 писем/день · 500/месяц',
-    'tr': '30 mektup/gün · 500/ay',
-    'ar': '30 رسالة/يوم · 500/شهر',
-    'it': '30 lettere/giorno · 500/mese',
-    'hi': '30 पत्र/दिन · 500/माह',
-    'th': '30 ฉบับ/วัน · 500/เดือน',
+    'ko': '줍기 반경 1km · Free 200m의 5배',
+    'en': '1 km pickup radius · 5× the free 200 m',
+    'ja': '拾える範囲 1km · 無料 200m の 5倍',
+    'zh': '拾取范围 1km · 免费 200m 的 5 倍',
+    'fr': 'Rayon 1 km · 5× des 200 m gratuits',
+    'de': 'Aufsammelradius 1 km · 5× die kostenlosen 200 m',
+    'es': 'Radio de recogida 1 km · 5× los 200 m gratis',
+    'pt': 'Raio de recolha 1 km · 5× os 200 m grátis',
+    'ru': 'Радиус 1 км · в 5× больше бесплатных 200 м',
+    'tr': 'Toplama yarıçapı 1 km · ücretsiz 200 m’nin 5 katı',
+    'ar': 'نطاق الالتقاط 1 كم · 5 أضعاف 200 م المجانية',
+    'it': 'Raggio di raccolta 1 km · 5× i 200 m gratuiti',
+    'hi': 'पिकअप रेडियस 1 किमी · मुफ्त 200 मी का 5×',
+    'th': 'รัศมีเก็บ 1 กม. · 5 เท่าของ 200 ม. ฟรี',
   });
 
   String get onboardingPremiumFeat2 => _t({
-    'ko': '이미지+링크 첨부 (하루 20통)',
-    'en': 'Image + link attachments (20/day)',
-    'ja': '画像+リンク添付 (1日20通)',
-    'zh': '图片+链接附件 (每天20封)',
-    'fr': 'Images + liens (20/jour)',
-    'de': 'Bild + Link-Anhänge (20/Tag)',
-    'es': 'Imágenes + enlaces (20/día)',
-    'pt': 'Imagens + links (20/dia)',
-    'ru': 'Изображения + ссылки (20/день)',
-    'tr': 'Görsel + link ekleri (20/gün)',
-    'ar': 'صور + روابط مرفقة (20/يوم)',
-    'it': 'Immagini + link (20/giorno)',
-    'hi': 'इमेज + लिंक (20/दिन)',
-    'th': 'แนบรูป+ลิงก์ (20/วัน)',
+    'ko': '10분 쿨다운 · Free 60분 대비 6배',
+    'en': '10-min cooldown · 6× faster than free',
+    'ja': '10分クールダウン · 無料 60分 より6倍速',
+    'zh': '冷却 10 分钟 · 比免费 60 分钟快 6 倍',
+    'fr': 'Recharge 10 min · 6× plus rapide que le gratuit',
+    'de': '10 min Abklingzeit · 6× schneller als kostenlos',
+    'es': 'Enfriamiento 10 min · 6× más rápido que gratis',
+    'pt': 'Recarga 10 min · 6× mais rápido que o grátis',
+    'ru': 'Перезарядка 10 мин · в 6× быстрее бесплатной',
+    'tr': '10 dk bekleme · ücretsizden 6× hızlı',
+    'ar': 'تبريد 10 دقائق · أسرع 6× من المجانية',
+    'it': 'Cooldown 10 min · 6× più veloce del gratuito',
+    'hi': '10 मिनट कूलडाउन · मुफ्त से 6× तेज़',
+    'th': 'คูลดาวน์ 10 นาที · เร็วกว่าฟรี 6 เท่า',
   });
 
   String get onboardingPremiumFeat3 => _t({
-    'ko': '특급 배송 (하루 3통)',
-    'en': 'Express delivery (3/day)',
-    'ja': '特急配送 (1日3通)',
-    'zh': '特快配送 (每天3封)',
-    'fr': 'Livraison express (3/jour)',
-    'de': 'Expressversand (3/Tag)',
-    'es': 'Envío exprés (3/día)',
-    'pt': 'Entrega expressa (3/dia)',
-    'ru': 'Экспресс-доставка (3/день)',
-    'tr': 'Hızlı teslimat (3/gün)',
-    'ar': 'توصيل سريع (3/يوم)',
-    'it': 'Consegna espressa (3/giorno)',
-    'hi': 'एक्सप्रेस डिलीवरी (3/दिन)',
-    'th': 'ส่งด่วน (3/วัน)',
+    'ko': '하루 30통 발송 + 이미지·링크 편지',
+    'en': '30 letters/day + image & link letters',
+    'ja': '1日30通発送 + 画像・リンク付き手紙',
+    'zh': '每日 30 封发送 + 图片·链接信件',
+    'fr': '30 lettres/jour + image & lien',
+    'de': '30 Briefe/Tag + Bild & Link',
+    'es': '30 cartas/día + imagen y enlace',
+    'pt': '30 cartas/dia + imagem e link',
+    'ru': '30 писем/день + фото и ссылки',
+    'tr': 'Günde 30 mektup + resim & link',
+    'ar': '30 رسالة/يوم + صور وروابط',
+    'it': '30 lettere/giorno + immagine e link',
+    'hi': '30 पत्र/दिन + छवि व लिंक',
+    'th': '30 ฉบับ/วัน + ภาพ·ลิงก์',
   });
 
   String get onboardingPremiumFeat4 => _t({
-    'ko': '커스텀 타워 스킨',
-    'en': 'Custom tower skins',
-    'ja': 'カスタムタワースキン',
-    'zh': '自定义塔皮肤',
-    'fr': 'Skins de tour personnalisés',
-    'de': 'Benutzerdefinierte Turm-Skins',
-    'es': 'Skins de torre personalizados',
-    'pt': 'Skins de torre personalizadas',
-    'ru': 'Пользовательские скины башни',
-    'tr': 'Özel kule görünümleri',
-    'ar': 'مظاهر برج مخصصة',
-    'it': 'Skin torre personalizzate',
-    'hi': 'कस्टम टॉवर स्किन',
-    'th': 'สกินหอคอยกำหนดเอง',
+    'ko': '타워 커스텀 색상 · 특급 배송 3통/일',
+    'en': 'Custom tower color · 3 express deliveries/day',
+    'ja': 'タワーカスタムカラー · 特急配送 3/日',
+    'zh': '塔楼自定义颜色 · 特快配送 3/日',
+    'fr': 'Couleur de tour personnalisée · 3 livraisons express/jour',
+    'de': 'Eigene Turmfarbe · 3 Express-Lieferungen/Tag',
+    'es': 'Color de torre personalizado · 3 entregas exprés/día',
+    'pt': 'Cor de torre personalizada · 3 entregas expressas/dia',
+    'ru': 'Свой цвет башни · 3 экспресса/день',
+    'tr': 'Özel kule rengi · 3 ekspres/gün',
+    'ar': 'لون برج مخصّص · 3 توصيلات سريعة/يوم',
+    'it': 'Colore torre personalizzato · 3 espressi/giorno',
+    'hi': 'कस्टम टावर रंग · 3 एक्सप्रेस/दिन',
+    'th': 'สีหอคอยกำหนดเอง · ด่วน 3/วัน',
   });
 
   String get onboardingStatActiveUsers => _t({
@@ -11155,6 +14197,24 @@ class AppL10n {
     'th': 'ถึงคุณ',
   });
 
+  // Build 182: 본문이 네트워크 이슈로 비어 있을 때 fallback 라벨.
+  String get letterReadBodyUnavailable => _t({
+    'ko': '본문을 불러오는 중이에요…',
+    'en': 'Loading message…',
+    'ja': '本文を読み込み中…',
+    'zh': '正在加载内容…',
+    'fr': 'Chargement du message…',
+    'de': 'Nachricht wird geladen…',
+    'es': 'Cargando mensaje…',
+    'pt': 'A carregar mensagem…',
+    'ru': 'Загрузка сообщения…',
+    'tr': 'Mesaj yükleniyor…',
+    'ar': 'جارٍ تحميل الرسالة…',
+    'it': 'Caricamento messaggio…',
+    'hi': 'संदेश लोड हो रहा है…',
+    'th': 'กำลังโหลดข้อความ…',
+  });
+
   String letterReadTranslated(String lang) => _t({
     'ko': '🔤 번역됨 ($lang)',
     'en': '🔤 Translated ($lang)',
@@ -11308,6 +14368,2008 @@ class AppL10n {
     'th': 'ตอบแล้ว (ได้ครั้งเดียว)',
   });
 
+  // 브랜드 발송인이 "답장 받지 않음" 으로 설정한 편지에 표시되는 안내 카드 문구.
+  // 답장 버튼이 사라진 대신 "이 캠페인은 답장을 받지 않아요" 한 줄을 띄운다.
+  String get letterReadBrandNoReply => _t({
+    'ko': '이 캠페인은 답장을 받지 않아요',
+    'en': 'This campaign does not accept replies',
+    'ja': 'このキャンペーンは返信を受け付けていません',
+    'zh': '此活动不接受回复',
+    'fr': 'Cette campagne n\'accepte pas de réponse',
+    'de': 'Diese Kampagne akzeptiert keine Antworten',
+    'es': 'Esta campaña no acepta respuestas',
+    'pt': 'Esta campanha não aceita respostas',
+    'ru': 'Эта кампания не принимает ответов',
+    'tr': 'Bu kampanya yanıt kabul etmiyor',
+    'ar': 'هذه الحملة لا تقبل الردود',
+    'it': 'Questa campagna non accetta risposte',
+    'hi': 'यह अभियान जवाब स्वीकार नहीं करता',
+    'th': 'แคมเปญนี้ไม่รับคำตอบ',
+  });
+
+  // 브랜드 컴포즈: 쿠폰/교환권 사용 안내 필드 (category != general 시 표시)
+  String get composeBrandRedemptionLabel => _t({
+    'ko': '사용 방법 안내',
+    'en': 'How to redeem',
+    'ja': '使い方の案内',
+    'zh': '使用方法',
+    'fr': 'Mode d\'emploi',
+    'de': 'Einlösehinweis',
+    'es': 'Cómo usar',
+    'pt': 'Como resgatar',
+    'ru': 'Как использовать',
+    'tr': 'Nasıl kullanılır',
+    'ar': 'كيفية الاستخدام',
+    'it': 'Come utilizzare',
+    'hi': 'कैसे उपयोग करें',
+    'th': 'วิธีใช้',
+  });
+
+  String get composeBrandRedemptionDesc => _t({
+    'ko': '수신자에게 보여줄 코드·링크·매장 안내 등 (최대 200자)',
+    'en': 'Code, link, or store instructions shown to the recipient (max 200 chars)',
+    'ja': '受信者に表示するコード・リンク・店舗案内など (最大200文字)',
+    'zh': '向收件人展示的代码、链接或门店说明 (最多200字)',
+    'fr': 'Code, lien ou instructions (200 car. max)',
+    'de': 'Code, Link oder Hinweise (max. 200 Zeichen)',
+    'es': 'Código, enlace o instrucciones (máx. 200 caracteres)',
+    'pt': 'Código, link ou instruções (máx. 200 caracteres)',
+    'ru': 'Код, ссылка или инструкция (до 200 символов)',
+    'tr': 'Kod, bağlantı veya mağaza bilgisi (maks 200 karakter)',
+    'ar': 'رمز أو رابط أو إرشادات (حتى 200 حرف)',
+    'it': 'Codice, link o istruzioni (max 200 caratteri)',
+    'hi': 'कोड, लिंक, या स्टोर निर्देश (अधिकतम 200 अक्षर)',
+    'th': 'รหัส ลิงก์ หรือวิธีการที่ร้าน (ไม่เกิน 200 ตัวอักษร)',
+  });
+
+  String get composeBrandRedemptionHint => _t({
+    'ko': '예: LETTERGO20 결제 시 입력',
+    'en': 'e.g. Enter LETTERGO20 at checkout',
+    'ja': '例: 決済時に LETTERGO20 を入力',
+    'zh': '例：结账时输入 LETTERGO20',
+    'fr': 'ex : saisir LETTERGO20 au paiement',
+    'de': 'z.B. LETTERGO20 beim Bezahlen eingeben',
+    'es': 'ej: introduce LETTERGO20 al pagar',
+    'pt': 'ex: use LETTERGO20 no pagamento',
+    'ru': 'напр. введите LETTERGO20 при оплате',
+    'tr': 'örn: ödemede LETTERGO20 girin',
+    'ar': 'مثال: أدخل LETTERGO20 عند الدفع',
+    'it': 'es: inserisci LETTERGO20 al checkout',
+    'hi': 'उदा. चेकआउट पर LETTERGO20 दर्ज करें',
+    'th': 'เช่น ใส่ LETTERGO20 ตอนชำระ',
+  });
+
+  // ─────────────────────────────────────────────────────────────────────
+  // Build 115 — 소비자 감사 기반 4개 신규 기능. 각 키 묶음 앞에 용도 명시.
+  // ─────────────────────────────────────────────────────────────────────
+
+  // 1) 프로필 "나의 레터 기록" 카드 (HuntWalletCard).
+  // Build 125: 사용자 정체성 "레터" 통일에 따라 "헌트 기록" → "레터 기록"
+  // 으로 교체. 14개 언어 모두 Letter 브랜드명 정합 재작성.
+  String get huntWalletTitle => _t({
+    'ko': '나의 레터 기록', 'en': 'My Letter Log', 'ja': '私のレター記録',
+    'zh': '我的 Letter 记录', 'fr': 'Mon journal Letter', 'de': 'Mein Letter-Log',
+    'es': 'Mi registro Letter', 'pt': 'Meu registro Letter',
+    'ru': 'Мой Letter-журнал', 'tr': 'Letter kaydım',
+    'ar': 'سجل Letter الخاص بي', 'it': 'Il mio diario Letter',
+    'hi': 'मेरा Letter लॉग', 'th': 'บันทึก Letter ของฉัน',
+  });
+  String get huntWalletPickupsMonth => _t({
+    'ko': '이번 달 픽업', 'en': 'Pickups this month', 'ja': '今月のピックアップ',
+    'zh': '本月拾取', 'fr': 'Ramassées ce mois', 'de': 'Diesen Monat',
+    'es': 'Recogidas este mes', 'pt': 'Apanhadas este mês',
+    'ru': 'Собрано в месяц', 'tr': 'Bu ay toplandı',
+    'ar': 'التقطت هذا الشهر', 'it': 'Raccolte questo mese',
+    'hi': 'इस महीने', 'th': 'เดือนนี้',
+  });
+  String get huntWalletRedeemedMonth => _t({
+    'ko': '이번 달 사용', 'en': 'Redeemed this month', 'ja': '今月使用',
+    'zh': '本月已使用', 'fr': 'Utilisées ce mois', 'de': 'Eingelöst diesen Monat',
+    'es': 'Canjeadas este mes', 'pt': 'Usadas este mês',
+    'ru': 'Использовано в месяц', 'tr': 'Bu ay kullanıldı',
+    'ar': 'استُخدمت هذا الشهر', 'it': 'Riscattate questo mese',
+    'hi': 'इस महीने उपयोग', 'th': 'ใช้เดือนนี้',
+  });
+  String get huntWalletTotalPickups => _t({
+    'ko': '누적 픽업', 'en': 'Total pickups', 'ja': '累計ピックアップ',
+    'zh': '累计拾取', 'fr': 'Total ramassées', 'de': 'Gesamt aufgenommen',
+    'es': 'Total recogidas', 'pt': 'Total apanhadas',
+    'ru': 'Всего собрано', 'tr': 'Toplam toplanan',
+    'ar': 'الإجمالي', 'it': 'Totale raccolte',
+    'hi': 'कुल पिकअप', 'th': 'รวมทั้งหมด',
+  });
+  String get huntWalletTotalRedemptions => _t({
+    'ko': '누적 사용', 'en': 'Total redemptions', 'ja': '累計使用',
+    'zh': '累计使用', 'fr': 'Total utilisées', 'de': 'Gesamt eingelöst',
+    'es': 'Total canjeadas', 'pt': 'Total usadas',
+    'ru': 'Всего использовано', 'tr': 'Toplam kullanılan',
+    'ar': 'إجمالي الاستخدام', 'it': 'Totale riscattate',
+    'hi': 'कुल उपयोग', 'th': 'รวมใช้',
+  });
+  // ─────────────────────────────────────────────────────────────────────
+  // Build 120 — 픽업 감각 증폭 UX 로드맵 (7가지). 레벨업 반경 토스트·프로필
+  // 반경 바·네비 위 근처 카운터·나침반 힌트·레벨 마일스톤·타워 펄스.
+  // ─────────────────────────────────────────────────────────────────────
+
+  String levelUpRadiusDelta(int delta, int newRadius) => _t({
+    'ko': '📍 반경 +${delta}m · 이제 ${newRadius}m',
+    'en': '📍 Radius +${delta}m · now ${newRadius}m',
+    'ja': '📍 範囲 +${delta}m · 現在 ${newRadius}m',
+    'zh': '📍 范围 +${delta}米 · 现 ${newRadius}米',
+    'fr': '📍 Rayon +${delta} m · ${newRadius} m maintenant',
+    'de': '📍 Radius +${delta} m · jetzt ${newRadius} m',
+    'es': '📍 Radio +${delta} m · ahora ${newRadius} m',
+    'pt': '📍 Raio +${delta} m · agora ${newRadius} m',
+    'ru': '📍 Радиус +${delta} м · теперь ${newRadius} м',
+    'tr': '📍 Yarıçap +${delta} m · şimdi ${newRadius} m',
+    'ar': '📍 نطاق +${delta}م · الآن ${newRadius}م',
+    'it': '📍 Raggio +${delta} m · ora ${newRadius} m',
+    'hi': '📍 रेडियस +${delta} मी · अब ${newRadius} मी',
+    'th': '📍 รัศมี +${delta} ม. · ตอนนี้ ${newRadius} ม.',
+  });
+
+  String get huntWalletRadiusTitle => _t({
+    'ko': '내 줍기 반경',
+    'en': 'My pickup radius',
+    'ja': '私の拾える範囲',
+    'zh': '我的拾取范围',
+    'fr': 'Mon rayon',
+    'de': 'Mein Aufsammelradius',
+    'es': 'Mi radio',
+    'pt': 'Meu raio',
+    'ru': 'Мой радиус',
+    'tr': 'Yarıçapım',
+    'ar': 'نطاقي',
+    'it': 'Il mio raggio',
+    'hi': 'मेरा रेडियस',
+    'th': 'รัศมีของฉัน',
+  });
+
+  String huntWalletRadiusValue(int current, int max) => _t({
+    'ko': '${current}m · 최대 ${max}m',
+    'en': '${current}m · max ${max}m',
+    'ja': '${current}m · 最大 ${max}m',
+    'zh': '${current}m · 最大 ${max}m',
+    'fr': '${current} m · max ${max} m',
+    'de': '${current} m · max ${max} m',
+    'es': '${current} m · máx ${max} m',
+    'pt': '${current} m · máx ${max} m',
+    'ru': '${current} м · макс ${max} м',
+    'tr': '${current} m · maks ${max} m',
+    'ar': '${current}م · الحد ${max}م',
+    'it': '${current} m · max ${max} m',
+    'hi': '${current} मी · अधिकतम ${max} मी',
+    'th': '${current} ม. · สูงสุด ${max} ม.',
+  });
+
+  String get huntWalletRadiusUpgradeCta => _t({
+    'ko': 'Premium 전환 시 5× 즉시 확대 →',
+    'en': 'Go Premium to widen 5× instantly →',
+    'ja': 'プレミアムで即 5× 拡大 →',
+    'zh': '升级 Premium 立即扩大 5× →',
+    'fr': 'Passe en Premium pour élargir 5× →',
+    'de': 'Premium: sofort 5× weiter →',
+    'es': 'Pásate a Premium para expandir 5× →',
+    'pt': 'Vai Premium para expandir 5× →',
+    'ru': 'Premium — сразу в 5× шире →',
+    'tr': "Premium ile hemen 5× genişle →",
+    'ar': 'Premium يوسّعه 5× فوراً →',
+    'it': 'Con Premium subito 5× più ampio →',
+    'hi': 'Premium से 5× तुरंत बड़ा →',
+    'th': 'อัปเป็น Premium กว้างขึ้น 5 เท่าทันที →',
+  });
+
+  String mainNavNearbyChip(int n) => _t({
+    'ko': '🎟 근처 $n통',
+    'en': '🎟 $n nearby',
+    'ja': '🎟 近く $n通',
+    'zh': '🎟 附近 $n',
+    'fr': '🎟 $n à proximité',
+    'de': '🎟 $n in der Nähe',
+    'es': '🎟 $n cerca',
+    'pt': '🎟 $n por perto',
+    'ru': '🎟 $n рядом',
+    'tr': '🎟 Yakında $n',
+    'ar': '🎟 $n قريب',
+    'it': '🎟 $n vicino',
+    'hi': '🎟 $n पास',
+    'th': '🎟 ใกล้ $n',
+  });
+
+  // 나침반 힌트 — 주변 반경 내 편지는 없지만 월드 편지 중 가장 가까운 것의
+  // 방향과 거리. 방향은 화살표 이모지(↑ ↗ → ↘ ↓ ↙ ← ↖) 로 표현해 번역 불필요.
+  String mapCompassHint(int meters, String arrow, String categoryEmoji) => _t({
+    'ko': '🧭 $arrow ${meters}m — $categoryEmoji 편지가 있어요',
+    'en': '🧭 $arrow ${meters}m — $categoryEmoji letter waiting',
+    'ja': '🧭 $arrow ${meters}m に $categoryEmoji 手紙',
+    'zh': '🧭 $arrow ${meters}m — $categoryEmoji 信件',
+    'fr': "🧭 $arrow ${meters} m — lettre $categoryEmoji",
+    'de': '🧭 $arrow ${meters} m — $categoryEmoji Brief',
+    'es': '🧭 $arrow ${meters} m — carta $categoryEmoji',
+    'pt': '🧭 $arrow ${meters} m — carta $categoryEmoji',
+    'ru': '🧭 $arrow ${meters} м — письмо $categoryEmoji',
+    'tr': '🧭 $arrow ${meters} m — $categoryEmoji mektup',
+    'ar': '🧭 $arrow ${meters}م — رسالة $categoryEmoji',
+    'it': '🧭 $arrow ${meters} m — lettera $categoryEmoji',
+    'hi': '🧭 $arrow ${meters} मी — $categoryEmoji पत्र',
+    'th': '🧭 $arrow ${meters} ม. — จดหมาย $categoryEmoji',
+  });
+
+  String milestoneLevelTitle(int level) => _t({
+    'ko': '🏆 레벨 $level 달성!',
+    'en': '🏆 Level $level reached!',
+    'ja': '🏆 レベル $level 到達！',
+    'zh': '🏆 达到 $level 级！',
+    'fr': '🏆 Niveau $level atteint !',
+    'de': '🏆 Level $level erreicht!',
+    'es': '🏆 ¡Nivel $level alcanzado!',
+    'pt': '🏆 Nível $level alcançado!',
+    'ru': '🏆 Уровень $level достигнут!',
+    'tr': '🏆 Seviye $level tamam!',
+    'ar': '🏆 وصلت للمستوى $level!',
+    'it': '🏆 Livello $level raggiunto!',
+    'hi': '🏆 स्तर $level प्राप्त!',
+    'th': '🏆 ถึงระดับ $level!',
+  });
+
+  String milestoneLevelBody(int radius) => _t({
+    'ko': '이제 줍기 반경이 ${radius}m 로 넓어졌어요. 더 멀리 주울 수 있어요.',
+    'en': 'Your pickup radius is now ${radius}m. Reach further.',
+    'ja': '拾える範囲が ${radius}m に広がりました。さらに遠くまで拾えます。',
+    'zh': '拾取范围扩大到 ${radius}m。可以走得更远。',
+    'fr': 'Ton rayon est maintenant ${radius} m. Va plus loin.',
+    'de': 'Dein Radius beträgt jetzt ${radius} m. Greif weiter.',
+    'es': 'Tu radio ahora es ${radius} m. Llega más lejos.',
+    'pt': 'O teu raio agora é ${radius} m. Chega mais longe.',
+    'ru': 'Ваш радиус теперь ${radius} м. Можно дальше.',
+    'tr': 'Yarıçapın artık ${radius} m. Daha ileri git.',
+    'ar': 'نطاقك الآن ${radius}م. تقدّم أبعد.',
+    'it': 'Il tuo raggio è ora ${radius} m. Arriva più lontano.',
+    'hi': 'अब आपका रेडियस ${radius} मी है। और दूर पहुँचो।',
+    'th': 'รัศมีคุณคือ ${radius} ม. แล้ว ไปไกลขึ้นได้',
+  });
+
+  String get milestoneLevelCta => _t({
+    'ko': '계속 주우러 가기', 'en': 'Keep hunting', 'ja': '続けて拾う',
+    'zh': '继续寻找', 'fr': 'Continuer', 'de': 'Weiter sammeln',
+    'es': 'Seguir cazando', 'pt': 'Continuar', 'ru': 'Продолжить',
+    'tr': 'Devam', 'ar': 'متابعة', 'it': 'Continua', 'hi': 'जारी रखो',
+    'th': 'ไปต่อ',
+  });
+
+  String get towerPulseHint => _t({
+    'ko': '✨ 내 줍기 반경',
+    'en': '✨ My pickup radius',
+    'ja': '✨ 私の拾える範囲',
+    'zh': '✨ 我的拾取范围',
+    'fr': '✨ Mon rayon',
+    'de': '✨ Mein Radius',
+    'es': '✨ Mi radio',
+    'pt': '✨ Meu raio',
+    'ru': '✨ Мой радиус',
+    'tr': '✨ Yarıçapım',
+    'ar': '✨ نطاقي',
+    'it': '✨ Il mio raggio',
+    'hi': '✨ मेरा रेडियस',
+    'th': '✨ รัศมีของฉัน',
+  });
+
+  // Build 124: 유저 정체성 명칭 재확정 "레터 (Letter)".
+  // Build 123 에서 "레고 (Lego)" 로 지정했지만 The LEGO Group 상표와
+  // 직접 충돌(특히 中 乐高 / 日 レゴ / 글로벌 LEGO) 이라 "Letter" 로 전환.
+  // "Letter" 는 Letter Go 브랜드명의 핵심 요소이자 일반 명사로 상표 위험
+  // 최소. l10n key 이름과 코드 심볼은 기존 `hunter*` 그대로 유지 (내부
+  // 식별자, 사용자 노출 없음).
+  String get hunterItemsTitle => _t({
+    'ko': '레터 아이템', 'en': 'Letter items', 'ja': 'レター アイテム',
+    'zh': 'Letter 道具', 'fr': 'Objets Letter', 'de': 'Letter-Ausrüstung',
+    'es': 'Objetos Letter', 'pt': 'Itens Letter',
+    'ru': 'Снаряжение Letter', 'tr': 'Letter eşyaları',
+    'ar': 'أدوات Letter', 'it': 'Oggetti Letter',
+    'hi': 'Letter सामान', 'th': 'ไอเท็ม Letter',
+  });
+
+  // ─────────────────────────────────────────────────────────────────────
+  // Build 127 — 편지 카테고리 사용법 모달 + 할인권/교환권 구분 카피 +
+  // Brand 사업자 인증 UI l10n.
+  // ─────────────────────────────────────────────────────────────────────
+
+  String get categoryHelpTitle => _t({
+    'ko': '편지 종류 사용법', 'en': 'Letter types', 'ja': '手紙の種類',
+    'zh': '信件类型', 'fr': 'Types de lettres', 'de': 'Brieftypen',
+    'es': 'Tipos de carta', 'pt': 'Tipos de carta',
+    'ru': 'Типы писем', 'tr': 'Mektup türleri',
+    'ar': 'أنواع الرسائل', 'it': 'Tipi di lettera',
+    'hi': 'पत्र प्रकार', 'th': 'ประเภทจดหมาย',
+  });
+
+  String get categoryHelpCouponDesc => _t({
+    'ko': '웹사이트·앱에서 쓸 수 있는 코드 형식 쿠폰. 예: "LETTERGO20" 같은 문자열을 받은 사람이 결제 시 입력.',
+    'en': 'Code-based discount for online use. The receiver types your code (e.g. "LETTERGO20") at checkout.',
+    'ja': 'ウェブサイトやアプリで使えるコード形式のクーポン。例: "LETTERGO20" のような文字列を決済時に入力。',
+    'zh': '网站/APP 使用的代码形式优惠。例如 "LETTERGO20"，结账时输入即可。',
+    'fr': 'Code promo utilisable en ligne. Le destinataire tape ton code (ex : "LETTERGO20") au paiement.',
+    'de': 'Code-basierter Online-Rabatt. Empfänger gibt deinen Code (z. B. "LETTERGO20") an der Kasse ein.',
+    'es': 'Descuento con código para uso online. El receptor introduce tu código (ej. "LETTERGO20") al pagar.',
+    'pt': 'Código de desconto para uso online. O destinatário insere o código (ex. "LETTERGO20") no pagamento.',
+    'ru': 'Промокод для онлайн-оплаты. Получатель вводит ваш код (например, "LETTERGO20") при оплате.',
+    'tr': 'Online kullanım için kod. Alıcı ödemede kodunu ("LETTERGO20") girer.',
+    'ar': 'رمز خصم للاستخدام عبر الإنترنت. يُدخل المستلم الرمز (مثل "LETTERGO20") عند الدفع.',
+    'it': 'Codice sconto per uso online. Il destinatario inserisce il codice (es. "LETTERGO20") al checkout.',
+    'hi': 'ऑनलाइन उपयोग के लिए कोड-आधारित छूट। पाने वाला आपका कोड (जैसे "LETTERGO20") चेकआउट पर डालता है।',
+    'th': 'ส่วนลดแบบรหัสสำหรับใช้ออนไลน์ ผู้รับใส่รหัส (เช่น "LETTERGO20") ตอนชำระ',
+  });
+
+  String get categoryHelpVoucherDesc => _t({
+    'ko': '매장·오프라인에서 쓸 수 있는 쿠폰 이미지. 바코드·QR·스탬프 이미지를 업로드해 수신자가 현장에서 보여주고 사용.',
+    'en': 'Image coupon for in-store use. Upload a barcode / QR / stamp image the receiver shows at the counter.',
+    'ja': '店舗で使える画像クーポン。バーコード・QR・スタンプ画像をアップロードし、受取人がレジで提示。',
+    'zh': '线下门店使用的图片优惠。上传条形码 / 二维码 / 图章图片，收件人到店出示即可。',
+    'fr': "Bon image pour usage en boutique. Upload un code-barre, QR ou tampon que le destinataire montre en caisse.",
+    'de': 'Bild-Gutschein für Laden-Einsatz. Lade einen Barcode/QR/Stempel hoch, den der Empfänger an der Kasse zeigt.',
+    'es': 'Cupón de imagen para tienda. Sube un código de barras/QR/sello que el receptor muestra en caja.',
+    'pt': 'Cupão de imagem para loja física. Carrega um código de barras/QR/carimbo que o destinatário mostra no balcão.',
+    'ru': 'Купон-изображение для магазина. Загрузите штрих-код/QR/штамп — получатель покажет на кассе.',
+    'tr': 'Mağazada kullanım için görsel kupon. Barkod/QR/damga yükle, alıcı kasada gösterir.',
+    'ar': 'قسيمة صورة للاستخدام في المتجر. ارفع صورة باركود/QR/ختم يعرضها المستلم عند الدفع.',
+    'it': 'Coupon immagine per uso in negozio. Carica un codice a barre/QR/timbro che il destinatario mostra alla cassa.',
+    'hi': 'दुकान में उपयोग के लिए छवि कूपन। बारकोड/QR/स्टैंप छवि अपलोड करें, पाने वाला काउंटर पर दिखाएगा।',
+    'th': 'คูปองแบบรูปใช้ในร้าน อัปโหลดบาร์โค้ด/QR/ตราประทับ ผู้รับแสดงที่เคาน์เตอร์',
+  });
+
+  String get categoryHelpGeneralDesc => _t({
+    'ko': '일반 브랜드 스토리·공지. 할인 코드나 이미지 없이 자유 메시지를 보낼 때 선택.',
+    'en': 'Plain brand message. Use when sending a story, announcement, or greeting without a code or image.',
+    'ja': '一般のブランドメッセージ。割引コードや画像なしで自由なメッセージを送るときに。',
+    'zh': '普通品牌信息。无优惠码或图片，仅发送品牌故事或通知时选择。',
+    'fr': "Message de marque libre. À utiliser pour une annonce ou histoire sans code ni image.",
+    'de': 'Freier Marken-Text. Nutze ihn für Story/Ankündigung ohne Code oder Bild.',
+    'es': 'Mensaje de marca libre. Úsalo para anuncios o historias sin código ni imagen.',
+    'pt': 'Mensagem de marca livre. Usa quando envias uma história ou anúncio sem código ou imagem.',
+    'ru': 'Обычное сообщение бренда. Для истории или анонса без кода или изображения.',
+    'tr': 'Serbest marka mesajı. Kod veya görsel olmadan hikaye/duyuru gönderirken kullan.',
+    'ar': 'رسالة علامة عادية. استخدمها لإرسال قصة أو إعلان دون رمز أو صورة.',
+    'it': 'Messaggio di marca libero. Per storie o annunci senza codice o immagine.',
+    'hi': 'सामान्य ब्रांड संदेश। कोड या छवि के बिना कहानी/घोषणा भेजते समय चुनें।',
+    'th': 'ข้อความแบรนด์ทั่วไป ใช้เมื่อส่งเรื่องราวหรือประกาศโดยไม่มีรหัสหรือรูป',
+  });
+
+  String get categoryHelpBrandOnlyNote => _t({
+    'ko': '🎟 할인권과 🎁 교환권은 Brand 계정만 발송 가능해요. 무료·Premium 회원은 지도에서 주워서 사용할 수 있어요.',
+    'en': '🎟 Coupons and 🎁 Vouchers can only be sent by Brand accounts. Free and Premium users pick them up on the map.',
+    'ja': '🎟 割引券と 🎁 交換券は Brand アカウント限定で送信可能。無料・Premium 会員は地図で拾って使えます。',
+    'zh': '🎟 优惠券和 🎁 兑换券仅 Brand 账号可发送。免费/Premium 用户在地图上拾取使用。',
+    'fr': '🎟 Coupons et 🎁 Bons : envoi réservé aux comptes Brand. Utilisateurs Gratuit/Premium les ramassent sur la carte.',
+    'de': '🎟 Gutscheine und 🎁 Bons können nur Brand-Accounts senden. Free/Premium-User sammeln sie auf der Karte.',
+    'es': '🎟 Cupones y 🎁 Vales solo los envían cuentas Brand. Los usuarios Gratis/Premium los recogen en el mapa.',
+    'pt': '🎟 Cupões e 🎁 Vales só são enviados por contas Brand. Free/Premium apanham no mapa.',
+    'ru': '🎟 Купоны и 🎁 Ваучеры отправляют только Brand-аккаунты. Free/Premium подбирают их на карте.',
+    'tr': '🎟 Kupon ve 🎁 Fiş sadece Brand hesapları gönderir. Ücretsiz/Premium haritadan toplar.',
+    'ar': '🎟 الكوبونات و 🎁 القسائم يرسلها حسابات Brand فقط. يلتقطها Free/Premium من الخريطة.',
+    'it': '🎟 Coupon e 🎁 Buoni solo da account Brand. Gli utenti Free/Premium li raccolgono dalla mappa.',
+    'hi': '🎟 कूपन और 🎁 वाउचर केवल Brand खाते भेज सकते हैं। Free/Premium उपयोगकर्ता नक्शे पर उठाते हैं।',
+    'th': '🎟 คูปองและ 🎁 บัตรกำนัลส่งได้เฉพาะบัญชี Brand. ผู้ใช้ฟรี/Premium เก็บจากแผนที่',
+  });
+
+  // Build 182: Brand 전용 게이트 시트 전용 문구 — Premium 과 구분하는 위계.
+  String get brandOnlyBadge => _t({
+    'ko': 'Brand 전용',
+    'en': 'Brand only',
+    'ja': 'Brand 限定',
+    'zh': 'Brand 专属',
+    'fr': 'Brand uniquement',
+    'de': 'Nur Brand',
+    'es': 'Solo Brand',
+    'pt': 'Só Brand',
+    'ru': 'Только Brand',
+    'tr': 'Sadece Brand',
+    'ar': 'Brand فقط',
+    'it': 'Solo Brand',
+    'hi': 'केवल Brand',
+    'th': 'Brand เท่านั้น',
+  });
+
+  String get brandOnlyPremiumNote => _t({
+    'ko': 'Premium 이 이미 활성화되어 있어요. Brand 는 업그레이드가 아니라 사업자 광고주 계정으로 별도 등록이 필요한 트랙이에요.',
+    'en': 'Premium is already active. Brand is a separate advertiser track — not an upgrade, it needs a business registration.',
+    'ja': 'Premium は既に有効です。Brand はアップグレードではなく、別途事業者登録が必要な広告主アカウントです。',
+    'zh': 'Premium 已激活。Brand 不是升级路径，而是需另行注册的商业广告主账号。',
+    'fr': 'Premium est déjà actif. Brand n\'est pas une mise à niveau mais un compte annonceur distinct nécessitant une vérification professionnelle.',
+    'de': 'Premium ist bereits aktiv. Brand ist kein Upgrade, sondern ein separates Werbekonto mit Unternehmensprüfung.',
+    'es': 'Premium ya está activo. Brand no es una mejora, es una cuenta de anunciante independiente con verificación empresarial.',
+    'pt': 'Premium já está ativo. Brand não é um upgrade, é uma conta de anunciante separada com verificação empresarial.',
+    'ru': 'Premium уже активен. Brand — это отдельный рекламодательский аккаунт, а не апгрейд.',
+    'tr': 'Premium zaten aktif. Brand bir yükseltme değil, ayrı bir reklamveren hesabıdır ve iş doğrulaması gerektirir.',
+    'ar': 'Premium مفعّل مسبقًا. Brand ليس ترقية بل حساب معلن منفصل يتطلّب التحقق التجاري.',
+    'it': 'Premium è già attivo. Brand non è un upgrade: è un account inserzionista separato con verifica aziendale.',
+    'hi': 'Premium पहले से सक्रिय है। Brand अपग्रेड नहीं है, अलग विज्ञापनदाता खाता है जिसे व्यावसायिक सत्यापन चाहिए।',
+    'th': 'Premium เปิดใช้งานอยู่แล้ว Brand ไม่ใช่การอัปเกรดแต่เป็นบัญชีผู้ลงโฆษณาแยกที่ต้องยืนยันธุรกิจ',
+  });
+
+  String get brandOnlyAcknowledge => _t({
+    'ko': '알겠어요',
+    'en': 'Got it',
+    'ja': 'わかりました',
+    'zh': '我知道了',
+    'fr': 'Compris',
+    'de': 'Verstanden',
+    'es': 'Entendido',
+    'pt': 'Entendido',
+    'ru': 'Понятно',
+    'tr': 'Anladım',
+    'ar': 'فهمت',
+    'it': 'Capito',
+    'hi': 'समझ गया',
+    'th': 'เข้าใจแล้ว',
+  });
+
+  // Build 186: Brand 프로필의 ExactDrop 크레딧 카드.
+  String get brandExactDropCreditsTitle => _t({
+    'ko': 'ExactDrop 크레딧',
+    'en': 'ExactDrop Credits',
+    'ja': 'ExactDrop クレジット',
+    'zh': 'ExactDrop 额度',
+    'fr': 'Crédits ExactDrop',
+    'de': 'ExactDrop-Guthaben',
+    'es': 'Créditos ExactDrop',
+    'pt': 'Créditos ExactDrop',
+    'ru': 'Кредиты ExactDrop',
+    'tr': 'ExactDrop Kredileri',
+    'ar': 'أرصدة ExactDrop',
+    'it': 'Crediti ExactDrop',
+    'hi': 'ExactDrop क्रेडिट',
+    'th': 'เครดิต ExactDrop',
+  });
+
+  String brandExactDropCreditsCount(int n) => _t({
+    'ko': '$n 통',
+    'en': '$n left',
+    'ja': '残り$n 通',
+    'zh': '剩余 $n',
+    'fr': '$n restants',
+    'de': '$n übrig',
+    'es': '$n restantes',
+    'pt': '$n restantes',
+    'ru': 'Осталось $n',
+    'tr': '$n kaldı',
+    'ar': 'متبقي $n',
+    'it': '$n rimasti',
+    'hi': '$n शेष',
+    'th': 'เหลือ $n',
+  });
+
+  String get brandExactDropCreditsHint => _t({
+    'ko': '정확한 좌표에 편지를 떨어뜨리려면 크레딧이 필요해요. 100통 단위로 구매.',
+    'en': 'Credits are required to drop letters at exact coordinates. Sold in 100-letter packs.',
+    'ja': '正確な座標に手紙を配るには ExactDrop クレジットが必要。100通単位で購入。',
+    'zh': '向精确坐标投放信件需要 ExactDrop 额度。以 100 封为单位购买。',
+    'fr': 'Crédits requis pour lancer des lettres à des coordonnées précises. Packs de 100.',
+    'de': 'Guthaben nötig, um Briefe an exakten Koordinaten abzulegen. 100er-Pakete.',
+    'es': 'Se necesitan créditos para lanzar cartas en coordenadas exactas. Paquetes de 100.',
+    'pt': 'Créditos necessários para lançar cartas em coordenadas exatas. Pacotes de 100.',
+    'ru': 'Нужны кредиты для сброса писем по точным координатам. Пакеты по 100.',
+    'tr': 'Tam koordinatlara mektup bırakmak için kredi gerekli. 100\'lü paketler.',
+    'ar': 'الأرصدة مطلوبة لإسقاط الرسائل في إحداثيات دقيقة. عبوات من 100.',
+    'it': 'Servono crediti per lanciare lettere in coordinate esatte. Pacchetti da 100.',
+    'hi': 'सटीक निर्देशांक पर पत्र गिराने के लिए क्रेडिट चाहिए। 100 के पैक।',
+    'th': 'ต้องใช้เครดิตเพื่อปล่อยจดหมายที่พิกัดแม่นยำ แพ็ก 100 ฉบับ',
+  });
+
+  String get brandExactDropCreditsBuyBtn => _t({
+    'ko': '💎 100통 구매 (₩10,000)',
+    'en': '💎 Buy 100 (\$7.99)',
+    'ja': '💎 100通を購入 (¥1,100)',
+    'zh': '💎 购买 100 封 (¥50)',
+    'fr': '💎 Acheter 100 (€7.99)',
+    'de': '💎 100 kaufen (€7.99)',
+    'es': '💎 Comprar 100 (€7.99)',
+    'pt': '💎 Comprar 100 (€7.99)',
+    'ru': '💎 Купить 100 (₽749)',
+    'tr': '💎 100 satın al (₺299)',
+    'ar': '💎 اشترِ 100 (\$7.99)',
+    'it': '💎 Compra 100 (€7.99)',
+    'hi': '💎 100 खरीदें (\$7.99)',
+    'th': '💎 ซื้อ 100 (฿299)',
+  });
+
+  String get brandExactDropCreditsSheetTitle => _t({
+    'ko': 'ExactDrop 크레딧 구매 안내',
+    'en': 'How to buy ExactDrop credits',
+    'ja': 'ExactDrop クレジットの購入案内',
+    'zh': '购买 ExactDrop 额度',
+    'fr': 'Acheter des crédits ExactDrop',
+    'de': 'ExactDrop-Guthaben kaufen',
+    'es': 'Comprar créditos ExactDrop',
+    'pt': 'Comprar créditos ExactDrop',
+    'ru': 'Купить кредиты ExactDrop',
+    'tr': 'ExactDrop kredisi satın al',
+    'ar': 'شراء أرصدة ExactDrop',
+    'it': 'Acquistare crediti ExactDrop',
+    'hi': 'ExactDrop क्रेडिट खरीदें',
+    'th': 'วิธีซื้อเครดิต ExactDrop',
+  });
+
+  String get brandExactDropCreditsSheetBody => _t({
+    'ko': '지금은 앱 내 결제가 준비 중이라 관리자 승인으로만 지급돼요.\nsupport@lettergo.app 으로 사업자명과 필요한 통 수를 알려주시면 24시간 안에 충전해 드립니다.',
+    'en': 'In-app purchase is coming soon. For now, credits are granted by admin.\nEmail support@lettergo.app with your business name and desired quantity — topped up within 24 hours.',
+    'ja': 'アプリ内決済は準備中で、現在は管理者承認で支給されます。\nsupport@lettergo.app へ事業者名と希望通数を送ってください。24時間以内にチャージします。',
+    'zh': '应用内购买正在准备中，目前通过管理员审批发放。\n请发送企业名称和所需数量至 support@lettergo.app，24 小时内充值。',
+    'fr': 'L\'achat intégré arrive bientôt. En attendant, les crédits sont octroyés par un admin.\nEnvoyez support@lettergo.app votre nom d\'entreprise et quantité — rechargé sous 24h.',
+    'de': 'In-App-Kauf kommt bald. Bis dahin werden Guthaben von Admins vergeben.\nMail an support@lettergo.app mit Firmennamen und Menge — innerhalb 24h aufgeladen.',
+    'es': 'La compra dentro de la app llegará pronto. Por ahora, los admins asignan créditos.\nEnvíe a support@lettergo.app el nombre de su empresa y la cantidad — recarga en 24h.',
+    'pt': 'Compra na app em breve. Por agora, créditos são concedidos por admin.\nEmail support@lettergo.app com o nome da empresa e quantidade — em 24h.',
+    'ru': 'Встроенная покупка скоро. Пока кредиты выдаёт администратор.\nПишите на support@lettergo.app с названием бизнеса и количеством — начисление в 24ч.',
+    'tr': 'Uygulama içi satın alma yakında. Şimdilik admin kredi veriyor.\nsupport@lettergo.app adresine işletme adı ve miktarı yazın — 24 saat içinde yüklenir.',
+    'ar': 'الشراء داخل التطبيق قريبًا. حاليًا يمنح المسؤول الأرصدة.\nراسل support@lettergo.app باسم النشاط والعدد — شحن خلال 24 ساعة.',
+    'it': 'Acquisto in-app in arrivo. Per ora i crediti sono concessi dall\'admin.\nScrivi a support@lettergo.app con nome azienda e quantità — caricato entro 24h.',
+    'hi': 'इन-ऐप खरीदारी जल्द आ रही है। अभी क्रेडिट एडमिन द्वारा दिए जाते हैं।\nsupport@lettergo.app पर व्यवसाय नाम और मात्रा भेजें — 24 घंटे में लोड।',
+    'th': 'ซื้อในแอปกำลังมา ตอนนี้แอดมินเป็นผู้อนุมัติ\nส่งชื่อธุรกิจและจำนวนที่ต้องการไปยัง support@lettergo.app — เติมภายใน 24 ชม.',
+  });
+
+  // 카테고리별 redemption 필드 설명 + 힌트 (할인권 코드 vs 교환권 이미지).
+  String get composeBrandCouponDesc => _t({
+    'ko': '할인 코드를 입력하세요. 수신자가 결제·주문 시 이 코드를 입력하면 혜택 적용.',
+    'en': 'Enter the discount code. Receivers type this at checkout/order.',
+    'ja': '割引コードを入力。受取人が決済/注文時にこのコードを入力します。',
+    'zh': '输入折扣代码。收件人结账/下单时输入该代码。',
+    'fr': "Saisis le code. Les destinataires le tapent au paiement.",
+    'de': 'Gib den Rabatt-Code ein. Empfänger tippt ihn an der Kasse.',
+    'es': 'Introduce el código. El receptor lo escribe al pagar.',
+    'pt': 'Introduz o código. O destinatário digita-o no pagamento.',
+    'ru': 'Введите код. Получатель вводит его при оплате.',
+    'tr': 'İndirim kodunu gir. Alıcı ödemede yazar.',
+    'ar': 'أدخل رمز الخصم. يُدخله المستلم عند الدفع.',
+    'it': 'Inserisci il codice. Il destinatario lo digita al pagamento.',
+    'hi': 'छूट कोड दर्ज करें। पाने वाला चेकआउट पर टाइप करेगा।',
+    'th': 'ใส่รหัสส่วนลด ผู้รับพิมพ์ตอนชำระ',
+  });
+
+  String get composeBrandCouponHint => _t({
+    'ko': '예: LETTERGO20', 'en': 'e.g. LETTERGO20', 'ja': '例: LETTERGO20',
+    'zh': '例：LETTERGO20', 'fr': 'ex : LETTERGO20', 'de': 'z. B. LETTERGO20',
+    'es': 'ej: LETTERGO20', 'pt': 'ex: LETTERGO20',
+    'ru': 'напр. LETTERGO20', 'tr': 'örn: LETTERGO20',
+    'ar': 'مثال: LETTERGO20', 'it': 'es: LETTERGO20',
+    'hi': 'उदा. LETTERGO20', 'th': 'เช่น LETTERGO20',
+  });
+
+  String get composeBrandVoucherDesc => _t({
+    'ko': '교환권 이미지 URL(바코드·QR·도장). 받은 사람이 매장에서 화면에 띄워 사용. 부가 설명은 본문에.',
+    'en': 'Image URL for a physical voucher (barcode/QR/stamp). Receivers show it at the counter. Use the letter body for notes.',
+    'ja': '交換券画像の URL(バーコード/QR/スタンプ)。受取人が店舗で画面に表示。補足は本文に。',
+    'zh': '兑换券图片 URL（条形码/QR/图章）。收件人到店显示画面。补充说明写在正文中。',
+    'fr': "URL d'image pour bon physique (code-barre/QR/tampon). Destinataires la montrent en caisse.",
+    'de': 'Bild-URL für Gutschein (Barcode/QR/Stempel). Empfänger zeigt es an der Kasse.',
+    'es': 'URL de imagen del vale físico (código/QR/sello). El receptor la muestra en caja.',
+    'pt': 'URL da imagem do vale físico (código/QR/carimbo). O destinatário mostra no balcão.',
+    'ru': 'URL изображения ваучера (штрих-код/QR/штамп). Получатель покажет на кассе.',
+    'tr': 'Fiziksel kupon görseli URL (barkod/QR/damga). Alıcı kasada gösterir.',
+    'ar': 'رابط صورة القسيمة المادية (باركود/QR/ختم). يعرضها المستلم في المتجر.',
+    'it': "URL dell'immagine del buono (codice/QR/timbro). Il destinatario la mostra alla cassa.",
+    'hi': 'भौतिक वाउचर छवि URL (बारकोड/QR/स्टैंप)। पाने वाला काउंटर पर दिखाएगा।',
+    'th': 'URL รูปคูปองจริง (บาร์โค้ด/QR/ตรา) ผู้รับแสดงที่เคาน์เตอร์',
+  });
+
+  String get composeBrandVoucherHint => _t({
+    'ko': '예: https://... .png', 'en': 'e.g. https://... .png',
+    'ja': '例: https://... .png', 'zh': '例：https://... .png',
+    'fr': 'ex : https://... .png', 'de': 'z. B. https://... .png',
+    'es': 'ej: https://... .png', 'pt': 'ex: https://... .png',
+    'ru': 'напр. https://... .png', 'tr': 'örn: https://... .png',
+    'ar': 'مثال: https://... .png', 'it': 'es: https://... .png',
+    'hi': 'उदा. https://... .png', 'th': 'เช่น https://... .png',
+  });
+
+  // Build 130: 교환권 이미지 선택 버튼 라벨.
+  String get composeBrandVoucherImagePick => _t({
+    'ko': '📸 쿠폰 이미지 선택',
+    'en': '📸 Pick voucher image',
+    'ja': '📸 クーポン画像を選択',
+    'zh': '📸 选择优惠券图片',
+    'fr': '📸 Choisir l\'image',
+    'de': '📸 Bild auswählen',
+    'es': '📸 Elegir imagen',
+    'pt': '📸 Escolher imagem',
+    'ru': '📸 Выбрать изображение',
+    'tr': '📸 Görsel seç',
+    'ar': '📸 اختر صورة القسيمة',
+    'it': '📸 Scegli immagine',
+    'hi': '📸 वाउचर छवि चुनें',
+    'th': '📸 เลือกรูปคูปอง',
+  });
+
+  String get composeBrandVoucherImageChange => _t({
+    'ko': '📸 다른 이미지 선택',
+    'en': '📸 Change image',
+    'ja': '📸 別の画像を選択',
+    'zh': '📸 更换图片',
+    'fr': '📸 Changer d\'image',
+    'de': '📸 Bild ändern',
+    'es': '📸 Cambiar imagen',
+    'pt': '📸 Trocar imagem',
+    'ru': '📸 Заменить',
+    'tr': '📸 Görseli değiştir',
+    'ar': '📸 تغيير الصورة',
+    'it': '📸 Cambia immagine',
+    'hi': '📸 छवि बदलें',
+    'th': '📸 เปลี่ยนรูป',
+  });
+
+  // Build 132: 유효기간 UI.
+  String get composeBrandRedemptionValidityLabel => _t({
+    'ko': '유효기간',
+    'en': 'Validity',
+    'ja': '有効期限',
+    'zh': '有效期',
+    'fr': 'Validité',
+    'de': 'Gültigkeit',
+    'es': 'Validez',
+    'pt': 'Validade',
+    'ru': 'Срок действия',
+    'tr': 'Geçerlilik',
+    'ar': 'الصلاحية',
+    'it': 'Validità',
+    'hi': 'वैधता',
+    'th': 'ระยะเวลา',
+  });
+
+  String composeBrandRedemptionExpiresOn(String date) {
+    switch (languageCode) {
+      case 'ko': return '만료: $date';
+      case 'ja': return '期限: $date';
+      case 'zh': return '到期: $date';
+      case 'fr': return 'Expire le $date';
+      case 'de': return 'Läuft ab: $date';
+      case 'es': return 'Caduca el $date';
+      case 'pt': return 'Expira em $date';
+      case 'ru': return 'До $date';
+      case 'tr': return 'Son tarih: $date';
+      case 'ar': return 'ينتهي: $date';
+      case 'it': return 'Scade il $date';
+      case 'hi': return 'समाप्ति: $date';
+      case 'th': return 'หมดอายุ $date';
+      default: return 'Expires $date';
+    }
+  }
+
+  String get composeBrandRedemptionUnlimited => _t({
+    'ko': '만료 없음',
+    'en': 'No expiry',
+    'ja': '無期限',
+    'zh': '无到期日',
+    'fr': 'Sans expiration',
+    'de': 'Kein Ablauf',
+    'es': 'Sin caducidad',
+    'pt': 'Sem expiração',
+    'ru': 'Бессрочно',
+    'tr': 'Süresiz',
+    'ar': 'بدون انتهاء',
+    'it': 'Senza scadenza',
+    'hi': 'समाप्ति नहीं',
+    'th': 'ไม่มีวันหมดอายุ',
+  });
+
+  String get composeBrandRedemptionUnlimitedChip => _t({
+    'ko': '무제한',
+    'en': 'Unlimited',
+    'ja': '無期限',
+    'zh': '无限',
+    'fr': 'Illimité',
+    'de': 'Unbegrenzt',
+    'es': 'Ilimitado',
+    'pt': 'Ilimitado',
+    'ru': 'Бессрочно',
+    'tr': 'Sınırsız',
+    'ar': 'غير محدود',
+    'it': 'Illimitato',
+    'hi': 'असीमित',
+    'th': 'ไม่จำกัด',
+  });
+
+  String get composeBrandRedemptionOneYear => _t({
+    'ko': '1년',
+    'en': '1 year',
+    'ja': '1年',
+    'zh': '1年',
+    'fr': '1 an',
+    'de': '1 Jahr',
+    'es': '1 año',
+    'pt': '1 ano',
+    'ru': '1 год',
+    'tr': '1 yıl',
+    'ar': 'سنة',
+    'it': '1 anno',
+    'hi': '1 वर्ष',
+    'th': '1 ปี',
+  });
+
+  String composeBrandRedemptionDays(int days) {
+    switch (languageCode) {
+      case 'ko': return '${days}일';
+      case 'ja': return '$days日';
+      case 'zh': return '$days天';
+      case 'fr': return '$days jours';
+      case 'de': return '$days Tage';
+      case 'es': return '$days días';
+      case 'pt': return '$days dias';
+      case 'ru': return '$days дн.';
+      case 'tr': return '$days gün';
+      case 'ar': return '$days يوم';
+      case 'it': return '$days giorni';
+      case 'hi': return '$days दिन';
+      case 'th': return '$days วัน';
+      default: return '$days days';
+    }
+  }
+
+  // Brand 사업자 인증 UI.
+  String get brandVerificationTitle => _t({
+    'ko': '사업자 인증', 'en': 'Business verification', 'ja': '事業者認証',
+    'zh': '企业认证', 'fr': 'Vérification entreprise',
+    'de': 'Geschäftsverifizierung', 'es': 'Verificación empresarial',
+    'pt': 'Verificação empresarial', 'ru': 'Подтверждение бизнеса',
+    'tr': 'İşletme doğrulama', 'ar': 'التحقق من الأعمال',
+    'it': 'Verifica aziendale', 'hi': 'व्यवसाय सत्यापन',
+    'th': 'ยืนยันธุรกิจ',
+  });
+
+  String get brandVerificationSubtitle => _t({
+    'ko': '사업자 번호·등록증·담당자 연락처를 제출하면 인증 완료 후 프로필에 ✅ 마크가 붙어요.',
+    'en': 'Submit your business number, registration document, and contact phone to earn a ✅ badge.',
+    'ja': '事業者番号・登録証・担当者連絡先を提出すると、認証後プロフィールに ✅ マーク。',
+    'zh': '提交企业编号、注册证和联系电话，认证后资料上会显示 ✅。',
+    'fr': "Soumets le numéro, le document et le contact pour obtenir le badge ✅.",
+    'de': 'Reiche Nummer, Urkunde und Kontakt ein, um das ✅ zu erhalten.',
+    'es': 'Envía número, documento y contacto para conseguir la ✅.',
+    'pt': 'Envia número, documento e contacto para obter ✅.',
+    'ru': 'Отправьте номер, документ и контакт, чтобы получить ✅.',
+    'tr': 'Numara, belge ve iletişim gönder — ✅ kazan.',
+    'ar': 'أرسل الرقم والمستند والاتصال للحصول على ✅.',
+    'it': 'Invia numero, documento e contatto per la ✅.',
+    'hi': 'नंबर, दस्तावेज़ और संपर्क भेजें — ✅ बैज पाएँ।',
+    'th': 'ส่งเลขทะเบียน เอกสาร และเบอร์ติดต่อ เพื่อรับ ✅',
+  });
+
+  String get brandVerificationNumberLabel => _t({
+    'ko': '사업자 등록번호', 'en': 'Business registration number',
+    'ja': '事業者登録番号', 'zh': '企业注册号',
+    'fr': 'N° d\'enregistrement', 'de': 'Handelsregister-Nr.',
+    'es': 'Nº de registro', 'pt': 'N.º de registo',
+    'ru': 'Регистрационный номер', 'tr': 'Kayıt numarası',
+    'ar': 'رقم التسجيل', 'it': 'N° di registrazione',
+    'hi': 'पंजीकरण नंबर', 'th': 'หมายเลขทะเบียน',
+  });
+
+  String get brandVerificationDocLabel => _t({
+    'ko': '등록증 URL', 'en': 'Document URL', 'ja': '登録証 URL',
+    'zh': '证件 URL', 'fr': 'URL du document', 'de': 'Dokument-URL',
+    'es': 'URL del documento', 'pt': 'URL do documento',
+    'ru': 'URL документа', 'tr': 'Belge URL',
+    'ar': 'رابط المستند', 'it': 'URL del documento',
+    'hi': 'दस्तावेज़ URL', 'th': 'URL เอกสาร',
+  });
+
+  String get brandVerificationPhoneLabel => _t({
+    'ko': '담당자 전화번호', 'en': 'Contact phone', 'ja': '担当者電話番号',
+    'zh': '联系电话', 'fr': 'Téléphone du contact', 'de': 'Kontakttelefon',
+    'es': 'Teléfono de contacto', 'pt': 'Telefone de contacto',
+    'ru': 'Контактный телефон', 'tr': 'İletişim telefonu',
+    'ar': 'هاتف الاتصال', 'it': 'Telefono di contatto',
+    'hi': 'संपर्क फ़ोन', 'th': 'เบอร์ติดต่อ',
+  });
+
+  String get brandVerificationSubmitCta => _t({
+    'ko': '인증 요청 보내기', 'en': 'Submit verification',
+    'ja': '認証を申請', 'zh': '提交认证',
+    'fr': 'Envoyer la demande', 'de': 'Verifizierung anfordern',
+    'es': 'Enviar verificación', 'pt': 'Enviar verificação',
+    'ru': 'Отправить запрос', 'tr': 'Doğrulama gönder',
+    'ar': 'إرسال طلب التحقق', 'it': 'Invia verifica',
+    'hi': 'सत्यापन भेजें', 'th': 'ส่งคำขอยืนยัน',
+  });
+
+  String get brandVerificationStatusPending => _t({
+    'ko': '검토 대기 중', 'en': 'Under review', 'ja': '審査中',
+    'zh': '审核中', 'fr': 'En cours de vérification',
+    'de': 'In Prüfung', 'es': 'En revisión', 'pt': 'Em revisão',
+    'ru': 'На проверке', 'tr': 'İnceleniyor',
+    'ar': 'قيد المراجعة', 'it': 'In revisione',
+    'hi': 'समीक्षाधीन', 'th': 'กำลังตรวจสอบ',
+  });
+
+  String get brandVerificationStatusApproved => _t({
+    'ko': '✅ 인증 완료', 'en': '✅ Verified', 'ja': '✅ 認証済み',
+    'zh': '✅ 已认证', 'fr': '✅ Vérifié', 'de': '✅ Verifiziert',
+    'es': '✅ Verificado', 'pt': '✅ Verificado', 'ru': '✅ Подтверждено',
+    'tr': '✅ Doğrulandı', 'ar': '✅ مُوثَّق', 'it': '✅ Verificato',
+    'hi': '✅ सत्यापित', 'th': '✅ ยืนยันแล้ว',
+  });
+
+  String get brandVerificationSubmittedToast => _t({
+    'ko': '인증 요청이 접수됐어요. 관리자 검토 후 완료됩니다.',
+    'en': 'Verification request received. Admin will review soon.',
+    'ja': '認証申請を受け付けました。管理者の審査後、完了します。',
+    'zh': '已收到认证请求，管理员审核后生效。',
+    'fr': 'Demande reçue. L\'admin l\'examinera bientôt.',
+    'de': 'Antrag eingegangen. Prüfung folgt.',
+    'es': 'Solicitud recibida. El admin la revisará.',
+    'pt': 'Pedido recebido. O admin vai rever.',
+    'ru': 'Запрос получен. Админ проверит.',
+    'tr': 'Başvuru alındı. Yönetici inceleyecek.',
+    'ar': 'تم استلام الطلب. سيراجعه المدير.',
+    'it': 'Richiesta ricevuta. L\'admin la esaminerà.',
+    'hi': 'अनुरोध प्राप्त। व्यवस्थापक समीक्षा करेंगे।',
+    'th': 'รับคำขอแล้ว ผู้ดูแลจะตรวจสอบ',
+  });
+
+  // Build 125 — 레터 꾸미기 (동행·장식) 슬롯 타이틀.
+  String get letterCompanionsTitle => _t({
+    'ko': '동행', 'en': 'Companions', 'ja': '仲間',
+    'zh': '伙伴', 'fr': 'Compagnons', 'de': 'Gefährten',
+    'es': 'Compañeros', 'pt': 'Companheiros', 'ru': 'Спутники',
+    'tr': 'Yoldaşlar', 'ar': 'الرفاق', 'it': 'Compagni',
+    'hi': 'साथी', 'th': 'เพื่อนร่วมทาง',
+  });
+
+  String get letterAccessoriesTitle => _t({
+    'ko': '장식', 'en': 'Accessories', 'ja': 'アクセサリー',
+    'zh': '装饰', 'fr': 'Accessoires', 'de': 'Accessoires',
+    'es': 'Accesorios', 'pt': 'Acessórios', 'ru': 'Аксессуары',
+    'tr': 'Aksesuarlar', 'ar': 'الإكسسوارات', 'it': 'Accessori',
+    'hi': 'सहायक वस्तुएँ', 'th': 'เครื่องประดับ',
+  });
+
+  String hunterItemLockedHint(int level) => _t({
+    'ko': 'Lv $level 에 해금',
+    'en': 'Unlocks at Lv $level',
+    'ja': 'Lv $level で解放',
+    'zh': 'Lv $level 解锁',
+    'fr': 'Débloque au Lv $level',
+    'de': 'Freigeschaltet ab Lv $level',
+    'es': 'Se desbloquea en Lv $level',
+    'pt': 'Desbloqueia no Lv $level',
+    'ru': 'Откроется на Lv $level',
+    'tr': 'Lv $level ile açılır',
+    'ar': 'يُفتح في Lv $level',
+    'it': 'Sbloccato al Lv $level',
+    'hi': 'Lv $level पर खुलता है',
+    'th': 'ปลดล็อคที่ Lv $level',
+  });
+
+  // Build 116 — 헌트 지갑 확장: 팔로우 카운트 + 주간 퀘스트.
+  String huntWalletFollowing(int n) => _t({
+    'ko': '❤️ $n개 브랜드 팔로우 중',
+    'en': '❤️ Following $n brand${n == 1 ? '' : 's'}',
+    'ja': '❤️ $nブランドをフォロー中',
+    'zh': '❤️ 关注中 $n 个品牌',
+    'fr': '❤️ $n marque${n == 1 ? '' : 's'} suivie${n == 1 ? '' : 's'}',
+    'de': '❤️ $n Marke${n == 1 ? '' : 'n'} gefolgt',
+    'es': '❤️ Siguiendo $n marca${n == 1 ? '' : 's'}',
+    'pt': '❤️ A seguir $n marca${n == 1 ? '' : 's'}',
+    'ru': '❤️ Подписок: $n',
+    'tr': '❤️ $n marka takip',
+    'ar': '❤️ متابعة $n علامة',
+    'it': '❤️ $n brand seguiti',
+    'hi': '❤️ $n ब्रांड फ़ॉलो',
+    'th': '❤️ ติดตาม $n แบรนด์',
+  });
+
+  String huntWalletWeeklyGoal(int current, int goal) => _t({
+    'ko': '이번 주 목표 · $current / $goal통',
+    'en': 'Weekly goal · $current / $goal',
+    'ja': '今週の目標 · $current / $goal通',
+    'zh': '本周目标 · $current / $goal 封',
+    'fr': 'Objectif · $current / $goal',
+    'de': 'Wochenziel · $current / $goal',
+    'es': 'Meta semanal · $current / $goal',
+    'pt': 'Meta semanal · $current / $goal',
+    'ru': 'Цель недели · $current / $goal',
+    'tr': 'Haftalık · $current / $goal',
+    'ar': 'هدف الأسبوع · $current / $goal',
+    'it': 'Settimana · $current / $goal',
+    'hi': 'साप्ताहिक · $current / $goal',
+    'th': 'เป้ารายสัปดาห์ · $current / $goal',
+  });
+
+  String get huntWalletWeeklyGoalDone => _t({
+    'ko': '🎉 이번 주 목표 달성!',
+    'en': '🎉 Weekly goal complete!',
+    'ja': '🎉 今週の目標達成！',
+    'zh': '🎉 本周目标达成！',
+    'fr': '🎉 Objectif hebdomadaire atteint !',
+    'de': '🎉 Wochenziel erreicht!',
+    'es': '🎉 ¡Meta semanal cumplida!',
+    'pt': '🎉 Meta semanal cumprida!',
+    'ru': '🎉 Цель недели выполнена!',
+    'tr': '🎉 Haftalık hedef tamam!',
+    'ar': '🎉 هدف الأسبوع مكتمل!',
+    'it': '🎉 Obiettivo settimanale!',
+    'hi': '🎉 साप्ताहिक लक्ष्य पूरा!',
+    'th': '🎉 ครบเป้าสัปดาห์!',
+  });
+
+  String get huntWalletEmpty => _t({
+    'ko': '아직 주운 편지가 없어요. 지도에서 찾아보세요!',
+    'en': 'No letters picked up yet. Open the map and hunt!',
+    'ja': 'まだ拾った手紙はありません。地図で探しましょう！',
+    'zh': '还没有拾起信件。打开地图找找看！',
+    'fr': "Aucune lettre ramassée. Ouvre la carte et chasse !",
+    'de': 'Noch keine Briefe. Öffne die Karte und jag!',
+    'es': '¡Aún no has recogido cartas. Abre el mapa y caza!',
+    'pt': 'Ainda sem cartas. Abre o mapa e caça!',
+    'ru': 'Ещё ничего не собрано. Откройте карту и начните охоту!',
+    'tr': 'Henüz mektup yok. Haritayı aç ve avlan!',
+    'ar': 'لم تلتقط أي رسالة بعد. افتح الخريطة وابدأ الصيد!',
+    'it': 'Nessuna lettera ancora. Apri la mappa e caccia!',
+    'hi': 'अभी कुछ नहीं. नक्शा खोलो और शिकार करो!',
+    'th': 'ยังไม่มีจดหมาย เปิดแผนที่แล้วไปล่าเลย!',
+  });
+
+  // 2) 인박스 "만료 사이렌" 스트립
+  String expirySirenTitle(int n) => _t({
+    'ko': '⏰ $n장의 혜택이 24시간 안에 만료돼요',
+    'en': '⏰ $n benefit${n == 1 ? '' : 's'} expire in 24h',
+    'ja': '⏰ $n枚の特典が24時間以内に期限切れ',
+    'zh': '⏰ $n 张优惠将在 24 小时内过期',
+    'fr': "⏰ $n avantage${n == 1 ? '' : 's'} expire${n == 1 ? '' : 'nt'} dans 24h",
+    'de': '⏰ $n Vorteil${n == 1 ? '' : 'e'} läuft in 24h ab',
+    'es': '⏰ $n beneficio${n == 1 ? '' : 's'} expira${n == 1 ? '' : 'n'} en 24h',
+    'pt': '⏰ $n benefício${n == 1 ? '' : 's'} expira${n == 1 ? '' : 'm'} em 24h',
+    'ru': '⏰ $n выгод${n == 1 ? 'а' : ''} истекает за 24 ч',
+    'tr': '⏰ $n fayda 24 saat içinde sona eriyor',
+    'ar': '⏰ $n مزايا تنتهي خلال 24 ساعة',
+    'it': '⏰ $n vantagg${n == 1 ? 'io' : 'i'} scade${n == 1 ? '' : 'no'} in 24h',
+    'hi': '⏰ $n लाभ 24 घंटे में समाप्त',
+    'th': '⏰ สิทธิประโยชน์ $n รายการจะหมดใน 24 ชม.',
+  });
+  String get expirySirenCta => _t({
+    'ko': '지금 사용 →', 'en': 'Use now →', 'ja': '今すぐ使う →',
+    'zh': '立即使用 →', 'fr': 'Utiliser maintenant →', 'de': 'Jetzt nutzen →',
+    'es': 'Usar ahora →', 'pt': 'Usar já →', 'ru': 'Использовать →',
+    'tr': 'Şimdi kullan →', 'ar': 'استخدم الآن →', 'it': 'Usa ora →',
+    'hi': 'अभी उपयोग करें →', 'th': 'ใช้เลย →',
+  });
+
+  // 3) 인박스 빈 상태 근처 편지 카운터 (부제)
+  String inboxEmptyNearbyCount(int n) => _t({
+    'ko': '지금 근처에 $n통의 편지가 있어요',
+    'en': '$n letter${n == 1 ? '' : 's'} nearby right now',
+    'ja': '今、近くに$n通の手紙があります',
+    'zh': '附近有 $n 封信件',
+    'fr': '$n lettre${n == 1 ? '' : 's'} à proximité',
+    'de': '$n Brief${n == 1 ? '' : 'e'} in der Nähe',
+    'es': '$n carta${n == 1 ? '' : 's'} cerca',
+    'pt': '$n carta${n == 1 ? '' : 's'} por perto',
+    'ru': 'Рядом $n письм${n == 1 ? 'о' : 'а'}',
+    'tr': 'Yakınlarda $n mektup',
+    'ar': 'يوجد $n رسائل قربك الآن',
+    'it': '$n lettera${n == 1 ? '' : 'e'} vicino',
+    'hi': 'पास में $n पत्र हैं',
+    'th': 'ใกล้คุณมีจดหมาย $n ฉบับ',
+  });
+
+  // 4) 편지 읽기 화면 브랜드 팔로우 토글
+  String get letterReadFollowBrand => _t({
+    'ko': '브랜드 팔로우', 'en': 'Follow brand', 'ja': 'ブランドをフォロー',
+    'zh': '关注品牌', 'fr': 'Suivre la marque', 'de': 'Marke folgen',
+    'es': 'Seguir marca', 'pt': 'Seguir marca', 'ru': 'Подписаться',
+    'tr': 'Markayı takip et', 'ar': 'متابعة العلامة', 'it': 'Segui brand',
+    'hi': 'ब्रांड फ़ॉलो करें', 'th': 'ติดตามแบรนด์',
+  });
+  String get letterReadUnfollowBrand => _t({
+    'ko': '팔로우 해제', 'en': 'Unfollow', 'ja': 'フォロー解除',
+    'zh': '取消关注', 'fr': 'Ne plus suivre', 'de': 'Nicht mehr folgen',
+    'es': 'Dejar de seguir', 'pt': 'Deixar de seguir', 'ru': 'Отписаться',
+    'tr': 'Takipten çık', 'ar': 'إلغاء المتابعة', 'it': 'Smetti di seguire',
+    'hi': 'अनफ़ॉलो', 'th': 'เลิกติดตาม',
+  });
+  String get letterReadFollowedToast => _t({
+    'ko': '이 브랜드를 팔로우했어요',
+    'en': 'Following this brand',
+    'ja': 'このブランドをフォローしました',
+    'zh': '已关注此品牌',
+    'fr': 'Marque suivie',
+    'de': 'Marke gefolgt',
+    'es': 'Siguiendo esta marca',
+    'pt': 'A seguir esta marca',
+    'ru': 'Подписка оформлена',
+    'tr': 'Bu marka takipte',
+    'ar': 'متابعة العلامة',
+    'it': 'Stai seguendo questo brand',
+    'hi': 'ब्रांड फ़ॉलो किया',
+    'th': 'กำลังติดตามแบรนด์นี้',
+  });
+
+  // 5) 첫 픽업 축하 모달
+  String get firstPickupCelebrationTitle => _t({
+    'ko': '🎉 첫 편지를 주웠어요!',
+    'en': '🎉 First letter picked up!',
+    'ja': '🎉 最初の手紙を拾いました！',
+    'zh': '🎉 拾起你的第一封信！',
+    'fr': '🎉 Première lettre ramassée !',
+    'de': '🎉 Ersten Brief aufgehoben!',
+    'es': '🎉 ¡Primera carta recogida!',
+    'pt': '🎉 Primeira carta apanhada!',
+    'ru': '🎉 Первое письмо поднято!',
+    'tr': '🎉 İlk mektubunu topladın!',
+    'ar': '🎉 التقطت أول رسالة!',
+    'it': '🎉 Prima lettera raccolta!',
+    'hi': '🎉 पहला पत्र उठाया!',
+    'th': '🎉 เก็บจดหมายแรกแล้ว!',
+  });
+  String get firstPickupCelebrationBody => _t({
+    'ko': '이 동네에 흘린 혜택 편지를 계속 찾아보세요. 레벨이 오를수록 줍는 반경이 넓어져요.',
+    'en': 'Keep exploring — letters are dropped all around you. Every level you gain widens your pickup radius.',
+    'ja': 'この街に散らばる手紙を探し続けましょう。レベルが上がるほど拾える範囲が広がります。',
+    'zh': '继续探索——信件遍布你的周围。等级提升会扩大拾取范围。',
+    'fr': "Continue d'explorer — des lettres tombent autour de toi. Chaque niveau élargit ton rayon.",
+    'de': 'Erkunde weiter — überall in deiner Nähe fallen Briefe. Jedes Level vergrößert deinen Radius.',
+    'es': 'Sigue explorando: hay cartas por todas partes. Cada nivel amplía tu radio.',
+    'pt': 'Continua a explorar — caem cartas à tua volta. Cada nível amplia o teu raio.',
+    'ru': 'Продолжайте исследовать — письма падают вокруг вас. Каждый уровень расширяет радиус.',
+    'tr': 'Keşfetmeye devam et — etrafına mektuplar düşüyor. Her seviyede yarıçap artıyor.',
+    'ar': 'واصل الاستكشاف — الرسائل تتساقط حولك. كل مستوى يوسّع نطاقك.',
+    'it': 'Continua a esplorare — le lettere cadono ovunque. Ogni livello allarga il tuo raggio.',
+    'hi': 'खोजते रहो — तुम्हारे आसपास पत्र गिर रहे हैं। हर स्तर तुम्हारी रेंज बढ़ाता है।',
+    'th': 'สำรวจต่อไป — จดหมายตกอยู่รอบตัวคุณ ระดับยิ่งสูง รัศมียิ่งกว้าง',
+  });
+  String get firstPickupCelebrationCta => _t({
+    'ko': '계속 찾아보기',
+    'en': 'Keep hunting',
+    'ja': '続けて探す',
+    'zh': '继续寻找',
+    'fr': 'Continuer',
+    'de': 'Weiter suchen',
+    'es': 'Seguir cazando',
+    'pt': 'Continuar à caça',
+    'ru': 'Продолжить охоту',
+    'tr': 'Aramaya devam',
+    'ar': 'واصل الصيد',
+    'it': 'Continua',
+    'hi': 'शिकार जारी रखें',
+    'th': 'ล่าต่อ',
+  });
+
+  // Build 113: 쿠폰/교환권 발송 시 본문 최소 20자 규칙 완화 — 브랜드가 짧은
+  // 프로모 헤드라인 (예: "20% off this weekend!") 으로도 바로 보낼 수 있게.
+  // 카테고리 패널 사용 방법 필드 아래 안내 라인에 표시.
+  String get composeBrandPromoBodyHint => _t({
+    'ko': '쿠폰·교환권은 본문을 짧게 써도 바로 보낼 수 있어요',
+    'en': 'Promo letters can be sent with just a short headline',
+    'ja': '割引・プロモは短いタイトルだけでも送れます',
+    'zh': '优惠信件只需简短标题即可发送',
+    'fr': 'Les lettres promo peuvent partir avec un simple titre court',
+    'de': 'Promo-Briefe gehen auch mit einer kurzen Überschrift raus',
+    'es': 'Las cartas promo pueden enviarse con solo un título corto',
+    'pt': 'Cartas promo podem ser enviadas só com um título curto',
+    'ru': 'Промо-письма можно отправить с коротким заголовком',
+    'tr': 'Promosyon mektupları kısa bir başlıkla da gönderilebilir',
+    'ar': 'يمكن إرسال رسائل العروض بعنوان قصير فقط',
+    'it': 'Le lettere promo possono partire con una breve intestazione',
+    'hi': 'प्रोमो पत्र केवल एक छोटे शीर्षक से भेजे जा सकते हैं',
+    'th': 'จดหมายโปรโมสามารถส่งด้วยหัวข้อสั้น ๆ ก็ได้',
+  });
+
+  // 브랜드 뮤트 — 수신자가 "이 브랜드 편지 받지 않기" 선택 시.
+  String get letterReadMuteBrand => _t({
+    'ko': '이 브랜드 편지 받지 않기',
+    'en': 'Stop receiving letters from this brand',
+    'ja': 'このブランドの手紙を受信しない',
+    'zh': '不再接收此品牌的信件',
+    'fr': 'Ne plus recevoir cette marque',
+    'de': 'Keine Briefe dieser Marke mehr erhalten',
+    'es': 'Dejar de recibir de esta marca',
+    'pt': 'Parar de receber desta marca',
+    'ru': 'Не получать от этого бренда',
+    'tr': 'Bu markadan mektup alma',
+    'ar': 'إيقاف استلام رسائل هذه العلامة',
+    'it': 'Non ricevere più da questo brand',
+    'hi': 'इस ब्रांड से पत्र न लें',
+    'th': 'ไม่รับจดหมายจากแบรนด์นี้',
+  });
+
+  String get letterReadUnmuteBrand => _t({
+    'ko': '이 브랜드 편지 다시 받기',
+    'en': 'Resume receiving from this brand',
+    'ja': 'このブランドの手紙を再開',
+    'zh': '恢复接收此品牌信件',
+    'fr': 'Réactiver les lettres de cette marque',
+    'de': 'Briefe dieser Marke wieder empfangen',
+    'es': 'Volver a recibir de esta marca',
+    'pt': 'Voltar a receber desta marca',
+    'ru': 'Снова получать от бренда',
+    'tr': 'Bu markadan tekrar al',
+    'ar': 'استئناف الاستلام من العلامة',
+    'it': 'Riattiva questo brand',
+    'hi': 'ब्रांड को पुनः चालू करें',
+    'th': 'รับจดหมายจากแบรนด์นี้อีก',
+  });
+
+  String get letterReadMutedToast => _t({
+    'ko': '이 브랜드의 새 편지가 수집첩에 더 이상 쌓이지 않아요',
+    'en': 'New letters from this brand won\'t appear in your collection',
+    'ja': 'このブランドの新しい手紙は受信されません',
+    'zh': '此品牌的新信件将不再进入收件箱',
+    'fr': 'Les nouvelles lettres de cette marque n\'apparaîtront plus',
+    'de': 'Neue Briefe dieser Marke erscheinen nicht mehr',
+    'es': 'No aparecerán nuevas cartas de esta marca',
+    'pt': 'Novas cartas desta marca não aparecerão',
+    'ru': 'Новые письма этого бренда не будут приходить',
+    'tr': 'Bu markanın yeni mektupları gelmeyecek',
+    'ar': 'لن تصل رسائل جديدة من هذه العلامة',
+    'it': 'Le nuove lettere da questo brand non compariranno',
+    'hi': 'इस ब्रांड के नए पत्र अब संग्रह में नहीं दिखेंगे',
+    'th': 'จดหมายใหม่จากแบรนด์นี้จะไม่เข้ากล่อง',
+  });
+
+  // 🎫 쿠폰 사용 완료 관련 — Build 108 추가
+  String get letterReadRedemptionMarkUsed => _t({
+    'ko': '🎫 사용 완료 표시',
+    'en': '🎫 Mark as used',
+    'ja': '🎫 使用済みにする',
+    'zh': '🎫 标记为已使用',
+    'fr': '🎫 Marquer comme utilisé',
+    'de': '🎫 Als verwendet markieren',
+    'es': '🎫 Marcar como usado',
+    'pt': '🎫 Marcar como usado',
+    'ru': '🎫 Отметить использованным',
+    'tr': '🎫 Kullanıldı olarak işaretle',
+    'ar': '🎫 وضع علامة مستخدم',
+    'it': '🎫 Segna come usato',
+    'hi': '🎫 उपयोग किया गया चिह्न',
+    'th': '🎫 ทำเครื่องหมายว่าใช้แล้ว',
+  });
+
+  String get letterReadRedemptionUsedHeader => _t({
+    'ko': '사용 완료된 혜택',
+    'en': 'Already redeemed',
+    'ja': '使用済みの特典',
+    'zh': '已使用的优惠',
+    'fr': 'Déjà utilisé',
+    'de': 'Bereits eingelöst',
+    'es': 'Ya canjeado',
+    'pt': 'Já utilizado',
+    'ru': 'Уже использовано',
+    'tr': 'Kullanıldı',
+    'ar': 'تم استخدامه',
+    'it': 'Già usato',
+    'hi': 'उपयोग किया गया',
+    'th': 'ใช้แล้ว',
+  });
+
+  String get letterReadRedemptionUsedBadge => _t({
+    'ko': '사용됨',
+    'en': 'Used',
+    'ja': '使用済み',
+    'zh': '已使用',
+    'fr': 'Utilisé',
+    'de': 'Verwendet',
+    'es': 'Usado',
+    'pt': 'Usado',
+    'ru': 'Использовано',
+    'tr': 'Kullanıldı',
+    'ar': 'مستخدم',
+    'it': 'Usato',
+    'hi': 'उपयोग',
+    'th': 'ใช้แล้ว',
+  });
+
+  String get letterReadRedemptionMarkedToast => _t({
+    'ko': '사용 완료로 표시했어요',
+    'en': 'Marked as used',
+    'ja': '使用済みにしました',
+    'zh': '已标记为使用',
+    'fr': 'Marqué comme utilisé',
+    'de': 'Als verwendet markiert',
+    'es': 'Marcado como usado',
+    'pt': 'Marcado como utilizado',
+    'ru': 'Отмечено как использованное',
+    'tr': 'Kullanıldı olarak işaretlendi',
+    'ar': 'تم الوضع كمستخدم',
+    'it': 'Contrassegnato come usato',
+    'hi': 'उपयोग किया गया चिह्नित',
+    'th': 'ทำเครื่องหมายแล้ว',
+  });
+
+  // 수신자 측 편지 읽기 화면 쿠폰 박스
+  String get letterReadRedemptionHeader => _t({
+    'ko': '🎁 사용 방법',
+    'en': '🎁 How to redeem',
+    'ja': '🎁 使い方',
+    'zh': '🎁 使用方法',
+    'fr': '🎁 Mode d\'emploi',
+    'de': '🎁 Einlösen',
+    'es': '🎁 Cómo usar',
+    'pt': '🎁 Como resgatar',
+    'ru': '🎁 Как использовать',
+    'tr': '🎁 Nasıl kullanılır',
+    'ar': '🎁 طريقة الاستخدام',
+    'it': '🎁 Come usare',
+    'hi': '🎁 उपयोग विधि',
+    'th': '🎁 วิธีใช้',
+  });
+
+  // Build 131: 교환권 이미지 아래 안내.
+  String get letterReadVoucherShowAtCounter => _t({
+    'ko': '매장 카운터에서 이 이미지를 보여주세요.',
+    'en': 'Show this image at the counter.',
+    'ja': 'カウンターでこの画像を見せてください。',
+    'zh': '在柜台出示此图片。',
+    'fr': 'Montrez cette image au comptoir.',
+    'de': 'Dieses Bild an der Kasse vorzeigen.',
+    'es': 'Muestra esta imagen en el mostrador.',
+    'pt': 'Mostre esta imagem no balcão.',
+    'ru': 'Покажите изображение на кассе.',
+    'tr': 'Görseli tezgâhta gösterin.',
+    'ar': 'أظهر هذه الصورة عند الكاونتر.',
+    'it': 'Mostra l\'immagine alla cassa.',
+    'hi': 'यह छवि काउंटर पर दिखाएँ।',
+    'th': 'แสดงรูปนี้ที่เคาน์เตอร์',
+  });
+
+  // Build 131: 할인권 복사 버튼 + 복사 완료 토스트.
+  String get letterReadCouponCopyBtn => _t({
+    'ko': '복사',
+    'en': 'Copy',
+    'ja': 'コピー',
+    'zh': '复制',
+    'fr': 'Copier',
+    'de': 'Kopieren',
+    'es': 'Copiar',
+    'pt': 'Copiar',
+    'ru': 'Копировать',
+    'tr': 'Kopyala',
+    'ar': 'نسخ',
+    'it': 'Copia',
+    'hi': 'कॉपी',
+    'th': 'คัดลอก',
+  });
+
+  String get letterReadCouponCopied => _t({
+    'ko': '📋 할인 코드가 복사됐어요',
+    'en': '📋 Coupon code copied',
+    'ja': '📋 クーポンコードをコピーしました',
+    'zh': '📋 优惠码已复制',
+    'fr': '📋 Code copié',
+    'de': '📋 Code kopiert',
+    'es': '📋 Código copiado',
+    'pt': '📋 Código copiado',
+    'ru': '📋 Код скопирован',
+    'tr': '📋 Kod kopyalandı',
+    'ar': '📋 تم نسخ الكود',
+    'it': '📋 Codice copiato',
+    'hi': '📋 कूपन कोड कॉपी हुआ',
+    'th': '📋 คัดลอกรหัสแล้ว',
+  });
+
+  // Build 133: 쿠폰/교환권 유효기간 · 만료 상태.
+  String get letterReadRedemptionExpiredHeader => _t({
+    'ko': '⏰ 유효기간 만료',
+    'en': '⏰ Redemption expired',
+    'ja': '⏰ 有効期限切れ',
+    'zh': '⏰ 已过有效期',
+    'fr': '⏰ Utilisation expirée',
+    'de': '⏰ Abgelaufen',
+    'es': '⏰ Canjeo caducado',
+    'pt': '⏰ Resgate expirado',
+    'ru': '⏰ Срок истёк',
+    'tr': '⏰ Süresi doldu',
+    'ar': '⏰ انتهت الصلاحية',
+    'it': '⏰ Riscatto scaduto',
+    'hi': '⏰ अवधि समाप्त',
+    'th': '⏰ หมดอายุแล้ว',
+  });
+
+  String get letterReadRedemptionExpiredBadge => _t({
+    'ko': '만료됨',
+    'en': 'Expired',
+    'ja': '期限切れ',
+    'zh': '已过期',
+    'fr': 'Expiré',
+    'de': 'Abgelaufen',
+    'es': 'Caducado',
+    'pt': 'Expirado',
+    'ru': 'Истёк',
+    'tr': 'Süresi doldu',
+    'ar': 'منتهي',
+    'it': 'Scaduto',
+    'hi': 'समाप्त',
+    'th': 'หมดอายุ',
+  });
+
+  String letterReadRedemptionExpiresOn(String date) {
+    switch (languageCode) {
+      case 'ko': return '$date까지';
+      case 'ja': return '$dateまで';
+      case 'zh': return '有效期至 $date';
+      case 'fr': return "jusqu'au $date";
+      case 'de': return 'bis $date';
+      case 'es': return 'hasta el $date';
+      case 'pt': return 'até $date';
+      case 'ru': return 'до $date';
+      case 'tr': return '$date tarihine kadar';
+      case 'ar': return 'حتى $date';
+      case 'it': return 'fino al $date';
+      case 'hi': return '$date तक';
+      case 'th': return 'ถึง $date';
+      default: return 'until $date';
+    }
+  }
+
+  String letterReadRedemptionDaysLeft(int days) {
+    switch (languageCode) {
+      case 'ko': return '$days일 남음';
+      case 'ja': return '残り$days日';
+      case 'zh': return '还剩$days天';
+      case 'fr': return '$days j. restants';
+      case 'de': return 'noch $days Tage';
+      case 'es': return '$days días rest.';
+      case 'pt': return '$days dias rest.';
+      case 'ru': return 'осталось $days дн.';
+      case 'tr': return '$days gün kaldı';
+      case 'ar': return 'متبقي $days يوم';
+      case 'it': return '$days gg rimasti';
+      case 'hi': return '$days दिन बाकी';
+      case 'th': return 'เหลือ $days วัน';
+      default: return '$days days left';
+    }
+  }
+
+  // Build 137: 무료 유저가 "보내기" 탭 탭했을 때 뜨는 Premium 안내 시트 문구.
+  // Free = 줍기 전용, Premium = 홍보 편지 발송의 가치 제안.
+  // Build 142: 지도 상단 브랜드 홍보 배너 광고.
+  String get brandPromoBannerAdLabel => _t({
+    'ko': '· 홍보',
+    'en': '· Ad',
+    'ja': '· 広告',
+    'zh': '· 广告',
+    'fr': '· Pub',
+    'de': '· Anzeige',
+    'es': '· Ad',
+    'pt': '· Anúncio',
+    'ru': '· Реклама',
+    'tr': '· Reklam',
+    'ar': '· إعلان',
+    'it': '· Annuncio',
+    'hi': '· विज्ञापन',
+    'th': '· โฆษณา',
+  });
+
+  String get brandPromoBannerCTA => _t({
+    'ko': '자세히',
+    'en': 'View',
+    'ja': '詳細',
+    'zh': '查看',
+    'fr': 'Voir',
+    'de': 'Ansehen',
+    'es': 'Ver',
+    'pt': 'Ver',
+    'ru': 'Подробнее',
+    'tr': 'Detay',
+    'ar': 'عرض',
+    'it': 'Vedi',
+    'hi': 'देखें',
+    'th': 'ดู',
+  });
+
+  // Build 141: 지도 상단 ⓘ 도움말 시트 콘텐츠.
+  String get mapHelpTitle => _t({
+    'ko': 'Letter Go 사용 안내',
+    'en': 'How to use Letter Go',
+    'ja': 'Letter Go の使い方',
+    'zh': 'Letter Go 使用指南',
+    'fr': 'Comment utiliser Letter Go',
+    'de': 'Letter Go verwenden',
+    'es': 'Cómo usar Letter Go',
+    'pt': 'Como usar Letter Go',
+    'ru': 'Как пользоваться Letter Go',
+    'tr': 'Letter Go nasıl kullanılır',
+    'ar': 'كيفية استخدام Letter Go',
+    'it': 'Come usare Letter Go',
+    'hi': 'Letter Go का उपयोग',
+    'th': 'วิธีใช้ Letter Go',
+  });
+
+  String get mapHelpTierSection => _t({
+    'ko': '회원 등급',
+    'en': 'Membership tiers',
+    'ja': '会員等級',
+    'zh': '会员等级',
+    'fr': 'Niveaux d\'adhésion',
+    'de': 'Mitgliedsstufen',
+    'es': 'Niveles',
+    'pt': 'Níveis',
+    'ru': 'Уровни членства',
+    'tr': 'Üyelik seviyeleri',
+    'ar': 'مستويات العضوية',
+    'it': 'Livelli',
+    'hi': 'सदस्यता स्तर',
+    'th': 'ระดับสมาชิก',
+  });
+
+  // Build 183: 일반 회원(Free/Premium) 등급 설명을 "레터" 트랙 서사로 통일.
+  // 이전엔 "pickup only", "photo/link letters" 같은 기능 나열이었으나 유저는
+  // Letter 캐릭터가 성장하는 내러티브를 기대. Brand 만 광고주 기능 구분 유지.
+  String get mapHelpTierFreeTitle => _t({
+    'ko': 'Free — 🎟 레터 줍기',
+    'en': 'Free — 🎟 Pick up Letters',
+    'ja': 'Free — 🎟 Letter を拾う',
+    'zh': 'Free — 🎟 拾取 Letter',
+    'fr': 'Free — 🎟 Ramasser des Letters',
+    'de': 'Free — 🎟 Letters aufsammeln',
+    'es': 'Free — 🎟 Recoger Letters',
+    'pt': 'Free — 🎟 Apanhar Letters',
+    'ru': 'Free — 🎟 Собирать Letters',
+    'tr': 'Free — 🎟 Letter topla',
+    'ar': 'Free — 🎟 التقاط Letter',
+    'it': 'Free — 🎟 Raccogli Letter',
+    'hi': 'Free — 🎟 Letter उठाएँ',
+    'th': 'Free — 🎟 เก็บ Letter',
+  });
+  String get mapHelpTierFreeBody => _t({
+    'ko': '200m 반경 안의 레터를 주워 내 수집첩에 담고 사용하세요. 레벨이 오를수록 반경이 늘어나고 레터가 함께 성장합니다. 쿨다운 60분.',
+    'en': 'Pick up Letters within 200 m into your inbox. Your radius grows with each level as your Letter levels up. 60-min cooldown.',
+    'ja': '200m 圏内の Letter を拾って受信箱に集めよう。レベルが上がるほど半径も Letter も成長。クールダウン 60 分。',
+    'zh': '拾取 200 米范围内的 Letter 到收件箱。等级越高半径越大，Letter 也一同成长。冷却 60 分钟。',
+    'fr': 'Ramasse les Letters dans un rayon de 200 m — ta portée grandit avec ton Letter. Cooldown 60 min.',
+    'de': 'Letters im 200-m-Radius aufsammeln. Mit jedem Level wächst Radius und dein Letter. 60 min Abklingzeit.',
+    'es': 'Recoge Letters en 200 m — tu radio crece con tu Letter. Cooldown 60 min.',
+    'pt': 'Apanha Letters em 200 m — o teu raio cresce com o teu Letter. Cooldown 60 min.',
+    'ru': 'Собирайте Letter в радиусе 200 м — радиус растёт вместе с вашим Letter. Перезарядка 60 мин.',
+    'tr': '200 m yarıçapta Letter topla. Her seviyede yarıçap ve Letter büyür. 60 dk cooldown.',
+    'ar': 'التقاط Letter في نطاق 200 م. يزداد النطاق مع نمو Letter الخاص بك. تبريد 60 دقيقة.',
+    'it': 'Raccogli Letter entro 200 m — il tuo raggio cresce col tuo Letter. Cooldown 60 min.',
+    'hi': '200 मी में Letter उठाएँ। Letter बढ़ने पर परिधि भी बढ़ती है। कूलडाउन 60 मिनट।',
+    'th': 'เก็บ Letter ในรัศมี 200 ม. — รัศมีและ Letter เติบโตไปด้วยกัน คูลดาวน์ 60 นาที',
+  });
+
+  String get mapHelpTierPremiumTitle => _t({
+    'ko': 'Premium — ✉️ 내 레터 뿌리기',
+    'en': 'Premium — ✉️ Drop your Letters',
+    'ja': 'Premium — ✉️ 自分の Letter を配る',
+    'zh': 'Premium — ✉️ 投放自己的 Letter',
+    'fr': 'Premium — ✉️ Déposer tes Letters',
+    'de': 'Premium — ✉️ Eigene Letters verteilen',
+    'es': 'Premium — ✉️ Lanza tus Letters',
+    'pt': 'Premium — ✉️ Lança os teus Letters',
+    'ru': 'Premium — ✉️ Раскладывайте свои Letters',
+    'tr': 'Premium — ✉️ Kendi Letter\'larını bırak',
+    'ar': 'Premium — ✉️ وزّع رسائل Letter',
+    'it': 'Premium — ✉️ Rilascia i tuoi Letter',
+    'hi': 'Premium — ✉️ अपने Letter बिखेरें',
+    'th': 'Premium — ✉️ ปล่อย Letter ของคุณ',
+  });
+  String get mapHelpTierPremiumBody => _t({
+    'ko': '1km 반경으로 주우면서 📸 사진 · 🔗 링크가 달린 내 레터를 세계 지도에 떨어뜨릴 수 있어요. 내 레터가 빠르게 성장합니다. 쿨다운 10분.',
+    'en': '1 km pickup radius + drop your own Letters with 📸 photos and 🔗 links on the map. Your Letter levels up faster. 10-min cooldown.',
+    'ja': '1km 圏で拾いつつ、📸 写真・🔗 リンクを添えた自分の Letter を世界に配れます。Letter の成長が早まります。クールダウン 10 分。',
+    'zh': '1 公里范围内拾取 + 投放带 📸 照片和 🔗 链接的自己的 Letter。Letter 成长更快。冷却 10 分钟。',
+    'fr': 'Rayon 1 km · dépose tes Letters avec photos et liens. Ton Letter grandit plus vite. Cooldown 10 min.',
+    'de': '1 km · verteile eigene Letters mit Fotos & Links weltweit. Dein Letter wächst schneller. 10 min Cooldown.',
+    'es': '1 km · lanza tus Letters con fotos y enlaces. Tu Letter crece más rápido. Cooldown 10 min.',
+    'pt': '1 km · lança os teus Letters com fotos e links. O teu Letter cresce mais rápido. Cooldown 10 min.',
+    'ru': 'Радиус 1 км · раскладывайте свои Letters с фото и ссылками. Ваш Letter растёт быстрее. Перезарядка 10 мин.',
+    'tr': '1 km · kendi Letter\'larını fotoğraf ve linklerle dağıt. Letter\'ın daha hızlı büyür. 10 dk cooldown.',
+    'ar': 'نطاق 1 كم · وزّع رسائلك بصور وروابط. ينمو Letter الخاص بك أسرع. تبريد 10 دقائق.',
+    'it': '1 km · rilascia i tuoi Letter con foto e link. Il tuo Letter cresce più velocemente. Cooldown 10 min.',
+    'hi': '1 किमी · अपने Letter फ़ोटो और लिंक सहित बिखेरें। आपका Letter तेज़ी से बढ़ता है। कूलडाउन 10 मिनट।',
+    'th': 'รัศมี 1 กม. · ปล่อย Letter พร้อมรูปและลิงก์ Letter เติบโตเร็วขึ้น คูลดาวน์ 10 นาที',
+  });
+
+  String get mapHelpTierBrandTitle => _t({
+    'ko': 'Brand — 📣 캠페인 & ROI 대시보드',
+    'en': 'Brand — 📣 campaigns & ROI',
+    'ja': 'Brand — 📣 キャンペーン・ROI',
+    'zh': 'Brand — 📣 营销活动与 ROI',
+    'fr': 'Brand — campagnes 📣 & ROI',
+    'de': 'Brand — 📣 Kampagnen & ROI',
+    'es': 'Brand — 📣 campañas y ROI',
+    'pt': 'Brand — 📣 campanhas & ROI',
+    'ru': 'Brand — 📣 кампании и ROI',
+    'tr': 'Brand — 📣 kampanyalar & ROI',
+    'ar': 'Brand — 📣 الحملات و ROI',
+    'it': 'Brand — 📣 campagne & ROI',
+    'hi': 'Brand — 📣 अभियान व ROI',
+    'th': 'Brand — 📣 แคมเปญและ ROI',
+  });
+  String get mapHelpTierBrandBody => _t({
+    'ko': '🎟 할인권·🎁 교환권 캠페인 · ExactDrop 위치 지정 · 발송/픽업/사용 집계 대시보드로 광고 효과 측정.',
+    'en': '🎟 Coupon & 🎁 voucher campaigns · ExactDrop location pinning · impression/pickup/redemption dashboard.',
+    'ja': '🎟 割引券・🎁 交換券キャンペーン · ExactDrop 位置指定 · 発送/ピック/使用集計ダッシュボード。',
+    'zh': '🎟 优惠券·🎁 代金券活动 · ExactDrop 位置选择 · 发送/拾取/使用数据仪表板。',
+    'fr': 'Campagnes 🎟 coupons & 🎁 bons · ExactDrop · tableau de bord.',
+    'de': '🎟 Coupon- & 🎁 Gutschein-Kampagnen · ExactDrop · Analytics-Dashboard.',
+    'es': 'Campañas 🎟 cupones & 🎁 vales · ExactDrop · panel de analíticas.',
+    'pt': 'Campanhas 🎟 cupões & 🎁 vales · ExactDrop · painel de análise.',
+    'ru': 'Кампании 🎟 купоны & 🎁 ваучеры · ExactDrop · панель аналитики.',
+    'tr': '🎟 Kupon & 🎁 çek kampanyaları · ExactDrop · analiz panosu.',
+    'ar': 'حملات 🎟 القسائم و 🎁 الكوبونات · ExactDrop · لوحة تحليلات.',
+    'it': 'Campagne 🎟 coupon & 🎁 buoni · ExactDrop · dashboard.',
+    'hi': '🎟 कूपन व 🎁 वाउचर अभियान · ExactDrop · विश्लेषण डैशबोर्ड.',
+    'th': 'แคมเปญ 🎟 คูปอง·🎁 วาวเชอร์ · ExactDrop · แดชบอร์ด.',
+  });
+
+  String get mapHelpMarkerSection => _t({
+    'ko': '지도 마커 의미',
+    'en': 'Map markers',
+    'ja': '地図マーカー',
+    'zh': '地图标记含义',
+    'fr': 'Marqueurs de la carte',
+    'de': 'Kartenmarker',
+    'es': 'Marcadores',
+    'pt': 'Marcadores',
+    'ru': 'Маркеры карты',
+    'tr': 'Harita işaretleri',
+    'ar': 'علامات الخريطة',
+    'it': 'Marcatori',
+    'hi': 'मानचित्र मार्कर',
+    'th': 'สัญลักษณ์แผนที่',
+  });
+  String get mapHelpMarkerArrivedTitle => _t({
+    'ko': '📮 도착 미열람',
+    'en': '📮 Arrived, unread',
+    'ja': '📮 到着・未読',
+    'zh': '📮 已到未读',
+    'fr': '📮 Arrivée, non lue',
+    'de': '📮 Angekommen, ungelesen',
+    'es': '📮 Llegada sin leer',
+    'pt': '📮 Chegada por ler',
+    'ru': '📮 Прибыло, не прочитано',
+    'tr': '📮 Geldi, okunmadı',
+    'ar': '📮 وصلت، غير مقروءة',
+    'it': '📮 Arrivata, non letta',
+    'hi': '📮 आया, अनपढ़',
+    'th': '📮 ถึงแล้ว ยังไม่ได้อ่าน',
+  });
+  String get mapHelpMarkerArrivedBody => _t({
+    'ko': '도착 지점에 표시되며 가까이 다가가서 주울 수 있어요.',
+    'en': 'Walk up close to pick this letter up.',
+    'ja': '到着地点に表示され、近づいて拾えます。',
+    'zh': '显示在到达点，靠近即可拾起。',
+    'fr': 'Approche-toi pour le ramasser.',
+    'de': 'Nähere dich, um ihn aufzusammeln.',
+    'es': 'Acércate para recogerla.',
+    'pt': 'Aproxima-te para apanhar.',
+    'ru': 'Подойдите, чтобы подобрать.',
+    'tr': 'Yaklaşıp topla.',
+    'ar': 'اقترب لالتقاطها.',
+    'it': 'Avvicinati per raccoglierla.',
+    'hi': 'उठाने के लिए पास जाएँ।',
+    'th': 'เข้าใกล้เพื่อเก็บ',
+  });
+  String get mapHelpMarkerCouponTitle => _t({
+    'ko': '🎟 할인권 편지',
+    'en': '🎟 Coupon letter',
+    'ja': '🎟 割引券',
+    'zh': '🎟 优惠券',
+    'fr': '🎟 Coupon',
+    'de': '🎟 Rabatt',
+    'es': '🎟 Cupón',
+    'pt': '🎟 Cupão',
+    'ru': '🎟 Купон',
+    'tr': '🎟 Kupon',
+    'ar': '🎟 قسيمة',
+    'it': '🎟 Coupon',
+    'hi': '🎟 कूपन',
+    'th': '🎟 คูปอง',
+  });
+  String get mapHelpMarkerCouponBody => _t({
+    'ko': '웹사이트·앱에서 쓸 수 있는 할인 코드. 편지 열어 📋 복사 버튼으로 사용.',
+    'en': 'A code to use on web/app. Tap 📋 copy after opening.',
+    'ja': 'ウェブ・アプリで使える割引コード。開封後 📋 コピー。',
+    'zh': '可在网页/App 使用的折扣码。打开后 📋 复制。',
+    'fr': 'Code à utiliser en ligne. Appuie sur 📋 après ouverture.',
+    'de': 'Code für Web/App. Nach Öffnen 📋 kopieren.',
+    'es': 'Código para web/app. Toca 📋 copiar.',
+    'pt': 'Código para web/app. Toca 📋 copiar.',
+    'ru': 'Код для сайта/приложения. Нажмите 📋 после открытия.',
+    'tr': 'Web/app kodu. Açtıktan sonra 📋 kopyala.',
+    'ar': 'رمز للويب/التطبيق. انقر 📋 بعد الفتح.',
+    'it': 'Codice per web/app. Tocca 📋 copia.',
+    'hi': 'वेब/ऐप कोड। खोलने के बाद 📋 कॉपी।',
+    'th': 'รหัสใช้บนเว็บ/แอป เปิดแล้วแตะ 📋 คัดลอก',
+  });
+  String get mapHelpMarkerVoucherTitle => _t({
+    'ko': '🎁 교환권 편지',
+    'en': '🎁 Voucher letter',
+    'ja': '🎁 交換券',
+    'zh': '🎁 代金券',
+    'fr': '🎁 Bon',
+    'de': '🎁 Gutschein',
+    'es': '🎁 Vale',
+    'pt': '🎁 Vale',
+    'ru': '🎁 Ваучер',
+    'tr': '🎁 Çek',
+    'ar': '🎁 كوبون',
+    'it': '🎁 Buono',
+    'hi': '🎁 वाउचर',
+    'th': '🎁 วาวเชอร์',
+  });
+  String get mapHelpMarkerVoucherBody => _t({
+    'ko': '매장에서 쓰는 쿠폰 이미지. 카운터에서 보여주면 돼요.',
+    'en': 'Voucher image to show at the store counter.',
+    'ja': '店舗で見せるクーポン画像。',
+    'zh': '店内出示的优惠券图片。',
+    'fr': 'Image à montrer en boutique.',
+    'de': 'Gutschein-Bild am Tresen zeigen.',
+    'es': 'Imagen para mostrar en tienda.',
+    'pt': 'Imagem para mostrar em loja.',
+    'ru': 'Показать изображение на кассе.',
+    'tr': 'Tezgâhta gösterilecek görsel.',
+    'ar': 'صورة لإظهارها عند الكاونتر.',
+    'it': 'Immagine da mostrare in negozio.',
+    'hi': 'दुकान पर दिखाने की छवि।',
+    'th': 'รูปแสดงที่เคาน์เตอร์',
+  });
+  String get mapHelpMarkerBrandTitle => _t({
+    'ko': '🏢 Brand 계정 타워',
+    'en': '🏢 Brand tower',
+    'ja': '🏢 Brand タワー',
+    'zh': '🏢 Brand 塔楼',
+    'fr': '🏢 Tour Brand',
+    'de': '🏢 Brand-Turm',
+    'es': '🏢 Torre Brand',
+    'pt': '🏢 Torre Brand',
+    'ru': '🏢 Башня Brand',
+    'tr': '🏢 Brand kulesi',
+    'ar': '🏢 برج Brand',
+    'it': '🏢 Torre Brand',
+    'hi': '🏢 Brand टावर',
+    'th': '🏢 หอ Brand',
+  });
+  String get mapHelpMarkerBrandBody => _t({
+    'ko': '공식 발송인 표시. ✅ 가 붙으면 사업자 인증 완료.',
+    'en': 'Official sender. ✅ means verified business.',
+    'ja': '公式送信者。✅ は事業者認証済み。',
+    'zh': '官方发送者。✅ 表示已认证商户。',
+    'fr': 'Expéditeur officiel. ✅ = entreprise vérifiée.',
+    'de': 'Offizieller Absender. ✅ = verifiziert.',
+    'es': 'Remitente oficial. ✅ = empresa verificada.',
+    'pt': 'Remetente oficial. ✅ = empresa verificada.',
+    'ru': 'Официальный отправитель. ✅ — проверенный бизнес.',
+    'tr': 'Resmi gönderici. ✅ doğrulanmış işletme.',
+    'ar': 'مرسل رسمي. ✅ نشاط موثّق.',
+    'it': 'Mittente ufficiale. ✅ azienda verificata.',
+    'hi': 'आधिकारिक प्रेषक। ✅ = सत्यापित।',
+    'th': 'ผู้ส่งทางการ ✅ = ธุรกิจยืนยัน',
+  });
+
+  String get mapHelpHowToSection => _t({
+    'ko': '사용 방법',
+    'en': 'How to use',
+    'ja': '使い方',
+    'zh': '使用方法',
+    'fr': 'Comment',
+    'de': 'Anleitung',
+    'es': 'Cómo',
+    'pt': 'Como',
+    'ru': 'Как',
+    'tr': 'Nasıl',
+    'ar': 'الطريقة',
+    'it': 'Come',
+    'hi': 'कैसे',
+    'th': 'วิธี',
+  });
+  String get mapHelpStep1Title => _t({
+    'ko': '지도 탐험',
+    'en': 'Explore the map',
+    'ja': '地図を探索',
+    'zh': '浏览地图',
+    'fr': 'Explore la carte',
+    'de': 'Karte erkunden',
+    'es': 'Explora el mapa',
+    'pt': 'Explora o mapa',
+    'ru': 'Изучите карту',
+    'tr': 'Haritayı keşfet',
+    'ar': 'استكشف الخريطة',
+    'it': 'Esplora la mappa',
+    'hi': 'मानचित्र देखें',
+    'th': 'สำรวจแผนที่',
+  });
+  String get mapHelpStep1Body => _t({
+    'ko': '내 위치 주변에 떨어진 편지를 확인. 반경 밖 편지는 상단 나침반에서 방향을 봐요.',
+    'en': 'See letters near you. Outside the radius, the top compass shows direction.',
+    'ja': '近くの手紙を確認。圏外の手紙は上部の方位で方向を確認。',
+    'zh': '查看附近的信件。范围外的信件可在顶部方向指示查看。',
+    'fr': 'Voir les lettres près de toi. Hors portée, la boussole montre la direction.',
+    'de': 'Briefe in der Nähe sehen. Außerhalb — oben am Kompass.',
+    'es': 'Cartas cerca de ti. Fuera del radio, brújula superior.',
+    'pt': 'Cartas perto. Fora do raio, bússola superior.',
+    'ru': 'Смотрите письма рядом. Вне радиуса — компас сверху.',
+    'tr': 'Yakındaki mektupları gör. Menzil dışı için üst pusula.',
+    'ar': 'الرسائل القريبة. خارج النطاق — بوصلة علوية.',
+    'it': 'Lettere vicine. Fuori raggio — bussola.',
+    'hi': 'पास के पत्र। दायरे के बाहर — शीर्ष दिशा.',
+    'th': 'จดหมายใกล้ ๆ นอกรัศมี — เข็มทิศด้านบน',
+  });
+  String get mapHelpStep2Title => _t({
+    'ko': '다가가서 줍기',
+    'en': 'Walk over & pick up',
+    'ja': '近づいて拾う',
+    'zh': '走近拾起',
+    'fr': 'Approche-toi & ramasse',
+    'de': 'Hingehen & aufheben',
+    'es': 'Camina y recoge',
+    'pt': 'Vai até lá e apanha',
+    'ru': 'Подойдите и подберите',
+    'tr': 'Yaklaş ve topla',
+    'ar': 'اقترب والتقط',
+    'it': 'Avvicinati e raccogli',
+    'hi': 'पास जाकर उठाएँ',
+    'th': 'เดินไปเก็บ',
+  });
+  String get mapHelpStep2Body => _t({
+    'ko': '반경 안에 들어오면 편지가 밝아져요. 탭해서 열고 할인 혜택을 확인하세요.',
+    'en': 'Letters light up when in range. Tap to open and view the offer.',
+    'ja': '圏内に入ると手紙が光ります。タップして開いて特典を確認。',
+    'zh': '进入范围后信件发光。点击打开并查看优惠。',
+    'fr': 'Les lettres s\'illuminent à portée. Appuie pour ouvrir.',
+    'de': 'Briefe leuchten in Reichweite. Antippen zum Öffnen.',
+    'es': 'Se iluminan al entrar en rango. Toca para abrir.',
+    'pt': 'Iluminam-se em alcance. Toca para abrir.',
+    'ru': 'Письма подсвечиваются в зоне. Нажмите, чтобы открыть.',
+    'tr': 'Menzilde parlıyor. Aç ve gör.',
+    'ar': 'تضيء في النطاق. اضغط للفتح.',
+    'it': 'Si illuminano a portata. Tocca per aprire.',
+    'hi': 'दायरे में चमकते हैं। खोलने को टैप करें।',
+    'th': 'สว่างเมื่ออยู่ในรัศมี แตะเพื่อเปิด',
+  });
+  String get mapHelpStep3Title => _t({
+    'ko': '혜택 사용',
+    'en': 'Redeem the offer',
+    'ja': '特典を使う',
+    'zh': '使用优惠',
+    'fr': 'Utilise l\'offre',
+    'de': 'Angebot einlösen',
+    'es': 'Canjea la oferta',
+    'pt': 'Resgata a oferta',
+    'ru': 'Используйте предложение',
+    'tr': 'Teklifi kullan',
+    'ar': 'استخدم العرض',
+    'it': 'Riscatta',
+    'hi': 'ऑफ़र उपयोग',
+    'th': 'ใช้ข้อเสนอ',
+  });
+  String get mapHelpStep3Body => _t({
+    'ko': '할인권은 📋 코드 복사, 교환권은 이미지를 매장에서 제시. 유효기간을 놓치지 마세요.',
+    'en': 'Coupons: copy 📋 code. Vouchers: show image at store. Mind the expiry.',
+    'ja': '割引券は 📋 コピー、交換券は画像を店舗で提示。有効期限に注意。',
+    'zh': '优惠券 📋 复制码，代金券在店出示图片。注意有效期。',
+    'fr': 'Coupons : 📋 copie. Bons : montre l\'image. Vérifie la date.',
+    'de': 'Coupons: 📋 kopieren. Gutscheine: Bild zeigen. Ablauf beachten.',
+    'es': 'Cupones: 📋 copia. Vales: imagen en tienda. Caducidad.',
+    'pt': 'Cupões: 📋 copia. Vales: imagem na loja. Valide.',
+    'ru': 'Купоны: 📋 код. Ваучеры: изображение. Срок.',
+    'tr': 'Kuponlar: 📋. Çekler: görsel. Süre.',
+    'ar': 'القسائم: 📋. الكوبونات: صورة. الصلاحية.',
+    'it': 'Coupon: 📋. Buoni: immagine. Scadenza.',
+    'hi': 'कूपन: 📋। वाउचर: छवि। समाप्ति.',
+    'th': 'คูปอง: 📋 วาวเชอร์: รูป. ระวังหมดอายุ',
+  });
+
+  // Build 138: 브랜드 분석 대시보드 l10n.
+  String get brandAnalyticsTitle => _t({
+    'ko': '캠페인 분석',
+    'en': 'Campaign Analytics',
+    'ja': 'キャンペーン分析',
+    'zh': '活动分析',
+    'fr': 'Analyse de campagne',
+    'de': 'Kampagnen-Analyse',
+    'es': 'Análisis de campaña',
+    'pt': 'Análise de campanha',
+    'ru': 'Аналитика кампаний',
+    'tr': 'Kampanya Analizi',
+    'ar': 'تحليلات الحملة',
+    'it': 'Analisi campagna',
+    'hi': 'अभियान विश्लेषण',
+    'th': 'วิเคราะห์แคมเปญ',
+  });
+
+  String get brandAnalyticsOffline => _t({
+    'ko': '집계를 불러올 수 없어요. 네트워크 확인 후 다시 시도해주세요.',
+    'en': "Couldn't load analytics. Check network and retry.",
+    'ja': '集計を読み込めません。ネットワーク確認後に再試行してください。',
+    'zh': '无法加载数据。请检查网络后重试。',
+    'fr': 'Impossible de charger les analyses. Vérifiez le réseau.',
+    'de': 'Analysen nicht ladbar. Netzwerk prüfen.',
+    'es': 'No se pudo cargar. Revisa la red.',
+    'pt': 'Não foi possível carregar. Verifica a rede.',
+    'ru': 'Не удалось загрузить аналитику.',
+    'tr': 'Analitik yüklenemedi. Ağı kontrol edin.',
+    'ar': 'تعذّر تحميل التحليلات.',
+    'it': 'Impossibile caricare. Controlla la rete.',
+    'hi': 'डेटा लोड नहीं हुआ। नेटवर्क जांचें।',
+    'th': 'โหลดข้อมูลไม่สำเร็จ',
+  });
+
+  String get brandAnalyticsSent => _t({
+    'ko': '발송',
+    'en': 'Sent',
+    'ja': '発送',
+    'zh': '发送',
+    'fr': 'Envoyées',
+    'de': 'Versendet',
+    'es': 'Enviadas',
+    'pt': 'Enviadas',
+    'ru': 'Отправлено',
+    'tr': 'Gönderilen',
+    'ar': 'مرسلة',
+    'it': 'Inviate',
+    'hi': 'भेजे',
+    'th': 'ส่ง',
+  });
+
+  String get brandAnalyticsPicked => _t({
+    'ko': '픽업',
+    'en': 'Picked',
+    'ja': 'ピックアップ',
+    'zh': '拾取',
+    'fr': 'Ramassées',
+    'de': 'Aufgesammelt',
+    'es': 'Recogidas',
+    'pt': 'Apanhadas',
+    'ru': 'Собрано',
+    'tr': 'Toplanan',
+    'ar': 'مُلتَقط',
+    'it': 'Raccolte',
+    'hi': 'उठाए',
+    'th': 'เก็บ',
+  });
+
+  String get brandAnalyticsRedeemed => _t({
+    'ko': '사용',
+    'en': 'Used',
+    'ja': '使用',
+    'zh': '使用',
+    'fr': 'Utilisées',
+    'de': 'Genutzt',
+    'es': 'Usados',
+    'pt': 'Usados',
+    'ru': 'Использовано',
+    'tr': 'Kullanılan',
+    'ar': 'مستخدم',
+    'it': 'Usate',
+    'hi': 'उपयोग',
+    'th': 'ใช้',
+  });
+
+  String get brandAnalyticsPickupReach => _t({
+    'ko': '픽업률',
+    'en': 'Pickup reach',
+    'ja': 'ピックアップ率',
+    'zh': '拾取率',
+    'fr': 'Taux de ramassage',
+    'de': 'Aufsammel-Reichweite',
+    'es': 'Alcance de recogida',
+    'pt': 'Alcance',
+    'ru': 'Охват подбора',
+    'tr': 'Toplama oranı',
+    'ar': 'نسبة الالتقاط',
+    'it': 'Tasso di raccolta',
+    'hi': 'पिकअप दर',
+    'th': 'อัตราการเก็บ',
+  });
+
+  String get brandAnalyticsConversion => _t({
+    'ko': '전환율',
+    'en': 'Conversion',
+    'ja': '転換率',
+    'zh': '转换率',
+    'fr': 'Conversion',
+    'de': 'Konversion',
+    'es': 'Conversión',
+    'pt': 'Conversão',
+    'ru': 'Конверсия',
+    'tr': 'Dönüşüm',
+    'ar': 'التحويل',
+    'it': 'Conversione',
+    'hi': 'रूपांतरण',
+    'th': 'คอนเวอร์ชัน',
+  });
+
+  String get brandAnalyticsTopCountries => _t({
+    'ko': '국가별 픽업 TOP 5',
+    'en': 'Top 5 countries (by picks)',
+    'ja': '国別ピックアップ TOP 5',
+    'zh': '按国家拾取 TOP 5',
+    'fr': 'Top 5 pays (ramassages)',
+    'de': 'Top 5 Länder (Picks)',
+    'es': 'Top 5 países (recogidas)',
+    'pt': 'Top 5 países (apanhadas)',
+    'ru': 'ТОП-5 стран (по подборам)',
+    'tr': 'En iyi 5 ülke (toplama)',
+    'ar': 'أفضل 5 دول (التقاط)',
+    'it': 'Top 5 paesi (raccolte)',
+    'hi': 'शीर्ष 5 देश (पिकअप)',
+    'th': '5 ประเทศยอดนิยม (เก็บ)',
+  });
+
+  String get composeGateFeatureName => _t({
+    'ko': '홍보 편지 발송',
+    'en': 'Promo letter sending',
+    'ja': 'プロモ手紙の送信',
+    'zh': '推广信件发送',
+    'fr': 'Envoi de lettres promo',
+    'de': 'Promo-Brief-Versand',
+    'es': 'Envío de cartas promo',
+    'pt': 'Envio de cartas promo',
+    'ru': 'Отправка промо-писем',
+    'tr': 'Promo mektup gönderimi',
+    'ar': 'إرسال الرسائل الترويجية',
+    'it': 'Invio lettere promo',
+    'hi': 'प्रोमो पत्र भेजना',
+    'th': 'ส่งจดหมายโปรโมต',
+  });
+
+  String get composeGateDesc => _t({
+    'ko': '편지를 세계에 뿌리고 싶다면 Premium 으로 업그레이드하세요.\n📸 사진 첨부 · 🔗 채널/SNS 링크로 나를 홍보할 수 있어요.\n무료 회원은 지도에서 편지를 주워 혜택을 활용할 수 있어요.',
+    'en': 'Upgrade to Premium to drop your own letters worldwide.\n📸 Attach photos · 🔗 Add channel/SNS links to promote yourself.\nFree members keep picking up letters and claiming benefits.',
+    'ja': 'Premium にアップグレードして、自分の手紙を世界に届けましょう。\n📸 写真添付 · 🔗 チャンネル/SNS リンクで自己PR。\n無料会員は地図で手紙を拾って特典を活用できます。',
+    'zh': '升级 Premium 将你的信件发送到世界各地。\n📸 附加照片 · 🔗 添加频道/社交链接自我宣传。\n免费会员可以继续在地图上拾取信件。',
+    'fr': 'Passe à Premium pour envoyer tes lettres dans le monde entier.\n📸 Joins des photos · 🔗 Ajoute des liens de chaîne / réseaux.\nLes membres gratuits continuent de ramasser des lettres.',
+    'de': 'Mit Premium sendest du eigene Briefe weltweit.\n📸 Fotos anhängen · 🔗 Kanal-/Social-Links für Selbstvermarktung.\nFreie Mitglieder sammeln weiterhin Briefe auf der Karte.',
+    'es': 'Actualiza a Premium para lanzar tus cartas al mundo.\n📸 Adjunta fotos · 🔗 Añade enlaces de canal/redes.\nLos miembros gratuitos siguen recogiendo cartas.',
+    'pt': 'Atualiza para Premium e lança as tuas cartas ao mundo.\n📸 Anexa fotos · 🔗 Adiciona links de canal/redes.\nMembros gratuitos continuam a apanhar cartas.',
+    'ru': 'Перейдите на Premium, чтобы отправлять письма по всему миру.\n📸 Прикрепляйте фото · 🔗 Добавляйте ссылки на канал/соцсети.\nБесплатные пользователи продолжают собирать письма.',
+    'tr': "Premium'a yükselt ve mektuplarını dünyaya bırak.\n📸 Fotoğraf ekle · 🔗 Kanal/SNS bağlantısıyla kendini tanıt.\nÜcretsiz üyeler haritadan mektup toplamaya devam eder.",
+    'ar': 'ارتقِ إلى Premium لإرسال رسائلك للعالم.\n📸 أرفق الصور · 🔗 أضف روابط قناتك/وسائلك.\nالأعضاء المجانيون يواصلون التقاط الرسائل.',
+    'it': 'Passa a Premium per lanciare le tue lettere nel mondo.\n📸 Allega foto · 🔗 Aggiungi link canale/social.\nI membri gratuiti continuano a raccogliere lettere.',
+    'hi': 'Premium में अपग्रेड करें और अपने पत्र दुनिया में भेजें।\n📸 फ़ोटो संलग्न करें · 🔗 चैनल/SNS लिंक जोड़ें।\nमुफ़्त सदस्य मानचित्र पर पत्र उठाते रहें।',
+    'th': 'อัปเกรด Premium เพื่อส่งจดหมายไปทั่วโลก\n📸 แนบรูป · 🔗 ใส่ลิงก์ช่อง/โซเชียล\nสมาชิกฟรียังเก็บจดหมายบนแผนที่ได้',
+  });
+
+  String get letterReadRedemptionTodayOnly => _t({
+    'ko': '오늘 마지막',
+    'en': 'last day',
+    'ja': '今日まで',
+    'zh': '仅剩今天',
+    'fr': 'dernier jour',
+    'de': 'letzter Tag',
+    'es': 'último día',
+    'pt': 'último dia',
+    'ru': 'последний день',
+    'tr': 'son gün',
+    'ar': 'آخر يوم',
+    'it': 'ultimo giorno',
+    'hi': 'अंतिम दिन',
+    'th': 'วันสุดท้าย',
+  });
+
+  // 브랜드 컴포즈: 답장 수락 토글
+  String get composeBrandAcceptsReplies => _t({
+    'ko': '답장 받기',
+    'en': 'Accept replies',
+    'ja': '返信を受け付ける',
+    'zh': '接受回复',
+    'fr': 'Accepter les réponses',
+    'de': 'Antworten zulassen',
+    'es': 'Aceptar respuestas',
+    'pt': 'Aceitar respostas',
+    'ru': 'Принимать ответы',
+    'tr': 'Yanıtları kabul et',
+    'ar': 'قبول الردود',
+    'it': 'Accetta risposte',
+    'hi': 'जवाब स्वीकार करें',
+    'th': 'รับคำตอบ',
+  });
+
+  String get composeBrandAcceptsRepliesDesc => _t({
+    'ko': '끄면 수신자에게 답장 버튼이 보이지 않아요',
+    'en': 'If off, recipients won\'t see a reply button',
+    'ja': 'オフにすると受信者に返信ボタンが表示されません',
+    'zh': '关闭后，收件人将看不到回复按钮',
+    'fr': 'Désactivé : pas de bouton de réponse pour le destinataire',
+    'de': 'Aus: Empfänger sieht keinen Antworten-Button',
+    'es': 'Desactivado: el destinatario no verá botón de respuesta',
+    'pt': 'Desativado: o destinatário não vê botão de resposta',
+    'ru': 'Выкл: получатель не увидит кнопку ответа',
+    'tr': 'Kapalı: alıcı yanıt düğmesi görmeyecek',
+    'ar': 'إذا أُوقف لن يظهر زر الرد للمستلم',
+    'it': 'Se off, il destinatario non vede il pulsante di risposta',
+    'hi': 'बंद होने पर प्राप्तकर्ता को उत्तर बटन नहीं दिखेगा',
+    'th': 'ปิดแล้วผู้รับจะไม่เห็นปุ่มตอบกลับ',
+  });
+
   String get letterReadReply => _t({
     'ko': '답장 쓰기',
     'en': 'Write Reply',
@@ -11323,6 +16385,40 @@ class AppL10n {
     'it': 'Scrivi risposta',
     'hi': 'जवाब लिखें',
     'th': 'เขียนตอบ',
+  });
+
+  // 답장 1회 제한 제거 후 "다시 답장 쓰기" / "이미 답장했어요" 상태 표시용
+  String get letterReadReplyAgain => _t({
+    'ko': '다시 답장 쓰기',
+    'en': 'Reply again',
+    'ja': 'もう一度返信する',
+    'zh': '再次回复',
+    'fr': 'Répondre à nouveau',
+    'de': 'Erneut antworten',
+    'es': 'Responder de nuevo',
+    'pt': 'Responder novamente',
+    'ru': 'Ответить ещё раз',
+    'tr': 'Tekrar yanıtla',
+    'ar': 'رد مرة أخرى',
+    'it': 'Rispondi di nuovo',
+    'hi': 'फिर से जवाब दें',
+    'th': 'ตอบอีกครั้ง',
+  });
+  String get letterReadRepliedHint => _t({
+    'ko': '이미 한 번 답장했어요 · 원하면 더 이어서 보낼 수 있어요',
+    'en': 'You already replied once — you can send another if you want',
+    'ja': '一度返信済みです — もう一通続けて送れます',
+    'zh': '你已经回过一次 · 可以再写一封寄出',
+    'fr': 'Déjà répondu une fois — vous pouvez en envoyer une autre',
+    'de': 'Schon einmal geantwortet — Sie können noch eine schicken',
+    'es': 'Ya respondiste una vez — puedes enviar otra si quieres',
+    'pt': 'Você já respondeu uma vez — pode mandar outra',
+    'ru': 'Вы уже ответили — можно отправить ещё',
+    'tr': 'Zaten bir kez yanıtladınız — istersen bir tane daha gönder',
+    'ar': 'لقد رددت مرة بالفعل — يمكنك إرسال أخرى',
+    'it': 'Hai già risposto una volta — puoi inviarne un\'altra',
+    'hi': 'आप एक बार जवाब दे चुके हैं — चाहें तो और भेज सकते हैं',
+    'th': 'คุณตอบไปแล้วหนึ่งครั้ง · ถ้าต้องการก็ส่งเพิ่มได้',
   });
 
   String get letterReadImageLoadFailed => _t({
@@ -11510,6 +16606,41 @@ class AppL10n {
     'fr': 'Gestion du compte', 'de': 'Kontoverwaltung', 'es': 'Gestión de cuenta',
     'pt': 'Gerenciamento de conta', 'ru': 'Управление аккаунтом', 'tr': 'Hesap Yönetimi',
     'ar': 'إدارة الحساب', 'it': 'Gestione account', 'hi': 'खाता प्रबंधन', 'th': 'จัดการบัญชี',
+  });
+
+  // Build 183: 프로필 "설정" 섹션 접기 버튼 라벨.
+  String get profileSettingsCollapseLabel => _t({
+    'ko': '계정 · 알림 · 앱 설정',
+    'en': 'Account · Notifications · App Settings',
+    'ja': 'アカウント · 通知 · アプリ設定',
+    'zh': '账户 · 通知 · 应用设置',
+    'fr': 'Compte · Notifications · Paramètres',
+    'de': 'Konto · Mitteilungen · App-Einstellungen',
+    'es': 'Cuenta · Notificaciones · Ajustes',
+    'pt': 'Conta · Notificações · Configurações',
+    'ru': 'Аккаунт · Уведомления · Настройки',
+    'tr': 'Hesap · Bildirimler · Uygulama',
+    'ar': 'الحساب · الإشعارات · الإعدادات',
+    'it': 'Account · Notifiche · Impostazioni',
+    'hi': 'खाता · सूचनाएँ · ऐप सेटिंग्स',
+    'th': 'บัญชี · การแจ้งเตือน · การตั้งค่า',
+  });
+
+  String get profileSettingsCollapseSublabel => _t({
+    'ko': '탭해서 펼치기',
+    'en': 'Tap to expand',
+    'ja': 'タップで展開',
+    'zh': '点击展开',
+    'fr': 'Toucher pour ouvrir',
+    'de': 'Tippen zum Öffnen',
+    'es': 'Toca para abrir',
+    'pt': 'Toca para abrir',
+    'ru': 'Нажмите, чтобы открыть',
+    'tr': 'Açmak için dokun',
+    'ar': 'اضغط للفتح',
+    'it': 'Tocca per aprire',
+    'hi': 'खोलने के लिए टैप करें',
+    'th': 'แตะเพื่อเปิด',
   });
 
   String get profileNickname => _t({
@@ -11914,6 +17045,14 @@ class AppL10n {
     'ar': 'برجي', 'it': 'La mia torre', 'hi': 'मेरा टावर', 'th': 'หอคอยของฉัน',
   });
 
+  // Build 183: Free/Premium 용 "내 레터" 타이틀 — 타워 대신.
+  String get letterMyCharacter => _t({
+    'ko': '내 레터', 'en': 'My Letter', 'ja': 'マイレター', 'zh': '我的信使',
+    'fr': 'Ma lettre', 'de': 'Mein Letter', 'es': 'Mi carta',
+    'pt': 'Meu Letter', 'ru': 'Мой Letter', 'tr': 'Letter\'ım',
+    'ar': 'Letter الخاص بي', 'it': 'Il mio Letter', 'hi': 'मेरा Letter', 'th': 'Letter ของฉัน',
+  });
+
   String get towerEditProfile => _t({
     'ko': '프로필 편집', 'en': 'Edit Profile', 'ja': 'プロフィール編集', 'zh': '编辑资料',
     'fr': 'Modifier le profil', 'de': 'Profil bearbeiten', 'es': 'Editar perfil',
@@ -12177,11 +17316,14 @@ class AppL10n {
     'ar': 'ارتفاع البرج', 'it': 'Altezza torre', 'hi': 'टावर की ऊँचाई', 'th': 'ความสูงหอคอย',
   });
 
+  // Build 183: Brand 쪽에서는 타워 맥락 유지, Free/Premium 은 어차피
+  // 이 키가 참조 안 되는 쪽에서 letter 네이밍 써야 함. 공용 라벨이라 letter
+  // 네이밍으로 통일.
   String get towerWorldRanking => _t({
-    'ko': '세계 랭킹', 'en': 'World Ranking', 'ja': '世界ランキング', 'zh': '世界排名',
-    'fr': 'Classement mondial', 'de': 'Weltrangliste', 'es': 'Ranking mundial',
-    'pt': 'Ranking mundial', 'ru': 'Мировой рейтинг', 'tr': 'Dünya sıralaması',
-    'ar': 'التصنيف العالمي', 'it': 'Classifica mondiale', 'hi': 'विश्व रैंकिंग', 'th': 'อันดับโลก',
+    'ko': '레터 순위', 'en': 'Letter Ranking', 'ja': 'レターランキング', 'zh': '信使排名',
+    'fr': 'Classement Letter', 'de': 'Letter-Rangliste', 'es': 'Ranking de Letter',
+    'pt': 'Ranking de Letter', 'ru': 'Рейтинг Letter', 'tr': 'Letter Sıralaması',
+    'ar': 'تصنيف Letter', 'it': 'Classifica Letter', 'hi': 'Letter रैंकिंग', 'th': 'อันดับ Letter',
   });
 
   String towerMyRank(int rank) => _t({
@@ -12497,11 +17639,14 @@ class AppL10n {
     'ar': 'محادثة فردية فورية', 'it': 'Chat 1:1 in tempo reale', 'hi': '1:1 रीयल-टाइम चैट', 'th': 'แชท 1:1 แบบเรียลไทม์',
   });
 
+  // Build 114: "펜팔 / 편지 친구" 문구를 "긴 대화 스레드" 로 교체. DM 기능은
+  // Build 104 패치에서 UI 숨김 상태지만, 코드 경로가 살아있어 l10n 만이라도
+  // 현재 헌트 포지셔닝과 충돌하지 않게 정리.
   String get dmGateFeature2 => _t({
-    'ko': '편지 친구와 더 깊은 대화', 'en': 'Deeper conversations with pen pals', 'ja': 'ペンパルとの深い会話', 'zh': '与笔友更深入的对话',
-    'fr': 'Conversations plus profondes avec vos correspondants', 'de': 'Tiefere Gespräche mit Brieffreunden', 'es': 'Conversaciones más profundas con amigos por correspondencia',
-    'pt': 'Conversas mais profundas com amigos por correspondência', 'ru': 'Более глубокие беседы с друзьями по переписке', 'tr': 'Mektup arkadaşlarıyla daha derin sohbetler',
-    'ar': 'محادثات أعمق مع أصدقاء المراسلة', 'it': 'Conversazioni più profonde con gli amici di penna', 'hi': 'पत्र मित्रों के साथ गहरी बातचीत', 'th': 'สนทนาลึกซึ้งยิ่งขึ้นกับเพื่อนทางจดหมาย',
+    'ko': '오래 이어가는 대화 스레드', 'en': 'Ongoing conversation threads', 'ja': '長く続ける会話スレッド', 'zh': '持续的对话主题',
+    'fr': 'Fils de conversation continus', 'de': 'Fortlaufende Gesprächsstränge', 'es': 'Hilos de conversación continuos',
+    'pt': 'Threads de conversa contínuos', 'ru': 'Долговременные ветки диалогов', 'tr': 'Uzun süreli sohbet akışları',
+    'ar': 'خيوط محادثة مستمرة', 'it': 'Fili di conversazione continui', 'hi': 'लगातार चलने वाले बातचीत थ्रेड', 'th': 'กระทู้สนทนาต่อเนื่อง',
   });
 
   String get dmGateFeature3 => _t({
@@ -12925,22 +18070,26 @@ class AppL10n {
     'th': 'จดหมายเดินทางในจังหวะของตัวเอง — ทางบก ทางอากาศ ทางทะเล',
   });
 
-  /// 앱의 핵심 가치 한 줄 — "시간이 느리게 흐르는 소셜"
+  /// 앱의 핵심 가치 한 줄 — Build 114 에서 "느린 소셜" 에서
+  /// "지도 위 할인·홍보 편지 헌트" 로 전환. 마케팅 기획서 Build 113 의
+  /// 포지셔닝과 완전 일치.
+  // Build 170: 보조 태그라인 — 포지셔닝 풀 (편지 포맷의 글로벌 공간 쿠폰 플랫폼).
+  // 스플래시에서 메인 tagline 아래 노출. 감성 + 실용 동시 강조.
   String get appSubTagline => _t({
-    'ko': '시간이 느리게 흐르는 소셜',
-    'en': 'A social space where time slows down',
-    'ja': '時間がゆっくり流れるソーシャル',
-    'zh': '时间缓缓流淌的社交空间',
-    'fr': 'Un espace social où le temps ralentit',
-    'de': 'Ein sozialer Raum, in dem die Zeit langsamer fließt',
-    'es': 'Un espacio social donde el tiempo se ralentiza',
-    'pt': 'Um espaço social onde o tempo desacelera',
-    'ru': 'Социальное пространство, где время замедляется',
-    'tr': 'Zamanın yavaşladığı bir sosyal alan',
-    'ar': 'فضاء اجتماعي يتباطأ فيه الزمن',
-    'it': 'Uno spazio sociale dove il tempo rallenta',
-    'hi': 'एक सामाजिक जगह जहाँ समय धीमा हो जाता है',
-    'th': 'พื้นที่โซเชียลที่เวลาเดินช้าลง',
+    'ko': '편지 포맷의 글로벌 공간 쿠폰 플랫폼',
+    'en': 'The global space-based coupon platform — in letter format',
+    'ja': '手紙フォーマットのグローバル空間クーポンプラットフォーム',
+    'zh': '以信件形式的全球空间优惠券平台',
+    'fr': 'Plateforme mondiale de coupons spatiaux au format lettre',
+    'de': 'Globale Coupon-Plattform im Briefformat',
+    'es': 'Plataforma global de cupones espaciales en formato carta',
+    'pt': 'Plataforma global de cupões espaciais em formato carta',
+    'ru': 'Глобальная платформа купонов в формате писем',
+    'tr': 'Mektup formatında küresel konum tabanlı kupon platformu',
+    'ar': 'منصة القسائم المكانية العالمية بصيغة رسائل',
+    'it': 'Piattaforma globale di coupon spaziali in formato lettera',
+    'hi': 'पत्र फ़ॉर्मेट का वैश्विक स्थान-आधारित कूपन प्लेटफ़ॉर्म',
+    'th': 'แพลตฟอร์มคูปองเชิงพื้นที่ระดับโลกในรูปแบบจดหมาย',
   });
 
   // ── Hardcoded string l10n (formerly hardcoded) ─────────────────────────
@@ -14232,6 +19381,26 @@ class AppL10n {
     'it': '$days g', 'hi': '$days दिन', 'th': '$days วัน',
   });
 
+  String streakFreezeUsedMessage(int days) {
+    switch (languageCode) {
+      case 'ko': return '스트릭을 한 번 구해드렸어요! $days일 연속 유지 중';
+      case 'ja': return 'ストリークを1回救いました！$days日連続継続中';
+      case 'zh': return '我们帮你保住了一次连续签到！当前 $days 天';
+      case 'fr': return "On a sauvé votre série une fois ! $days jours d'affilée";
+      case 'de': return 'Wir haben deine Serie einmal gerettet! $days Tage in Folge';
+      case 'es': return '¡Salvamos tu racha una vez! $days días seguidos';
+      case 'pt': return 'Salvamos seu streak uma vez! $days dias seguidos';
+      case 'ru': return 'Мы сохранили вашу серию! $days дней подряд';
+      case 'tr': return 'Serini bir kez kurtardık! $days gün üst üste';
+      case 'ar': return 'أنقذنا سلسلتك مرة واحدة! $days يوماً متتالياً';
+      case 'it': return 'Abbiamo salvato la tua serie una volta! $days giorni di fila';
+      case 'hi': return 'हमने आपकी स्ट्रीक एक बार बचा ली! लगातार $days दिन';
+      case 'th': return 'เราช่วยสตรีคของคุณไว้หนึ่งครั้ง! ต่อเนื่อง $days วัน';
+      case 'en':
+      default: return 'We saved your streak once! $days days running';
+    }
+  }
+
   String streakMilestoneMessage(int days) {
     switch (days) {
       case 3: return streakMilestone3;
@@ -14603,21 +19772,23 @@ class AppL10n {
   });
 
   // ── 레벨업 배너 ─────────────────────────────────────────────────────────
+  // Build 183: 레벨업 배너 — 레터 중심으로 리프레임. "기능 해금" 이 아니라
+  // "레터 성장" 내러티브.
   String get levelUpBannerTitle => _t({
-    'ko': '새 기능이 해금됐어요',
-    'en': 'New feature unlocked',
-    'ja': '新機能が解放されました',
-    'zh': '解锁新功能',
-    'fr': 'Nouvelle fonctionnalité débloquée',
-    'de': 'Neue Funktion freigeschaltet',
-    'es': 'Nueva función desbloqueada',
-    'pt': 'Novo recurso desbloqueado',
-    'ru': 'Открыта новая функция',
-    'tr': 'Yeni özellik açıldı',
-    'ar': 'تم فتح ميزة جديدة',
-    'it': 'Nuova funzione sbloccata',
-    'hi': 'नई सुविधा खुली',
-    'th': 'ปลดล็อกฟีเจอร์ใหม่',
+    'ko': '레터가 성장했어요',
+    'en': 'Your Letter has grown',
+    'ja': 'Letterが成長しました',
+    'zh': '你的 Letter 成长了',
+    'fr': 'Votre Letter a grandi',
+    'de': 'Dein Letter ist gewachsen',
+    'es': 'Tu Letter ha crecido',
+    'pt': 'Seu Letter cresceu',
+    'ru': 'Ваш Letter вырос',
+    'tr': 'Letter\'ın büyüdü',
+    'ar': 'نما Letter الخاص بك',
+    'it': 'Il tuo Letter è cresciuto',
+    'hi': 'आपका Letter बढ़ा',
+    'th': 'Letter ของคุณเติบโต',
   });
 
   String get userLevelNewbieWelcome => _t({
@@ -14637,21 +19808,22 @@ class AppL10n {
     'th': 'พร้อมส่งจดหมายฉบับแรกหรือยัง?',
   });
 
+  // Build 183: "탑 레벨" → 레터 레벨. 타워 잔상 제거.
   String get userLevelBeginnerWelcome => _t({
-    'ko': '🏠 나의 탑 레벨이 공개되었어요',
-    'en': '🏠 Your tower level is now visible',
-    'ja': '🏠 あなたのタワーレベルが公開されました',
-    'zh': '🏠 你的塔楼等级已公开',
-    'fr': '🏠 Votre niveau de tour est maintenant visible',
-    'de': '🏠 Deine Turm-Stufe ist nun sichtbar',
-    'es': '🏠 Tu nivel de torre ahora es visible',
-    'pt': '🏠 Seu nível de torre agora é visível',
-    'ru': '🏠 Ваш уровень башни теперь виден',
-    'tr': '🏠 Kule seviyen artık görünür',
-    'ar': '🏠 أصبح مستوى برجك مرئيًا',
-    'it': '🏠 Il livello della tua torre è ora visibile',
-    'hi': '🏠 आपका टॉवर स्तर अब दिखाई दे रहा है',
-    'th': '🏠 ระดับหอคอยของคุณแสดงแล้ว',
+    'ko': '✉️ 레터 레벨이 공개되었어요',
+    'en': '✉️ Your Letter level is now visible',
+    'ja': '✉️ Letterレベルが公開されました',
+    'zh': '✉️ 你的 Letter 等级已公开',
+    'fr': '✉️ Votre niveau Letter est désormais visible',
+    'de': '✉️ Dein Letter-Level ist nun sichtbar',
+    'es': '✉️ Tu nivel de Letter ahora es visible',
+    'pt': '✉️ Seu nível de Letter agora é visível',
+    'ru': '✉️ Ваш уровень Letter теперь виден',
+    'tr': '✉️ Letter seviyen artık görünür',
+    'ar': '✉️ أصبح مستوى Letter مرئيًا',
+    'it': '✉️ Il livello del tuo Letter è ora visibile',
+    'hi': '✉️ आपका Letter स्तर अब दिखाई दे रहा है',
+    'th': '✉️ ระดับ Letter ของคุณแสดงแล้ว',
   });
 
   String get userLevelCasualWelcome => _t({
@@ -14993,6 +20165,282 @@ class AppL10n {
     'it': 'Scrivi la tua prima lettera',
     'hi': 'पहला पत्र लिखें',
     'th': 'เขียนจดหมายฉบับแรก',
+  });
+
+  // 🎯 오늘의 영감 통합 카드 헤더 — 요일 테마 + 퀵픽 + 월별 도시를 한 카드로
+  String get composeInspirationHeader => _t({
+    'ko': '오늘의 영감',
+    'en': "Today's inspiration",
+    'ja': '今日のインスピレーション',
+    'zh': '今日灵感',
+    'fr': 'Inspiration du jour',
+    'de': 'Inspiration des Tages',
+    'es': 'Inspiración de hoy',
+    'pt': 'Inspiração de hoje',
+    'ru': 'Сегодняшнее вдохновение',
+    'tr': 'Bugünün ilhamı',
+    'ar': 'إلهام اليوم',
+    'it': "Ispirazione di oggi",
+    'hi': 'आज की प्रेरणा',
+    'th': 'แรงบันดาลใจวันนี้',
+  });
+
+  // 🎯 현재 레벨의 줍기 반경 보너스 — 프로필 XP 카드 하단
+  String xpPickupBonusDesc(int radius, int bonus) {
+    switch (languageCode) {
+      case 'ko':
+        return '줍기 반경 ${radius}m (레벨 보너스 +${bonus}m)';
+      case 'en':
+        return 'Pickup radius ${radius}m (level bonus +${bonus}m)';
+      case 'ja':
+        return '拾える範囲 ${radius}m (レベルボーナス +${bonus}m)';
+      case 'zh':
+        return '拾取范围 ${radius}m (等级加成 +${bonus}m)';
+      case 'fr':
+        return 'Rayon ${radius}m (bonus de niveau +${bonus}m)';
+      case 'de':
+        return 'Aufhebradius ${radius}m (Level-Bonus +${bonus}m)';
+      case 'es':
+        return 'Radio ${radius}m (bonus de nivel +${bonus}m)';
+      case 'pt':
+        return 'Raio ${radius}m (bónus de nível +${bonus}m)';
+      case 'ru':
+        return 'Радиус ${radius}м (бонус уровня +${bonus}м)';
+      case 'tr':
+        return 'Yarıçap ${radius}m (seviye bonusu +${bonus}m)';
+      case 'ar':
+        return 'نطاق ${radius} م (مكافأة المستوى +${bonus} م)';
+      case 'it':
+        return 'Raggio ${radius}m (bonus livello +${bonus}m)';
+      case 'hi':
+        return 'पिकअप ${radius}मी (स्तर बोनस +${bonus}मी)';
+      case 'th':
+        return 'รัศมี ${radius}ม (โบนัสระดับ +${bonus}ม)';
+      default:
+        return 'Pickup radius ${radius}m (+${bonus}m level bonus)';
+    }
+  }
+
+  // 🪙 Level 50 도달 후 포인트 적립 라벨
+  String xpPointsLabel(int points) {
+    switch (languageCode) {
+      case 'ko':
+        return '적립 포인트 · $points P';
+      case 'en':
+        return 'Earned · $points pts';
+      case 'ja':
+        return '積立 · $points P';
+      case 'zh':
+        return '积分 · $points 点';
+      case 'fr':
+        return 'Points · $points';
+      case 'de':
+        return 'Punkte · $points';
+      case 'es':
+        return 'Puntos · $points';
+      case 'pt':
+        return 'Pontos · $points';
+      case 'ru':
+        return 'Очки · $points';
+      case 'tr':
+        return 'Puanlar · $points';
+      case 'ar':
+        return 'النقاط · $points';
+      case 'it':
+        return 'Punti · $points';
+      case 'hi':
+        return 'पॉइंट्स · $points';
+      case 'th':
+        return 'คะแนน · $points';
+      default:
+        return 'Earned · $points pts';
+    }
+  }
+
+  String get xpPointsHint => _t({
+    'ko': '구독 시 사용',
+    'en': 'Use on subscription',
+    'ja': '購読時に利用',
+    'zh': '订阅时使用',
+    'fr': 'Utilisable sur abonnement',
+    'de': 'Für Abo einlösbar',
+    'es': 'Usable en suscripción',
+    'pt': 'Usável na subscrição',
+    'ru': 'Для подписки',
+    'tr': 'Abonelikte kullan',
+    'ar': 'استخدامها في الاشتراك',
+    'it': 'Utilizzabili per abbonamento',
+    'hi': 'सदस्यता पर उपयोग',
+    'th': 'ใช้ตอนสมัคร',
+  });
+
+  // 레벨 마일스톤 바텀시트 — 프로필의 🏆 버튼으로 열림
+  String get xpMilestonesSheetOpen => _t({
+    'ko': '레벨 마일스톤 보기',
+    'en': 'View level milestones',
+    'ja': 'レベルマイルストーンを見る',
+    'zh': '查看等级里程碑',
+    'fr': 'Voir les paliers de niveau',
+    'de': 'Level-Meilensteine ansehen',
+    'es': 'Ver hitos de nivel',
+    'pt': 'Ver marcos de nível',
+    'ru': 'Посмотреть вехи уровней',
+    'tr': 'Seviye kilometre taşlarını gör',
+    'ar': 'عرض محطات المستوى',
+    'it': 'Vedi traguardi di livello',
+    'hi': 'स्तर मील के पत्थर देखें',
+    'th': 'ดูเป้าหมายระดับ',
+  });
+
+  String get xpMilestonesTitle => _t({
+    'ko': '레벨 1 → 50 여정',
+    'en': 'Level 1 → 50 Journey',
+    'ja': 'レベル 1 → 50 の旅',
+    'zh': '等级 1 → 50 之旅',
+    'fr': 'Voyage niveau 1 → 50',
+    'de': 'Reise: Level 1 → 50',
+    'es': 'Viaje Nivel 1 → 50',
+    'pt': 'Jornada Nível 1 → 50',
+    'ru': 'Путь Уровень 1 → 50',
+    'tr': 'Seviye 1 → 50 Yolculuğu',
+    'ar': 'رحلة المستوى 1 → 50',
+    'it': 'Viaggio Livello 1 → 50',
+    'hi': 'स्तर 1 → 50 यात्रा',
+    'th': 'การเดินทางเลเวล 1 → 50',
+  });
+
+  String get xpMilestonesSubtitle => _t({
+    'ko': '5 레벨마다 등급이 진화해요. 편지를 더 많이 주울수록, 멀리 보낼수록 빨라져요.',
+    'en': 'Your tier evolves every 5 levels. Pick up more, send further — climb faster.',
+    'ja': '5レベルごとに称号が進化します。多く拾い、遠くへ送るほど早く上がります。',
+    'zh': '每 5 级称号进化。拾得越多、送得越远，晋升越快。',
+    'fr': 'Votre rang évolue tous les 5 niveaux. Plus vous ramassez et envoyez loin, plus vite vous montez.',
+    'de': 'Dein Rang entwickelt sich alle 5 Level. Mehr sammeln und weiter senden lässt dich schneller aufsteigen.',
+    'es': 'Tu rango evoluciona cada 5 niveles. Recoger más y enviar más lejos acelera tu ascenso.',
+    'pt': 'O teu nível evolui a cada 5 níveis. Apanhar mais e enviar mais longe acelera a subida.',
+    'ru': 'Титул повышается каждые 5 уровней. Собирайте больше, отправляйте дальше — растите быстрее.',
+    'tr': 'Rütbe her 5 seviyede evrilir. Daha çok topla, daha uzağa gönder, daha hızlı yüksel.',
+    'ar': 'تتطور رتبتك كل 5 مستويات. التقط أكثر وأرسل أبعد لترتفع أسرع.',
+    'it': 'Il tuo grado evolve ogni 5 livelli. Raccogli di più e invia più lontano per salire più veloce.',
+    'hi': 'हर 5 स्तर पर आपका रैंक विकसित होता है. अधिक उठाएँ और दूर भेजें — तेज़ी से बढ़ें.',
+    'th': 'ยศจะพัฒนาทุก 5 ระดับ ยิ่งเก็บและส่งไกล ยิ่งไปเร็ว',
+  });
+
+  String xpMilestoneTierLabel(int fromLevel, int toLevel) {
+    switch (languageCode) {
+      case 'ko':
+        return 'Lv $fromLevel–$toLevel';
+      case 'ja':
+      case 'zh':
+        return 'Lv $fromLevel–$toLevel';
+      default:
+        return 'Lv $fromLevel–$toLevel';
+    }
+  }
+
+  String xpMilestoneXpReq(int xp) {
+    switch (languageCode) {
+      case 'ko':
+        return '필요 XP · $xp+';
+      case 'en':
+        return 'Required XP · $xp+';
+      case 'ja':
+        return '必要 XP · $xp+';
+      case 'zh':
+        return '所需 XP · $xp+';
+      case 'fr':
+        return 'XP requis · $xp+';
+      case 'de':
+        return 'Benötigte XP · $xp+';
+      case 'es':
+        return 'XP requerida · $xp+';
+      case 'pt':
+        return 'XP necessário · $xp+';
+      case 'ru':
+        return 'Нужно XP · $xp+';
+      case 'tr':
+        return 'Gerekli XP · $xp+';
+      case 'ar':
+        return 'XP المطلوب · $xp+';
+      case 'it':
+        return 'XP richiesti · $xp+';
+      case 'hi':
+        return 'आवश्यक XP · $xp+';
+      case 'th':
+        return 'XP ที่ต้องการ · $xp+';
+      default:
+        return 'Required XP · $xp+';
+    }
+  }
+
+  String get xpMilestoneCurrent => _t({
+    'ko': '지금 여기',
+    'en': 'You are here',
+    'ja': '現在',
+    'zh': '当前',
+    'fr': 'Vous êtes ici',
+    'de': 'Du bist hier',
+    'es': 'Estás aquí',
+    'pt': 'Está aqui',
+    'ru': 'Вы здесь',
+    'tr': 'Buradasın',
+    'ar': 'أنت هنا',
+    'it': 'Sei qui',
+    'hi': 'आप यहाँ हैं',
+    'th': 'คุณอยู่ที่นี่',
+  });
+
+  String xpMilestonesFootnote(int currentXp) {
+    switch (languageCode) {
+      case 'ko':
+        return '현재 XP · $currentXp · 편지 줍기 +10, 발송 +5, 거리 보너스.';
+      case 'en':
+        return 'Current XP · $currentXp · Pick up +10, send +5, distance bonus.';
+      case 'ja':
+        return '現在のXP · $currentXp · 拾う+10、送信+5、距離ボーナス。';
+      case 'zh':
+        return '当前 XP · $currentXp · 拾起+10、发送+5、距离奖励。';
+      case 'fr':
+        return 'XP actuel · $currentXp · Ramasser +10, envoyer +5, bonus distance.';
+      case 'de':
+        return 'Aktuelle XP · $currentXp · Aufheben +10, Senden +5, Distanz-Bonus.';
+      case 'es':
+        return 'XP actual · $currentXp · Recoger +10, enviar +5, bono distancia.';
+      case 'pt':
+        return 'XP atual · $currentXp · Apanhar +10, enviar +5, bónus distância.';
+      case 'ru':
+        return 'Текущий XP · $currentXp · Подбор +10, отправка +5, бонус за расстояние.';
+      case 'tr':
+        return 'Mevcut XP · $currentXp · Topla +10, gönder +5, mesafe bonusu.';
+      case 'ar':
+        return 'XP الحالي · $currentXp · التقاط +10، إرسال +5، مكافأة مسافة.';
+      case 'it':
+        return 'XP attuali · $currentXp · Raccogli +10, invia +5, bonus distanza.';
+      case 'hi':
+        return 'वर्तमान XP · $currentXp · उठाएँ +10, भेजें +5, दूरी बोनस.';
+      case 'th':
+        return 'XP ปัจจุบัน · $currentXp · เก็บ +10, ส่ง +5, โบนัสระยะทาง.';
+      default:
+        return 'Current XP · $currentXp · Pick up +10, send +5, distance bonus.';
+    }
+  }
+
+  // 헌트 모드 필터(할인권·교환권·브랜드)에서 편지 쓰기 대신 탐험 탭으로 유도
+  String get emptyStateExploreCta => _t({
+    'ko': '지도에서 찾아보기',
+    'en': 'Find on the map',
+    'ja': '地図で探す',
+    'zh': '在地图上寻找',
+    'fr': 'Chercher sur la carte',
+    'de': 'Auf der Karte finden',
+    'es': 'Buscar en el mapa',
+    'pt': 'Procurar no mapa',
+    'ru': 'Искать на карте',
+    'tr': 'Haritada bul',
+    'ar': 'ابحث على الخريطة',
+    'it': 'Cerca sulla mappa',
+    'hi': 'मानचित्र पर ढूंढें',
+    'th': 'ค้นหาบนแผนที่',
   });
 
 }
