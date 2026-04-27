@@ -100,7 +100,7 @@ class _LetterReadScreenState extends State<LetterReadScreen>
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(l10n.letterReadCannotOpenLink(urlStr)),
-          backgroundColor: const Color(0xFF1F2D44),
+          backgroundColor: AppColors.bgSurface,
           behavior: SnackBarBehavior.floating,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(10),
@@ -285,7 +285,7 @@ class _LetterReadScreenState extends State<LetterReadScreen>
               ScaffoldMessenger.of(ctx).showSnackBar(
                 SnackBar(
                   content: Text(l10n.dmBlocked(letter.senderName)),
-                  backgroundColor: const Color(0xFF1F2D44),
+                  backgroundColor: AppColors.bgSurface,
                   behavior: SnackBarBehavior.floating,
                 ),
               );
@@ -357,7 +357,7 @@ class _LetterReadScreenState extends State<LetterReadScreen>
                         border: Border.all(
                           color: selectedReason == r
                               ? AppColors.error.withValues(alpha: 0.6)
-                              : const Color(0xFF1F2D44),
+                              : AppColors.bgSurface,
                         ),
                       ),
                       child: Row(
@@ -405,7 +405,7 @@ class _LetterReadScreenState extends State<LetterReadScreen>
                       border: Border.all(
                         color: selectedReason == 'direct'
                             ? AppColors.error.withValues(alpha: 0.6)
-                            : const Color(0xFF1F2D44),
+                            : AppColors.bgSurface,
                       ),
                     ),
                     child: Row(
@@ -462,13 +462,13 @@ class _LetterReadScreenState extends State<LetterReadScreen>
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(10),
                           borderSide: const BorderSide(
-                            color: Color(0xFF1F2D44),
+                            color: AppColors.bgSurface,
                           ),
                         ),
                         enabledBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(10),
                           borderSide: const BorderSide(
-                            color: Color(0xFF1F2D44),
+                            color: AppColors.bgSurface,
                           ),
                         ),
                         focusedBorder: OutlineInputBorder(
@@ -506,7 +506,7 @@ class _LetterReadScreenState extends State<LetterReadScreen>
                       ScaffoldMessenger.of(ctx).showSnackBar(
                         SnackBar(
                           content: Text(l10n.letterReadReportSubmitted(reason)),
-                          backgroundColor: const Color(0xFF1F2D44),
+                          backgroundColor: AppColors.bgSurface,
                           behavior: SnackBarBehavior.floating,
                         ),
                       );
@@ -531,29 +531,22 @@ class _LetterReadScreenState extends State<LetterReadScreen>
     final l10n = AppL10n.of(ctx.read<AppState>().currentUser.languageCode);
     return Consumer<AppState>(
       builder: (ctx2, state, _) => Container(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        padding: const EdgeInsets.fromLTRB(20, 18, 20, 18),
         decoration: BoxDecoration(
           color: AppColors.bgCard,
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: const Color(0xFF1F2D44)),
+          borderRadius: BorderRadius.circular(22),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Row(
-              children: [
-                const Icon(Icons.star_rounded, color: AppColors.gold, size: 16),
-                const SizedBox(width: 6),
-                Text(
-                  l10n.letterReadRatePrompt,
-                  style: TextStyle(
-                    color: AppColors.gold,
-                    fontSize: 13,
-                    fontWeight: FontWeight.w700,
-                    letterSpacing: 0.3,
-                  ),
-                ),
-              ],
+            Text(
+              l10n.letterReadRatePrompt.toUpperCase(),
+              style: const TextStyle(
+                color: AppColors.textMuted,
+                fontSize: 10,
+                fontWeight: FontWeight.w700,
+                letterSpacing: 0.66,
+              ),
             ),
             const SizedBox(height: 14),
             // 별점 + 좋아요 + 인증/신고 (Flexible + spaceBetween 으로 오버플로우 방지)
@@ -615,31 +608,30 @@ class _LetterReadScreenState extends State<LetterReadScreen>
                     ),
                     decoration: BoxDecoration(
                       color: _hasLiked
-                          ? AppColors.gold.withValues(alpha: 0.15)
+                          ? AppColors.coupon
                           : AppColors.bgSurface,
-                      borderRadius: BorderRadius.circular(10),
-                      border: Border.all(
-                        color: _hasLiked
-                            ? AppColors.gold.withValues(alpha: 0.5)
-                            : const Color(0xFF1F2D44),
-                      ),
+                      borderRadius: BorderRadius.circular(999),
                     ),
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Text(
-                          _hasLiked ? '❤️' : '🤍',
-                          style: const TextStyle(fontSize: 18),
+                        Icon(
+                          _hasLiked ? Icons.favorite : Icons.favorite_border,
+                          size: 16,
+                          color: _hasLiked
+                              ? const Color(0xFF1A0008)
+                              : AppColors.textSecondary,
                         ),
-                        const SizedBox(width: 5),
+                        const SizedBox(width: 6),
                         Text(
                           '${letter.likeCount}',
                           style: TextStyle(
                             color: _hasLiked
-                                ? AppColors.gold
-                                : AppColors.textMuted,
-                            fontSize: 14,
-                            fontWeight: FontWeight.w700,
+                                ? const Color(0xFF1A0008)
+                                : AppColors.textPrimary,
+                            fontSize: 13,
+                            fontWeight: FontWeight.w800,
+                            letterSpacing: -0.1,
                           ),
                         ),
                       ],
@@ -657,16 +649,16 @@ class _LetterReadScreenState extends State<LetterReadScreen>
                         vertical: 6,
                       ),
                       decoration: BoxDecoration(
-                        color: const Color(0xFFFF8A5C).withValues(alpha: 0.1),
+                        color: AppColors.coupon.withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(8),
                         border: Border.all(
-                          color: const Color(0xFFFF8A5C).withValues(alpha: 0.3),
+                          color: AppColors.coupon.withValues(alpha: 0.3),
                         ),
                       ),
                       child: Text(
                         l10n.letterReadVerifiedAccount,
                         style: TextStyle(
-                          color: Color(0xFFFF8A5C),
+                          color: AppColors.coupon,
                           fontSize: 11,
                           fontWeight: FontWeight.w700,
                         ),
@@ -811,29 +803,25 @@ class _LetterReadScreenState extends State<LetterReadScreen>
   Widget _buildSenderCard(Letter letter) {
     final l10n = AppL10n.of(context.read<AppState>().currentUser.languageCode);
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
         color: AppColors.bgCard,
-        borderRadius: BorderRadius.circular(18),
-        border: Border.all(
-          color: AppColors.gold.withValues(alpha: 0.25),
-          width: 1,
-        ),
+        borderRadius: BorderRadius.circular(22),
       ),
       child: Row(
         children: [
-          // 국가 플래그
+          // 국가 플래그 — 클린 원형
           Container(
-            width: 56,
-            height: 56,
-            decoration: BoxDecoration(
+            width: 52,
+            height: 52,
+            decoration: const BoxDecoration(
               color: AppColors.bgSurface,
-              borderRadius: BorderRadius.circular(14),
+              shape: BoxShape.circle,
             ),
             child: Center(
               child: Text(
                 letter.senderCountryFlag,
-                style: const TextStyle(fontSize: 30),
+                style: const TextStyle(fontSize: 26),
               ),
             ),
           ),
@@ -849,59 +837,45 @@ class _LetterReadScreenState extends State<LetterReadScreen>
                         letter.isAnonymous ? l10n.letterReadAnonymousSender : letter.senderName,
                         style: const TextStyle(
                           color: AppColors.textPrimary,
-                          fontSize: 16,
-                          fontWeight: FontWeight.w700,
+                          fontSize: 17,
+                          fontWeight: FontWeight.w800,
+                          letterSpacing: -0.3,
                         ),
                       ),
                     ),
-                    // 브랜드 인증 배지
+                    // 브랜드 인증 배지 — v5 coupon pill
                     if (letter.senderIsBrand) ...[
                       const SizedBox(width: 6),
                       Container(
                         padding: const EdgeInsets.symmetric(
                           horizontal: 7,
-                          vertical: 3,
+                          vertical: 2,
                         ),
                         decoration: BoxDecoration(
-                          color: const Color(
-                            0xFFFF8A5C,
-                          ).withValues(alpha: 0.15),
-                          borderRadius: BorderRadius.circular(6),
-                          border: Border.all(
-                            color: const Color(
-                              0xFFFF8A5C,
-                            ).withValues(alpha: 0.4),
-                          ),
+                          color: AppColors.coupon,
+                          borderRadius: BorderRadius.circular(999),
                         ),
                         child: Text(
-                          l10n.letterReadVerifiedBadge,
-                          style: TextStyle(
-                            color: Color(0xFFFF8A5C),
-                            fontSize: 10,
+                          l10n.letterReadVerifiedBadge.toUpperCase(),
+                          style: const TextStyle(
+                            color: Color(0xFF1A0008),
+                            fontSize: 9,
                             fontWeight: FontWeight.w800,
+                            letterSpacing: 0.4,
                           ),
                         ),
                       ),
                     ],
                   ],
                 ),
-                const SizedBox(height: 3),
-                Row(
-                  children: [
-                    const Icon(
-                      Icons.flight_takeoff_rounded,
-                      size: 12,
-                      color: AppColors.gold,
-                    ),
-                    const SizedBox(width: 4),
-                    Text(
-                      l10n.letterReadDepartedFrom(CountryL10n.localizedName(letter.senderCountry, l10n.languageCode)),
-                      style: const TextStyle(
-                        color: AppColors.gold,
-                        fontSize: 12,
-                      ),
-                    ),
-                  ],
+                const SizedBox(height: 4),
+                Text(
+                  l10n.letterReadDepartedFrom(CountryL10n.localizedName(letter.senderCountry, l10n.languageCode)),
+                  style: const TextStyle(
+                    color: AppColors.textSecondary,
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
                 const SizedBox(height: 2),
                 Text(
@@ -909,6 +883,7 @@ class _LetterReadScreenState extends State<LetterReadScreen>
                   style: const TextStyle(
                     color: AppColors.textMuted,
                     fontSize: 11,
+                    fontWeight: FontWeight.w500,
                   ),
                 ),
                 // SNS 링크 + 팔로우 버튼 (하단 행)
@@ -1008,7 +983,7 @@ class _LetterReadScreenState extends State<LetterReadScreen>
                                   border: Border.all(
                                     color: isFollowing
                                         ? AppColors.teal.withValues(alpha: 0.5)
-                                        : const Color(0xFF1F2D44),
+                                        : AppColors.bgSurface,
                                   ),
                                 ),
                                 child: Text(
@@ -1039,37 +1014,44 @@ class _LetterReadScreenState extends State<LetterReadScreen>
   Widget _buildChatInviteCard(BuildContext ctx, Letter letter, AppState state) {
     final l10n = AppL10n.of(state.currentUser.languageCode);
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.fromLTRB(20, 18, 20, 18),
       decoration: BoxDecoration(
-        color: const Color(0xFF0D1F35),
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.teal.withValues(alpha: 0.4)),
+        color: AppColors.letter,
+        borderRadius: BorderRadius.circular(22),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            children: [
-              const Text('⚡', style: TextStyle(fontSize: 16)),
-              const SizedBox(width: 8),
-              Expanded(
-                child: Text(
-                  l10n.letterReadMutualFollow(letter.senderName),
-                  style: const TextStyle(
-                    color: AppColors.textPrimary,
-                    fontSize: 14,
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-              ),
-            ],
+          const Text(
+            'MUTUAL FOLLOW',
+            style: TextStyle(
+              color: Color(0xB30A1A00),
+              fontSize: 10,
+              fontWeight: FontWeight.w700,
+              letterSpacing: 0.66,
+            ),
           ),
-          const SizedBox(height: 6),
+          const SizedBox(height: 8),
+          Text(
+            l10n.letterReadMutualFollow(letter.senderName),
+            style: const TextStyle(
+              color: Color(0xFF0A1A00),
+              fontSize: 18,
+              fontWeight: FontWeight.w800,
+              letterSpacing: -0.4,
+              height: 1.2,
+            ),
+          ),
+          const SizedBox(height: 4),
           Text(
             l10n.letterReadStartChatPrompt,
-            style: TextStyle(color: AppColors.textSecondary, fontSize: 12),
+            style: const TextStyle(
+              color: Color(0xA60A1A00),
+              fontSize: 13,
+              fontWeight: FontWeight.w600,
+            ),
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: 16),
           Row(
             children: [
               Expanded(
@@ -1088,22 +1070,19 @@ class _LetterReadScreenState extends State<LetterReadScreen>
                     );
                   },
                   child: Container(
-                    padding: const EdgeInsets.symmetric(vertical: 10),
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                    alignment: Alignment.center,
                     decoration: BoxDecoration(
-                      color: AppColors.teal.withValues(alpha: 0.15),
-                      borderRadius: BorderRadius.circular(10),
-                      border: Border.all(
-                        color: AppColors.teal.withValues(alpha: 0.5),
-                      ),
+                      color: AppColors.bgDeep,
+                      borderRadius: BorderRadius.circular(14),
                     ),
-                    child: Center(
-                      child: Text(
-                        l10n.letterReadStartChat,
-                        style: TextStyle(
-                          color: AppColors.teal,
-                          fontSize: 13,
-                          fontWeight: FontWeight.w700,
-                        ),
+                    child: Text(
+                      l10n.letterReadStartChat,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 14,
+                        fontWeight: FontWeight.w800,
+                        letterSpacing: -0.2,
                       ),
                     ),
                   ),
@@ -1115,16 +1094,19 @@ class _LetterReadScreenState extends State<LetterReadScreen>
                 child: Container(
                   padding: const EdgeInsets.symmetric(
                     horizontal: 16,
-                    vertical: 10,
+                    vertical: 14,
                   ),
                   decoration: BoxDecoration(
-                    color: AppColors.bgSurface,
-                    borderRadius: BorderRadius.circular(10),
-                    border: Border.all(color: const Color(0xFF1F2D44)),
+                    color: const Color(0x140A1A00),
+                    borderRadius: BorderRadius.circular(14),
                   ),
-                  child: Text(
-                    l10n.letterReadLater,
-                    style: const TextStyle(color: AppColors.textMuted, fontSize: 13),
+                  child: const Text(
+                    '나중에',
+                    style: TextStyle(
+                      color: Color(0xCC0A1A00),
+                      fontSize: 14,
+                      fontWeight: FontWeight.w700,
+                    ),
                   ),
                 ),
               ),
@@ -1137,31 +1119,44 @@ class _LetterReadScreenState extends State<LetterReadScreen>
 
   Widget _buildDMButton(BuildContext ctx, Letter letter) {
     final l10n = AppL10n.of(ctx.read<AppState>().currentUser.languageCode);
-    return SizedBox(
-      width: double.infinity,
-      height: 48,
-      child: OutlinedButton.icon(
-        onPressed: () => Navigator.push(
-          ctx,
-          MaterialPageRoute(
-            builder: (_) => DmConversationScreen(
-              partnerId: letter.senderId,
-              partnerName: letter.senderName,
-              partnerFlag: letter.senderCountryFlag,
+    return GestureDetector(
+      onTap: () => Navigator.push(
+        ctx,
+        MaterialPageRoute(
+          builder: (_) => DmConversationScreen(
+            partnerId: letter.senderId,
+            partnerName: letter.senderName,
+            partnerFlag: letter.senderCountryFlag,
+          ),
+        ),
+      ),
+      child: Container(
+        width: double.infinity,
+        height: 52,
+        alignment: Alignment.center,
+        decoration: BoxDecoration(
+          color: AppColors.bgCard,
+          borderRadius: BorderRadius.circular(16),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Icon(
+              Icons.chat_bubble_outline_rounded,
+              size: 16,
+              color: AppColors.textPrimary,
             ),
-          ),
-        ),
-        icon: const Text('💬', style: TextStyle(fontSize: 16)),
-        label: Text(
-          l10n.letterReadDmChat(letter.senderName),
-          style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
-        ),
-        style: OutlinedButton.styleFrom(
-          foregroundColor: AppColors.teal,
-          side: BorderSide(color: AppColors.teal.withValues(alpha: 0.5)),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(14),
-          ),
+            const SizedBox(width: 8),
+            Text(
+              l10n.letterReadDmChat(letter.senderName),
+              style: const TextStyle(
+                color: AppColors.textPrimary,
+                fontSize: 14,
+                fontWeight: FontWeight.w700,
+                letterSpacing: -0.1,
+              ),
+            ),
+          ],
         ),
       ),
     );
@@ -1175,23 +1170,19 @@ class _LetterReadScreenState extends State<LetterReadScreen>
     final toLang = widget.userLanguageCode;
     final canTranslate = fromLang != toLang;
     return ClipRRect(
-      borderRadius: BorderRadius.circular(20),
+      borderRadius: BorderRadius.circular(24),
       child: CustomPaint(
         painter: LetterPaperPainter(paper),
         child: Container(
           width: double.infinity,
           padding: const EdgeInsets.all(24),
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(20),
-            border: Border.all(
-              color: AppColors.gold.withValues(alpha: 0.15),
-              width: 1,
-            ),
+            borderRadius: BorderRadius.circular(24),
             boxShadow: [
               BoxShadow(
-                color: AppColors.gold.withValues(alpha: 0.05),
-                blurRadius: 20,
-                spreadRadius: 5,
+                color: Colors.black.withValues(alpha: 0.4),
+                blurRadius: 32,
+                offset: const Offset(0, 12),
               ),
             ],
           ),
@@ -1230,43 +1221,32 @@ class _LetterReadScreenState extends State<LetterReadScreen>
                         vertical: 5,
                       ),
                       decoration: BoxDecoration(
-                        gradient: const LinearGradient(
-                          colors: [Color(0xFFFF8C00), Color(0xFFFFD700)],
-                        ),
-                        borderRadius: BorderRadius.circular(6),
-                        boxShadow: [
-                          BoxShadow(
-                            color: const Color(0xFFFF8C00).withValues(alpha: 0.35),
-                            blurRadius: 8,
-                            offset: const Offset(0, 2),
-                          ),
-                        ],
+                        color: AppColors.coupon,
+                        borderRadius: BorderRadius.circular(999),
                       ),
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          const Text('🏢', style: TextStyle(fontSize: 12)),
-                          const SizedBox(width: 5),
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             mainAxisSize: MainAxisSize.min,
                             children: [
                               Text(
-                                l10n.labelBrandLetter,
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 9,
+                                l10n.labelBrandLetter.toUpperCase(),
+                                style: const TextStyle(
+                                  color: Color(0xFF1A0008),
+                                  fontSize: 10,
                                   fontWeight: FontWeight.w800,
-                                  letterSpacing: 1.2,
+                                  letterSpacing: 0.6,
                                 ),
                               ),
                               if (letter.letterType == LetterType.brandExpress)
                                 const Text(
-                                  '⚡ EXPRESS DELIVERY',
+                                  '⚡ EXPRESS',
                                   style: TextStyle(
-                                    color: Colors.white,
+                                    color: Color(0xFF1A0008),
                                     fontSize: 8,
-                                    fontWeight: FontWeight.w600,
+                                    fontWeight: FontWeight.w700,
                                     letterSpacing: 0.8,
                                   ),
                                 ),
@@ -1330,15 +1310,12 @@ class _LetterReadScreenState extends State<LetterReadScreen>
                   },
                   child: Container(
                     padding: const EdgeInsets.symmetric(
-                      horizontal: 12,
-                      vertical: 7,
+                      horizontal: 14,
+                      vertical: 8,
                     ),
                     decoration: BoxDecoration(
-                      color: AppColors.teal.withValues(alpha: 0.1),
-                      borderRadius: BorderRadius.circular(8),
-                      border: Border.all(
-                        color: AppColors.teal.withValues(alpha: 0.3),
-                      ),
+                      color: AppColors.bgDeep,
+                      borderRadius: BorderRadius.circular(999),
                     ),
                     child: _isTranslating
                         ? const SizedBox(
@@ -1346,16 +1323,30 @@ class _LetterReadScreenState extends State<LetterReadScreen>
                             height: 14,
                             child: CircularProgressIndicator(
                               strokeWidth: 2,
-                              color: AppColors.teal,
+                              color: Colors.white,
                             ),
                           )
-                        : Text(
-                            _isTranslated ? l10n.letterReadShowOriginal : l10n.letterReadTranslate,
-                            style: const TextStyle(
-                              color: AppColors.teal,
-                              fontSize: 12,
-                              fontWeight: FontWeight.w600,
-                            ),
+                        : Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              const Icon(
+                                Icons.translate_rounded,
+                                size: 14,
+                                color: Colors.white,
+                              ),
+                              const SizedBox(width: 6),
+                              Text(
+                                _isTranslated
+                                    ? l10n.letterReadShowOriginal
+                                    : l10n.letterReadTranslate,
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w800,
+                                  letterSpacing: -0.1,
+                                ),
+                              ),
+                            ],
                           ),
                   ),
                 ),
@@ -1486,79 +1477,85 @@ class _LetterReadScreenState extends State<LetterReadScreen>
   Widget _buildJourneyCard(Letter letter) {
     final l10n = AppL10n.of(context.read<AppState>().currentUser.languageCode);
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.fromLTRB(20, 18, 20, 18),
       decoration: BoxDecoration(
         color: AppColors.bgCard,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: const Color(0xFF1F2D44)),
+        borderRadius: BorderRadius.circular(22),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            children: [
-              const Icon(Icons.route_rounded, color: AppColors.teal, size: 16),
-              const SizedBox(width: 6),
-              Text(
-                l10n.letterReadDeliveryJourney,
-                style: TextStyle(
-                  color: AppColors.textSecondary,
-                  fontSize: 13,
-                  fontWeight: FontWeight.w600,
-                  letterSpacing: 1.0,
-                ),
-              ),
-            ],
+          Text(
+            l10n.letterReadDeliveryJourney.toUpperCase(),
+            style: const TextStyle(
+              color: AppColors.textMuted,
+              fontSize: 10,
+              fontWeight: FontWeight.w700,
+              letterSpacing: 0.66,
+            ),
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: 14),
+          // 큰 IATA 스타일 라우트
           Row(
             children: [
               Text(
                 letter.senderCountryFlag,
-                style: const TextStyle(fontSize: 24),
+                style: const TextStyle(fontSize: 28),
               ),
+              const SizedBox(width: 12),
               Expanded(
                 child: Stack(
                   alignment: Alignment.center,
                   children: [
+                    Container(height: 0.5, color: AppColors.bgSurface),
                     Container(
-                      height: 1,
-                      color: AppColors.gold.withValues(alpha: 0.3),
-                    ),
-                    const Icon(
-                      Icons.flight_rounded,
-                      color: AppColors.gold,
-                      size: 18,
+                      padding: const EdgeInsets.symmetric(horizontal: 8),
+                      color: AppColors.bgCard,
+                      child: const Text(
+                        '→',
+                        style: TextStyle(
+                          color: AppColors.textPrimary,
+                          fontSize: 18,
+                          fontWeight: FontWeight.w800,
+                        ),
+                      ),
                     ),
                   ],
                 ),
               ),
+              const SizedBox(width: 12),
               Text(
                 letter.destinationCountryFlag,
-                style: const TextStyle(fontSize: 24),
+                style: const TextStyle(fontSize: 28),
               ),
             ],
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: 12),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
                 CountryL10n.localizedName(letter.senderCountry, l10n.languageCode),
                 style: const TextStyle(
-                  color: AppColors.textMuted,
-                  fontSize: 11,
+                  color: AppColors.textSecondary,
+                  fontSize: 12,
+                  fontWeight: FontWeight.w600,
                 ),
               ),
               Text(
                 '${_calcDistance(letter)} km',
-                style: const TextStyle(color: AppColors.teal, fontSize: 11),
+                style: const TextStyle(
+                  color: AppColors.gold,
+                  fontSize: 12,
+                  fontWeight: FontWeight.w700,
+                ),
               ),
               Text(
                 CountryL10n.localizedName(letter.destinationCountry, l10n.languageCode),
                 style: const TextStyle(
-                  color: AppColors.textMuted,
-                  fontSize: 11,
+                  color: AppColors.textSecondary,
+                  fontSize: 12,
+                  fontWeight: FontWeight.w600,
                 ),
               ),
             ],
@@ -1571,50 +1568,45 @@ class _LetterReadScreenState extends State<LetterReadScreen>
   Widget _buildReplyButton(BuildContext ctx, Letter letter) {
     final l10n = AppL10n.of(ctx.read<AppState>().currentUser.languageCode);
     final alreadyReplied = letter.hasReplied;
-    return SizedBox(
-      width: double.infinity,
-      height: 54,
-      child: ElevatedButton(
-        onPressed: alreadyReplied
-            ? null
-            : () => Navigator.push(
-                ctx,
-                MaterialPageRoute(
-                  builder: (_) => ComposeScreen(
-                    replyToId: letter.id,
-                    replyToName: letter.isAnonymous ? l10n.letterReadAnonymous : letter.senderName,
-                  ),
+    return GestureDetector(
+      onTap: alreadyReplied
+          ? null
+          : () => Navigator.push(
+              ctx,
+              MaterialPageRoute(
+                builder: (_) => ComposeScreen(
+                  replyToId: letter.id,
+                  replyToName: letter.isAnonymous ? l10n.letterReadAnonymous : letter.senderName,
                 ),
               ),
-        style: ElevatedButton.styleFrom(
-          backgroundColor: alreadyReplied
+            ),
+      child: Container(
+        width: double.infinity,
+        height: 56,
+        alignment: Alignment.center,
+        decoration: BoxDecoration(
+          color: alreadyReplied
               ? AppColors.bgSurface
-              : AppColors.bgCard,
-          foregroundColor: alreadyReplied
-              ? AppColors.textMuted
-              : AppColors.gold,
-          side: BorderSide(
-            color: alreadyReplied ? const Color(0xFF1F2D44) : AppColors.gold,
-            width: 1.5,
-          ),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(14),
-          ),
+              : AppColors.textPrimary,
+          borderRadius: BorderRadius.circular(16),
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text(
-              alreadyReplied ? '✅' : '💌',
-              style: const TextStyle(fontSize: 18),
-            ),
-            const SizedBox(width: 8),
+            if (alreadyReplied)
+              const Icon(
+                Icons.check_rounded,
+                size: 18,
+                color: AppColors.textMuted,
+              ),
+            if (alreadyReplied) const SizedBox(width: 8),
             Text(
               alreadyReplied ? l10n.letterReadReplied : l10n.letterReadReply,
-              style: const TextStyle(
-                fontSize: 15,
-                fontWeight: FontWeight.w700,
-                letterSpacing: 0.5,
+              style: TextStyle(
+                color: alreadyReplied ? AppColors.textMuted : AppColors.bgDeep,
+                fontSize: 16,
+                fontWeight: FontWeight.w800,
+                letterSpacing: -0.2,
               ),
             ),
           ],

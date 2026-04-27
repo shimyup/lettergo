@@ -1202,32 +1202,36 @@ class _WorldMapScreenState extends State<WorldMapScreen>
       isScrollControlled: true,
       builder: (_) => Container(
         decoration: const BoxDecoration(
-          color: Color(0xFF1A2535),
-          borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+          color: AppColors.bgCard,
+          borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
         ),
-        padding: const EdgeInsets.fromLTRB(20, 12, 20, 32),
+        padding: const EdgeInsets.fromLTRB(20, 14, 20, 32),
         child: Column(
           mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // 핸들
-            Container(
-              width: 40,
-              height: 4,
-              margin: const EdgeInsets.only(bottom: 16),
-              decoration: BoxDecoration(
-                color: Colors.white.withValues(alpha: 0.2),
-                borderRadius: BorderRadius.circular(2),
+            Center(
+              child: Container(
+                width: 36,
+                height: 5,
+                margin: const EdgeInsets.only(bottom: 18),
+                decoration: BoxDecoration(
+                  color: AppColors.textMuted.withValues(alpha: 0.35),
+                  borderRadius: BorderRadius.circular(999),
+                ),
               ),
             ),
             Text(
-              l10n.mapWhatsHere,
+              l10n.mapWhatsHere.toUpperCase(),
               style: const TextStyle(
-                color: Colors.white,
-                fontSize: 15,
+                color: AppColors.textMuted,
+                fontSize: 11,
                 fontWeight: FontWeight.w700,
+                letterSpacing: 0.66,
               ),
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: 12),
             // 내 타워 버튼
             _DisambiguationTile(
               icon: state.currentUser.activityScore.tier.emoji,
@@ -1273,24 +1277,35 @@ class _WorldMapScreenState extends State<WorldMapScreen>
       isScrollControlled: true,
       useSafeArea: true,
       builder: (_) => Container(
-        margin: const EdgeInsets.fromLTRB(12, 12, 12, 16),
-        padding: const EdgeInsets.fromLTRB(16, 16, 16, 16),
+        margin: const EdgeInsets.fromLTRB(12, 12, 12, 24),
+        padding: const EdgeInsets.fromLTRB(20, 18, 20, 18),
         decoration: BoxDecoration(
           color: AppColors.bgCard,
           borderRadius: BorderRadius.circular(24),
-          border: Border.all(
-            color: AppColors.textMuted.withValues(alpha: 0.25),
-          ),
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            // 드래그 핸들
+            Center(
+              child: Container(
+                width: 36,
+                height: 5,
+                decoration: BoxDecoration(
+                  color: AppColors.textMuted.withValues(alpha: 0.35),
+                  borderRadius: BorderRadius.circular(999),
+                ),
+              ),
+            ),
+            const SizedBox(height: 14),
             Text(
-              '🏘️ ${l10n.mapNearbyTowers(towers.length)}',
+              l10n.mapNearbyTowers(towers.length).toUpperCase(),
               style: const TextStyle(
-                color: AppColors.textPrimary,
-                fontSize: 15,
+                color: AppColors.textMuted,
+                fontSize: 11,
                 fontWeight: FontWeight.w700,
+                letterSpacing: 0.66,
               ),
             ),
             const SizedBox(height: 12),
@@ -1310,28 +1325,29 @@ class _WorldMapScreenState extends State<WorldMapScreen>
                   },
                   child: Container(
                     padding: const EdgeInsets.symmetric(
-                      horizontal: 14,
-                      vertical: 12,
+                      horizontal: 16,
+                      vertical: 14,
                     ),
                     decoration: BoxDecoration(
                       color: AppColors.bgSurface,
-                      borderRadius: BorderRadius.circular(14),
-                      border: Border.all(
-                        color: tierColor.withValues(alpha: 0.4),
-                      ),
+                      borderRadius: BorderRadius.circular(16),
                     ),
                     child: Row(
                       children: [
-                        Text(
-                          u.tier.emoji,
-                          style: const TextStyle(fontSize: 24),
+                        Container(
+                          width: 36,
+                          height: 36,
+                          alignment: Alignment.center,
+                          decoration: BoxDecoration(
+                            color: tierColor,
+                            shape: BoxShape.circle,
+                          ),
+                          child: Text(
+                            u.flag,
+                            style: const TextStyle(fontSize: 18),
+                          ),
                         ),
-                        const SizedBox(width: 10),
-                        Text(
-                          u.flag,
-                          style: const TextStyle(fontSize: 18),
-                        ),
-                        const SizedBox(width: 10),
+                        const SizedBox(width: 12),
                         Expanded(
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
@@ -1340,26 +1356,29 @@ class _WorldMapScreenState extends State<WorldMapScreen>
                                 name,
                                 style: const TextStyle(
                                   color: AppColors.textPrimary,
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w600,
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.w700,
+                                  letterSpacing: -0.2,
                                 ),
                                 overflow: TextOverflow.ellipsis,
                               ),
+                              const SizedBox(height: 2),
                               Text(
                                 '${u.tier.name.toUpperCase()} · ${u.floors}F',
-                                style: TextStyle(
-                                  color: tierColor,
+                                style: const TextStyle(
+                                  color: AppColors.textMuted,
                                   fontSize: 11,
-                                  fontWeight: FontWeight.w500,
+                                  fontWeight: FontWeight.w700,
+                                  letterSpacing: 0.4,
                                 ),
                               ),
                             ],
                           ),
                         ),
-                        Icon(
+                        const Icon(
                           Icons.chevron_right,
                           color: AppColors.textMuted,
-                          size: 20,
+                          size: 18,
                         ),
                       ],
                     ),
@@ -1614,7 +1633,7 @@ class _WorldMapScreenState extends State<WorldMapScreen>
                 decoration: BoxDecoration(
                   color: AppColors.bgSurface,
                   borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: const Color(0xFF1F2D44)),
+                  border: Border.all(color: AppColors.bgSurface),
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -1918,7 +1937,7 @@ class _MyLocationButtonState extends State<_MyLocationButton> {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(l10n.mapLocationPermissionRequired),
-              backgroundColor: const Color(0xFF1F2D44),
+              backgroundColor: AppColors.bgSurface,
             ),
           );
         }
@@ -1936,7 +1955,7 @@ class _MyLocationButtonState extends State<_MyLocationButton> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(l10n.mapCannotGetLocation),
-            backgroundColor: const Color(0xFF1F2D44),
+            backgroundColor: AppColors.bgSurface,
           ),
         );
       }
@@ -2119,7 +2138,7 @@ class _TransportMarker extends StatelessWidget {
         final tierGlowColor = isBrandExpress
             ? const Color(0xFFFFD700)
             : letter.senderTier == LetterSenderTier.brand
-            ? const Color(0xFFFF8A5C)
+            ? AppColors.coupon
             : letter.senderTier == LetterSenderTier.premium
             ? AppColors.gold
             : color;
@@ -2223,7 +2242,7 @@ class _TransportMarker extends StatelessWidget {
                   width: 10,
                   height: 10,
                   decoration: BoxDecoration(
-                    color: const Color(0xFFFF8A5C),
+                    color: AppColors.coupon,
                     shape: BoxShape.circle,
                     border: Border.all(color: Colors.black26, width: 0.5),
                   ),
@@ -2314,7 +2333,7 @@ class _UnreadDeliveredMarker extends StatelessWidget {
 
         // 등급별 글로우 색상
         final glowColor = showAsBrand
-            ? const Color(0xFFFF8A5C)
+            ? AppColors.coupon
             : showAsPremium
             ? AppColors.gold
             : Colors.white;
@@ -2399,14 +2418,14 @@ class _UnreadDeliveredMarker extends StatelessWidget {
                   color: const Color(0xFF3A1F10).withValues(alpha: 0.9),
                   borderRadius: BorderRadius.circular(4),
                   border: Border.all(
-                    color: const Color(0xFFFF8A5C).withValues(alpha: 0.5),
+                    color: AppColors.coupon.withValues(alpha: 0.5),
                     width: 0.5,
                   ),
                 ),
                 child: Text(
                   letter.senderName,
                   style: const TextStyle(
-                    color: Color(0xFFFF8A5C),
+                    color: AppColors.coupon,
                     fontSize: 8,
                     fontWeight: FontWeight.w700,
                     letterSpacing: 0.2,
@@ -2895,49 +2914,93 @@ class _PickupSheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isBrand = letter.senderIsBrand ||
+        letter.letterType == LetterType.brandExpress;
+    final cardColor = isBrand ? AppColors.coupon : AppColors.letter;
+    final ink = isBrand
+        ? const Color(0xFF1A0008)
+        : const Color(0xFF0A1A00);
+
     return Container(
-      margin: const EdgeInsets.all(12),
-      padding: const EdgeInsets.all(20),
+      margin: const EdgeInsets.fromLTRB(12, 12, 12, 24),
+      padding: const EdgeInsets.fromLTRB(22, 20, 22, 20),
       decoration: BoxDecoration(
-        color: AppColors.bgCard,
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: AppColors.gold.withValues(alpha: 0.3)),
+        color: cardColor,
+        borderRadius: BorderRadius.circular(24),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.4),
+            blurRadius: 32,
+            offset: const Offset(0, 12),
+          ),
+        ],
       ),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
         children: [
-          const Text('📩', style: TextStyle(fontSize: 40)),
+          // eyebrow
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                (isBrand ? 'BRAND' : 'LETTER').padRight(0),
+                style: TextStyle(
+                  color: ink.withValues(alpha: 0.7),
+                  fontSize: 11,
+                  fontWeight: FontWeight.w700,
+                  letterSpacing: 0.66,
+                ),
+              ),
+              Text(
+                letter.senderCountryFlag,
+                style: const TextStyle(fontSize: 18),
+              ),
+            ],
+          ),
           const SizedBox(height: 12),
+          // 큰 타이틀 — 발신지
           Text(
-            '${letter.senderCountryFlag} ${l10n.mapLetterFrom(CountryL10n.localizedName(letter.senderCountry, langCode))}',
-            style: const TextStyle(
-              color: AppColors.textPrimary,
-              fontSize: 16,
-              fontWeight: FontWeight.w700,
+            l10n.mapLetterFrom(
+              CountryL10n.localizedName(letter.senderCountry, langCode),
+            ),
+            style: TextStyle(
+              color: ink,
+              fontSize: 22,
+              fontWeight: FontWeight.w800,
+              letterSpacing: -0.6,
+              height: 1.15,
             ),
           ),
-          const SizedBox(height: 6),
+          const SizedBox(height: 4),
           Text(
             letter.senderName,
-            style: const TextStyle(color: AppColors.textMuted, fontSize: 13),
+            style: TextStyle(
+              color: ink.withValues(alpha: 0.65),
+              fontSize: 13,
+              fontWeight: FontWeight.w600,
+            ),
           ),
           const SizedBox(height: 20),
-          SizedBox(
-            width: double.infinity,
-            child: ElevatedButton(
-              onPressed: onPickup,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.gold,
-                foregroundColor: AppColors.bgDeep,
-                padding: const EdgeInsets.symmetric(vertical: 14),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(14),
-                ),
-                elevation: 0,
+          // CTA — 검정 pill
+          GestureDetector(
+            onTap: onPickup,
+            child: Container(
+              width: double.infinity,
+              padding: const EdgeInsets.symmetric(vertical: 16),
+              alignment: Alignment.center,
+              decoration: BoxDecoration(
+                color: AppColors.bgDeep,
+                borderRadius: BorderRadius.circular(14),
               ),
               child: Text(
                 l10n.mapPickUpLetter,
-                style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700),
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 15,
+                  fontWeight: FontWeight.w800,
+                  letterSpacing: -0.2,
+                ),
               ),
             ),
           ),
@@ -2970,12 +3033,11 @@ class _TransitInfoSheet extends StatelessWidget {
     final seg = letter.currentSegment;
     return SingleChildScrollView(
       child: Container(
-        margin: const EdgeInsets.all(12),
-        padding: const EdgeInsets.fromLTRB(20, 20, 20, 28),
+        margin: const EdgeInsets.fromLTRB(12, 12, 12, 24),
+        padding: const EdgeInsets.fromLTRB(22, 14, 22, 28),
         decoration: BoxDecoration(
           color: AppColors.bgCard,
-          borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: AppColors.teal.withValues(alpha: 0.2)),
+          borderRadius: BorderRadius.circular(24),
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -2985,61 +3047,46 @@ class _TransitInfoSheet extends StatelessWidget {
             Center(
               child: Container(
                 width: 36,
-                height: 4,
+                height: 5,
                 decoration: BoxDecoration(
-                  color: AppColors.textMuted.withValues(alpha: 0.4),
-                  borderRadius: BorderRadius.circular(2),
+                  color: AppColors.textMuted.withValues(alpha: 0.35),
+                  borderRadius: BorderRadius.circular(999),
                 ),
               ),
             ),
-            const SizedBox(height: 16),
-            // 헤더: 운송수단 + 발신→수신국
-            Row(
-              children: [
-                Container(
-                  width: 48,
-                  height: 48,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: AppColors.teal.withValues(alpha: 0.12),
-                    border: Border.all(
-                      color: AppColors.teal.withValues(alpha: 0.4),
-                    ),
-                  ),
-                  child: Center(
-                    child: Text(
-                      letter.currentTransport.emoji,
-                      style: const TextStyle(fontSize: 22),
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        '${letter.senderCountryFlag} ${letter.senderCountry}  →  ${letter.destinationCountryFlag} ${letter.destinationCountry}',
-                        style: const TextStyle(
-                          color: AppColors.textPrimary,
-                          fontSize: 14,
-                          fontWeight: FontWeight.w700,
-                        ),
-                      ),
-                      const SizedBox(height: 3),
-                      Text(
-                        '${l10n.mapCurrent}: ${seg.fromName} → ${(seg == letter.segments.last && letter.destinationDisplayAddress != null) ? letter.destinationDisplayAddress! : seg.toName}',
-                        style: const TextStyle(
-                          color: AppColors.textMuted,
-                          fontSize: 12,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
+            const SizedBox(height: 18),
+            const Text(
+              'IN TRANSIT',
+              style: TextStyle(
+                color: AppColors.textMuted,
+                fontSize: 11,
+                fontWeight: FontWeight.w700,
+                letterSpacing: 0.66,
+              ),
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: 8),
+            // 큰 라우트
+            Text(
+              '${letter.senderCountryFlag}  →  ${letter.destinationCountryFlag}',
+              style: const TextStyle(
+                color: AppColors.textPrimary,
+                fontSize: 22,
+                fontWeight: FontWeight.w800,
+                letterSpacing: -0.6,
+              ),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              '${seg.fromName} → ${(seg == letter.segments.last && letter.destinationDisplayAddress != null) ? letter.destinationDisplayAddress! : seg.toName}',
+              style: const TextStyle(
+                color: AppColors.textSecondary,
+                fontSize: 13,
+                fontWeight: FontWeight.w600,
+              ),
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+            ),
+            const SizedBox(height: 18),
             // 전체 진행률 바
             ClipRRect(
               borderRadius: BorderRadius.circular(5),

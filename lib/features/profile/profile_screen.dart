@@ -578,64 +578,61 @@ class _ProfileScreenState extends State<ProfileScreen> {
       ),
       child: Container(
         margin: const EdgeInsets.symmetric(horizontal: 16),
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+        padding: const EdgeInsets.fromLTRB(22, 18, 22, 18),
         decoration: BoxDecoration(
-          gradient: const LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [Color(0xFF1A3A2A), Color(0xFF0D2219)],
-          ),
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: AppColors.gold.withValues(alpha: 0.35)),
+          color: AppColors.bgCard,
+          borderRadius: BorderRadius.circular(22),
         ),
         child: Row(
           children: [
-            Container(
-              width: 44,
-              height: 44,
-              decoration: BoxDecoration(
-                color: AppColors.gold.withValues(alpha: 0.1),
-                shape: BoxShape.circle,
-                border: Border.all(
-                  color: AppColors.gold.withValues(alpha: 0.4),
-                ),
-              ),
-              child: const Center(
-                child: Text('🌍', style: TextStyle(fontSize: 22)),
-              ),
-            ),
-            const SizedBox(width: 14),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    _sbl.labelStampAlbum,
-                    style: TextStyle(
-                      color: AppColors.gold,
-                      fontSize: 9,
+                    _sbl.labelStampAlbum.toUpperCase(),
+                    style: const TextStyle(
+                      color: AppColors.textMuted,
+                      fontSize: 10,
                       fontWeight: FontWeight.w700,
-                      letterSpacing: 1.5,
+                      letterSpacing: 0.66,
                     ),
                   ),
-                  const SizedBox(height: 3),
-                  Text(
-                    countryCount > 0
-                        ? _sbl.profileStampCollected(countryCount)
-                        : _sbl.profileNoStamps,
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
-                    ),
+                  const SizedBox(height: 8),
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.baseline,
+                    textBaseline: TextBaseline.alphabetic,
+                    children: [
+                      Text(
+                        '$countryCount',
+                        style: const TextStyle(
+                          color: AppColors.textPrimary,
+                          fontSize: 28,
+                          fontWeight: FontWeight.w800,
+                          letterSpacing: -0.9,
+                          height: 1,
+                        ),
+                      ),
+                      const SizedBox(width: 6),
+                      Text(
+                        countryCount > 0
+                            ? _sbl.profileStampCollected(countryCount)
+                            : _sbl.profileNoStamps,
+                        style: const TextStyle(
+                          color: AppColors.textSecondary,
+                          fontSize: 13,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ],
                   ),
                 ],
               ),
             ),
             const Icon(
-              Icons.arrow_forward_ios_rounded,
-              color: AppColors.gold,
-              size: 14,
+              Icons.chevron_right_rounded,
+              color: AppColors.textMuted,
+              size: 20,
             ),
           ],
         ),
@@ -664,75 +661,65 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16),
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+      padding: const EdgeInsets.fromLTRB(22, 18, 22, 18),
       decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [
-            tierColor.withValues(alpha: 0.12),
-            tierColor.withValues(alpha: 0.05),
-          ],
-        ),
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: tierColor.withValues(alpha: 0.35)),
+        color: AppColors.bgCard,
+        borderRadius: BorderRadius.circular(22),
       ),
       child: Row(
         children: [
-          Container(
-            width: 44,
-            height: 44,
-            decoration: BoxDecoration(
-              color: tierColor.withValues(alpha: 0.15),
-              shape: BoxShape.circle,
-              border: Border.all(color: tierColor.withValues(alpha: 0.5)),
-            ),
-            child: Center(
-              child: Text(tier.emoji, style: const TextStyle(fontSize: 22)),
-            ),
-          ),
-          const SizedBox(width: 14),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  _rl.labelReputationScore,
-                  style: TextStyle(
+                  _rl.labelReputationScore.toUpperCase(),
+                  style: const TextStyle(
                     color: AppColors.textMuted,
-                    fontSize: 9,
+                    fontSize: 10,
                     fontWeight: FontWeight.w700,
-                    letterSpacing: 1.5,
+                    letterSpacing: 0.66,
                   ),
                 ),
-                const SizedBox(height: 3),
+                const SizedBox(height: 8),
                 Text(
                   score.reputationTitleL(user.languageCode),
                   style: TextStyle(
                     color: tierColor,
-                    fontSize: 16,
+                    fontSize: 18,
                     fontWeight: FontWeight.w800,
+                    letterSpacing: -0.3,
                   ),
                 ),
               ],
             ),
           ),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: [
-              Text(
-                score.towerHeight.toStringAsFixed(0),
-                style: TextStyle(
-                  color: tierColor,
-                  fontSize: 20,
-                  fontWeight: FontWeight.w900,
+          const SizedBox(width: 16),
+          // 큰 숫자 — Cash App 어법
+          RichText(
+            textAlign: TextAlign.right,
+            text: TextSpan(
+              children: [
+                TextSpan(
+                  text: score.towerHeight.toStringAsFixed(0),
+                  style: const TextStyle(
+                    color: AppColors.textPrimary,
+                    fontSize: 28,
+                    fontWeight: FontWeight.w800,
+                    letterSpacing: -0.9,
+                    height: 1,
+                  ),
                 ),
-              ),
-              Text(
-                _rl.unitPts,
-                style: const TextStyle(color: AppColors.textMuted, fontSize: 11),
-              ),
-            ],
+                TextSpan(
+                  text: ' ${_rl.unitPts}',
+                  style: const TextStyle(
+                    color: AppColors.textMuted,
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ],
+            ),
           ),
         ],
       ),
@@ -751,23 +738,40 @@ class _ProfileScreenState extends State<ProfileScreen> {
         margin: const EdgeInsets.symmetric(horizontal: 16),
         decoration: BoxDecoration(
           color: AppColors.bgCard,
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: const Color(0xFF1F2D44)),
+          borderRadius: BorderRadius.circular(22),
         ),
         child: Column(
           children: [
-            TabBar(
-              indicatorColor: AppColors.gold,
-              labelColor: AppColors.gold,
-              unselectedLabelColor: AppColors.textMuted,
-              labelStyle: const TextStyle(
-                fontWeight: FontWeight.w700,
-                fontSize: 13,
+            Container(
+              margin: const EdgeInsets.fromLTRB(8, 8, 8, 4),
+              padding: const EdgeInsets.all(4),
+              decoration: BoxDecoration(
+                color: AppColors.bgSurface,
+                borderRadius: BorderRadius.circular(999),
               ),
-              tabs: [
-                Tab(text: '👥 ${_fl.profileFollowing} ${user.followingIds.length}'),
-                Tab(text: '🌟 ${_fl.profileFollowers} ${user.followerIds.length}'),
-              ],
+              child: TabBar(
+                indicator: BoxDecoration(
+                  color: AppColors.textPrimary,
+                  borderRadius: BorderRadius.circular(999),
+                ),
+                indicatorSize: TabBarIndicatorSize.tab,
+                dividerColor: Colors.transparent,
+                labelColor: AppColors.bgDeep,
+                unselectedLabelColor: AppColors.textSecondary,
+                labelStyle: const TextStyle(
+                  fontWeight: FontWeight.w700,
+                  fontSize: 13,
+                  letterSpacing: -0.1,
+                ),
+                unselectedLabelStyle: const TextStyle(
+                  fontWeight: FontWeight.w600,
+                  fontSize: 13,
+                ),
+                tabs: [
+                  Tab(text: '${_fl.profileFollowing} ${user.followingIds.length}'),
+                  Tab(text: '${_fl.profileFollowers} ${user.followerIds.length}'),
+                ],
+              ),
             ),
             SizedBox(
               height: user.followingIds.isEmpty && user.followerIds.isEmpty
@@ -1078,7 +1082,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         : isPrem
         ? '👑 Premium'
         : null;
-    final planColor = isBrand ? const Color(0xFFFF8A5C) : AppColors.gold;
+    final planColor = isBrand ? AppColors.coupon : AppColors.gold;
 
     return SliverAppBar(
       expandedHeight: 270,
@@ -1088,25 +1092,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
       automaticallyImplyLeading: false,
       flexibleSpace: FlexibleSpaceBar(
         background: Container(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-              colors: [
-                tierClr.withValues(alpha: 0.22),
-                tierClr.withValues(alpha: 0.06),
-                AppTimeColors.of(ctx).bgDeep,
-              ],
-              stops: const [0.0, 0.5, 1.0],
-            ),
-          ),
+          color: AppTimeColors.of(ctx).bgDeep,
           child: SafeArea(
             bottom: false,
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
                 const SizedBox(height: 12),
-                // 아바타 (88px, 등급 색상 테두리 글로우)
+                // v5 — 클린한 원형 아바타, 글로우 / gradient 제거
                 GestureDetector(
                   onTap: () => _changeProfileImage(ctx, state),
                   child: Stack(
@@ -1117,65 +1110,37 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         height: 88,
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
-                          gradient: LinearGradient(
-                            begin: Alignment.topLeft,
-                            end: Alignment.bottomRight,
-                            colors: [tierClr.withValues(alpha: 0.9), tierClr],
-                          ),
-                          boxShadow: [
-                            BoxShadow(
-                              color: tierClr.withValues(alpha: 0.45),
-                              blurRadius: 20,
-                              spreadRadius: 3,
-                            ),
-                          ],
+                          color: tierClr,
                         ),
                         child: _buildAvatarContent(user),
                       ),
-                      // 등급 뱃지 (우상단 — A방향)
-                      Positioned(
-                        right: -4,
-                        top: -4,
-                        child: Container(
-                          padding: const EdgeInsets.all(4),
-                          decoration: BoxDecoration(
-                            color: AppColors.bgDeep,
-                            shape: BoxShape.circle,
-                            border: Border.all(color: tierClr, width: 1.5),
-                          ),
-                          child: Text(
-                            tier.emoji,
-                            style: const TextStyle(fontSize: 14),
-                          ),
-                        ),
-                      ),
-                      // 편집 버튼 (우하단)
+                      // 편집 버튼 (우하단) — 흰색 pill
                       Positioned(
                         right: -2,
                         bottom: -2,
                         child: Container(
-                          width: 24,
-                          height: 24,
+                          width: 26,
+                          height: 26,
                           decoration: BoxDecoration(
                             shape: BoxShape.circle,
-                            color: AppColors.teal,
+                            color: AppColors.textPrimary,
                             border: Border.all(
                               color: AppTimeColors.of(ctx).bgDeep,
-                              width: 2,
+                              width: 2.5,
                             ),
                           ),
                           child: const Icon(
                             Icons.edit_rounded,
                             size: 13,
-                            color: Colors.white,
+                            color: AppColors.bgDeep,
                           ),
                         ),
                       ),
                     ],
                   ),
                 ),
-                const SizedBox(height: 10),
-                // 닉네임 + 플랜 뱃지 (B방향)
+                const SizedBox(height: 14),
+                // 닉네임 + 플랜 뱃지
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
@@ -1183,9 +1148,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       user.username,
                       style: const TextStyle(
                         color: AppColors.textPrimary,
-                        fontSize: 20,
+                        fontSize: 22,
                         fontWeight: FontWeight.w800,
-                        letterSpacing: 0.3,
+                        letterSpacing: -0.5,
                       ),
                     ),
                     if (planLabel != null) ...[
@@ -1196,55 +1161,35 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           vertical: 3,
                         ),
                         decoration: BoxDecoration(
-                          color: planColor.withValues(alpha: 0.15),
-                          borderRadius: BorderRadius.circular(8),
-                          border: Border.all(
-                            color: planColor.withValues(alpha: 0.5),
-                          ),
+                          color: planColor,
+                          borderRadius: BorderRadius.circular(999),
                         ),
                         child: Text(
-                          planLabel,
+                          planLabel.replaceAll(RegExp(r'[🏷️👑\s]+'), '').toUpperCase(),
                           style: TextStyle(
-                            color: planColor,
-                            fontSize: 11,
-                            fontWeight: FontWeight.w700,
+                            color: planColor == AppColors.gold
+                                ? const Color(0xFF1A1300)
+                                : const Color(0xFF1A0008),
+                            fontSize: 10,
+                            fontWeight: FontWeight.w800,
+                            letterSpacing: 0.5,
                           ),
                         ),
                       ),
                     ],
-                    // 일일 스트릭 뱃지 (연속 접속 일수 > 0 일 때만 표시)
                     const SizedBox(width: 8),
                     const StreakBadge(compact: true),
                   ],
                 ),
-                const SizedBox(height: 6),
-                // 국가 + 명성 칭호 (A방향)
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      '${user.countryFlag} ${CountryL10n.localizedName(user.country, user.languageCode)}',
-                      style: const TextStyle(
-                        color: AppColors.textMuted,
-                        fontSize: 13,
-                      ),
-                    ),
-                    const SizedBox(width: 10),
-                    Container(
-                      width: 1,
-                      height: 11,
-                      color: AppColors.textMuted.withValues(alpha: 0.3),
-                    ),
-                    const SizedBox(width: 10),
-                    Text(
-                      user.activityScore.reputationTitleL(user.languageCode),
-                      style: TextStyle(
-                        color: tierClr,
-                        fontSize: 12,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ],
+                const SizedBox(height: 4),
+                // 핸들 + 명성 (한 줄로 축약)
+                Text(
+                  '@${user.username.toLowerCase()} · ${user.activityScore.reputationTitleL(user.languageCode)}',
+                  style: const TextStyle(
+                    color: AppColors.textMuted,
+                    fontSize: 13,
+                    fontWeight: FontWeight.w500,
+                  ),
                 ),
               ],
             ),
@@ -1268,46 +1213,70 @@ class _ProfileScreenState extends State<ProfileScreen> {
     final score = user.activityScore;
     // 나라 수: 받은 편지 발송 국가
     final countrySet = state.inbox.map((l) => l.senderCountry).toSet();
+    // v5 wallet: 큰 숫자 / 작은 라벨, 카드 4개를 검정 패널 위에 평면 배치
     return Container(
       margin: const EdgeInsets.fromLTRB(16, 14, 16, 0),
-      padding: const EdgeInsets.symmetric(vertical: 14),
+      padding: const EdgeInsets.fromLTRB(20, 18, 20, 18),
       decoration: BoxDecoration(
         color: AppColors.bgCard,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.textMuted.withValues(alpha: 0.12)),
+        borderRadius: BorderRadius.circular(22),
       ),
       child: Row(
         children: [
-          _stat4Cell('📬', '${score.sentCount}', _fsl.profileSentLetters),
+          _stat4Cell(
+            '${score.sentCount}',
+            _fsl.profileSentLetters,
+            AppColors.textPrimary,
+          ),
           _stat4Divider(),
-          _stat4Cell('📥', '${score.receivedCount}', _fsl.profileReceivedLetters),
+          _stat4Cell(
+            '${score.receivedCount}',
+            _fsl.profileReceivedLetters,
+            AppColors.textPrimary,
+          ),
           _stat4Divider(),
-          _stat4Cell('🌍', '${countrySet.length}', _fsl.profileVisitedCountries),
+          _stat4Cell(
+            '${countrySet.length}',
+            _fsl.profileVisitedCountries,
+            AppColors.gold,
+          ),
           _stat4Divider(),
-          _stat4Cell('👥', '${user.followerIds.length}', _fsl.profileFollowers),
+          _stat4Cell(
+            '${user.followerIds.length}',
+            _fsl.profileFollowers,
+            AppColors.textPrimary,
+          ),
         ],
       ),
     );
   }
 
-  Widget _stat4Cell(String emoji, String value, String label) {
+  Widget _stat4Cell(String value, String label, Color valueColor) {
     return Expanded(
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(emoji, style: const TextStyle(fontSize: 18)),
-          const SizedBox(height: 4),
           Text(
             value,
-            style: const TextStyle(
-              color: AppColors.textPrimary,
-              fontSize: 17,
+            style: TextStyle(
+              color: valueColor,
+              fontSize: 24,
               fontWeight: FontWeight.w800,
+              letterSpacing: -0.7,
+              height: 1,
             ),
           ),
-          const SizedBox(height: 2),
+          const SizedBox(height: 6),
           Text(
             label,
-            style: const TextStyle(color: AppColors.textMuted, fontSize: 10),
+            style: const TextStyle(
+              color: AppColors.textMuted,
+              fontSize: 10,
+              fontWeight: FontWeight.w700,
+              letterSpacing: 0.4,
+            ),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
           ),
         ],
       ),
@@ -1315,7 +1284,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   Widget _stat4Divider() {
-    return Container(width: 1, height: 44, color: AppColors.bgSurface);
+    return Container(width: 0.5, height: 32, color: AppColors.bgSurface);
   }
 
   // ── ② 구독 카드 + 오늘 발송 잔여 카드 (B+C) ─────────────────────────────────
@@ -1339,7 +1308,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         ? '₩4,900/mo'
         : _ql.profileFree;
     final planColor = isBrand
-        ? const Color(0xFFFF8A5C)
+        ? AppColors.coupon
         : isPremium
         ? AppColors.gold
         : AppColors.textMuted;
@@ -1350,14 +1319,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
     final quotaColor = quotaPct > 0.4
         ? AppColors.teal
         : quotaPct > 0.15
-        ? const Color(0xFFFFCA28)
+        ? AppColors.gold
         : AppColors.error;
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Row(
         children: [
-          // 구독 카드
+          // 구독 카드 (v5 wallet — premium이면 노란 카드, 아니면 검정 카드)
           Expanded(
             child: GestureDetector(
               onTap: () => Navigator.push(
@@ -1365,70 +1334,67 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 MaterialPageRoute(builder: (_) => const _PremiumScreenProxy()),
               ),
               child: Container(
-                padding: const EdgeInsets.all(14),
+                padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: AppColors.bgCard,
-                  borderRadius: BorderRadius.circular(16),
-                  border: Border.all(color: planColor.withValues(alpha: 0.35)),
+                  color: isPremium ? planColor : AppColors.bgCard,
+                  borderRadius: BorderRadius.circular(20),
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Row(
-                      children: [
-                        Text(
-                          _ql.profileSubscriptionPlan,
-                          style: TextStyle(
-                            color: AppColors.textMuted,
-                            fontSize: 10,
-                            fontWeight: FontWeight.w600,
-                            letterSpacing: 0.8,
-                          ),
-                        ),
-                        const Spacer(),
-                        Icon(
-                          Icons.chevron_right_rounded,
-                          color: AppColors.textMuted,
-                          size: 14,
-                        ),
-                      ],
+                    Text(
+                      _ql.profileSubscriptionPlan.toUpperCase(),
+                      style: TextStyle(
+                        color: isPremium
+                            ? const Color(0xFF1A1300).withValues(alpha: 0.7)
+                            : AppColors.textMuted,
+                        fontSize: 10,
+                        fontWeight: FontWeight.w700,
+                        letterSpacing: 0.6,
+                      ),
                     ),
-                    const SizedBox(height: 6),
+                    const SizedBox(height: 12),
                     Text(
                       planName,
                       style: TextStyle(
-                        color: planColor,
-                        fontSize: 15,
+                        color: isPremium
+                            ? const Color(0xFF1A1300)
+                            : AppColors.textPrimary,
+                        fontSize: 22,
                         fontWeight: FontWeight.w800,
+                        letterSpacing: -0.5,
+                        height: 1,
                       ),
                     ),
-                    const SizedBox(height: 2),
+                    const SizedBox(height: 4),
                     Text(
                       planPrice,
-                      style: const TextStyle(
-                        color: AppColors.textSecondary,
+                      style: TextStyle(
+                        color: isPremium
+                            ? const Color(0xFF1A1300).withValues(alpha: 0.65)
+                            : AppColors.textSecondary,
                         fontSize: 12,
+                        fontWeight: FontWeight.w600,
                       ),
                     ),
                     if (!isPremium) ...[
-                      const SizedBox(height: 8),
+                      const SizedBox(height: 12),
                       Container(
                         padding: const EdgeInsets.symmetric(
                           horizontal: 10,
-                          vertical: 5,
+                          vertical: 6,
                         ),
                         decoration: BoxDecoration(
-                          gradient: const LinearGradient(
-                            colors: [AppColors.goldLight, AppColors.gold],
-                          ),
-                          borderRadius: BorderRadius.circular(8),
+                          color: AppColors.gold,
+                          borderRadius: BorderRadius.circular(999),
                         ),
                         child: Text(
                           _ql.profileUpgrade,
                           style: const TextStyle(
-                            color: AppColors.bgDeep,
+                            color: Color(0xFF1A1300),
                             fontSize: 11,
                             fontWeight: FontWeight.w800,
+                            letterSpacing: -0.1,
                           ),
                         ),
                       ),
@@ -1439,28 +1405,27 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ),
           ),
           const SizedBox(width: 10),
-          // 오늘 발송 잔여 카드
+          // 오늘 발송 잔여 카드 (v5 wallet — 큰 숫자/라벨)
           Expanded(
             child: Container(
-              padding: const EdgeInsets.all(14),
+              padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
                 color: AppColors.bgCard,
-                borderRadius: BorderRadius.circular(16),
-                border: Border.all(color: quotaColor.withValues(alpha: 0.3)),
+                borderRadius: BorderRadius.circular(20),
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    _ql.profileTodaySent,
+                    _ql.profileTodaySent.toUpperCase(),
                     style: const TextStyle(
                       color: AppColors.textMuted,
                       fontSize: 10,
-                      fontWeight: FontWeight.w600,
-                      letterSpacing: 0.8,
+                      fontWeight: FontWeight.w700,
+                      letterSpacing: 0.6,
                     ),
                   ),
-                  const SizedBox(height: 6),
+                  const SizedBox(height: 12),
                   RichText(
                     text: TextSpan(
                       children: [
@@ -1468,34 +1433,32 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           text: '$remaining',
                           style: TextStyle(
                             color: quotaColor,
-                            fontSize: 22,
-                            fontWeight: FontWeight.w900,
+                            fontSize: 28,
+                            fontWeight: FontWeight.w800,
+                            letterSpacing: -0.7,
+                            height: 1,
                           ),
                         ),
                         TextSpan(
-                          text: '/$limit',
+                          text: ' / $limit',
                           style: const TextStyle(
                             color: AppColors.textMuted,
                             fontSize: 14,
+                            fontWeight: FontWeight.w600,
                           ),
                         ),
                       ],
                     ),
                   ),
-                  const SizedBox(height: 6),
+                  const SizedBox(height: 12),
                   ClipRRect(
-                    borderRadius: BorderRadius.circular(4),
+                    borderRadius: BorderRadius.circular(999),
                     child: LinearProgressIndicator(
                       value: quotaPct,
-                      minHeight: 5,
+                      minHeight: 4,
                       backgroundColor: AppColors.bgSurface,
                       valueColor: AlwaysStoppedAnimation<Color>(quotaColor),
                     ),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    _ql.profileResetMidnight,
-                    style: const TextStyle(color: AppColors.textMuted, fontSize: 10),
                   ),
                 ],
               ),
@@ -1977,39 +1940,51 @@ class _FollowListContent extends StatelessWidget {
         final flag = session?.partnerFlag ?? '🌍';
         return Container(
           margin: const EdgeInsets.only(bottom: 8),
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+          padding: const EdgeInsets.fromLTRB(14, 12, 12, 12),
           decoration: BoxDecoration(
             color: AppColors.bgSurface,
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(16),
           ),
           child: Row(
             children: [
-              Text(flag, style: const TextStyle(fontSize: 20)),
-              const SizedBox(width: 10),
+              Container(
+                width: 32,
+                height: 32,
+                alignment: Alignment.center,
+                decoration: BoxDecoration(
+                  color: AppColors.bgCard,
+                  shape: BoxShape.circle,
+                ),
+                child: Text(flag, style: const TextStyle(fontSize: 16)),
+              ),
+              const SizedBox(width: 12),
               Expanded(
                 child: Text(
                   name,
                   style: const TextStyle(
                     color: AppColors.textPrimary,
-                    fontSize: 14,
-                    fontWeight: FontWeight.w600,
+                    fontSize: 15,
+                    fontWeight: FontWeight.w700,
+                    letterSpacing: -0.2,
                   ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                 ),
               ),
               if (session != null)
                 Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 8,
-                    vertical: 3,
-                  ),
+                  width: 28,
+                  height: 28,
+                  alignment: Alignment.center,
                   decoration: BoxDecoration(
-                    color: AppColors.teal.withValues(alpha: 0.12),
-                    borderRadius: BorderRadius.circular(6),
-                    border: Border.all(
-                      color: AppColors.teal.withValues(alpha: 0.3),
-                    ),
+                    color: AppColors.letter,
+                    shape: BoxShape.circle,
                   ),
-                  child: const Text('💬', style: TextStyle(fontSize: 12)),
+                  child: const Icon(
+                    Icons.chat_bubble_rounded,
+                    size: 14,
+                    color: Color(0xFF0A1A00),
+                  ),
                 ),
             ],
           ),

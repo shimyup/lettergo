@@ -12,7 +12,6 @@ import '../../../models/user_profile.dart';
 import '../../../state/app_state.dart';
 import '../../settings/settings_screen.dart';
 import '../../premium/premium_screen.dart';
-import 'package:dotted_border/dotted_border.dart';
 import '../../../widgets/shared_profile_dialogs.dart';
 
 class TowerScreen extends StatefulWidget {
@@ -509,37 +508,28 @@ class _TowerScreenState extends State<TowerScreen>
     final _l = AppL10n.of(user.languageCode);
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
-      child: DottedBorder(
-        borderType: BorderType.RRect,
-        radius: const Radius.circular(20),
-        color: AppColors.gold.withValues(alpha: 0.4),
-        strokeWidth: 2,
-        dashPattern: const [6, 4],
-        child: Container(
-          padding: const EdgeInsets.all(20),
-          decoration: BoxDecoration(
-            color: AppColors.bgCard,
-            borderRadius: BorderRadius.circular(20),
-          ),
-          child: Column(
-            children: [
+      child: Container(
+        padding: const EdgeInsets.all(22),
+        decoration: BoxDecoration(
+          color: AppColors.bgCard,
+          borderRadius: BorderRadius.circular(24),
+        ),
+        child: Column(
+          children: [
               Row(
                 children: [
-                  // 아바타
+                  // 아바타 — 클린 원형, gold border 폐기
                   Container(
-                    width: 60,
-                    height: 60,
+                    width: 56,
+                    height: 56,
                     decoration: BoxDecoration(
                       color: AppColors.bgSurface,
-                      borderRadius: BorderRadius.circular(16),
-                      border: Border.all(
-                        color: AppColors.gold.withValues(alpha: 0.3),
-                      ),
+                      shape: BoxShape.circle,
                     ),
                     child: Center(
                       child: Text(
                         user.countryFlag,
-                        style: const TextStyle(fontSize: 30),
+                        style: const TextStyle(fontSize: 28),
                       ),
                     ),
                   ),
@@ -725,7 +715,6 @@ class _TowerScreenState extends State<TowerScreen>
             ],
           ),
         ),
-      ),
     );
   }
 
@@ -1235,7 +1224,7 @@ class _TowerScreenState extends State<TowerScreen>
                   border: Border.all(
                     color: idx == 0
                         ? AppColors.gold.withValues(alpha: 0.3)
-                        : const Color(0xFF1F2D44),
+                        : AppColors.bgSurface,
                   ),
                 ),
                 child: Row(
@@ -1636,7 +1625,7 @@ class _TowerScreenState extends State<TowerScreen>
               decoration: BoxDecoration(
                 color: AppColors.bgSurface,
                 borderRadius: BorderRadius.circular(14),
-                border: Border.all(color: const Color(0xFF1F2D44)),
+                border: Border.all(color: AppColors.bgSurface),
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -2120,7 +2109,7 @@ class _TowerScreenState extends State<TowerScreen>
                                               ? AppColors.gold.withValues(alpha: 0.65)
                                               : isPremiumOnly
                                                   ? const Color(0xFF8B65FF).withValues(alpha: 0.22)
-                                                  : const Color(0xFF1F2D44),
+                                                  : AppColors.bgSurface,
                                           width: isSelected ? 1.8 : 1,
                                         ),
                                         boxShadow: isSelected
@@ -2634,7 +2623,7 @@ class _TowerScreenState extends State<TowerScreen>
                 );
               },
             ),
-            const Divider(color: Color(0xFF1F2D44)),
+            const Divider(color: AppColors.bgSurface),
             ListTile(
               leading: const Icon(Icons.mail_rounded, color: AppColors.teal),
               title: Text(
@@ -2671,7 +2660,7 @@ class _TowerScreenState extends State<TowerScreen>
                 _showLetterManagement(ctx, state, showSent: true);
               },
             ),
-            const Divider(color: Color(0xFF1F2D44)),
+            const Divider(color: AppColors.bgSurface),
             ListTile(
               leading: const Icon(
                 Icons.logout_rounded,
@@ -2767,7 +2756,7 @@ class _TowerScreenState extends State<TowerScreen>
                           decoration: BoxDecoration(
                             color: AppColors.bgSurface,
                             borderRadius: BorderRadius.circular(12),
-                            border: Border.all(color: const Color(0xFF1F2D44)),
+                            border: Border.all(color: AppColors.bgSurface),
                           ),
                           child: Row(
                             children: [
@@ -2950,7 +2939,7 @@ class _TowerScreenState extends State<TowerScreen>
           color: isOn ? AppColors.gold.withValues(alpha: 0.14) : Colors.transparent,
           borderRadius: BorderRadius.circular(20),
           border: Border.all(
-            color: isOn ? AppColors.gold.withValues(alpha: 0.55) : const Color(0xFF1F2D44),
+            color: isOn ? AppColors.gold.withValues(alpha: 0.55) : AppColors.bgSurface,
             width: isOn ? 1.5 : 1,
           ),
         ),
@@ -2986,36 +2975,44 @@ class _StatCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
+      padding: const EdgeInsets.fromLTRB(14, 16, 14, 14),
       decoration: BoxDecoration(
         color: AppColors.bgCard,
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: const Color(0xFF1F2D44)),
+        borderRadius: BorderRadius.circular(20),
       ),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(emoji, style: const TextStyle(fontSize: 22)),
-          const SizedBox(height: 6),
+          Text(
+            label.toUpperCase(),
+            style: const TextStyle(
+              color: AppColors.textMuted,
+              fontSize: 10,
+              fontWeight: FontWeight.w700,
+              letterSpacing: 0.4,
+            ),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+          ),
+          const SizedBox(height: 10),
           Text(
             value,
             style: TextStyle(
               color: color,
-              fontSize: 22,
+              fontSize: 26,
               fontWeight: FontWeight.w800,
+              letterSpacing: -0.7,
+              height: 1,
             ),
           ),
+          const SizedBox(height: 6),
           Text(
-            label,
-            style: const TextStyle(color: AppColors.textMuted, fontSize: 11),
-            textAlign: TextAlign.center,
-          ),
-          const SizedBox(height: 4),
-          Text(
-            '+${contribution.toStringAsFixed(1)}pts',
+            '+${contribution.toStringAsFixed(1)} pts',
             style: TextStyle(
               color: color.withValues(alpha: 0.7),
-              fontSize: 10,
-              fontWeight: FontWeight.w600,
+              fontSize: 11,
+              fontWeight: FontWeight.w700,
+              letterSpacing: -0.1,
             ),
           ),
         ],
