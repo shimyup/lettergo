@@ -87,37 +87,44 @@ class AppTimeColors extends ThemeExtension<AppTimeColors> {
 
 class AppColors {
   // Background
-  static const Color bgDeep = Color(0xFF070B14);
-  static const Color bgCard = Color(0xFF111827);
-  static const Color bgSurface = Color(0xFF1A2235);
-  static const Color bgElevated = Color(0xFF222E45);
+  static const Color bgDeep = Color(0xFF000000);
+  static const Color bgCard = Color(0xFF141417);
+  static const Color bgSurface = Color(0xFF1C1C1F);
+  static const Color bgElevated = Color(0xFF2A2A2E);
 
   // Accent
-  static const Color gold = Color(0xFFF0C35A);
-  static const Color goldLight = Color(0xFFFBE08A);
-  static const Color goldDark = Color(0xFFB8922A);
-  static const Color teal = Color(0xFF2DD4BF);
-  static const Color tealDark = Color(0xFF0D9488);
+  static const Color gold = Color(0xFFFFD60A);
+  static const Color goldLight = Color(0xFFFFE761);
+  static const Color goldDark = Color(0xFFB89500);
+  static const Color teal = Color(0xFFB8FF5C);
+  static const Color tealDark = Color(0xFF7BC93C);
 
   // Text
-  static const Color textPrimary = Color(0xFFE8E0D0);
-  static const Color textSecondary = Color(0xFF9CA3AF);
-  static const Color textMuted = Color(0xFF6B7280);
+  static const Color textPrimary = Color(0xFFFFFFFF);
+  static const Color textSecondary = Color(0xFF8E8E93);
+  static const Color textMuted = Color(0xFF5A5A5F);
 
   // Letter glow colors
-  static const Color letterGlow = Color(0xFFF0C35A);
-  static const Color letterGlowDelivering = Color(0xFF2DD4BF);
-  static const Color letterGlowRead = Color(0xFF6B7280);
+  static const Color letterGlow = Color(0xFFFFD60A);
+  static const Color letterGlowDelivering = Color(0xFFB8FF5C);
+  static const Color letterGlowRead = Color(0xFF5A5A5F);
 
   // Status colors
-  static const Color success = Color(0xFF34D399);
-  static const Color warning = Color(0xFFFBBF24);
-  static const Color error = Color(0xFFF87171);
+  static const Color success = Color(0xFFB8FF5C);
+  static const Color warning = Color(0xFFFFD60A);
+  static const Color error = Color(0xFFFF4D6D);
 
   // Map overlay
-  static const Color mapOverlay = Color(0x99070B14);
-  static const Color nearbyRadius = Color(0x2AF0C35A);
-  static const Color nearbyBorder = Color(0x66F0C35A);
+  static const Color mapOverlay = Color(0x99000000);
+  static const Color nearbyRadius = Color(0x33FFD60A);
+  static const Color nearbyBorder = Color(0x80FFD60A);
+
+  // v5 wallet category colors (직접 참조용)
+  static const Color coupon = Color(0xFFFF4D6D);
+  static const Color premium = Color(0xFFFFD60A);
+  static const Color letter = Color(0xFFB8FF5C);
+  static const Color map = Color(0xFF5BA4F6);
+  static const Color streak = Color(0xFFC77DFF);
 }
 
 /// Build 159: 앱 전역 타이포 스케일.

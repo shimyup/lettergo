@@ -20,6 +20,7 @@ import 'features/compose/screens/compose_screen.dart';
 import 'features/intro/delivery_intro_screen.dart';
 import 'features/onboarding/onboarding_screen.dart';
 import 'features/premium/premium_screen.dart';
+import 'features/v5_preview/v5_preview_root.dart';
 import 'widgets/main_scaffold.dart';
 
 /// 앱 시작 시 위치를 조용히 조회합니다.
@@ -301,6 +302,7 @@ class _GlobalDriftAppState extends State<GlobalDriftApp> {
               '/compose': (_) => const ComposeScreen(),
               '/premium_welcome': (_) =>
                   const PremiumScreen(isWelcomeMode: true),
+              '/v5_preview': (_) => const V5PreviewRoot(),
             },
           );
         },
