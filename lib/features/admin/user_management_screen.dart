@@ -468,7 +468,7 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
                             ),
                             if (user.isBrand) ...[
                               const SizedBox(width: 6),
-                              _chip('Brand', const Color(0xFFFF8A5C)),
+                              _chip('Brand', AppColors.coupon),
                             ] else if (user.isPremium) ...[
                               const SizedBox(width: 6),
                               _chip('Premium', AppColors.gold),
@@ -584,7 +584,7 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
                     child: _tierButton(
                       label: 'Brand',
                       emoji: '🏷️',
-                      color: const Color(0xFFFF8A5C),
+                      color: AppColors.coupon,
                       isActive: user.isBrand,
                       onTap: () {
                         Navigator.pop(ctx);
@@ -879,14 +879,14 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
                       borderSide: const BorderSide(
-                        color: Color(0xFF1F2D44),
+                        color: AppColors.bgSurface,
                         width: 1,
                       ),
                     ),
                     enabledBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
                       borderSide: const BorderSide(
-                        color: Color(0xFF1F2D44),
+                        color: AppColors.bgSurface,
                         width: 1,
                       ),
                     ),
@@ -1002,7 +1002,7 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
           border: Border.all(
             color: user.isBanned
                 ? AppColors.error.withValues(alpha: 0.25)
-                : const Color(0xFF1F2D44),
+                : AppColors.bgSurface,
             width: 1,
           ),
         ),
@@ -1049,7 +1049,7 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
                       ),
                       if (user.isBrand) ...[
                         const SizedBox(width: 4),
-                        _chip('B', const Color(0xFFFF8A5C), small: true),
+                        _chip('B', AppColors.coupon, small: true),
                       ] else if (user.isPremium) ...[
                         const SizedBox(width: 4),
                         _chip('P', AppColors.gold, small: true),
@@ -1122,7 +1122,7 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
               : AppColors.bgCard,
           borderRadius: BorderRadius.circular(20),
           border: Border.all(
-            color: isActive ? AppColors.teal : const Color(0xFF1F2D44),
+            color: isActive ? AppColors.teal : AppColors.bgSurface,
             width: 1,
           ),
         ),

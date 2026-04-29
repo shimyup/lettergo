@@ -9,6 +9,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
 
 import '../../core/localization/app_localizations.dart';
+import '../../core/theme/app_theme.dart';
 import '../../models/letter.dart';
 import '../journey/journey_stats.dart';
 
@@ -104,7 +105,7 @@ class ShareCardService {
       const [
         Color(0xFF070B14),
         Color(0xFF0D1D3A),
-        Color(0xFF1F2D44),
+        AppColors.bgSurface,
       ],
       const [0.0, 0.5, 1.0],
     );
@@ -169,7 +170,7 @@ class ShareCardService {
     );
     canvas.drawRRect(
       cardRect,
-      Paint()..color = const Color(0xFF1F2D44).withValues(alpha: 0.85),
+      Paint()..color = AppColors.bgSurface.withValues(alpha: 0.85),
     );
 
     // 발신 → 수신 경로 곡선
@@ -438,7 +439,7 @@ class ShareCardService {
     );
     canvas.drawRRect(
       statCardRect,
-      Paint()..color = const Color(0xFF1F2D44).withValues(alpha: 0.85),
+      Paint()..color = AppColors.bgSurface.withValues(alpha: 0.85),
     );
 
     // 2열 통계 — 펜팔식 "답장" 지표 제거 후 발송·방문국만 노출.
@@ -650,7 +651,7 @@ class ShareCardService {
     canvas.drawCircle(
       Offset(centerX, centerY),
       radius - 20,
-      Paint()..color = const Color(0xFF1F2D44).withValues(alpha: 0.85),
+      Paint()..color = AppColors.bgSurface.withValues(alpha: 0.85),
     );
     // 중앙 캐릭터 이모지 (큰 크기)
     const charFontSize = 380.0;

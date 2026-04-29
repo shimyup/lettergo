@@ -1403,7 +1403,7 @@ class _LetterCard extends StatelessWidget {
                                       )
                                     : const LinearGradient(
                                         colors: [
-                                          Color(0xFFFF8C00),
+                                          AppColors.coupon,
                                           Color(0xFFFFB347),
                                         ],
                                       ),

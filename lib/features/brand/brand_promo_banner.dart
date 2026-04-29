@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../core/localization/app_localizations.dart';
+import '../../core/theme/app_theme.dart';
 import '../../models/letter.dart';
 import '../../state/app_state.dart';
 
@@ -170,7 +171,7 @@ class _BrandPromoBannerState extends State<BrandPromoBanner>
           padding: const EdgeInsets.fromLTRB(14, 10, 10, 10),
           decoration: BoxDecoration(
             gradient: const LinearGradient(
-              colors: [Color(0xFFFFE082), Color(0xFFFFCA28)],
+              colors: [Color(0xFFFFE082), AppColors.gold],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
             ),
@@ -287,7 +288,7 @@ class _BrandPromoBannerState extends State<BrandPromoBanner>
           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
           decoration: BoxDecoration(
             gradient: const LinearGradient(
-              colors: [Color(0xFFFFE082), Color(0xFFFFCA28)],
+              colors: [Color(0xFFFFE082), AppColors.gold],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
             ),

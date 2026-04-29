@@ -974,7 +974,7 @@ class _AdminScreenState extends State<AdminScreen> {
             fillColor: AppColors.bgSurface,
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(10),
-              borderSide: const BorderSide(color: Color(0xFF1F2D44)),
+              borderSide: const BorderSide(color: AppColors.bgSurface),
             ),
             contentPadding: const EdgeInsets.symmetric(
               horizontal: 12,
@@ -1188,7 +1188,7 @@ class _AdminScreenState extends State<AdminScreen> {
             hintText: l.koEn('내용을 입력하세요...', 'Enter message...'),
             hintStyle: const TextStyle(color: AppColors.textMuted),
             enabledBorder: const OutlineInputBorder(
-              borderSide: BorderSide(color: Color(0xFF1F2D44)),
+              borderSide: BorderSide(color: AppColors.bgSurface),
             ),
             focusedBorder: const OutlineInputBorder(
               borderSide: BorderSide(color: AppColors.teal),
@@ -1462,7 +1462,7 @@ class _AdminScreenState extends State<AdminScreen> {
                 padding: const EdgeInsets.fromLTRB(16, 0, 16, 24),
                 itemCount: ids.length,
                 separatorBuilder: (_, __) =>
-                    const Divider(color: Color(0xFF1F2D44), height: 1),
+                    const Divider(color: AppColors.bgSurface, height: 1),
                 itemBuilder: (_, i) => ListTile(
                   leading: const Icon(
                     Icons.pending_actions_rounded,
@@ -1580,7 +1580,7 @@ class _AdminScreenState extends State<AdminScreen> {
                 padding: const EdgeInsets.fromLTRB(16, 0, 16, 24),
                 itemCount: ids.length,
                 separatorBuilder: (_, __) =>
-                    const Divider(color: Color(0xFF1F2D44), height: 1),
+                    const Divider(color: AppColors.bgSurface, height: 1),
                 itemBuilder: (_, i) => ListTile(
                   leading: const Icon(
                     Icons.block_rounded,
@@ -1642,7 +1642,7 @@ class _AdminScreenState extends State<AdminScreen> {
         color: AppColors.bgCard,
         borderRadius: BorderRadius.circular(14),
         border: const Border.fromBorderSide(
-          BorderSide(color: Color(0xFF1F2D44), width: 1),
+          BorderSide(color: AppColors.bgSurface, width: 1),
         ),
       ),
       child: child,
@@ -1838,7 +1838,7 @@ class _AdminScreenState extends State<AdminScreen> {
 
   Widget _divider() {
     return const Divider(
-      color: Color(0xFF1F2D44),
+      color: AppColors.bgSurface,
       height: 1,
       indent: 16,
       endIndent: 16,
@@ -2157,7 +2157,7 @@ class _TesterDashboardScreenState extends State<_TesterDashboardScreen>
                         ),
                         if (isBrand) _badge('BRAND', AppColors.error),
                         if (isPremium && !isBrand)
-                          _badge('PRO', const Color(0xFFFFD700)),
+                          _badge('PRO', AppColors.gold),
                       ],
                     ),
                     if (towerName.isNotEmpty)

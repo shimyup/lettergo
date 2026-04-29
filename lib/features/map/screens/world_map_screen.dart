@@ -1518,7 +1518,7 @@ class _WorldMapScreenState extends State<WorldMapScreen>
       case TowerTier.megatower:
         return const Color(0xFFFF9F43);
       case TowerTier.landmark:
-        return const Color(0xFFFF6B9D);
+        return AppColors.coupon;
     }
   }
 
@@ -2699,7 +2699,7 @@ class _TransportMarker extends StatelessWidget {
 
         // 등급별 색상 오버라이드 (특송은 금색 강조)
         final tierGlowColor = isBrandExpress
-            ? const Color(0xFFFFD700)
+            ? AppColors.gold
             : letter.senderTier == LetterSenderTier.brand
             ? AppColors.coupon
             : letter.senderTier == LetterSenderTier.premium
@@ -2779,12 +2779,12 @@ class _TransportMarker extends StatelessWidget {
                   width: 14,
                   height: 14,
                   decoration: BoxDecoration(
-                    color: const Color(0xFFFFD700),
+                    color: AppColors.gold,
                     shape: BoxShape.circle,
                     border: Border.all(color: Colors.black38, width: 0.5),
                     boxShadow: [
                       BoxShadow(
-                        color: const Color(0xFFFFD700).withValues(alpha: 0.6),
+                        color: AppColors.gold.withValues(alpha: 0.6),
                         blurRadius: 4,
                       ),
                     ],
@@ -4263,7 +4263,7 @@ class _BrandTowerMarker extends StatelessWidget {
       case TowerTier.megatower:
         return const Color(0xFFFF9F43);
       case TowerTier.landmark:
-        return const Color(0xFFFF6B9D);
+        return AppColors.coupon;
     }
   }
 

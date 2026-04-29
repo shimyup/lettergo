@@ -635,9 +635,9 @@ class _TowerScreenState extends State<TowerScreen>
               begin: Alignment.topCenter,
               end: Alignment.bottomCenter,
               colors: [
-                const Color(0xFF060D1A),
+                AppColors.bgDeep,
                 tierColor.withValues(alpha: 0.06),
-                const Color(0xFF0D1F3C),
+                AppColors.bgCard,
               ],
             ),
             border: Border.all(
@@ -672,8 +672,8 @@ class _TowerScreenState extends State<TowerScreen>
                         begin: Alignment.topCenter,
                         end: Alignment.bottomCenter,
                         colors: [
-                          const Color(0xFF0D1F3C).withValues(alpha: 0.0),
-                          const Color(0xFF0D1F3C),
+                          AppColors.bgCard.withValues(alpha: 0.0),
+                          AppColors.bgCard,
                         ],
                       ),
                     ),
@@ -1909,7 +1909,7 @@ class _TowerScreenState extends State<TowerScreen>
       case TowerTier.megatower:
         return const Color(0xFFFF9F43);
       case TowerTier.landmark:
-        return const Color(0xFFFF6B9D);
+        return AppColors.coupon;
     }
   }
 
@@ -2424,7 +2424,7 @@ class _TowerScreenState extends State<TowerScreen>
         padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
         margin: const EdgeInsets.only(bottom: 16),
         decoration: BoxDecoration(
-          color: const Color(0xFF0A1628),
+          color: AppColors.bgDeep,
           borderRadius: BorderRadius.circular(16),
           border: Border.all(
             color: previewColor.withValues(alpha: 0.2),

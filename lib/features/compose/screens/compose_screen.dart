@@ -314,7 +314,7 @@ class _ComposeScreenState extends State<ComposeScreen>
                 content: Text(
                   AppL10n.of(context.read<AppState>().currentUser.languageCode).composeLinkNotAllowed,
                 ),
-                backgroundColor: const Color(0xFF1F2D44),
+                backgroundColor: AppColors.bgSurface,
                 behavior: SnackBarBehavior.floating,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
@@ -661,7 +661,7 @@ class _ComposeScreenState extends State<ComposeScreen>
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(AppL10n.of(context.read<AppState>().currentUser.languageCode).composeImageLimitReached),
-          backgroundColor: const Color(0xFF1F2D44),
+          backgroundColor: AppColors.bgSurface,
           behavior: SnackBarBehavior.floating,
         ),
       );
@@ -1745,15 +1745,15 @@ class _ComposeScreenState extends State<ComposeScreen>
           gradient: _isLuckyLetter
               ? LinearGradient(
                   colors: [
-                    const Color(0xFFFFD700).withValues(alpha: 0.25),
-                    const Color(0xFFFF8C00).withValues(alpha: 0.15),
+                    AppColors.gold.withValues(alpha: 0.25),
+                    AppColors.coupon.withValues(alpha: 0.15),
                   ],
                 )
               : LinearGradient(colors: [AppColors.bgCard, AppColors.bgCard]),
           borderRadius: BorderRadius.circular(14),
           border: Border.all(
             color: _isLuckyLetter
-                ? const Color(0xFFFFD700).withValues(alpha: 0.7)
+                ? AppColors.gold.withValues(alpha: 0.7)
                 : AppColors.textMuted.withValues(alpha: 0.25),
             width: 1.5,
           ),
@@ -1770,7 +1770,7 @@ class _ComposeScreenState extends State<ComposeScreen>
                     _isLuckyLetter ? l10n.composeLuckyApplied : l10n.composeLuckySend,
                     style: TextStyle(
                       color: _isLuckyLetter
-                          ? const Color(0xFFFFD700)
+                          ? AppColors.gold
                           : AppColors.textPrimary,
                       fontSize: 13,
                       fontWeight: FontWeight.w700,
@@ -1794,7 +1794,7 @@ class _ComposeScreenState extends State<ComposeScreen>
                   ? Icons.autorenew_rounded
                   : Icons.auto_awesome_rounded,
               color: _isLuckyLetter
-                  ? const Color(0xFFFFD700)
+                  ? AppColors.gold
                   : AppColors.textMuted,
               size: 18,
             ),
@@ -1955,7 +1955,7 @@ class _ComposeScreenState extends State<ComposeScreen>
             border: Border.all(
               color: _contentFocus.hasFocus
                   ? AppColors.gold.withValues(alpha: 0.55)
-                  : const Color(0xFF1F2D44),
+                  : AppColors.bgSurface,
               width: _contentFocus.hasFocus ? 1.8 : 1.5,
             ),
           ),
@@ -2334,13 +2334,13 @@ class _ComposeScreenState extends State<ComposeScreen>
           const Divider(
             height: 18,
             thickness: 0.6,
-            color: Color(0xFF1F2D44),
+            color: AppColors.bgSurface,
           ),
           _buildQuickPickRow(state),
           const Divider(
             height: 18,
             thickness: 0.6,
-            color: Color(0xFF1F2D44),
+            color: AppColors.bgSurface,
           ),
           _buildCityOfMonthHint(state),
         ],
@@ -2642,7 +2642,7 @@ class _ComposeScreenState extends State<ComposeScreen>
           decoration: BoxDecoration(
             color: AppColors.bgCard.withValues(alpha: 0.5),
             borderRadius: BorderRadius.circular(13),
-            border: Border.all(color: const Color(0xFF1F2D44)),
+            border: Border.all(color: AppColors.bgSurface),
           ),
           child: Row(
             children: [
@@ -2703,7 +2703,7 @@ class _ComposeScreenState extends State<ComposeScreen>
           border: Border.all(
             color: _attachSocial
                 ? AppColors.teal.withValues(alpha: 0.4)
-                : const Color(0xFF1F2D44),
+                : AppColors.bgSurface,
           ),
         ),
         child: Row(
@@ -2757,7 +2757,7 @@ class _ComposeScreenState extends State<ComposeScreen>
         fillColor: AppColors.bgCard,
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: Color(0xFF1F2D44)),
+          borderSide: const BorderSide(color: AppColors.bgSurface),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
@@ -2765,7 +2765,7 @@ class _ComposeScreenState extends State<ComposeScreen>
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: Color(0xFF1F2D44)),
+          borderSide: const BorderSide(color: AppColors.bgSurface),
         ),
       ),
     );
@@ -2788,7 +2788,7 @@ class _ComposeScreenState extends State<ComposeScreen>
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
                     content: Text('🏢 ${l10n.composeBrandNoAnonymous}'),
-                    backgroundColor: const Color(0xFF1F2D44),
+                    backgroundColor: AppColors.bgSurface,
                     behavior: SnackBarBehavior.floating,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10),
@@ -2806,7 +2806,7 @@ class _ComposeScreenState extends State<ComposeScreen>
             border: Border.all(
               color: isBrand
                   ? AppColors.textMuted.withValues(alpha: 0.15)
-                  : const Color(0xFF1F2D44),
+                  : AppColors.bgSurface,
             ),
           ),
           child: Row(
@@ -3379,7 +3379,7 @@ class _ComposeScreenState extends State<ComposeScreen>
                                 child: Container(
                                   padding: const EdgeInsets.all(2.5),
                                   decoration: BoxDecoration(
-                                    color: const Color(0xFFFF8A5C),
+                                    color: AppColors.coupon,
                                     shape: BoxShape.circle,
                                     border: Border.all(
                                       color: AppColors.bgCard,
@@ -3465,7 +3465,7 @@ class _ComposeScreenState extends State<ComposeScreen>
                 ),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(10),
-                  borderSide: const BorderSide(color: Color(0xFF1F2D44)),
+                  borderSide: const BorderSide(color: AppColors.bgSurface),
                 ),
                 focusedBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(10),
@@ -3473,7 +3473,7 @@ class _ComposeScreenState extends State<ComposeScreen>
                 ),
                 enabledBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(10),
-                  borderSide: const BorderSide(color: Color(0xFF1F2D44)),
+                  borderSide: const BorderSide(color: AppColors.bgSurface),
                 ),
               ),
             ),
@@ -3525,7 +3525,7 @@ class _ComposeScreenState extends State<ComposeScreen>
       decoration: BoxDecoration(
         color: AppColors.bgCard,
         borderRadius: BorderRadius.circular(13),
-        border: Border.all(color: const Color(0xFF1F2D44)),
+        border: Border.all(color: AppColors.bgSurface),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -3682,8 +3682,8 @@ class _ComposeScreenState extends State<ComposeScreen>
     final l10n = AppL10n.of(context.read<AppState>().currentUser.languageCode);
     // 특송 ON이면 gold, 대량만 ON이면 orange, OFF면 기본
     final activeColor = (_isBulkMode && _isExpressMode)
-        ? const Color(0xFFFFD700)
-        : const Color(0xFFFF8A5C);
+        ? AppColors.gold
+        : AppColors.coupon;
     return GestureDetector(
       onTap: () => setState(() {
         _isBulkMode = !_isBulkMode;
@@ -3732,16 +3732,16 @@ class _ComposeScreenState extends State<ComposeScreen>
                         vertical: 2,
                       ),
                       decoration: BoxDecoration(
-                        color: const Color(0xFFFFD700).withValues(alpha: 0.2),
+                        color: AppColors.gold.withValues(alpha: 0.2),
                         borderRadius: BorderRadius.circular(4),
                         border: Border.all(
-                          color: const Color(0xFFFFD700).withValues(alpha: 0.6),
+                          color: AppColors.gold.withValues(alpha: 0.6),
                         ),
                       ),
                       child: Text(
                         '⚡ ${l10n.composeWithin5Min}',
                         style: TextStyle(
-                          color: Color(0xFFFFD700),
+                          color: AppColors.gold,
                           fontSize: 10,
                           fontWeight: FontWeight.w700,
                         ),
@@ -3781,12 +3781,12 @@ class _ComposeScreenState extends State<ComposeScreen>
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
         decoration: BoxDecoration(
           color: _isExpressMode
-              ? const Color(0xFFFFD700).withValues(alpha: 0.12)
+              ? AppColors.gold.withValues(alpha: 0.12)
               : AppColors.bgCard,
           borderRadius: BorderRadius.circular(13),
           border: Border.all(
             color: _isExpressMode
-                ? const Color(0xFFFFD700).withValues(alpha: 0.6)
+                ? AppColors.gold.withValues(alpha: 0.6)
                 : AppColors.textMuted.withValues(alpha: 0.2),
           ),
         ),
@@ -3795,7 +3795,7 @@ class _ComposeScreenState extends State<ComposeScreen>
             Icon(
               Icons.bolt_rounded,
               color: _isExpressMode
-                  ? const Color(0xFFFFD700)
+                  ? AppColors.gold
                   : AppColors.textMuted,
               size: 18,
             ),
@@ -3807,7 +3807,7 @@ class _ComposeScreenState extends State<ComposeScreen>
                     : '⚡ ${l10n.composeExpressModeBrand}',
                 style: TextStyle(
                   color: _isExpressMode
-                      ? const Color(0xFFFFD700)
+                      ? AppColors.gold
                       : AppColors.textMuted,
                   fontSize: 12,
                   fontWeight: FontWeight.w600,
@@ -3817,7 +3817,7 @@ class _ComposeScreenState extends State<ComposeScreen>
             Switch(
               value: _isExpressMode,
               onChanged: (v) => setState(() => _isExpressMode = v),
-              activeColor: const Color(0xFFFFD700),
+              activeColor: AppColors.gold,
               materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
             ),
           ],
@@ -3837,7 +3837,7 @@ class _ComposeScreenState extends State<ComposeScreen>
         color: AppColors.bgCard,
         borderRadius: BorderRadius.circular(14),
         border: Border.all(
-          color: const Color(0xFFFFD700).withValues(alpha: 0.4),
+          color: AppColors.gold.withValues(alpha: 0.4),
         ),
       ),
       child: Column(
@@ -3900,12 +3900,12 @@ class _ComposeScreenState extends State<ComposeScreen>
                     alignment: Alignment.center,
                     decoration: BoxDecoration(
                       color: selected
-                          ? const Color(0xFFFFD700).withValues(alpha: 0.15)
+                          ? AppColors.gold.withValues(alpha: 0.15)
                           : AppColors.bgDeep,
                       borderRadius: BorderRadius.circular(8),
                       border: Border.all(
                         color: selected
-                            ? const Color(0xFFFFD700).withValues(alpha: 0.7)
+                            ? AppColors.gold.withValues(alpha: 0.7)
                             : AppColors.textMuted.withValues(alpha: 0.15),
                         width: selected ? 1.5 : 1.0,
                       ),
@@ -3915,7 +3915,7 @@ class _ComposeScreenState extends State<ComposeScreen>
                       style: TextStyle(
                         fontSize: 10,
                         color: selected
-                            ? const Color(0xFFFFD700)
+                            ? AppColors.gold
                             : AppColors.textSecondary,
                         fontWeight: selected
                             ? FontWeight.w700
@@ -3935,7 +3935,7 @@ class _ComposeScreenState extends State<ComposeScreen>
                 : l10n.composeSelectCountryAbove,
             style: TextStyle(
               color: _selectedCountry.isNotEmpty
-                  ? const Color(0xFFFFD700).withValues(alpha: 0.85)
+                  ? AppColors.gold.withValues(alpha: 0.85)
                   : AppColors.textMuted,
               fontSize: 11,
               fontWeight: FontWeight.w500,
@@ -3950,7 +3950,7 @@ class _ComposeScreenState extends State<ComposeScreen>
   /// 모드를 모르고 닫아 버려서 발송 실수가 나는 걸 방지 + 되돌리기 가능.
   Widget _buildActiveModeBanner(AppState state) {
     final l10n = AppL10n.of(state.currentUser.languageCode);
-    final orange = const Color(0xFFFF8A5C);
+    final orange = AppColors.coupon;
     return Padding(
       padding: const EdgeInsets.only(bottom: 8),
       child: Container(
@@ -4024,13 +4024,13 @@ class _ComposeScreenState extends State<ComposeScreen>
     final langCode = state.currentUser.languageCode;
     final allCountries = AppState.countries;
     final panelColor = _isExpressMode
-        ? const Color(0xFFFFD700)
-        : const Color(0xFFFF8A5C);
+        ? AppColors.gold
+        : AppColors.coupon;
     return Container(
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
         color: _isExpressMode
-            ? const Color(0xFFFFD700).withValues(alpha: 0.05)
+            ? AppColors.gold.withValues(alpha: 0.05)
             : AppColors.bgCard,
         borderRadius: BorderRadius.circular(14),
         border: Border.all(
@@ -4048,12 +4048,12 @@ class _ComposeScreenState extends State<ComposeScreen>
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
               decoration: BoxDecoration(
                 color: _isExpressMode
-                    ? const Color(0xFFFFD700).withValues(alpha: 0.12)
+                    ? AppColors.gold.withValues(alpha: 0.12)
                     : AppColors.bgSurface,
                 borderRadius: BorderRadius.circular(10),
                 border: Border.all(
                   color: _isExpressMode
-                      ? const Color(0xFFFFD700).withValues(alpha: 0.6)
+                      ? AppColors.gold.withValues(alpha: 0.6)
                       : AppColors.textMuted.withValues(alpha: 0.2),
                 ),
               ),
@@ -4062,7 +4062,7 @@ class _ComposeScreenState extends State<ComposeScreen>
                   Icon(
                     Icons.bolt_rounded,
                     color: _isExpressMode
-                        ? const Color(0xFFFFD700)
+                        ? AppColors.gold
                         : AppColors.textMuted,
                     size: 17,
                   ),
@@ -4077,7 +4077,7 @@ class _ComposeScreenState extends State<ComposeScreen>
                               : '⚡ ${l10n.composeExpressModeBrand}',
                           style: TextStyle(
                             color: _isExpressMode
-                                ? const Color(0xFFFFD700)
+                                ? AppColors.gold
                                 : AppColors.textMuted,
                             fontSize: 12,
                             fontWeight: FontWeight.w700,
@@ -4087,7 +4087,7 @@ class _ComposeScreenState extends State<ComposeScreen>
                           Text(
                             l10n.composeExpressDeliveryEachCountry,
                             style: TextStyle(
-                              color: Color(0xFFFFD700),
+                              color: AppColors.gold,
                               fontSize: 10,
                             ),
                           ),
@@ -4097,7 +4097,7 @@ class _ComposeScreenState extends State<ComposeScreen>
                   Switch(
                     value: _isExpressMode,
                     onChanged: (v) => setState(() => _isExpressMode = v),
-                    activeColor: const Color(0xFFFFD700),
+                    activeColor: AppColors.gold,
                     materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
                   ),
                 ],
@@ -4114,7 +4114,7 @@ class _ComposeScreenState extends State<ComposeScreen>
                     : '📮 ${l10n.composeSendPerCountry}',
                 style: TextStyle(
                   color: _isExpressMode
-                      ? const Color(0xFFFFD700)
+                      ? AppColors.gold
                       : AppColors.textPrimary,
                   fontSize: 12,
                   fontWeight: FontWeight.w700,
@@ -4133,7 +4133,7 @@ class _ComposeScreenState extends State<ComposeScreen>
                     borderRadius: BorderRadius.circular(7),
                     border: Border.all(
                       color: _isExpressMode
-                          ? const Color(0xFFFFD700).withValues(alpha: 0.3)
+                          ? AppColors.gold.withValues(alpha: 0.3)
                           : AppColors.textMuted.withValues(alpha: 0.3),
                     ),
                   ),
@@ -4141,7 +4141,7 @@ class _ComposeScreenState extends State<ComposeScreen>
                     Icons.remove,
                     size: 14,
                     color: _isExpressMode
-                        ? const Color(0xFFFFD700)
+                        ? AppColors.gold
                         : AppColors.textSecondary,
                   ),
                 ),
@@ -4152,7 +4152,7 @@ class _ComposeScreenState extends State<ComposeScreen>
                   l10n.composeCountUnit(_sendPerCountry),
                   style: TextStyle(
                     color: _isExpressMode
-                        ? const Color(0xFFFFD700)
+                        ? AppColors.gold
                         : AppColors.textPrimary,
                     fontSize: 14,
                     fontWeight: FontWeight.w700,
@@ -4171,7 +4171,7 @@ class _ComposeScreenState extends State<ComposeScreen>
                     borderRadius: BorderRadius.circular(7),
                     border: Border.all(
                       color: _isExpressMode
-                          ? const Color(0xFFFFD700).withValues(alpha: 0.3)
+                          ? AppColors.gold.withValues(alpha: 0.3)
                           : AppColors.textMuted.withValues(alpha: 0.3),
                     ),
                   ),
@@ -4179,7 +4179,7 @@ class _ComposeScreenState extends State<ComposeScreen>
                     Icons.add,
                     size: 14,
                     color: _isExpressMode
-                        ? const Color(0xFFFFD700)
+                        ? AppColors.gold
                         : AppColors.textSecondary,
                   ),
                 ),
@@ -4301,12 +4301,12 @@ class _ComposeScreenState extends State<ComposeScreen>
                     ),
                     decoration: BoxDecoration(
                       color: selected
-                          ? const Color(0xFFFF8A5C).withValues(alpha: 0.2)
+                          ? AppColors.coupon.withValues(alpha: 0.2)
                           : AppColors.bgSurface,
                       borderRadius: BorderRadius.circular(20),
                       border: Border.all(
                         color: selected
-                            ? const Color(0xFFFF8A5C)
+                            ? AppColors.coupon
                             : AppColors.textMuted.withValues(alpha: 0.25),
                         width: selected ? 1.5 : 1,
                       ),
@@ -4320,7 +4320,7 @@ class _ComposeScreenState extends State<ComposeScreen>
                           CountryL10n.localizedName(c['name']!, langCode),
                           style: TextStyle(
                           color: selected
-                              ? const Color(0xFFFF8A5C)
+                              ? AppColors.coupon
                               : AppColors.textSecondary,
                           fontSize: 11,
                           fontWeight: selected
@@ -4358,8 +4358,8 @@ class _ComposeScreenState extends State<ComposeScreen>
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
               decoration: BoxDecoration(
                 color: _isExpressMode
-                    ? const Color(0xFFFFD700).withValues(alpha: 0.08)
-                    : const Color(0xFFFF8A5C).withValues(alpha: 0.08),
+                    ? AppColors.gold.withValues(alpha: 0.08)
+                    : AppColors.coupon.withValues(alpha: 0.08),
                 borderRadius: BorderRadius.circular(10),
               ),
               child: Column(
@@ -4371,8 +4371,8 @@ class _ComposeScreenState extends State<ComposeScreen>
                         : l10n.composeBulkSendSummary(_bulkTargets.length * _sendPerCountry, _bulkTargets.length, _sendPerCountry),
                     style: TextStyle(
                       color: _isExpressMode
-                          ? const Color(0xFFFFD700)
-                          : const Color(0xFFFF8A5C),
+                          ? AppColors.gold
+                          : AppColors.coupon,
                       fontSize: 12,
                       fontWeight: FontWeight.w600,
                     ),
@@ -4381,7 +4381,7 @@ class _ComposeScreenState extends State<ComposeScreen>
                     const SizedBox(height: 2),
                     Text(
                       '⏱ ${l10n.composeDeliveryIn5Min}',
-                      style: const TextStyle(color: Color(0xFFFFD700), fontSize: 10),
+                      style: const TextStyle(color: AppColors.gold, fontSize: 10),
                     ),
                   ],
                 ],
@@ -5233,7 +5233,7 @@ class _ComposeScreenState extends State<ComposeScreen>
                 decoration: BoxDecoration(
                   color: AppColors.bgCard,
                   borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: const Color(0xFF1F2D44)),
+                  border: Border.all(color: AppColors.bgSurface),
                 ),
                 child: Row(
                   children: [
@@ -5327,7 +5327,7 @@ class _ComposeScreenState extends State<ComposeScreen>
                     border: Border.all(
                       color: isSelected
                           ? AppColors.teal
-                          : const Color(0xFF1F2D44),
+                          : AppColors.bgSurface,
                       width: isSelected ? 2 : 1,
                     ),
                   ),
@@ -5375,7 +5375,7 @@ class _ComposeScreenState extends State<ComposeScreen>
               decoration: BoxDecoration(
                 color: AppColors.bgCard,
                 borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: const Color(0xFF1F2D44)),
+                border: Border.all(color: AppColors.bgSurface),
               ),
               child: Row(
                 children: [
@@ -5617,7 +5617,7 @@ class _ComposeOptionsSectionState extends State<_ComposeOptionsSection> {
       decoration: BoxDecoration(
         color: AppColors.bgCard,
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: const Color(0xFF1F2D44)),
+        border: Border.all(color: AppColors.bgSurface),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -5659,7 +5659,7 @@ class _ComposeOptionsSectionState extends State<_ComposeOptionsSection> {
           if (_expanded) ...[
             Container(
               height: 1,
-              color: const Color(0xFF1F2D44),
+              color: AppColors.bgSurface,
             ),
             Padding(
               padding: const EdgeInsets.all(14),

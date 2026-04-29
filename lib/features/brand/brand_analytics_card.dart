@@ -57,15 +57,15 @@ class _BrandAnalyticsCardState extends State<BrandAnalyticsCard> {
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [
-            const Color(0xFFFF8A5C).withValues(alpha: 0.14),
-            const Color(0xFFFF8A5C).withValues(alpha: 0.04),
+            AppColors.coupon.withValues(alpha: 0.14),
+            AppColors.coupon.withValues(alpha: 0.04),
           ],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: const Color(0xFFFF8A5C).withValues(alpha: 0.4),
+          color: AppColors.coupon.withValues(alpha: 0.4),
           width: 1.3,
         ),
       ),
@@ -106,7 +106,7 @@ class _BrandAnalyticsCardState extends State<BrandAnalyticsCard> {
                   width: 20,
                   height: 20,
                   child: CircularProgressIndicator(
-                    color: Color(0xFFFF8A5C),
+                    color: AppColors.coupon,
                     strokeWidth: 2,
                   ),
                 ),
@@ -221,7 +221,7 @@ class _BrandAnalyticsCardState extends State<BrandAnalyticsCard> {
                         Text(
                           '${e.value}',
                           style: const TextStyle(
-                            color: Color(0xFFFF8A5C),
+                            color: AppColors.coupon,
                             fontSize: 11,
                             fontWeight: FontWeight.w800,
                           ),
@@ -301,7 +301,7 @@ class _BrandAnalyticsCardState extends State<BrandAnalyticsCard> {
         Text(
           '$pct%',
           style: const TextStyle(
-            color: Color(0xFFFF8A5C),
+            color: AppColors.coupon,
             fontSize: 12,
             fontWeight: FontWeight.w800,
           ),
@@ -314,7 +314,7 @@ class _BrandAnalyticsCardState extends State<BrandAnalyticsCard> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
-        color: const Color(0xFFFF8A5C).withValues(alpha: 0.18),
+        color: AppColors.coupon.withValues(alpha: 0.18),
         borderRadius: BorderRadius.circular(8),
       ),
       child: Row(
@@ -325,7 +325,7 @@ class _BrandAnalyticsCardState extends State<BrandAnalyticsCard> {
           Text(
             label,
             style: const TextStyle(
-              color: Color(0xFFFF8A5C),
+              color: AppColors.coupon,
               fontSize: 11,
               fontWeight: FontWeight.w800,
             ),
@@ -363,7 +363,7 @@ class _Sparkline extends StatelessWidget {
             Text(
               'Σ $total',
               style: const TextStyle(
-                color: Color(0xFFFF8A5C),
+                color: AppColors.coupon,
                 fontSize: 11,
                 fontWeight: FontWeight.w800,
               ),
@@ -392,11 +392,11 @@ class _Sparkline extends StatelessWidget {
                           gradient: LinearGradient(
                             colors: isToday
                                 ? [
-                                    const Color(0xFFFF8A5C),
+                                    AppColors.coupon,
                                     const Color(0xFFFFB86B),
                                   ]
                                 : [
-                                    const Color(0xFFFF8A5C)
+                                    AppColors.coupon
                                         .withValues(alpha: 0.55),
                                     const Color(0xFFFFB86B)
                                         .withValues(alpha: 0.35),

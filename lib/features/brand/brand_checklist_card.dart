@@ -66,15 +66,15 @@ class _BrandChecklistCardState extends State<BrandChecklistCard> {
           decoration: BoxDecoration(
             gradient: LinearGradient(
               colors: [
-                const Color(0xFFFF8A5C).withValues(alpha: 0.18),
-                const Color(0xFFFF8A5C).withValues(alpha: 0.04),
+                AppColors.coupon.withValues(alpha: 0.18),
+                AppColors.coupon.withValues(alpha: 0.04),
               ],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
             ),
             borderRadius: BorderRadius.circular(16),
             border: Border.all(
-              color: const Color(0xFFFF8A5C).withValues(alpha: 0.45),
+              color: AppColors.coupon.withValues(alpha: 0.45),
               width: 1.3,
             ),
           ),
@@ -98,7 +98,7 @@ class _BrandChecklistCardState extends State<BrandChecklistCard> {
                   Text(
                     '$doneCount / 3',
                     style: const TextStyle(
-                      color: Color(0xFFFF8A5C),
+                      color: AppColors.coupon,
                       fontSize: 12,
                       fontWeight: FontWeight.w800,
                     ),
@@ -140,7 +140,7 @@ class _BrandChecklistCardState extends State<BrandChecklistCard> {
     required String body,
   }) {
     final color = done
-        ? const Color(0xFFFF8A5C)
+        ? AppColors.coupon
         : AppColors.textMuted.withValues(alpha: 0.6);
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -152,7 +152,7 @@ class _BrandChecklistCardState extends State<BrandChecklistCard> {
           decoration: BoxDecoration(
             shape: BoxShape.circle,
             color: done
-                ? const Color(0xFFFF8A5C).withValues(alpha: 0.22)
+                ? AppColors.coupon.withValues(alpha: 0.22)
                 : AppColors.bgSurface,
             border: Border.all(color: color, width: 1.2),
           ),
@@ -160,7 +160,7 @@ class _BrandChecklistCardState extends State<BrandChecklistCard> {
               ? const Icon(
                   Icons.check_rounded,
                   size: 14,
-                  color: Color(0xFFFF8A5C),
+                  color: AppColors.coupon,
                 )
               : Text(
                   '$index',

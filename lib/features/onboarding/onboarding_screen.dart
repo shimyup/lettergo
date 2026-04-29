@@ -358,7 +358,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 emoji: '🎟',
                 title: _l.onboarding3Title,
                 body: _l.onboarding3Body,
-                gradient: const [Color(0xFF0F1A30), Color(0xFF1A2A50)],
+                gradient: const [AppColors.bgDeep, AppColors.bgCard],
                 // Build 186: 줍기는 모든 티어 가능 — "Free + Premium + Brand".
                 tiers: [
                   _TierBadge(_l.tierLabelFree, AppColors.teal),
@@ -372,7 +372,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 emoji: '📸',
                 title: _l.onboarding4Title,
                 body: _l.onboarding4Body,
-                gradient: const [Color(0xFF15102A), Color(0xFF2A1A50)],
+                gradient: const [AppColors.bgDeep, AppColors.bgCard],
                 // Build 186: 편지 뿌리기는 Premium + Brand 만. Free 배제를
                 // 시각적으로 명시해 gate 시 혼선 예방.
                 tiers: [
@@ -384,7 +384,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 emoji: '🚀',
                 title: _l.onboarding5Title,
                 body: _l.onboarding5Body,
-                gradient: const [Color(0xFF0A1628), Color(0xFF162040)],
+                gradient: const [AppColors.bgDeep, AppColors.bgCard],
               ),
               // Page 5: Premium 소개
               _PremiumPage(l: _l),

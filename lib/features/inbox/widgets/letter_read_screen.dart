@@ -1365,12 +1365,12 @@ class _LetterReadScreenState extends State<LetterReadScreen>
                       ),
                       decoration: BoxDecoration(
                         gradient: const LinearGradient(
-                          colors: [Color(0xFFFF8C00), Color(0xFFFFD700)],
+                          colors: [AppColors.coupon, AppColors.gold],
                         ),
                         borderRadius: BorderRadius.circular(6),
                         boxShadow: [
                           BoxShadow(
-                            color: const Color(0xFFFF8C00).withValues(alpha: 0.35),
+                            color: AppColors.coupon.withValues(alpha: 0.35),
                             blurRadius: 8,
                             offset: const Offset(0, 2),
                           ),
