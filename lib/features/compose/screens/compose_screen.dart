@@ -840,7 +840,7 @@ class _ComposeScreenState extends State<ComposeScreen>
               l10n.composeExpressBulkSent(_bulkTargets.length, _sendPerCountry, totalSent),
               style: const TextStyle(color: Colors.white),
             ),
-            backgroundColor: const Color(0xFF1A1A2A),
+            backgroundColor: AppColors.bgCard,
             behavior: SnackBarBehavior.floating,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(12),
@@ -898,7 +898,7 @@ class _ComposeScreenState extends State<ComposeScreen>
                   : l10n.composeBulkSent(totalSent, _bulkTargets.length),
               style: const TextStyle(color: Colors.white),
             ),
-            backgroundColor: const Color(0xFF111827),
+            backgroundColor: AppColors.bgCard,
             behavior: SnackBarBehavior.floating,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(12),
@@ -1055,7 +1055,7 @@ class _ComposeScreenState extends State<ComposeScreen>
                     Text(
                       estLabel,
                       style: const TextStyle(
-                        color: Color(0xFFE5E7EB),
+                        color: AppColors.textPrimary,
                         fontSize: 12,
                       ),
                     ),
@@ -1068,7 +1068,7 @@ class _ComposeScreenState extends State<ComposeScreen>
                     fontWeight: FontWeight.w700,
                   ),
                 ),
-          backgroundColor: const Color(0xFF111827),
+          backgroundColor: AppColors.bgCard,
           behavior: SnackBarBehavior.floating,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
@@ -1479,7 +1479,7 @@ class _ComposeScreenState extends State<ComposeScreen>
             onPressed: () => Navigator.pop(dCtx, 'discard'),
             child: Text(
               l10n.composeDiscard,
-              style: const TextStyle(color: Color(0xFFFF6B6B)),
+              style: const TextStyle(color: AppColors.error),
             ),
           ),
           TextButton(
@@ -4197,12 +4197,12 @@ class _ComposeScreenState extends State<ComposeScreen>
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
               decoration: BoxDecoration(
                 color: _isBulkRandom
-                    ? const Color(0xFF6C5CE7).withValues(alpha: 0.12)
+                    ? AppColors.streak.withValues(alpha: 0.12)
                     : AppColors.bgSurface,
                 borderRadius: BorderRadius.circular(10),
                 border: Border.all(
                   color: _isBulkRandom
-                      ? const Color(0xFF6C5CE7).withValues(alpha: 0.6)
+                      ? AppColors.streak.withValues(alpha: 0.6)
                       : AppColors.textMuted.withValues(alpha: 0.2),
                 ),
               ),
@@ -4218,7 +4218,7 @@ class _ComposeScreenState extends State<ComposeScreen>
                           l10n.composeBulkRandomCountry,
                           style: TextStyle(
                             color: _isBulkRandom
-                                ? const Color(0xFF6C5CE7)
+                                ? AppColors.streak
                                 : AppColors.textSecondary,
                             fontSize: 12,
                             fontWeight: FontWeight.w700,
@@ -4228,7 +4228,7 @@ class _ComposeScreenState extends State<ComposeScreen>
                           Text(
                             l10n.composeBulkRandomDesc,
                             style: const TextStyle(
-                              color: Color(0xFF6C5CE7),
+                              color: AppColors.streak,
                               fontSize: 10,
                             ),
                           ),
@@ -4241,7 +4241,7 @@ class _ComposeScreenState extends State<ComposeScreen>
                       _isBulkRandom = v;
                       if (v) _bulkTargets.clear();
                     }),
-                    activeColor: const Color(0xFF6C5CE7),
+                    activeColor: AppColors.streak,
                     materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
                   ),
                 ],
@@ -4341,13 +4341,13 @@ class _ComposeScreenState extends State<ComposeScreen>
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
               decoration: BoxDecoration(
-                color: const Color(0xFF6C5CE7).withValues(alpha: 0.08),
+                color: AppColors.streak.withValues(alpha: 0.08),
                 borderRadius: BorderRadius.circular(10),
               ),
               child: Text(
                 '🎲 ${l10n.composeBulkRandomSummary(_sendPerCountry)}',
                 style: const TextStyle(
-                  color: Color(0xFF6C5CE7),
+                  color: AppColors.streak,
                   fontSize: 12,
                   fontWeight: FontWeight.w600,
                 ),
@@ -4807,14 +4807,14 @@ class _ComposeScreenState extends State<ComposeScreen>
           final tabColors = [
             AppColors.gold,
             AppColors.teal,
-            const Color(0xFF60A5FA),
+            AppColors.map,
           ];
           final tabLabel = ['🛣️ ${l10n.composeLand}', '✈️ ${l10n.composeAir}', '🌊 ${l10n.composeSea}'];
           final selectedInTab = _categoryEmojis[tabIndex];
 
           return Container(
             decoration: const BoxDecoration(
-              color: Color(0xFF0D1421),
+              color: AppColors.bgDeep,
               borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
             ),
             child: Column(
@@ -5100,7 +5100,7 @@ class _ComposeScreenState extends State<ComposeScreen>
                             ? AppColors.gold
                             : AppColors.bgCard,
                         foregroundColor: _categoryEmojis.isNotEmpty
-                            ? const Color(0xFF0D1421)
+                            ? AppColors.bgDeep
                             : AppColors.textMuted,
                         elevation: _categoryEmojis.isNotEmpty ? 2 : 0,
                         shape: RoundedRectangleBorder(
@@ -5153,7 +5153,7 @@ class _ComposeScreenState extends State<ComposeScreen>
       useSafeArea: true,
       builder: (_) => Container(
         decoration: const BoxDecoration(
-          color: Color(0xFF0D1421),
+          color: AppColors.bgDeep,
           borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
         ),
         child: SingleChildScrollView(
@@ -5284,7 +5284,7 @@ class _ComposeScreenState extends State<ComposeScreen>
       backgroundColor: Colors.transparent,
       builder: (_) => Container(
         decoration: const BoxDecoration(
-          color: Color(0xFF0D1421),
+          color: AppColors.bgDeep,
           borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
         ),
         child: Column(
@@ -5461,7 +5461,7 @@ class _ComposeScreenState extends State<ComposeScreen>
             style: TextStyle(
               color: state.hasRemainingDailyQuota
                   ? AppColors.textMuted
-                  : const Color(0xFFFF8A80),
+                  : AppColors.coupon,
               fontSize: 11,
               fontWeight: FontWeight.w600,
             ),

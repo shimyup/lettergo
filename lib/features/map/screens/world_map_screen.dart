@@ -3687,49 +3687,90 @@ class _PickupSheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isBrand = letter.senderIsBrand ||
+        letter.letterType == LetterType.brandExpress;
+    final cardColor = isBrand ? AppColors.coupon : AppColors.letter;
+    final ink = isBrand
+        ? const Color(0xFF1A0008)
+        : const Color(0xFF0A1A00);
+
     return Container(
-      margin: const EdgeInsets.all(12),
-      padding: const EdgeInsets.all(20),
+      margin: const EdgeInsets.fromLTRB(12, 12, 12, 24),
+      padding: const EdgeInsets.fromLTRB(22, 20, 22, 20),
       decoration: BoxDecoration(
-        color: AppColors.bgCard,
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: AppColors.gold.withValues(alpha: 0.3)),
+        color: cardColor,
+        borderRadius: BorderRadius.circular(24),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.4),
+            blurRadius: 32,
+            offset: const Offset(0, 12),
+          ),
+        ],
       ),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
         children: [
-          const Text('📩', style: TextStyle(fontSize: 40)),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                isBrand ? 'BRAND' : 'LETTER',
+                style: TextStyle(
+                  color: ink.withValues(alpha: 0.7),
+                  fontSize: 11,
+                  fontWeight: FontWeight.w700,
+                  letterSpacing: 0.66,
+                ),
+              ),
+              Text(
+                letter.senderCountryFlag,
+                style: const TextStyle(fontSize: 18),
+              ),
+            ],
+          ),
           const SizedBox(height: 12),
           Text(
-            '${letter.senderCountryFlag} ${l10n.mapLetterFrom(CountryL10n.localizedName(letter.senderCountry, langCode))}',
-            style: const TextStyle(
-              color: AppColors.textPrimary,
-              fontSize: 16,
-              fontWeight: FontWeight.w700,
+            l10n.mapLetterFrom(
+              CountryL10n.localizedName(letter.senderCountry, langCode),
+            ),
+            style: TextStyle(
+              color: ink,
+              fontSize: 22,
+              fontWeight: FontWeight.w800,
+              letterSpacing: -0.6,
+              height: 1.15,
             ),
           ),
-          const SizedBox(height: 6),
+          const SizedBox(height: 4),
           Text(
             letter.senderName,
-            style: const TextStyle(color: AppColors.textMuted, fontSize: 13),
+            style: TextStyle(
+              color: ink.withValues(alpha: 0.65),
+              fontSize: 13,
+              fontWeight: FontWeight.w600,
+            ),
           ),
           const SizedBox(height: 20),
-          SizedBox(
-            width: double.infinity,
-            child: ElevatedButton(
-              onPressed: onPickup,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.gold,
-                foregroundColor: AppColors.bgDeep,
-                padding: const EdgeInsets.symmetric(vertical: 14),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(14),
-                ),
-                elevation: 0,
+          GestureDetector(
+            onTap: onPickup,
+            child: Container(
+              width: double.infinity,
+              padding: const EdgeInsets.symmetric(vertical: 16),
+              alignment: Alignment.center,
+              decoration: BoxDecoration(
+                color: AppColors.bgDeep,
+                borderRadius: BorderRadius.circular(14),
               ),
               child: Text(
                 l10n.mapPickUpLetter,
-                style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700),
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 15,
+                  fontWeight: FontWeight.w800,
+                  letterSpacing: -0.2,
+                ),
               ),
             ),
           ),
