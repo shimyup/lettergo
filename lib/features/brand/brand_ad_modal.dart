@@ -67,6 +67,7 @@ class _BrandAdDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final state = context.read<AppState>();
+    final l10n = AppL10n.of(state.currentUser.languageCode);
     final mq = MediaQuery.of(context);
     final modalHeight = mq.size.height * 0.62;
     final imageUrl = letter.imageUrl;
@@ -176,11 +177,7 @@ class _BrandAdDialog extends StatelessWidget {
                                   borderRadius: BorderRadius.circular(14),
                                 ),
                                 child: Text(
-                                  AppL10n.of(state.currentUser.languageCode)
-                                      .languageCode
-                                      .startsWith('ko')
-                                      ? '닫기'
-                                      : 'Close',
+                                  l10n.brandAdClose,
                                   style: const TextStyle(
                                     color: AppColors.textPrimary,
                                     fontSize: 15,
@@ -214,9 +211,9 @@ class _BrandAdDialog extends StatelessWidget {
                                     ),
                                   ],
                                 ),
-                                child: const Text(
-                                  '편지 받기',
-                                  style: TextStyle(
+                                child: Text(
+                                  l10n.brandAdPickup,
+                                  style: const TextStyle(
                                     color: Color(0xFF1A0008),
                                     fontSize: 15,
                                     fontWeight: FontWeight.w800,

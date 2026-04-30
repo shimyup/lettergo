@@ -223,12 +223,18 @@ class _TowerScreenState extends State<TowerScreen>
                       const SizedBox(height: 8),
                       _buildCharacterGallery(state, user),
                     ],
-                    // ── 유저 정보 카드 ────────────────────────────────────────
-                    _buildUserCard(context, user, score),
-                    const SizedBox(height: 14),
-                    // ── 활동 통계 ─────────────────────────────────────────────
-                    _buildStatsGrid(context, score),
-                    const SizedBox(height: 14),
+                    // ── Build 203: 유저 카드 + 스탯 그리드 통합 ──
+                    // 이전엔 별개 카드 2개로 분산 → 하나의 identity 카드로 통합.
+                    // 아바타/이름 위, 3-stat 인라인 row 아래.
+                    if (user.isBrand) ...[
+                      _buildUserCard(context, user, score),
+                      const SizedBox(height: 14),
+                      _buildStatsGrid(context, score),
+                      const SizedBox(height: 14),
+                    ] else ...[
+                      _buildCombinedIdentityStats(context, user, score),
+                      const SizedBox(height: 14),
+                    ],
                     // Build 180: Free/Premium 은 레벨업 가이드 숨김 — 레터 hero
                     // 의 로드맵 pill (Build 177) 과 중복. Brand 만 타워 진척 안내.
                     if (user.isBrand) ...[
@@ -1110,6 +1116,144 @@ class _TowerScreenState extends State<TowerScreen>
   }
 
   // ── 활동 통계 그리드 ─────────────────────────────────────────────────────────
+  /// Build 203: Free/Premium 전용 통합 카드 — 유저 아바타/이름 + 3-stat row.
+  /// 기존 _buildUserCard + _buildStatsGrid 두 카드를 하나로 합쳐 시각 밀도
+  /// 개선 + 직관성 향상.
+  Widget _buildCombinedIdentityStats(
+    BuildContext ctx,
+    UserProfile user,
+    ActivityScore score,
+  ) {
+    final l = AppL10n.of(user.languageCode);
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      child: Container(
+        padding: const EdgeInsets.fromLTRB(22, 20, 22, 18),
+        decoration: BoxDecoration(
+          color: AppColors.bgCard,
+          borderRadius: BorderRadius.circular(24),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // ── 상단: 아바타 + 이름 ──
+            Row(
+              children: [
+                Container(
+                  width: 52,
+                  height: 52,
+                  alignment: Alignment.center,
+                  decoration: const BoxDecoration(
+                    color: AppColors.bgSurface,
+                    shape: BoxShape.circle,
+                  ),
+                  child: Text(
+                    user.countryFlag,
+                    style: const TextStyle(fontSize: 26),
+                  ),
+                ),
+                const SizedBox(width: 14),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        user.username,
+                        style: const TextStyle(
+                          color: AppColors.textPrimary,
+                          fontSize: 18,
+                          fontWeight: FontWeight.w800,
+                          letterSpacing: -0.4,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        score.reputationTitleL(user.languageCode),
+                        style: const TextStyle(
+                          color: AppColors.gold,
+                          fontSize: 12,
+                          fontWeight: FontWeight.w700,
+                          letterSpacing: 0.2,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 18),
+            Container(height: 0.5, color: AppColors.bgSurface),
+            const SizedBox(height: 16),
+            // ── 하단: 3-stat row ──
+            Row(
+              children: [
+                Expanded(
+                  child: _statCellInline(
+                    value: '${score.receivedCount}',
+                    label: l.towerReceivedLetters,
+                    color: AppColors.gold,
+                  ),
+                ),
+                Container(width: 0.5, height: 32, color: AppColors.bgSurface),
+                Expanded(
+                  child: _statCellInline(
+                    value: '${score.replyCount}',
+                    label: l.towerReply,
+                    color: AppColors.teal,
+                  ),
+                ),
+                Container(width: 0.5, height: 32, color: AppColors.bgSurface),
+                Expanded(
+                  child: _statCellInline(
+                    value: '${score.sentCount}',
+                    label: l.towerSentLetters,
+                    color: AppColors.success,
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _statCellInline({
+    required String value,
+    required String label,
+    required Color color,
+  }) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          value,
+          style: TextStyle(
+            color: color,
+            fontSize: 22,
+            fontWeight: FontWeight.w800,
+            letterSpacing: -0.6,
+            height: 1,
+          ),
+        ),
+        const SizedBox(height: 6),
+        Text(
+          label.toUpperCase(),
+          style: const TextStyle(
+            color: AppColors.textMuted,
+            fontSize: 10,
+            fontWeight: FontWeight.w700,
+            letterSpacing: 0.4,
+          ),
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+        ),
+      ],
+    );
+  }
+
   Widget _buildStatsGrid(BuildContext ctx, ActivityScore score) {
     final _sl = AppL10n.of(ctx.read<AppState>().currentUser.languageCode);
     return Padding(

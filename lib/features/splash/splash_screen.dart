@@ -1,8 +1,11 @@
 import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../../core/localization/app_localizations.dart';
 import '../../core/theme/app_theme.dart';
+import '../../state/app_state.dart';
 
 /// v5 Wallet 디자인. 검정 배경 + 큰 brand wordmark + 1.8s 자동 이동.
 /// Debug 모드에서 우상단 'v5 preview' 칩 노출.
@@ -94,15 +97,23 @@ class _SplashScreenState extends State<SplashScreen>
                     ),
                   ),
                   const SizedBox(height: 18),
-                  const Text(
-                    '근처에 떠있는 쿠폰과 편지를\n주워 쓰는 지갑.',
-                    style: TextStyle(
-                      fontSize: 17,
-                      color: AppColors.textSecondary,
-                      fontWeight: FontWeight.w500,
-                      height: 1.45,
-                      letterSpacing: -0.15,
-                    ),
+                  Builder(
+                    builder: (ctx) {
+                      final lang = ctx
+                          .read<AppState>()
+                          .currentUser
+                          .languageCode;
+                      return Text(
+                        AppL10n.of(lang.isEmpty ? 'en' : lang).splashSub,
+                        style: const TextStyle(
+                          fontSize: 17,
+                          color: AppColors.textSecondary,
+                          fontWeight: FontWeight.w500,
+                          height: 1.45,
+                          letterSpacing: -0.15,
+                        ),
+                      );
+                    },
                   ),
                   const Spacer(flex: 2),
                   AnimatedBuilder(

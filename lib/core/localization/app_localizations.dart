@@ -18092,6 +18092,62 @@ class AppL10n {
     'th': 'แพลตฟอร์มคูปองเชิงพื้นที่ระดับโลกในรูปแบบจดหมาย',
   });
 
+  // ── v5 splash / brand ad (Build 203) ──────────────────────────────────
+
+  /// 스플래시 sub-tagline — 메인 wordmark 아래 한 줄 설명.
+  String get splashSub => _t({
+    'ko': '근처에 떠있는 쿠폰과 편지를\n주워 쓰는 지갑.',
+    'en': 'Pick up nearby coupons and letters\nright into your wallet.',
+    'ja': '近くに浮かぶクーポンと手紙を\n拾って使う財布。',
+    'zh': '附近的优惠券和信件\n捡起来,放进钱包。',
+    'fr': 'Une cartera para coger les coupons\net les lettres autour de toi.',
+    'de': 'Coupons und Briefe aus deiner Nähe\ndirekt in dein Wallet.',
+    'es': 'Una cartera para recoger\ncupones y cartas a tu alrededor.',
+    'pt': 'Uma carteira para recolher\ncupões e cartas à tua volta.',
+    'ru': 'Кошелёк, чтобы собирать\nкупоны и письма рядом с тобой.',
+    'tr': 'Yakındaki kuponları ve mektupları\ncüzdanına alıp kullan.',
+    'ar': 'محفظة لالتقاط القسائم\nوالرسائل القريبة منك.',
+    'it': 'Un portafoglio per raccogliere\ncoupon e lettere intorno a te.',
+    'hi': 'आपके पास के कूपन और पत्र\nउठाकर इस्तेमाल करने वाला वॉलेट।',
+    'th': 'กระเป๋าเก็บคูปองและจดหมาย\nที่ลอยอยู่ใกล้คุณ',
+  });
+
+  /// 브랜드 광고 모달 "편지 받기" CTA.
+  String get brandAdPickup => _t({
+    'ko': '편지 받기',
+    'en': 'Pick up letter',
+    'ja': '手紙を受け取る',
+    'zh': '领取信件',
+    'fr': 'Recevoir la lettre',
+    'de': 'Brief annehmen',
+    'es': 'Recoger carta',
+    'pt': 'Receber carta',
+    'ru': 'Получить письмо',
+    'tr': 'Mektubu al',
+    'ar': 'استلام الرسالة',
+    'it': 'Ricevi lettera',
+    'hi': 'पत्र प्राप्त करें',
+    'th': 'รับจดหมาย',
+  });
+
+  /// 브랜드 광고 모달 "닫기" CTA.
+  String get brandAdClose => _t({
+    'ko': '닫기',
+    'en': 'Close',
+    'ja': '閉じる',
+    'zh': '关闭',
+    'fr': 'Fermer',
+    'de': 'Schließen',
+    'es': 'Cerrar',
+    'pt': 'Fechar',
+    'ru': 'Закрыть',
+    'tr': 'Kapat',
+    'ar': 'إغلاق',
+    'it': 'Chiudi',
+    'hi': 'बंद करें',
+    'th': 'ปิด',
+  });
+
   // ── Hardcoded string l10n (formerly hardcoded) ─────────────────────────
 
   String get labelLetterGoPremium => _t({
