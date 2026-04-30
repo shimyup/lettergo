@@ -2139,6 +2139,42 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
         } catch (_) {}
       }
     }
+    // Build 202 — 테스트용 브랜드 광고 편지 (사진 + coupon 카테고리).
+    // BrandAdModal 의 featuredBrandPromo 가 이 편지를 픽업해서 온보딩 후 모달
+    // 노출. 실제로는 admin 업로드로 추가될 예정.
+    if (!_worldLetters.any((l) => l.id == 'brand_ad_seed')) {
+      final now = DateTime.now();
+      _worldLetters.add(Letter(
+        id: 'brand_ad_seed',
+        senderId: 'brand_seed',
+        senderName: 'Blue Bottle Coffee',
+        senderCountry: '대한민국',
+        senderCountryFlag: '🇰🇷',
+        content:
+            '아메리카노 1+1 쿠폰\n오늘 성수점에서 받아가세요. 첫 잔은 저희가 살게요.',
+        originLocation: const LatLng(37.5447, 127.0557),
+        destinationLocation: const LatLng(37.5447, 127.0557),
+        destinationCountry: '대한민국',
+        destinationCountryFlag: '🇰🇷',
+        destinationCity: '성수동',
+        segments: const [],
+        currentSegmentIndex: 0,
+        status: DeliveryStatus.delivered,
+        sentAt: now.subtract(const Duration(hours: 2)),
+        arrivedAt: now.subtract(const Duration(hours: 1)),
+        arrivalTime: now.subtract(const Duration(hours: 1)),
+        estimatedTotalMinutes: 60,
+        senderIsBrand: true,
+        senderTier: LetterSenderTier.brand,
+        category: LetterCategory.coupon,
+        acceptsReplies: false,
+        deliveryEmoji: '☕',
+        imageUrl:
+            'https://images.unsplash.com/photo-1509042239860-f550ce710b93?w=800&q=80',
+        expiresAt: now.add(const Duration(days: 7)),
+      ));
+    }
+
     // 디버그 모드: 사진 예시 편지가 없으면 추가 (inbox 유무와 무관하게 항상 체크)
     if (kDebugMode && !_inbox.any((l) => l.id == 'inbox4_photo')) {
       _inbox.add(

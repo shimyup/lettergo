@@ -12,6 +12,7 @@ import '../features/tower/screens/tower_screen.dart';
 import '../features/profile/profile_screen.dart';
 import '../features/streak/streak_badge.dart';
 import '../features/progression/level_up_banner.dart';
+import '../features/brand/brand_ad_modal.dart';
 import 'offline_banner.dart';
 
 class MainScaffold extends StatefulWidget {
@@ -43,10 +44,10 @@ class _MainScaffoldState extends State<MainScaffold> {
       Future.delayed(const Duration(milliseconds: 400), () {
         if (mounted) LevelUpBanner.showIfLevelUp(context);
       });
-      // Build 142: 브랜드 홍보 배너는 이제 WorldMapScreen 내부의 top banner
-      // 로 이동 (modal Dialog 대신). main_scaffold 는 더 이상 popup 을
-      // 열지 않음 — `_showBrandPromoIfDue` 는 하위 호환을 위해 시그니처만
-      // 유지하되 no-op 로 변경.
+      // Build 202: 온보딩 직후 1회 브랜드 광고 modal (반쪽 크기, 사진 + 닫기/편지받기)
+      Future.delayed(const Duration(milliseconds: 1200), () {
+        if (mounted) BrandAdModal.showIfDue(context);
+      });
     });
   }
 
