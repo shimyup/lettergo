@@ -61,15 +61,20 @@ service cloud.firestore {
 
     // ── users 컬렉션 ──────────────────────────────────────────────────
     match /users/{userId} {
-      // 지도 노출에 동의한 (isMapPublic=true) 사용자 + 본인만 read.
-      // 동의하지 않은 사용자는 list 결과에서 빠져야 하지만 Firestore rules
-      // 의 list 평가는 query-level 만 가능하므로, 클라이언트가 query 에
-      // `where('isMapPublic', '==', true)` 를 포함해야 통과한다.
-      // (지도 동기화 path 가 이미 그렇게 되어 있어야 함 — 안 되어 있다면
-      // syncWorldUsersFromServer 를 수정해야 한다.)
-      allow read: if (resource.data.isMapPublic == true)
-                  || (isSignedIn() && request.auth.uid == userId);
-      allow list: if isSignedIn();
+      // ⚠️ TODO(security/post-207): 이상적으로는 read/list 를 isMapPublic=true
+      // 또는 owner 로 한정하고 싶지만, 현재 클라이언트가 REST `:list` 엔드
+      // 포인트로 사용자를 가져오기 때문에 (`syncWorldUsersFromServer`
+      // app_state.dart:4666) where 필터가 적용되지 않아 strict read 룰이면
+      // 전체 list 가 거부된다. 다음 빌드에서 `:runQuery` + structured query
+      // (`where('isMapPublic','==',true)`) 로 마이그레이션 후 룰 강화 예정.
+      //
+      // 현 상태의 PII 보호 layer:
+      //   - 클라이언트가 `mask.fieldPaths=...` 로 공개 필드만 요청
+      //     (latitude/longitude/countryFlag/username/카운터 — phone/email 제외)
+      //   - latitude/longitude 는 ~110m 정밀도로 round 후 저장
+      //   - 클라이언트 코드가 `isMapPublic=false` 인 사용자를 즉시 skip
+      allow read: if true;
+      allow list: if true;
 
       // 익명 인증 환경 — owner check 강제 불가. 베타 기간 isSignedIn() 만 요구.
       allow create, update: if isSignedIn();

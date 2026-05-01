@@ -22,6 +22,10 @@ class FirestoreService {
     if (_idToken != null) 'Authorization': 'Bearer $_idToken',
   };
 
+  /// 외부에서 직접 http.patch/post 를 만들 때 사용할 동일한 auth 헤더.
+  /// rules 평가 대상이 되어야 하는 admin 작업(soft-delete 등) 에서 사용.
+  static Map<String, String> get authHeaders => _headers;
+
   static Uri _buildUri(String path, {Map<String, String>? queryParameters}) {
     final base = '${FirebaseConfig.firestoreBase}/$path';
     final uri = Uri.parse(base);

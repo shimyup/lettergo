@@ -711,6 +711,78 @@ class _ComposeScreenState extends State<ComposeScreen>
     return _bannedWords.any((w) => lower.contains(w.toLowerCase()));
   }
 
+  /// Build 207: 본문 PII 패턴 감지.
+  /// 편지 본문은 공개 데이터로 취급되므로 사용자가 실수로 전화번호/주민번호/
+  /// 카드번호를 적어 발송하지 못하게 발송 직전 confirm 시트로 한 번 잡는다.
+  /// 매칭된 패턴 라벨을 반환 (없으면 null).
+  String? _detectPii(String text) {
+    // 한국 휴대전화 (010-1234-5678 / 01012345678 / 010 1234 5678)
+    final phoneRegex = RegExp(r'01[016789][\s\-]?\d{3,4}[\s\-]?\d{4}');
+    if (phoneRegex.hasMatch(text)) return '전화번호';
+    // 한국 주민등록번호 (앞6 - 뒤7)
+    final rrnRegex = RegExp(r'\b\d{6}[\s\-]\d{7}\b');
+    if (rrnRegex.hasMatch(text)) return '주민등록번호';
+    // 카드번호 — 13~19자리 연속 또는 4-4-4-4 패턴
+    final cardRegex = RegExp(
+      r'(\b\d{4}[\s\-]\d{4}[\s\-]\d{4}[\s\-]\d{4}\b|\b\d{15,19}\b)',
+    );
+    if (cardRegex.hasMatch(text)) return '카드번호';
+    return null;
+  }
+
+  /// PII 감지 시 사용자에게 확인 — "그래도 보내기" 누를 때만 진행.
+  Future<bool> _confirmPiiBeforeSend(String label) async {
+    final l10n = AppL10n.of(context.read<AppState>().currentUser.languageCode);
+    final ok = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: AppColors.bgCard,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: Row(
+          children: [
+            const Text('⚠️', style: TextStyle(fontSize: 22)),
+            const SizedBox(width: 10),
+            Expanded(
+              child: Text(
+                '$label 가 포함됐어요',
+                style: const TextStyle(
+                  color: AppColors.textPrimary,
+                  fontSize: 16,
+                  fontWeight: FontWeight.w800,
+                ),
+              ),
+            ),
+          ],
+        ),
+        content: Text(
+          '편지 본문은 받는 사람이 누구나 읽을 수 있어요.\n$label 같은 개인정보는 빼고 보내는 게 안전해요.\n그래도 그대로 보낼까요?',
+          style: const TextStyle(
+            color: AppColors.textSecondary,
+            fontSize: 13,
+            height: 1.5,
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: Text(
+              l10n.inboxCancel,
+              style: const TextStyle(color: AppColors.gold),
+            ),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            child: const Text(
+              '그래도 보내기',
+              style: TextStyle(color: AppColors.error),
+            ),
+          ),
+        ],
+      ),
+    );
+    return ok == true;
+  }
+
   Future<void> _refreshCurrentLocationIfAvailable(AppState state) async {
     try {
       final permission = await Geolocator.checkPermission();
@@ -749,6 +821,13 @@ class _ComposeScreenState extends State<ComposeScreen>
     if (_hasBannedWords(content)) {
       _showError(l10n.composeBannedWordError);
       return;
+    }
+    // Build 207: PII 패턴 감지 — 본문은 누구나 읽을 수 있는 공개 데이터이므로
+    // 사용자가 실수로 전화번호/주민번호/카드번호를 적어 보내지 않도록 confirm.
+    final piiHit = _detectPii(content);
+    if (piiHit != null) {
+      final proceed = await _confirmPiiBeforeSend(piiHit);
+      if (!proceed) return;
     }
     if (!state.hasRemainingDailyQuota) {
       _showError(state.dailyLimitExceededMessage);

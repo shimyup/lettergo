@@ -3509,9 +3509,34 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
   }
 
   /// 관리자: 특정 편지 삭제
+  ///
+  /// Build 207: firestore.rules 가 letters delete 를 차단(`if false`)했으므로
+  /// 클라이언트에서는 hard-delete 불가. 대신 status='deletedByAdmin' 으로
+  /// 마킹 (rule 의 update 화이트리스트 통과). 실제 row 삭제는 Cloud Function
+  /// 또는 admin SDK 가 후속 처리. 클라이언트 UI 는 이 status 를 보고 즉시
+  /// 숨김 처리.
   Future<bool> adminDeleteLetter(String letterId) async {
     if (!FirebaseConfig.kFirebaseEnabled) return false;
-    return FirestoreService.deleteDocument('letters/$letterId');
+    try {
+      final url = Uri.parse(
+        '${FirebaseConfig.firestoreBase}/letters/$letterId'
+        '?updateMask.fieldPaths=status',
+      );
+      final body = jsonEncode({
+        'fields': {
+          'status': {'stringValue': 'deletedByAdmin'},
+        },
+      });
+      // Bearer 토큰 포함된 PATCH — rule 의 update 화이트리스트 통과 필요.
+      await FirebaseAuthService.ensureValidToken();
+      final res = await http
+          .patch(url, headers: FirestoreService.authHeaders, body: body)
+          .timeout(const Duration(seconds: 10));
+      return res.statusCode == 200;
+    } catch (e) {
+      if (kDebugMode) debugPrint('[adminDeleteLetter] $e');
+      return false;
+    }
   }
 
   // ── 유저 세팅 (로그인/회원가입 후) ────────────────────────────────────────
