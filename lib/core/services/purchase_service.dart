@@ -316,6 +316,19 @@ class PurchaseService extends ChangeNotifier {
   /// UI에서 베타 무료 프리미엄 모드 여부를 확인할 때 사용
   bool get isBetaFreePremium => _isBetaFreePremium;
 
+  // ── 베타 업그레이드 시뮬레이터 (TestFlight/베타 전용) ────────────────────────
+  // RevenueCat 상품이 App Store Connect 에 아직 미등록 / 미승인 상태에서도
+  // 베타 테스터가 업그레이드 흐름을 끝까지 체험할 수 있도록 가짜 구매로 처리.
+  // 빌드 시 --dart-define=BETA_UPGRADE_SIMULATOR=true 로 활성화.
+  // BETA_DISABLE_IN_RELEASE 와 독립 — 명시적으로 켜지 않으면 release 에서도 OFF.
+  static const bool _isBetaUpgradeSimulator = bool.fromEnvironment(
+    'BETA_UPGRADE_SIMULATOR',
+    defaultValue: false,
+  );
+
+  /// UI 에서 베타 시뮬레이터 모드 노출용.
+  bool get isBetaUpgradeSimulator => _isBetaUpgradeSimulator;
+
   static bool get _isRcKeyConfiguredForCurrentPlatform {
     final iosReady = _isValidRevenueCatKey(_RcKeys.ios, isAndroid: false);
     final androidReady = _isValidRevenueCatKey(
@@ -578,13 +591,14 @@ class PurchaseService extends ChangeNotifier {
   // ── Premium 구매 ────────────────────────────────────────────────────────
   Future<bool> buyPremium() async {
     _startLoading(PurchaseOperation.premium);
-    if (!_isTestMode && !_isBetaFreePremium && !_isRcKeyConfiguredForCurrentPlatform) {
+    if (!_isTestMode && !_isBetaFreePremium && !_isBetaUpgradeSimulator &&
+        !_isRcKeyConfiguredForCurrentPlatform) {
       _setError('결제 설정이 누락되었습니다. 앱 업데이트 후 다시 시도해주세요.');
       return false;
     }
 
-    // 디버그 빌드 or RevenueCat 미연동 or 베타 무료 프리미엄 → 로컬 활성화
-    if (_isTestMode || _isBetaFreePremium) {
+    // 디버그 빌드 or RevenueCat 미연동 or 베타 무료 프리미엄 or 시뮬레이터 → 로컬 활성화
+    if (_isTestMode || _isBetaFreePremium || _isBetaUpgradeSimulator) {
       return await _fakePurchase(() async {
         final prefs = await _getPrefs();
         _isPremium = true;
@@ -630,12 +644,14 @@ class PurchaseService extends ChangeNotifier {
       return false;
     }
 
-    if (!_isTestMode && !_isRcKeyConfiguredForCurrentPlatform) {
+    if (!_isTestMode && !_isBetaUpgradeSimulator &&
+        !_isRcKeyConfiguredForCurrentPlatform) {
       _setError('결제 설정이 누락되었습니다. 앱 업데이트 후 다시 시도해주세요.');
       return false;
     }
 
-    if (_isTestMode) {
+    // 베타 시뮬레이터에서는 Brand 도 즉시 활성화 (캠페인 기능 체험용).
+    if (_isTestMode || _isBetaUpgradeSimulator) {
       return await _fakePurchase(() async {
         final prefs = await _getPrefs();
         _isBrand = true;

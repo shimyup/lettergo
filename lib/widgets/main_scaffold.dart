@@ -241,17 +241,16 @@ class _MainScaffoldState extends State<MainScaffold> {
                     ),
                   ),
                   Expanded(
-                    // Build 139: 등급별 중앙 CTA — Free 는 업그레이드 유도,
-                    // Premium 은 홍보 편지 보내기, Brand 는 캠페인 발행.
+                    // Build 213: Free 도 "✉️ 편지 쓰기" 라벨로 노출 — 탭 시
+                    // PremiumGateSheet 가 떠 업그레이드 안내. 라벨이 보이지
+                    // 않아 발송 기능 자체가 사라진 줄 아는 사용자 혼선 해소.
                     child: _ComposeNavItem(
                       label: isBrand
                           ? l.navCampaign
-                          : (isPremium ? l.navSend : l.navUpgradeShort),
+                          : l.navSend,
                       icon: isBrand
                           ? Icons.campaign_rounded
-                          : (isPremium
-                              ? Icons.edit_note_rounded
-                              : Icons.workspace_premium_rounded),
+                          : Icons.edit_note_rounded,
                       accent: isBrand
                           ? AppColors.coupon
                           : AppColors.gold,

@@ -69,6 +69,16 @@ if [[ "${BETA_FREE_PREMIUM:-false}" == "true" ]]; then
   DART_DEFINES+=("--dart-define=BETA_FREE_PREMIUM=true")
 fi
 
+# 베타 업그레이드 시뮬레이터 — 사용자가 업그레이드 버튼을 누르면 RevenueCat
+# 에 실제 결제 요청 안 보내고 즉시 Premium/Brand 활성화. App Store Connect
+# 상품 미등록 상태에서도 베타 테스터가 흐름을 끝까지 체험 가능.
+# Default true (베타 기간) — 정식 출시 시 .env.local 에서 명시적으로
+# `BETA_UPGRADE_SIMULATOR=false` 로 끄거나 키 자체 제거.
+if [[ "${BETA_UPGRADE_SIMULATOR:-true}" == "true" ]]; then
+  echo "[ios] BETA_UPGRADE_SIMULATOR=true — upgrade will be granted without purchase."
+  DART_DEFINES+=("--dart-define=BETA_UPGRADE_SIMULATOR=true")
+fi
+
 # 베타 테스트 관리자 이메일 — 릴리스 빌드에서도 이 이메일만 관리자 패널/브랜드
 # 권한 활성. 정식 출시 시 .env.local 에서 BETA_ADMIN_EMAIL 제거하면 자동 잠김.
 if [[ -n "${BETA_ADMIN_EMAIL:-}" ]]; then

@@ -116,8 +116,18 @@ class _InboxScreenState extends State<InboxScreen>
   @override
   void initState() {
     super.initState();
-    // DM 탭 제거로 2개 탭만 운영. (받은/보낸)
+    // Build 213: Brand 사용자는 캠페인 추적이 핵심이므로 "보낸 편지" 탭을
+    // 기본으로. Free/Premium 은 받은 편지 우선 (기본값).
+    // initState 시점엔 context 가 준비됐어도 read 안전 — read-only 호출.
     _tabController = TabController(length: 2, vsync: this);
+    // 첫 frame 후 user.isBrand 확인하고 Brand 면 sent 탭으로 이동.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      final state = context.read<AppState>();
+      if (state.currentUser.isBrand && _tabController.index != 1) {
+        _tabController.animateTo(1);
+      }
+    });
   }
 
   @override
@@ -1157,12 +1167,16 @@ class _SentTab extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppL10n.of(context.read<AppState>().currentUser.languageCode);
+    final state = context.watch<AppState>();
+    final isBrand = state.currentUser.isBrand;
     return Column(
       children: [
         _LetterFilterBar(
           activeFilter: activeFilter,
           onChanged: onFilterChanged,
         ),
+        // Build 213: Brand 전용 발송 요약 — 발송 / 답장 받음 통계 강조 띠.
+        if (isBrand) _BrandSentStatsBar(letters: letters),
         if (letters.isEmpty)
           Expanded(
             child: _EmptyState(
@@ -1749,6 +1763,98 @@ class _CategorySectionHeader extends StatelessWidget {
                 fontSize: 10,
                 fontWeight: FontWeight.w800,
               ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// Build 213: Brand 사용자 전용 발송 통계 띠 — 보낸 편지 탭 상단.
+/// 발송한 편지 총 수 / 픽업된 수 / 답장 받은 수를 한 줄로 노출.
+class _BrandSentStatsBar extends StatelessWidget {
+  final List<Letter> letters;
+  const _BrandSentStatsBar({required this.letters});
+
+  @override
+  Widget build(BuildContext context) {
+    if (letters.isEmpty) return const SizedBox.shrink();
+    final total = letters.length;
+    final picked = letters
+        .where((l) =>
+            l.status == DeliveryStatus.delivered ||
+            l.status == DeliveryStatus.read ||
+            l.status == DeliveryStatus.deliveredFar ||
+            l.status == DeliveryStatus.nearYou)
+        .length;
+    final replied = letters.where((l) => l.hasReplied).length;
+    return Container(
+      margin: const EdgeInsets.fromLTRB(16, 4, 16, 8),
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [
+            AppColors.coupon.withValues(alpha: 0.16),
+            AppColors.coupon.withValues(alpha: 0.05),
+          ],
+          begin: Alignment.centerLeft,
+          end: Alignment.centerRight,
+        ),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: AppColors.coupon.withValues(alpha: 0.4),
+        ),
+      ),
+      child: Row(
+        children: [
+          _statCell(label: '📮 발송', value: '$total'),
+          const SizedBox(width: 14),
+          _divider(),
+          const SizedBox(width: 14),
+          _statCell(label: '🎯 픽업', value: '$picked'),
+          const SizedBox(width: 14),
+          _divider(),
+          const SizedBox(width: 14),
+          _statCell(label: '💌 답장', value: '$replied', highlight: true),
+        ],
+      ),
+    );
+  }
+
+  Widget _divider() => Container(
+        width: 1,
+        height: 22,
+        color: AppColors.coupon.withValues(alpha: 0.3),
+      );
+
+  Widget _statCell({
+    required String label,
+    required String value,
+    bool highlight = false,
+  }) {
+    return Expanded(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(
+            label,
+            style: const TextStyle(
+              color: AppColors.textMuted,
+              fontSize: 10,
+              fontWeight: FontWeight.w700,
+              letterSpacing: 0.3,
+            ),
+          ),
+          const SizedBox(height: 2),
+          Text(
+            value,
+            style: TextStyle(
+              color: highlight ? AppColors.coupon : AppColors.textPrimary,
+              fontSize: 18,
+              fontWeight: FontWeight.w900,
+              letterSpacing: -0.5,
             ),
           ),
         ],
