@@ -114,8 +114,12 @@
 반환하지 않음**. SMS/이메일 발송 실패 시에도 코드는 서버 채널로만.
 
 ### 백그라운드 위치
-iOS Info.plist 의 `NSLocationAlwaysAndWhenInUseUsageDescription` 제거.
-`When In Use` 만 요청 → 백그라운드 추적 권한 자체를 받지 않음.
+iOS Info.plist 의 `NSLocationAlwaysAndWhenInUseUsageDescription` 키는 Apple
+정적 분석이 geolocator SDK 안의 "Always" API 심볼을 잡아 요구하므로 보유
+**필수**. 단, 런타임에서는 `requestAlwaysAuthorization()` 을 호출하지 않으며
+권한 요청은 항상 `requestWhenInUseAuthorization()` 만. 사용자에게 노출되는
+purpose string 도 "Background location is never accessed" 로 명시되어
+백그라운드 추적이 실질적으로 일어나지 않음을 보장.
 
 ### 회원 탈퇴
 `AuthService.deleteAccount` 가:

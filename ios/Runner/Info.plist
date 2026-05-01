@@ -6,6 +6,8 @@
 	<false/>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>Your location is needed to discover nearby letters.</string>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>Letter Go only uses your location while the app is open to find nearby letters. Background location is never accessed.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>Photo library access is needed to change your profile picture.</string>
 	<key>NSPhotoLibraryAddUsageDescription</key>

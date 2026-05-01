@@ -44,8 +44,11 @@
 
 ## iOS / Android 권한
 
-- [ ] `ios/Runner/Info.plist` 에 `NSLocationAlwaysAndWhenInUseUsageDescription`
-      이 **없어야 함** (When In Use 만)
+- [ ] `ios/Runner/Info.plist` 에 `NSLocationWhenInUseUsageDescription` +
+      `NSLocationAlwaysAndWhenInUseUsageDescription` 둘 다 존재해야 함.
+      Apple 정적 분석이 geolocator SDK 의 "Always" 심볼 때문에 두 키 모두
+      요구. 런타임에서는 `requestAlwaysAuthorization()` 호출 금지 — 코드
+      리뷰 시 검색해서 호출 없는지 확인.
 - [ ] iOS App Store Connect Privacy "App Privacy" 항목이 다음을 정확히 선언:
   - Coarse Location (Optional, App Functionality)
   - User-Generated Content / Photos (Optional, App Functionality)
