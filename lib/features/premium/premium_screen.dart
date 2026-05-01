@@ -12,11 +12,26 @@ import '../../core/localization/app_localizations.dart';
 import 'premium_collections.dart';
 import '../../state/app_state.dart';
 
-class PremiumScreen extends StatelessWidget {
+class PremiumScreen extends StatefulWidget {
   /// [isWelcomeMode] : 최초 가입 후 플랜 선택 화면으로 열릴 때 true.
   /// 뒤로가기 대신 "나중에" 버튼이 표시되며 누르면 /home 으로 이동합니다.
   final bool isWelcomeMode;
   const PremiumScreen({super.key, this.isWelcomeMode = false});
+
+  @override
+  State<PremiumScreen> createState() => _PremiumScreenState();
+}
+
+class _PremiumScreenState extends State<PremiumScreen> {
+  @override
+  void initState() {
+    super.initState();
+    // Build 215: 이전 buy 시도가 남긴 stale 에러 클리어 — 화면 다시 들어오면 깨끗.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      context.read<PurchaseService>().clearError();
+    });
+  }
 
   String _formatDate(DateTime date, String langCode) {
     return DateFormat.yMd(langCode).format(date);
@@ -79,7 +94,7 @@ class PremiumScreen extends StatelessWidget {
           appBar: AppBar(
             backgroundColor: AppColors.bgDeep,
             elevation: 0,
-            leading: isWelcomeMode
+            leading: widget.isWelcomeMode
                 ? TextButton(
                     onPressed: () =>
                         Navigator.of(context).pushReplacementNamed('/home'),
@@ -103,7 +118,7 @@ class PremiumScreen extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
-                  isWelcomeMode
+                  widget.isWelcomeMode
                       ? '🎉 ${l.premiumPlanTitle}'
                       : 'Letter Go Premium',
                   style: const TextStyle(
@@ -147,6 +162,42 @@ class PremiumScreen extends StatelessWidget {
                   _PremiumHeroBanner(),
                 const SizedBox(height: 20),
 
+                // Build 215: 베타 시뮬레이터 안내 — 결제 없이 업그레이드 체험
+                // 가능한 환경임을 명시. 실 결제 시도 시 발생할 수 있는 "상품
+                // 정보 없음" 에러를 사전에 컨텍스트로 잡아줌.
+                if (purchase.isBetaUpgradeSimulator && !isPremium && !isBrand)
+                  Container(
+                    margin: const EdgeInsets.only(bottom: 16),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 14, vertical: 12,
+                    ),
+                    decoration: BoxDecoration(
+                      color: AppColors.gold.withValues(alpha: 0.12),
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(
+                        color: AppColors.gold.withValues(alpha: 0.4),
+                      ),
+                    ),
+                    child: Row(
+                      children: [
+                        const Text('🧪', style: TextStyle(fontSize: 18)),
+                        const SizedBox(width: 10),
+                        Expanded(
+                          child: Text(
+                            '베타 기간: 결제 없이 업그레이드를 체험할 수 있어요. '
+                            '버튼 한 번이면 바로 활성화됩니다.',
+                            style: TextStyle(
+                              color: AppColors.gold,
+                              fontSize: 12.5,
+                              height: 1.4,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+
                 // 비구독자에게만 컬렉션 스토리를 먼저 노출 — 기능 나열 대신
                 // "라이프스타일 패키지"로 감성 프레이밍
                 if (!isPremium && !isBrand) ...[
@@ -174,7 +225,10 @@ class PremiumScreen extends StatelessWidget {
                     '📍  ${l.premiumFreeFeature1}',
                     '✉️  ${l.premiumFreeFeature2}',
                   ],
-                  isActive: false,
+                  // Build 215: 현재 Free 사용자면 active 로 표시 → "현재 사용 중"
+                  // 라벨이 뜨고 "해지 예약" 버튼이 안 뜸. 이전엔 항상 false 라
+                  // Free 인 사용자에게 의미 없는 다운그레이드 버튼이 노출됨.
+                  isActive: isFree,
                   onTap: (isFree || purchase.loading)
                       ? null
                       : () async {

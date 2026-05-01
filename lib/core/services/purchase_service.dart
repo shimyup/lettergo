@@ -162,6 +162,15 @@ class PurchaseService extends ChangeNotifier {
   String? get errorMessage => _errorMessage;
 
   bool _initialized = false;
+
+  /// Build 215: 화면 진입 시 stale errorMessage 클리어용 public API.
+  /// 이전 buy 시도가 실패했더라도 다시 들어오면 깨끗한 상태로.
+  void clearError() {
+    if (_errorMessage != null) {
+      _errorMessage = null;
+      notifyListeners();
+    }
+  }
   Future<void>? _initializationFuture;
   bool _isRevenueCatConfigured = false;
   bool _customerInfoListenerAttached = false;
