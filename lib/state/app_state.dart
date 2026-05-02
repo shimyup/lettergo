@@ -3004,6 +3004,32 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
     }
   }
 
+  /// Build 216: Brand 가 보낸 편지 중 가장 최근에 누군가 픽업한 letter.
+  /// 지도 상단에 "캠페인이 도착한 장소" 인포로 노출 → 캠페인 효과 시각화.
+  /// status 가 delivered / read / nearYou / deliveredFar 중 하나이고 arrivedAt
+  /// 이 가장 최근인 항목 반환. 없으면 null.
+  Letter? get brandMostRecentlyPickedUpLetter {
+    if (!_currentUser.isBrand) return null;
+    Letter? best;
+    DateTime? bestAt;
+    for (final l in _sent) {
+      if (!l.senderIsBrand) continue;
+      final st = l.status;
+      final isPicked = st == DeliveryStatus.delivered ||
+          st == DeliveryStatus.read ||
+          st == DeliveryStatus.nearYou ||
+          st == DeliveryStatus.deliveredFar;
+      if (!isPicked) continue;
+      final at = l.arrivedAt ?? l.readAt;
+      if (at == null) continue;
+      if (bestAt == null || at.isAfter(bestAt)) {
+        bestAt = at;
+        best = l;
+      }
+    }
+    return best;
+  }
+
   /// Build 158: ExactDrop 화면에서 보여줄 "최근 발송 좌표" 추천 리스트.
   /// 로컬 `_sent` 중 Brand 편지 역순 N개 destination. 서버 쿼리 불필요.
   /// 과거 캠페인 좌표를 재활용하면 동일 동네 유저에게 반복 노출 가능.

@@ -480,7 +480,37 @@ class _WorldMapScreenState extends State<WorldMapScreen>
             // Build 152: 반경 안에 편지 있을 때 시간대별 인사 + 카운트 pill.
             // 기존 나침반 슬롯과 상호 배타 — 둘 다 top 220 에 배치하되
             // nearbyLetters.isNotEmpty 이면 인사 pill, 비어있으면 방향 안내.
-            if (state.nearbyLetters.isNotEmpty &&
+            //
+            // Build 216: Brand 사용자는 "주울 편지" 가 아니라 "내 캠페인 픽업 결과"
+            // 가 더 의미 있음. nearby info 대신 가장 최근 픽업된 캠페인 위치를
+            // 표시하고 탭 시 그 좌표로 카메라 이동.
+            if (state.currentUser.isBrand) ...[
+              Builder(builder: (ctx) {
+                final picked = state.brandMostRecentlyPickedUpLetter;
+                if (picked == null) return const SizedBox.shrink();
+                return Positioned(
+                  top: 130,
+                  left: 16,
+                  right: 16,
+                  child: _BrandRecentPickupBanner(
+                    letter: picked,
+                    onTap: () {
+                      HapticFeedback.lightImpact();
+                      final target = ll.LatLng(
+                        picked.destinationLocation.latitude,
+                        picked.destinationLocation.longitude,
+                      );
+                      _positionSaveDebounce?.cancel();
+                      _mapController.move(target, 13.5);
+                      Future.delayed(const Duration(milliseconds: 160), () {
+                        if (!mounted) return;
+                        _mapController.move(target, 15.0);
+                      });
+                    },
+                  ),
+                );
+              }),
+            ] else if (state.nearbyLetters.isNotEmpty &&
                 !state.hasNearbyAlert)
               Positioned(
                 top: 130,
@@ -501,7 +531,9 @@ class _WorldMapScreenState extends State<WorldMapScreen>
                   },
                 ),
               ),
-            if (state.nearbyLetters.isEmpty && state.worldLetters.isNotEmpty)
+            if (!state.currentUser.isBrand &&
+                state.nearbyLetters.isEmpty &&
+                state.worldLetters.isNotEmpty)
               Builder(builder: (ctx) {
                 final hint = _nearestLetterCompass(state);
                 if (hint == null) return const SizedBox.shrink();
@@ -4576,4 +4608,103 @@ class _PointedRoofPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(covariant _PointedRoofPainter old) => old.color != color;
+}
+
+/// Build 216: Brand 사용자가 지도에 들어왔을 때 상단에 노출되는
+/// "최근 픽업 장소" 배너. 본인이 발송한 캠페인 중 누군가 최근에 픽업한
+/// 도착 좌표를 표시. 탭 시 그 좌표로 카메라 이동.
+class _BrandRecentPickupBanner extends StatelessWidget {
+  final Letter letter;
+  final VoidCallback onTap;
+  const _BrandRecentPickupBanner({
+    required this.letter,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final at = letter.arrivedAt ?? letter.readAt ?? letter.sentAt;
+    final ago = _relativeTime(DateTime.now().difference(at));
+    final city = letter.destinationCity ?? letter.destinationCountry;
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        borderRadius: BorderRadius.circular(14),
+        onTap: onTap,
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [
+                AppColors.coupon.withValues(alpha: 0.22),
+                AppColors.coupon.withValues(alpha: 0.10),
+              ],
+              begin: Alignment.centerLeft,
+              end: Alignment.centerRight,
+            ),
+            borderRadius: BorderRadius.circular(14),
+            border: Border.all(
+              color: AppColors.coupon.withValues(alpha: 0.55),
+              width: 1.2,
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.22),
+                blurRadius: 14,
+                offset: const Offset(0, 4),
+              ),
+            ],
+          ),
+          child: Row(
+            children: [
+              const Text('🎯', style: TextStyle(fontSize: 22)),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      '캠페인이 픽업됐어요',
+                      style: TextStyle(
+                        color: AppColors.coupon,
+                        fontSize: 11,
+                        fontWeight: FontWeight.w800,
+                        letterSpacing: 0.4,
+                      ),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      '${letter.destinationCountryFlag}  $city · $ago',
+                      style: const TextStyle(
+                        color: AppColors.textPrimary,
+                        fontSize: 13.5,
+                        fontWeight: FontWeight.w700,
+                        letterSpacing: -0.2,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ],
+                ),
+              ),
+              Icon(
+                Icons.arrow_forward_ios_rounded,
+                color: AppColors.coupon.withValues(alpha: 0.85),
+                size: 14,
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  String _relativeTime(Duration d) {
+    if (d.inMinutes < 1) return '방금 전';
+    if (d.inMinutes < 60) return '${d.inMinutes}분 전';
+    if (d.inHours < 24) return '${d.inHours}시간 전';
+    if (d.inDays < 7) return '${d.inDays}일 전';
+    return '${d.inDays ~/ 7}주 전';
+  }
 }

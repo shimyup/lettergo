@@ -1169,14 +1169,31 @@ class _SentTab extends StatelessWidget {
     final l10n = AppL10n.of(context.read<AppState>().currentUser.languageCode);
     final state = context.watch<AppState>();
     final isBrand = state.currentUser.isBrand;
+    // Build 216: Brand 사용자는 발송 letter 를 1건씩 리스트로 안 봐도 됨.
+    // 캠페인 효율 위주로 요약 카드(전체 N · 픽업 M · 사용 K · 미확인 X)
+    // + drill-down 분류별 상세. _BrandSentSummaryView 로 완전 교체.
+    if (isBrand) {
+      return Column(
+        children: [
+          _LetterFilterBar(
+            activeFilter: activeFilter,
+            onChanged: onFilterChanged,
+          ),
+          Expanded(
+            child: _BrandSentSummaryView(
+              letters: letters,
+              activeFilter: activeFilter,
+            ),
+          ),
+        ],
+      );
+    }
     return Column(
       children: [
         _LetterFilterBar(
           activeFilter: activeFilter,
           onChanged: onFilterChanged,
         ),
-        // Build 213: Brand 전용 발송 요약 — 발송 / 답장 받음 통계 강조 띠.
-        if (isBrand) _BrandSentStatsBar(letters: letters),
         if (letters.isEmpty)
           Expanded(
             child: _EmptyState(
@@ -1771,15 +1788,27 @@ class _CategorySectionHeader extends StatelessWidget {
   }
 }
 
-/// Build 213: Brand 사용자 전용 발송 통계 띠 — 보낸 편지 탭 상단.
-/// 발송한 편지 총 수 / 픽업된 수 / 답장 받은 수를 한 줄로 노출.
-class _BrandSentStatsBar extends StatelessWidget {
+/// Build 216: Brand 사용자 전용 발송 요약 뷰.
+/// 1건씩 리스트가 아닌 캠페인 통계 hero + 분류별 drill-down 카드.
+///
+/// 구조:
+///   1) Hero — 총 발송 수 (큰 글자)
+///   2) 4-stat 그리드: 픽업·미확인·사용·답장
+///   3) 분류별 카드 (탭하면 해당 카테고리 letter list 모달)
+class _BrandSentSummaryView extends StatelessWidget {
   final List<Letter> letters;
-  const _BrandSentStatsBar({required this.letters});
+  final LetterFilterType activeFilter;
+  const _BrandSentSummaryView({
+    required this.letters,
+    required this.activeFilter,
+  });
 
   @override
   Widget build(BuildContext context) {
-    if (letters.isEmpty) return const SizedBox.shrink();
+    final state = context.read<AppState>();
+    final l = AppL10n.of(state.currentUser.languageCode);
+
+    // 분류별 카운트
     final total = letters.length;
     final picked = letters
         .where((l) =>
@@ -1788,76 +1817,465 @@ class _BrandSentStatsBar extends StatelessWidget {
             l.status == DeliveryStatus.deliveredFar ||
             l.status == DeliveryStatus.nearYou)
         .length;
+    final inTransit = letters
+        .where((l) =>
+            l.status == DeliveryStatus.inTransit ||
+            l.status == DeliveryStatus.nearYou)
+        .length;
+    final unconfirmed = letters
+        .where((l) =>
+            l.status == DeliveryStatus.deliveredFar ||
+            l.status == DeliveryStatus.delivered)
+        .length;
+    final used = letters
+        .where((l) => state.isLetterRedeemed(l.id))
+        .length;
     final replied = letters.where((l) => l.hasReplied).length;
-    return Container(
-      margin: const EdgeInsets.fromLTRB(16, 4, 16, 8),
-      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [
-            AppColors.coupon.withValues(alpha: 0.16),
-            AppColors.coupon.withValues(alpha: 0.05),
+
+    if (total == 0) {
+      return Center(
+        child: Padding(
+          padding: const EdgeInsets.all(32),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Text('📮', style: TextStyle(fontSize: 64)),
+              const SizedBox(height: 16),
+              Text(
+                l.inboxEmptySent,
+                style: const TextStyle(
+                  color: AppColors.textPrimary,
+                  fontSize: 17,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                l.inboxEmptySentSub,
+                textAlign: TextAlign.center,
+                style: const TextStyle(
+                  color: AppColors.textMuted,
+                  fontSize: 13,
+                  height: 1.5,
+                ),
+              ),
+              const SizedBox(height: 20),
+              ElevatedButton.icon(
+                onPressed: () => Navigator.of(context).pushNamed('/compose'),
+                icon: const Icon(Icons.edit_note_rounded, size: 18),
+                label: Text(l.emptyStateWriteCta),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.coupon,
+                  foregroundColor: const Color(0xFF1A0008),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 24, vertical: 12,
+                  ),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(14),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
+    final pickRate = total > 0 ? (picked / total * 100) : 0.0;
+    final useRate = picked > 0 ? (used / picked * 100) : 0.0;
+
+    return ListView(
+      padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
+      children: [
+        // ── Hero: 총 발송 수 ──
+        Container(
+          padding: const EdgeInsets.fromLTRB(20, 18, 20, 18),
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [
+                AppColors.coupon.withValues(alpha: 0.22),
+                AppColors.coupon.withValues(alpha: 0.06),
+              ],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+            borderRadius: BorderRadius.circular(18),
+            border: Border.all(
+              color: AppColors.coupon.withValues(alpha: 0.5),
+              width: 1.4,
+            ),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                '📮 총 발송 캠페인',
+                style: TextStyle(
+                  color: AppColors.coupon,
+                  fontSize: 11.5,
+                  fontWeight: FontWeight.w800,
+                  letterSpacing: 0.6,
+                ),
+              ),
+              const SizedBox(height: 6),
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.baseline,
+                textBaseline: TextBaseline.alphabetic,
+                children: [
+                  Text(
+                    '$total',
+                    style: const TextStyle(
+                      color: AppColors.textPrimary,
+                      fontSize: 44,
+                      fontWeight: FontWeight.w900,
+                      letterSpacing: -1.0,
+                      height: 1,
+                    ),
+                  ),
+                  const SizedBox(width: 6),
+                  Text(
+                    '통',
+                    style: TextStyle(
+                      color: AppColors.textMuted,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 10),
+              Row(
+                children: [
+                  _RatePill(label: '픽업률', value: '${pickRate.toStringAsFixed(1)}%'),
+                  const SizedBox(width: 8),
+                  _RatePill(label: '사용률', value: '${useRate.toStringAsFixed(1)}%', accent: true),
+                ],
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 16),
+
+        // ── 4-stat 그리드 ──
+        Row(
+          children: [
+            Expanded(
+              child: _BrandStatBlock(
+                emoji: '🎯',
+                label: '픽업됨',
+                value: picked,
+                color: AppColors.success,
+                onTap: () => _showCategoryDetail(context, '픽업된 편지',
+                    letters
+                        .where((l) =>
+                            l.status == DeliveryStatus.delivered ||
+                            l.status == DeliveryStatus.read ||
+                            l.status == DeliveryStatus.deliveredFar ||
+                            l.status == DeliveryStatus.nearYou)
+                        .toList()),
+              ),
+            ),
+            const SizedBox(width: 10),
+            Expanded(
+              child: _BrandStatBlock(
+                emoji: '✈️',
+                label: '배송 중',
+                value: inTransit,
+                color: AppColors.teal,
+                onTap: () => _showCategoryDetail(context, '배송 중 편지',
+                    letters
+                        .where((l) =>
+                            l.status == DeliveryStatus.inTransit ||
+                            l.status == DeliveryStatus.nearYou)
+                        .toList()),
+              ),
+            ),
           ],
-          begin: Alignment.centerLeft,
-          end: Alignment.centerRight,
         ),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(
-          color: AppColors.coupon.withValues(alpha: 0.4),
+        const SizedBox(height: 10),
+        Row(
+          children: [
+            Expanded(
+              child: _BrandStatBlock(
+                emoji: '✅',
+                label: '사용 완료',
+                value: used,
+                color: AppColors.coupon,
+                onTap: () {
+                  final state2 = context.read<AppState>();
+                  _showCategoryDetail(context, '사용된 편지',
+                      letters
+                          .where((l) => state2.isLetterRedeemed(l.id))
+                          .toList());
+                },
+              ),
+            ),
+            const SizedBox(width: 10),
+            Expanded(
+              child: _BrandStatBlock(
+                emoji: '📬',
+                label: '미확인',
+                value: unconfirmed,
+                color: AppColors.warning,
+                onTap: () => _showCategoryDetail(context, '미확인 편지',
+                    letters
+                        .where((l) =>
+                            l.status == DeliveryStatus.deliveredFar ||
+                            l.status == DeliveryStatus.delivered)
+                        .toList()),
+              ),
+            ),
+          ],
         ),
-      ),
-      child: Row(
-        children: [
-          _statCell(label: '📮 발송', value: '$total'),
-          const SizedBox(width: 14),
-          _divider(),
-          const SizedBox(width: 14),
-          _statCell(label: '🎯 픽업', value: '$picked'),
-          const SizedBox(width: 14),
-          _divider(),
-          const SizedBox(width: 14),
-          _statCell(label: '💌 답장', value: '$replied', highlight: true),
-        ],
-      ),
+        const SizedBox(height: 10),
+        Row(
+          children: [
+            Expanded(
+              child: _BrandStatBlock(
+                emoji: '💌',
+                label: '답장 받음',
+                value: replied,
+                color: AppColors.gold,
+                highlight: true,
+                onTap: () => _showCategoryDetail(context, '답장 받은 편지',
+                    letters.where((l) => l.hasReplied).toList()),
+              ),
+            ),
+            const SizedBox(width: 10),
+            Expanded(
+              child: _BrandStatBlock(
+                emoji: '📋',
+                label: '전체 보기',
+                value: total,
+                color: AppColors.textSecondary,
+                onTap: () =>
+                    _showCategoryDetail(context, '전체 발송 편지', letters),
+              ),
+            ),
+          ],
+        ),
+
+        const SizedBox(height: 18),
+        // 발송 안내 — 대량 캠페인 유도
+        Container(
+          padding: const EdgeInsets.all(14),
+          decoration: BoxDecoration(
+            color: AppColors.bgCard,
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(
+              color: AppColors.textMuted.withValues(alpha: 0.18),
+            ),
+          ),
+          child: Row(
+            children: [
+              const Text('📈', style: TextStyle(fontSize: 22)),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Text(
+                  '카드를 탭하면 해당 분류의 편지 상세를 볼 수 있어요.',
+                  style: const TextStyle(
+                    color: AppColors.textSecondary,
+                    fontSize: 12,
+                    height: 1.4,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
     );
   }
 
-  Widget _divider() => Container(
-        width: 1,
-        height: 22,
-        color: AppColors.coupon.withValues(alpha: 0.3),
+  void _showCategoryDetail(
+    BuildContext context,
+    String title,
+    List<Letter> subset,
+  ) {
+    if (subset.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('$title 가 없어요'),
+          backgroundColor: AppColors.bgCard,
+          behavior: SnackBarBehavior.floating,
+        ),
       );
+      return;
+    }
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: AppColors.bgCard,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
+      ),
+      builder: (ctx) => DraggableScrollableSheet(
+        expand: false,
+        initialChildSize: 0.75,
+        minChildSize: 0.4,
+        maxChildSize: 0.95,
+        builder: (_, scrollCtrl) => Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(20, 14, 20, 8),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      '$title (${subset.length})',
+                      style: const TextStyle(
+                        color: AppColors.textPrimary,
+                        fontSize: 18,
+                        fontWeight: FontWeight.w800,
+                      ),
+                    ),
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.close_rounded,
+                        color: AppColors.textMuted),
+                    onPressed: () => Navigator.pop(ctx),
+                  ),
+                ],
+              ),
+            ),
+            const Divider(color: AppColors.bgSurface, height: 1),
+            Expanded(
+              child: ListView.builder(
+                controller: scrollCtrl,
+                padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
+                itemCount: subset.length,
+                itemBuilder: (_, i) => _LetterCard(
+                  letter: subset[i],
+                  isInbox: false,
+                  onTap: () {},
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
 
-  Widget _statCell({
-    required String label,
-    required String value,
-    bool highlight = false,
-  }) {
-    return Expanded(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+class _RatePill extends StatelessWidget {
+  final String label;
+  final String value;
+  final bool accent;
+  const _RatePill({required this.label, required this.value, this.accent = false});
+
+  @override
+  Widget build(BuildContext context) {
+    final color = accent ? AppColors.coupon : AppColors.textPrimary;
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+      decoration: BoxDecoration(
+        color: AppColors.bgDeep.withValues(alpha: 0.6),
+        borderRadius: BorderRadius.circular(999),
+        border: Border.all(
+          color: color.withValues(alpha: 0.35),
+        ),
+      ),
+      child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
           Text(
             label,
-            style: const TextStyle(
+            style: TextStyle(
               color: AppColors.textMuted,
-              fontSize: 10,
+              fontSize: 10.5,
               fontWeight: FontWeight.w700,
-              letterSpacing: 0.3,
             ),
           ),
-          const SizedBox(height: 2),
+          const SizedBox(width: 6),
           Text(
             value,
             style: TextStyle(
-              color: highlight ? AppColors.coupon : AppColors.textPrimary,
-              fontSize: 18,
-              fontWeight: FontWeight.w900,
-              letterSpacing: -0.5,
+              color: color,
+              fontSize: 12,
+              fontWeight: FontWeight.w800,
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class _BrandStatBlock extends StatelessWidget {
+  final String emoji;
+  final String label;
+  final int value;
+  final Color color;
+  final bool highlight;
+  final VoidCallback onTap;
+  const _BrandStatBlock({
+    required this.emoji,
+    required this.label,
+    required this.value,
+    required this.color,
+    required this.onTap,
+    this.highlight = false,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: highlight
+          ? color.withValues(alpha: 0.14)
+          : AppColors.bgCard,
+      borderRadius: BorderRadius.circular(14),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(14),
+        onTap: onTap,
+        child: Container(
+          padding: const EdgeInsets.fromLTRB(14, 14, 14, 14),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(14),
+            border: Border.all(
+              color: highlight
+                  ? color.withValues(alpha: 0.5)
+                  : AppColors.textMuted.withValues(alpha: 0.15),
+              width: highlight ? 1.3 : 0.8,
+            ),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Text(emoji, style: const TextStyle(fontSize: 18)),
+                  const Spacer(),
+                  Icon(
+                    Icons.arrow_forward_ios_rounded,
+                    color: AppColors.textMuted.withValues(alpha: 0.5),
+                    size: 11,
+                  ),
+                ],
+              ),
+              const SizedBox(height: 8),
+              Text(
+                '$value',
+                style: TextStyle(
+                  color: highlight ? color : AppColors.textPrimary,
+                  fontSize: 26,
+                  fontWeight: FontWeight.w900,
+                  letterSpacing: -0.6,
+                  height: 1,
+                ),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                label,
+                style: const TextStyle(
+                  color: AppColors.textMuted,
+                  fontSize: 11.5,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }

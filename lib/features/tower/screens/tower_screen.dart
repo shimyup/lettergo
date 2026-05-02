@@ -89,6 +89,7 @@ class _TowerScreenState extends State<TowerScreen>
         final _lc = user.languageCode;
         final _l = AppL10n.of(_lc);
         final score = user.activityScore;
+        // ignore: unused_local_variable
         final hasPremium =
             purchase.isPremium ||
             purchase.isBrand ||
@@ -216,36 +217,27 @@ class _TowerScreenState extends State<TowerScreen>
               SliverToBoxAdapter(
                 child: Column(
                   children: [
-                    // Build 163: Brand 는 타워 시각화 유지, Free/Premium 은
-                    // "성장하는 레터 캐릭터" 로 교체. 유저의 `characterEmoji`
-                    // + 컴패니언 + 악세사리 스택을 hero 로 노출.
-                    if (user.isBrand)
-                      _buildTowerVisualization(score, user, hasPremium)
-                    else
-                      _buildCharacterVisualization(state, user),
-                    // Build 174: 레터 캐릭터 갤러리 — 과거 티어 회고 (Free/Premium).
+                    // Build 216: Brand 는 타워 비주얼 hero 폐기 — 캠페인 데이터가
+                    // 핵심. 이름 옆 inline 으로 작은 타워 칩만 노출.
                     if (!user.isBrand) ...[
+                      _buildCharacterVisualization(state, user),
                       const SizedBox(height: 8),
                       _buildCharacterGallery(state, user),
                     ],
-                    // Build 204: Brand 타워 화면 재구성 — 캠페인 분석을 핵심
-                    // 으로 끌어올리고 브랜드 정체성/성장 지표는 캠페인 맥락
-                    // 으로 통합. Free/Premium 은 기존 레터 캐릭터 흐름 유지.
                     if (user.isBrand) ...[
-                      // 1) 신원 카드 (브랜드명/타워명 편집 + 티어 배지)
-                      _buildUserCard(context, user, score),
+                      // 1) 인라인 신원 칩 — 작은 타워 미니어처 + 브랜드명
+                      _buildBrandInlineIdentity(context, user, score),
                       const SizedBox(height: 14),
-                      // 2) 캠페인 분석 — 브랜드 계정의 핵심 지표.
+                      // 2) 캠페인 분석 — 브랜드 계정의 핵심 지표 (가장 prominent).
                       const BrandAnalyticsCard(),
                       const SizedBox(height: 14),
-                      // 3) 성장 게이지 — 캠페인 활동량이 곧 타워 성장이라는
-                      //    프레이밍으로 레이블 재작성 (_buildTierGauge 안에서 처리).
+                      // 3) 활동 통계 — 캠페인 활동량.
                       _buildStatsGrid(context, score),
                       const SizedBox(height: 14),
-                      // 4) 다음 마일스톤 (캠페인 리듬으로 표현).
+                      // 4) 다음 마일스톤 (캠페인 리듬).
                       _buildLevelUpGuide(context, score),
                       const SizedBox(height: 14),
-                      // 5) 커뮤니티 비교 (그대로).
+                      // 5) 커뮤니티 비교.
                       _buildCommunityTowers(context, state),
                     ] else ...[
                       _buildCombinedIdentityStats(context, user, score),
@@ -897,6 +889,146 @@ class _TowerScreenState extends State<TowerScreen>
   }
 
   // ── 유저 정보 카드 ───────────────────────────────────────────────────────────
+  /// Build 216: Brand 사용자 인라인 신원 카드 — 큰 타워 비주얼 대신 한 줄.
+  /// 좌측에 작은 타워 미니어처(48x48) + 우측에 이름·티어 + 편집 버튼.
+  /// 캠페인 분석 카드가 화면 핵심이 되도록 hero 영역 양보.
+  Widget _buildBrandInlineIdentity(
+    BuildContext ctx,
+    UserProfile user,
+    ActivityScore score,
+  ) {
+    final l = AppL10n.of(user.languageCode);
+    final tierColor = _communityTierColor(score.tier);
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
+      child: Container(
+        padding: const EdgeInsets.fromLTRB(14, 12, 14, 12),
+        decoration: BoxDecoration(
+          color: AppColors.bgCard,
+          borderRadius: BorderRadius.circular(18),
+          border: Border.all(
+            color: tierColor.withValues(alpha: 0.32),
+          ),
+        ),
+        child: Row(
+          children: [
+            // 작은 타워 미니어처
+            Container(
+              width: 52,
+              height: 52,
+              alignment: Alignment.center,
+              decoration: BoxDecoration(
+                color: tierColor.withValues(alpha: 0.18),
+                borderRadius: BorderRadius.circular(14),
+              ),
+              child: Text(
+                score.tier.emoji,
+                style: const TextStyle(fontSize: 28),
+              ),
+            ),
+            const SizedBox(width: 14),
+            // 이름 + 티어 + 편집
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Row(
+                    children: [
+                      Flexible(
+                        child: Text(
+                          user.customTowerName?.isNotEmpty == true
+                              ? user.customTowerName!
+                              : user.username,
+                          style: const TextStyle(
+                            color: AppColors.textPrimary,
+                            fontSize: 16,
+                            fontWeight: FontWeight.w800,
+                            letterSpacing: -0.3,
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                      const SizedBox(width: 6),
+                      // 인라인 티어 라벨 (작게)
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 6,
+                          vertical: 2,
+                        ),
+                        decoration: BoxDecoration(
+                          color: tierColor.withValues(alpha: 0.15),
+                          borderRadius: BorderRadius.circular(6),
+                        ),
+                        child: Text(
+                          score.tier.labelL(user.languageCode),
+                          style: TextStyle(
+                            color: tierColor,
+                            fontSize: 10,
+                            fontWeight: FontWeight.w800,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 4),
+                  Row(
+                    children: [
+                      Text(
+                        '${user.countryFlag}  ${user.country}',
+                        style: const TextStyle(
+                          color: AppColors.textMuted,
+                          fontSize: 11.5,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      // 편집 버튼 — 타워 이름
+                      InkWell(
+                        onTap: () => showEditTowerNameDialog(
+                          ctx,
+                          ctx.read<AppState>(),
+                        ),
+                        borderRadius: BorderRadius.circular(8),
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 6,
+                            vertical: 3,
+                          ),
+                          child: Row(
+                            children: [
+                              Icon(
+                                Icons.edit_rounded,
+                                size: 11,
+                                color: AppColors.gold.withValues(alpha: 0.85),
+                              ),
+                              const SizedBox(width: 3),
+                              Text(
+                                l.towerSetNameHint.length > 8
+                                    ? '편집'
+                                    : l.towerSetNameHint,
+                                style: TextStyle(
+                                  color: AppColors.gold.withValues(alpha: 0.85),
+                                  fontSize: 11,
+                                  fontWeight: FontWeight.w700,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   Widget _buildUserCard(
     BuildContext ctx,
     UserProfile user,
