@@ -32,7 +32,7 @@ class WorldMapScreen extends StatefulWidget {
 }
 
 class _WorldMapScreenState extends State<WorldMapScreen>
-    with TickerProviderStateMixin {
+    with TickerProviderStateMixin, WidgetsBindingObserver {
   static const String _permissionDialogDateKey =
       'world_map_permission_denied_forever_prompt_date';
   static const double _towerLabelZoomThreshold = 4.8;
@@ -57,6 +57,10 @@ class _WorldMapScreenState extends State<WorldMapScreen>
   @override
   void initState() {
     super.initState();
+    // Build 219: lifecycle 옵저버 등록 — 백그라운드 → 포그라운드 복귀 시
+    // pulse 애니메이션 재시작 + 마커 위치 즉시 재계산. 기존엔 OS 가 timer/
+    // animation 을 정지해 "편지가 가다가 멈춰 보이는" 잔상이 남았음.
+    WidgetsBinding.instance.addObserver(this);
     _pulseController = AnimationController(
       duration: const Duration(seconds: 2),
       vsync: this,
@@ -98,6 +102,7 @@ class _WorldMapScreenState extends State<WorldMapScreen>
 
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     WorldMapScreen.focusSentLetterNotifier.removeListener(_onFocusSentLetter);
     _positionTimer?.cancel();
     _mapRefreshTimer?.cancel();
@@ -106,6 +111,30 @@ class _WorldMapScreenState extends State<WorldMapScreen>
     _pulseController.dispose();
     _mapController.dispose();
     super.dispose();
+  }
+
+  /// Build 219: 백그라운드에서 복귀할 때 편지가 멈춰 보이지 않도록.
+  /// AppState 의 reconcile 은 wall-clock 기반으로 letter status 를 즉시
+  /// 캐치업하지만, 지도 위 마커는 별도 vsync 애니메이션이라 OS 가 정지
+  /// 시킨 상태로 머무를 수 있다. 이 콜백에서 명시적으로 깨운다.
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      if (!mounted) return;
+      // pulse 재시작 (이미 동작 중이면 idempotent)
+      if (!_pulseController.isAnimating) {
+        _pulseController.repeat();
+      }
+      // position timer 가 OS 에 의해 멈춰 있으면 다시 등록
+      if (_positionTimer == null || !_positionTimer!.isActive) {
+        _positionTimer?.cancel();
+        _positionTimer = Timer.periodic(const Duration(seconds: 1), (_) {
+          if (mounted) _tickNotifier.value++;
+        });
+      }
+      // 즉시 1회 강제 rebuild → 마커가 새 wall-clock 으로 위치 재계산
+      _tickNotifier.value++;
+    }
   }
 
   /// Build 151: 이전 세션 지도 위치·줌 복원. 저장된 값 없으면 유저 좌표로
@@ -3230,15 +3259,23 @@ class _CountryJumpBarState extends State<_CountryJumpBar> {
   }
 
   void _sortCountries() {
+    // Build 219: 현재 사용자의 국가를 항상 0번으로. 기존엔 myIdx==0(한국)
+    // 인 경우만 정렬을 건너뛰어 모두 한국부터 시작했음. 이제 myIdx>=0 이면
+    // 무조건 그 국가를 앞으로 끌어올린다.
     final myIdx = _CountryJumpBar._countries
         .indexWhere((c) => c.name == widget.myCountry);
-    _sorted = myIdx > 0
-        ? [
-            _CountryJumpBar._countries[myIdx],
-            ..._CountryJumpBar._countries
-                .where((c) => c.name != widget.myCountry),
-          ]
-        : List.of(_CountryJumpBar._countries);
+    if (myIdx >= 0) {
+      _sorted = [
+        _CountryJumpBar._countries[myIdx],
+        ..._CountryJumpBar._countries
+            .where((c) => c.name != widget.myCountry),
+      ];
+    } else {
+      // myCountry 가 정의 목록에 없는 경우 (희소 국가)
+      _sorted = List.of(_CountryJumpBar._countries);
+    }
+    // 0번이 항상 자기 국가가 되도록 인덱스도 리셋
+    _idx = 0;
   }
 
   void _step(int delta) {

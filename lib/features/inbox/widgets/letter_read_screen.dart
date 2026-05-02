@@ -1492,15 +1492,22 @@ class _LetterReadScreenState extends State<LetterReadScreen>
                   },
                   child: Container(
                     padding: const EdgeInsets.symmetric(
-                      horizontal: 12,
-                      vertical: 7,
+                      horizontal: 14,
+                      vertical: 9,
                     ),
+                    // Build 219: 가시성 강화 — 솔리드 teal 배경 + 흰 텍스트 +
+                    // 미세한 그림자. 이전 alpha 0.1 배경 + teal 텍스트 조합은
+                    // 어두운 배지 위에서 잘 안 보였음.
                     decoration: BoxDecoration(
-                      color: AppColors.teal.withValues(alpha: 0.1),
-                      borderRadius: BorderRadius.circular(8),
-                      border: Border.all(
-                        color: AppColors.teal.withValues(alpha: 0.3),
-                      ),
+                      color: AppColors.teal,
+                      borderRadius: BorderRadius.circular(10),
+                      boxShadow: [
+                        BoxShadow(
+                          color: AppColors.teal.withValues(alpha: 0.35),
+                          blurRadius: 8,
+                          offset: const Offset(0, 2),
+                        ),
+                      ],
                     ),
                     child: _isTranslating
                         ? const SizedBox(
@@ -1508,16 +1515,26 @@ class _LetterReadScreenState extends State<LetterReadScreen>
                             height: 14,
                             child: CircularProgressIndicator(
                               strokeWidth: 2,
-                              color: AppColors.teal,
+                              color: Colors.white,
                             ),
                           )
-                        : Text(
-                            _isTranslated ? l10n.letterReadShowOriginal : l10n.letterReadTranslate,
-                            style: const TextStyle(
-                              color: AppColors.teal,
-                              fontSize: 12,
-                              fontWeight: FontWeight.w600,
-                            ),
+                        : Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              const Text('🌐', style: TextStyle(fontSize: 13)),
+                              const SizedBox(width: 6),
+                              Text(
+                                _isTranslated
+                                    ? l10n.letterReadShowOriginal
+                                    : l10n.letterReadTranslate,
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w800,
+                                  letterSpacing: 0.2,
+                                ),
+                              ),
+                            ],
                           ),
                   ),
                 ),
