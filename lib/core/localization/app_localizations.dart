@@ -11568,13 +11568,13 @@ class AppL10n {
     }),
     _t({
       'ko': '$flag $country에서 온 혜택병이 도착했어요 🏖️',
-      'en': 'A bottle letter from $flag $country arrived 🏖️',
+      'en': 'A bottle reward from $flag $country arrived 🏖️',
       'ja': '$flag ${country}からのボトルレターが届きました 🏖️',
       'zh': '来自$flag $country的漂流瓶到了 🏖️',
     }),
     _t({
       'ko': '$flag $country 혜택이 긴 여행을 마치고 도착했어요',
-      'en': 'A $flag $country letter finished its long journey',
+      'en': 'A $flag $country reward finished its long journey',
       'ja': '$flag ${country}の手紙が長い旅を終えて届きました',
       'zh': '$flag $country的信完成了漫长旅程',
     }),
@@ -11668,7 +11668,7 @@ class AppL10n {
   // ── 쿨다운 중 근처 혜택 알림 ──────────────────────────────────────────────
   String get stateCooldownNearbyTitle => _t({
     'ko': '⏳ 혜택이 근처에 있어요!',
-    'en': '⏳ A letter is nearby!',
+    'en': '⏳ A reward is nearby!',
     'ja': '⏳ 手紙が近くにあります！',
     'zh': '⏳ 附近有一封信！',
     'fr': '⏳ Une lettre est à proximité !',
@@ -11685,7 +11685,7 @@ class AppL10n {
 
   String stateCooldownNearbyBody(String flag, String country, String timeStr) => _t({
     'ko': '$flag $country에서 온 혜택이 근처에 있지만, $timeStr 후에 수령할 수 있어요',
-    'en': 'A letter from $flag $country is nearby, but you can pick it up in $timeStr',
+    'en': 'A reward from $flag $country is nearby, but you can pick it up in $timeStr',
     'ja': '$flag ${country}からの手紙が近くにありますが、${timeStr}後に受け取れます',
     'zh': '来自$flag $country的信在附近，但$timeStr后才能领取',
     'fr': 'Une lettre de $flag $country est proche, ramassage dans $timeStr',
@@ -11703,7 +11703,7 @@ class AppL10n {
   // ── 신고 임시 차단 알림 (발송자에게) ───────────────────────────────────────
   String get stateReportBlockTitle => _t({
     'ko': '⚠️ 혜택이 신고되었습니다',
-    'en': '⚠️ Your letter has been reported',
+    'en': '⚠️ Your promo has been reported',
     'ja': '⚠️ あなたの手紙が通報されました',
     'zh': '⚠️ 您的信件被举报了',
     'fr': '⚠️ Votre lettre a été signalée',
@@ -11720,7 +11720,7 @@ class AppL10n {
 
   String get stateReportBlockBody => _t({
     'ko': '신고 접수로 홍보 발송이 일시 제한됩니다. 관리자 검토 후 조치됩니다.',
-    'en': 'Your letter sending is temporarily restricted due to a report. An admin will review shortly.',
+    'en': 'Your promo sending is temporarily restricted due to a report. An admin will review shortly.',
     'ja': '通報により手紙の送信が一時制限されています。管理者が確認後、対応します。',
     'zh': '由于举报，您的信件发送已暂时限制。管理员将尽快审核。',
     'fr': 'L\'envoi de lettres est temporairement restreint suite à un signalement. Un administrateur examinera sous peu.',
@@ -11737,7 +11737,7 @@ class AppL10n {
 
   String get stateAlreadyRead => _t({
     'ko': '이미 읽은 혜택이에요 📖',
-    'en': 'You\'ve already read this letter 📖',
+    'en': 'You\'ve already read this reward 📖',
     'ja': 'すでに読んだ手紙です 📖',
     'zh': '这封信已经读过了 📖',
     'fr': 'Vous avez déjà lu cette lettre 📖',
@@ -11754,7 +11754,7 @@ class AppL10n {
 
   String get inboxHuntHint => _t({
     'ko': '주변에 뿌려진 할인권·이벤트 혜택을 주워 활용해보세요',
-    'en': 'Pick up discount and event letters dropped nearby to redeem',
+    'en': 'Pick up discount and event rewards dropped nearby to redeem',
     'ja': '近くに落ちている割引券・イベントの手紙を拾って使ってみて',
     'zh': '拾取附近的折扣券和活动信件即可兑换',
     'fr': 'Ramassez les réductions et événements lâchés près de vous',
@@ -11787,7 +11787,7 @@ class AppL10n {
   });
   String get brandOnlySendBody => _t({
     'ko': '홍보·이벤트·할인 혜택을 지구 곳곳에 뿌려보세요. 혜택 줍기는 일반·프리미엄 회원의 메리트예요.',
-    'en': 'Drop promos, events, and discounts around the world. Picking letters up is the Free/Premium member\'s perk.',
+    'en': 'Drop promos, events, and discounts around the world. Picking rewards up is the Free/Premium member\'s perk.',
     'ja': '告知・イベント・割引の手紙を世界に配ってください。拾うのは一般・プレミアム会員の特典です。',
     'zh': '把宣传、活动和折扣信件撒到世界各地。收取是普通/高级会员的专属福利。',
     'fr': 'Diffusez promos, événements et réductions dans le monde. Le ramassage est l\'avantage Free/Premium.',
@@ -11804,7 +11804,7 @@ class AppL10n {
 
   String get statePickupBrandBlocked => _t({
     'ko': '브랜드 계정은 홍보를 보내는 데만 사용돼요 · 픽업은 일반·프리미엄 회원 전용이에요',
-    'en': 'Brand accounts can only send letters — pickup is for Free / Premium members',
+    'en': 'Brand accounts can only send promos — pickup is for Free / Premium members',
     'ja': 'ブランドアカウントは送信専用です — 受け取りは一般・プレミアム会員のみ',
     'zh': '品牌账号只能发送信件 · 收取仅限普通/高级会员',
     'fr': 'Les comptes Marque ne peuvent qu\'envoyer — le ramassage est réservé aux membres Free/Premium',
@@ -11821,7 +11821,7 @@ class AppL10n {
 
   String get stateAlreadyTaken => _t({
     'ko': '누군가 이미 가져간 혜택이에요 😢',
-    'en': 'Someone already took this letter 😢',
+    'en': 'Someone already took this reward 😢',
     'ja': '誰かがすでに持って行った手紙です 😢',
     'zh': '这封信已经被别人拿走了 😢',
     'fr': 'Quelqu\'un a déjà pris cette lettre 😢',
@@ -11838,7 +11838,7 @@ class AppL10n {
 
   String stateMaxReadersReached(int maxReaders) => _t({
     'ko': '이미 ${maxReaders}명이 읽은 혜택이에요 📪',
-    'en': 'This letter has already been read by $maxReaders people 📪',
+    'en': 'This reward has already been read by $maxReaders people 📪',
     'ja': 'すでに${maxReaders}人が読んだ手紙です 📪',
     'zh': '这封信已经被$maxReaders人读过了 📪',
     'fr': 'Cette lettre a déjà été lue par $maxReaders personnes 📪',
@@ -11855,7 +11855,7 @@ class AppL10n {
 
   String get stateDistanceTooFar => _t({
     'ko': '📍 혜택 수령지 2km 이내에 있어야 받을 수 있어요',
-    'en': '📍 You must be within 2km of the letter\'s destination to pick it up',
+    'en': '📍 You must be within 2km of the reward\'s destination to pick it up',
     'ja': '📍 手紙の受取地点から2km以内にいる必要があります',
     'zh': '📍 您需要在信件目的地2km范围内才能领取',
     'fr': '📍 Vous devez être à moins de 2 km de la destination pour récupérer la lettre',
@@ -11889,7 +11889,7 @@ class AppL10n {
 
   String get stateDmReply2 => _t({
     'ko': '혜택으로 이렇게 대화할 수 있다니 신기해요',
-    'en': 'It\'s amazing we can chat like this through letters',
+    'en': 'It\'s amazing we can chat like this through rewards',
     'ja': '手紙でこうやって会話できるなんて不思議です',
     'zh': '能通过信件这样聊天真是太神奇了',
     'fr': 'C\'est incroyable de pouvoir discuter ainsi par lettres',
@@ -12147,7 +12147,7 @@ class AppL10n {
 
   String get settingsNotifyNearbyDesc => _t({
     'ko': '2km 이내에 혜택이 도착하면 알림',
-    'en': 'Notify when a letter arrives within 2km',
+    'en': 'Notify when a reward arrives within 2km',
     'ja': '2km以内に手紙が届くと通知',
     'zh': '2km内有信件到达时通知',
     'fr': 'Notification quand une lettre arrive à moins de 2 km',
@@ -12492,7 +12492,7 @@ class AppL10n {
 
   String get gpsTermsBody => _t({
     'ko': '• 내 위치 주변의 혜택을 주울 수 있어요\n• 내가 보낸 혜택의 출발 지점을 기록해요\n• 위치 정보는 서비스 제공 외에 사용하지 않아요\n\n❗ 동의하지 않으면 홍보를 보내거나 줍을 수 없어요.',
-    'en': '• Pick up letters dropped near you\n• Mark the origin of letters you send\n• Location is used only for this service\n\n❗ Without consent you cannot pick up or send letters.',
+    'en': '• Pick up rewards dropped near you\n• Mark the origin of promos you send\n• Location is used only for this service\n\n❗ Without consent you cannot pick up or send rewards.',
     'ja': '• 周辺の手紙を拾えます\n• 送った手紙の出発地点を記録します\n• 位置情報はサービス提供以外に使用しません\n\n❗ 同意しないと手紙を送ったり拾ったりできません。',
     'zh': '• 拾起你身边的信件\n• 记录你寄出信件的出发地\n• 位置信息仅用于本服务\n\n❗ 不同意将无法收发信件。',
     'fr': '• Ramasser les lettres déposées près de toi\n• Marquer le point de départ des lettres envoyées\n• Utilisé uniquement pour ce service\n\n❗ Sans consentement, impossible d\'envoyer ou ramasser.',
@@ -12543,7 +12543,7 @@ class AppL10n {
 
   String get gpsSkipWarningBody => _t({
     'ko': 'GPS 동의 없이는 다음 기능을 사용할 수 없어요:\n\n• 📍 주변 혜택 줍기 불가\n• ✉️ 홍보 발송 불가 (Premium/Brand)\n• 🗺 내 위치 마커 표시 불가\n\n설정에서 언제든지 다시 허용할 수 있지만, 지금 동의하는 것을 강력히 권장합니다.',
-    'en': 'Without GPS consent the following are disabled:\n\n• 📍 Pick up nearby rewards\n• ✉️ Send letters (Premium/Brand)\n• 🗺 Show your location marker\n\nYou can enable it later in Settings, but we strongly recommend consenting now.',
+    'en': 'Without GPS consent the following are disabled:\n\n• 📍 Pick up nearby rewards\n• 📣 Send promos (Premium/Brand)\n• 🗺 Show your location marker\n\nYou can enable it later in Settings, but we strongly recommend consenting now.',
     'ja': 'GPS 同意なしでは次の機能が使えません:\n\n• 📍 周辺の手紙を拾う\n• ✉️ 手紙を送る (Premium/Brand)\n• 🗺 自分の位置マーカー\n\n設定から後で許可できますが、今すぐ同意することを強くお勧めします。',
     'zh': '没有 GPS 同意将无法使用:\n\n• 📍 拾起附近信件\n• ✉️ 发送信件 (Premium/Brand)\n• 🗺 显示我的位置\n\n可在设置中重新允许，但强烈建议现在同意。',
     'fr': 'Sans consentement GPS, désactivé:\n\n• 📍 Ramasser des lettres\n• ✉️ Envoyer (Premium/Brand)\n• 🗺 Marqueur de position\n\nActivable plus tard dans Paramètres, mais nous recommandons fortement maintenant.',
@@ -13028,7 +13028,7 @@ class AppL10n {
 
   String get stampAlbumSubtitle => _t({
     'ko': '혜택 우표 수집 앨범',
-    'en': 'Letter Stamp Collection',
+    'en': 'Reward Stamp Collection',
     'ja': '手紙切手コレクション',
     'zh': '信件邮票收藏册',
     'fr': 'Collection de timbres de lettres',
@@ -13079,7 +13079,7 @@ class AppL10n {
 
   String stampLettersCount(int n) => _t({
     'ko': '${n}통',
-    'en': '$n letters',
+    'en': '$n rewards',
     'ja': '${n}通',
     'zh': '${n}封',
     'fr': '$n lettres',
@@ -13164,7 +13164,7 @@ class AppL10n {
 
   String get stampEmptyBody => _t({
     'ko': '혜택을 받으면 발신 국가 우표가\n자동으로 수집됩니다',
-    'en': 'When you receive a letter,\nthe sender\'s country stamp is collected automatically',
+    'en': 'When you receive a reward,\nthe sender\'s country stamp is collected automatically',
     'ja': '手紙を受け取ると、送信国の切手が\n自動的に収集されます',
     'zh': '收到信件后，发件国邮票\n会自动收集',
     'fr': 'Quand vous recevez une lettre,\nle timbre du pays est collecté automatiquement',
@@ -13376,7 +13376,7 @@ class AppL10n {
 
   String get onboardingPremiumFeat3 => _t({
     'ko': '하루 30통 발송 + 이미지·링크 홍보',
-    'en': '30 letters/day + image & link letters',
+    'en': '30 promos/day + image & link promos',
     'ja': '1日30通発送 + 画像・リンク付き手紙',
     'zh': '每日 30 封发送 + 图片·链接信件',
     'fr': '30 lettres/jour + image & lien',
@@ -13427,7 +13427,7 @@ class AppL10n {
 
   String get onboardingStatTotalLetters => _t({
     'ko': '누적 혜택',
-    'en': 'Total letters',
+    'en': 'Total rewards',
     'ja': '累計手紙',
     'zh': '累计信件',
     'fr': 'Lettres totales',
@@ -13512,7 +13512,7 @@ class AppL10n {
 
   String get onboardingReview1 => _t({
     'ko': '"브랜드 혜택이 일반 광고보다 훨씬 따뜻하게 느껴져요."',
-    'en': '"Brand letters feel much warmer than regular ads."',
+    'en': '"Brand rewards feel much warmer than regular ads."',
     'ja': '"ブランドレターは普通の広告よりずっと温かみがあります。"',
     'zh': '"品牌信件比普通广告感觉温暖得多。"',
     'fr': '"Les lettres de marque semblent bien plus chaleureuses que les publicités."',
