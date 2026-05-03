@@ -78,11 +78,11 @@ class AppL10n {
   // Build 114: 스플래시 메인 태그라인 — 마케팅 기획서 Build 113 의 1순위
   // 후보 ("걸으면 쿠폰이 보여요" / "Walk close. Pick it up.") 로 교체.
   // 기존 "세상 어딘가의 당신에게" 는 펜팔 포지셔닝 잔재.
-  // Build 172: 감성적 톤으로 리라이트. 실용성 (action verb) 보다 "편지가 나를
+  // Build 172: 감성적 톤으로 리라이트. 실용성 (action verb) 보다 "혜택이 나를
   // 기다리는" 감성 앵커를 우선. "주워 쓰세요" 는 onboarding/CTA 에서 계속 등장.
   // 메인 스플래시에는 한 번 만나는 순간이라 여운 있는 카피.
   String get tagline => _t({
-    'ko': '오늘, 편지가 당신을 기다려요',
+    'ko': '오늘, 혜택이 당신을 기다려요',
     'en': 'A letter is waiting for you today',
     'ja': '今日、手紙があなたを待っています',
     'zh': '今天，有一封信在等你',
@@ -317,7 +317,7 @@ class AppL10n {
     'hi': 'संग्रह',
     'th': 'สะสม',
   });
-  // Build 223: '보내기/Send' → '홍보/Promo' — Premium = 홍보 편지 정체성과 일치.
+  // Build 223: '보내기/Send' → '홍보/Promo' — Premium = 홍보 혜택 정체성과 일치.
   // Free 회원은 _ComposeNavItem.isLocked 로 자물쇠 오버레이.
   String get navSend => _t({
     'ko': '홍보',
@@ -440,7 +440,7 @@ class AppL10n {
 
   // ── Chain rule ────────────────────────────────────────────────────────────
   String get chainRuleLocked => _t({
-    'ko': '다음 편지를 읽으려면 편지를 3개 보내야 합니다',
+    'ko': '다음 혜택을 읽으려면 혜택을 3개 보내야 합니다',
     'en': 'Send 3 letters to unlock the next one',
     'ja': '次の手紙を読むには3通送ってください',
     'zh': '发送3封信后可阅读下一封',
@@ -625,7 +625,7 @@ class AppL10n {
     'th': '🎟 Thiscount',
   });
   String get onboarding1Body => _t({
-    'ko': '내 주변 지도 위에 떠 있는 할인·쿠폰을 주워 바로 사용해요. 브랜드는 편지로 홍보하고, 회원은 보물처럼 줍습니다.',
+    'ko': '내 주변 지도 위에 떠 있는 할인·쿠폰을 주워 바로 사용해요. 브랜드는 혜택으로 홍보하고, 회원은 보물처럼 줍습니다.',
     'en':
         'Pick up discounts and coupons floating on the map around you, redeem instantly. Brands promote via letters; members hunt for treasures.',
     'ja': '近くの地図に浮かぶ割引・クーポンを拾って即使用。ブランドは手紙で宣伝し、会員は宝物のように拾います。',
@@ -669,9 +669,9 @@ class AppL10n {
   });
   // Build 119: 배송 경로 페이지를 픽업과 묶어 재작성. "내가 주운 편지"도
   // 지도 위에서 출발지→내 위치로 여행한 여정이 시각화된다는 연결 고리로
-  // 헌트 포지셔닝에 정렬. 보낸 편지만 이동하는 것 아님을 명시.
+  // 헌트 포지셔닝에 정렬. 보낸 혜택만 이동하는 것 아님을 명시.
   String get onboarding2Body => _t({
-    'ko': '주운 편지도, 보낸 편지도 🚚 → ✈️ → 🚚 순서로 지도 위를 이동해요. 실제 우편 이동 시간이 그대로 반영됩니다.',
+    'ko': '주운 혜택도, 보낸 혜택도 🚚 → ✈️ → 🚚 순서로 지도 위를 이동해요. 실제 우편 이동 시간이 그대로 반영됩니다.',
     'en':
         'Both picked-up and sent letters travel 🚚 → ✈️ → 🚚 across the map, reflecting real postal transit times.',
     'ja': '拾った手紙も送った手紙も🚚→✈️→🚚の順で地図を移動します。実際の郵便時間を反映します。',
@@ -716,7 +716,7 @@ class AppL10n {
   });
   // Build 170: "편지 포맷의 글로벌 공간 쿠폰 플랫폼" 포지셔닝 강조.
   String get onboarding3Body => _t({
-    'ko': '브랜드의 할인권이 편지가 되어 세계 곳곳 지도에 떨어집니다. 당신 주변 200m 안의 혜택을 주워 매장에서 바로 쓰세요. 감성과 실용성이 공존하는 편지 포맷의 글로벌 공간 쿠폰 플랫폼.',
+    'ko': '브랜드의 할인권이 혜택이 되어 세계 곳곳 지도에 떨어집니다. 당신 주변 200m 안의 혜택을 주워 매장에서 바로 쓰세요. 감성과 실용성이 공존하는 편지 포맷의 글로벌 공간 쿠폰 플랫폼.',
     'en':
         'Brand coupons drop as letters on a worldwide map. Pick up letters within 200m of you and redeem them instantly. A global space-based coupon platform — in letter format.',
     'ja':
@@ -749,7 +749,7 @@ class AppL10n {
   // 로 전면 개편. Free 는 줍기, Premium 은 홍보, Brand 는 캠페인 이라는
   // 3 단 역할 분리를 이 한 슬라이드에서 요약.
   String get onboarding4Title => _t({
-    'ko': '📸 내 편지를 세계에 뿌리다',
+    'ko': '📸 내 혜택을 세계에 뿌리다',
     'en': '📸 Drop Your Own Letters',
     'ja': '📸 自分の手紙を世界に届ける',
     'zh': '📸 向世界投放自己的信件',
@@ -1020,7 +1020,7 @@ class AppL10n {
     'th': 'ต้องการอนุญาตตำแหน่ง',
   });
   String get locationGrantedBody => _t({
-    'ko': '주변 2km 이내에 도착한 편지를\n수령할 수 있어요 🎉',
+    'ko': '주변 2km 이내에 도착한 혜택을\n수령할 수 있어요 🎉',
     'en': 'You can receive letters that arrive\nwithin 2km of you 🎉',
     'ja': '2km以内に届いた手紙を\n受け取ることができます 🎉',
     'zh': '您可以接收到达\n2公里范围内的信件 🎉',
@@ -1036,7 +1036,7 @@ class AppL10n {
     'th': 'คุณสามารถรับจดหมายที่มาถึง\nภายใน 2 กม. จากคุณ 🎉',
   });
   String get locationRequiredBody => _t({
-    'ko': '편지가 내 위치 2km 이내에 도착하면\n알림을 받을 수 있어요.\n위치 정보는 앱 내에서만 사용됩니다.',
+    'ko': '혜택이 내 위치 2km 이내에 도착하면\n알림을 받을 수 있어요.\n위치 정보는 앱 내에서만 사용됩니다.',
     'en':
         'Get notified when a letter arrives\nwithin 2km of you.\nLocation is only used within the app.',
     'ja': '2km以内に手紙が届いたとき\n通知を受け取れます。\n位置情報はアプリ内のみで使用されます。',
@@ -1188,7 +1188,7 @@ class AppL10n {
     'hi': 'आप सभी प्रीमियम सुविधाओं का उपयोग कर रहे हैं 🎉',
     'th': 'คุณกำลังใช้ฟีเจอร์พรีเมียมทั้งหมด 🎉',
   });
-  // Build 119: 페이월 히어로 카피 픽업-퍼스트. 기존 "더 넓은 세계로 편지를
+  // Build 119: 페이월 히어로 카피 픽업-퍼스트. 기존 "더 넓은 세계로 혜택을
   // 보내보세요" → 5배 반경 · 6배 빠른 쿨다운 으로 핵심 가치 전환.
   String get premiumHeroTitle => _t({
     'ko': '더 넓은 반경으로\n쿠폰을 주워보세요',
@@ -2077,7 +2077,7 @@ class AppL10n {
 
   String weeklyReflectionLongest(int km) {
     switch (languageCode) {
-      case 'ko': return '가장 멀리 떠난 편지는 ${km}km를 여행했어요 ✈️';
+      case 'ko': return '가장 멀리 떠난 혜택은 ${km}km를 여행했어요 ✈️';
       case 'ja': return '最も遠く旅した手紙は${km}kmを旅しました ✈️';
       case 'zh': return '最远的那封信旅行了 ${km} 公里 ✈️';
       case 'fr': return 'Votre lettre la plus lointaine a parcouru ${km} km ✈️';
@@ -2096,7 +2096,7 @@ class AppL10n {
   }
 
   String get replyAlreadyNotice => _t({
-    'ko': '이 편지엔 이미 답장을 보냈어요 · 한 편지에 한 번만 답장할 수 있어요',
+    'ko': '이 이미 답장을 보냈어요 · 한 한 번만 답장할 수 있어요',
     'en': 'You\'ve already replied to this letter — one reply per letter',
     'ja': 'この手紙にはすでに返信済みです — 1通につき1回のみ',
     'zh': '你已经回复过这封信 · 每封信只能回复一次',
@@ -2112,7 +2112,7 @@ class AppL10n {
     'th': 'คุณตอบจดหมายฉบับนี้ไปแล้ว · ตอบได้ครั้งเดียวต่อจดหมาย',
   });
   String get replyOnePerLetterTip => _t({
-    'ko': '한 편지에 한 번만 답장할 수 있어요',
+    'ko': '한 한 번만 답장할 수 있어요',
     'en': 'One reply per letter',
     'ja': '1通につき1回のみ返信できます',
     'zh': '每封信只能回复一次',
@@ -2144,7 +2144,7 @@ class AppL10n {
     'th': 'บอตวรรณกรรม',
   });
   String get aiLetterNoticeTitle => _t({
-    'ko': '창작 편지예요',
+    'ko': '창작 혜택이에요',
     'en': 'A curated letter',
     'ja': '創作の手紙です',
     'zh': '这是一封创作信件',
@@ -2160,7 +2160,7 @@ class AppL10n {
     'th': 'จดหมายคัดสรร',
   });
   String get aiLetterNoticeBody => _t({
-    'ko': '실제 사람이 아닌 문학 봇이 보낸 편지라, 답장은 전달되지 않아요. 다른 편지에 답장해보세요.',
+    'ko': '실제 사람이 아닌 문학 봇이 보낸 편지라, 답장은 전달되지 않아요. 다른 답장해보세요.',
     'en': 'This letter was written by a literary bot, so replies won\'t reach anyone. Try replying to a real letter instead.',
     'ja': '文学Botが書いた手紙なので、返信は届きません。他の手紙に返信してみてください。',
     'zh': '这封信由文学机器人撰写，回复不会被送达。可以回复其他信件。',
@@ -2208,7 +2208,7 @@ class AppL10n {
     'th': 'เตือนทุกเช้าเวลา 8 โมง?',
   });
   String get reminderPrepromptBody => _t({
-    'ko': '"오늘 나에게 편지가 왔을까?"\n매일 아침 8시에 편지함을 열어보도록 조용히 알려드릴게요.',
+    'ko': '"오늘 나에게 혜택이 왔을까?"\n매일 아침 8시에 수집첩을 열어보도록 조용히 알려드릴게요.',
     'en': '"Did a letter arrive for me today?"\nA quiet 8 AM nudge to open your mailbox — nothing noisy.',
     'ja': '「今日、手紙は届いたかな？」\n毎朝8時に、そっと手紙箱を開くようお知らせします。',
     'zh': '"今天有我的信吗？"\n每天早上 8 点轻轻提醒你打开信箱——不喧哗。',
@@ -2384,7 +2384,7 @@ class AppL10n {
     'th': 'การเตือนจดหมายวันนี้',
   });
   String get settingsNotifyDailyDesc => _t({
-    'ko': '매일 오전 8시에 편지함을 열어보도록 알려드려요',
+    'ko': '매일 오전 8시에 수집첩을 열어보도록 알려드려요',
     'en': 'A gentle 8:00 AM nudge to check your mailbox',
     'ja': '毎朝8時に手紙を確認するようお知らせします',
     'zh': '每天早上 8 点温柔提醒你查看信箱',
@@ -3839,7 +3839,7 @@ class AppL10n {
   });
 
   String get composePhotoAttachDesc => _t({
-    'ko': '편지에 사진 1장을 첨부할 수 있어요.\n프리미엄 회원은 하루 20통까지 이미지 홍보 발송 가능.',
+    'ko': '홍보에 사진 1장을 첨부할 수 있어요.\n프리미엄 회원은 하루 20통까지 이미지 홍보 발송 가능.',
     'en': 'Attach 1 photo to your letter.\nPremium members can send up to 20 image letters per day.',
     'ja': '手紙に写真を1枚添付できます。\nプレミアム会員は1日20通まで画像付き手紙を送れます。',
     'zh': '可以给信附上1张照片。\n高级会员每天最多可发送20封带图片的信。',
@@ -3856,7 +3856,7 @@ class AppL10n {
   });
 
   String get composeImageLimitReached => _t({
-    'ko': '오늘 이미지 편지 한도(20통)에 도달했어요. 내일 다시 시도해주세요.',
+    'ko': '오늘 이미지 혜택 한도(20통)에 도달했어요. 내일 다시 시도해주세요.',
     'en': 'You\'ve reached today\'s image letter limit (20). Please try again tomorrow.',
     'ja': '本日の画像手紙の上限（20通）に達しました。明日また試してください。',
     'zh': '今天的图片信件配额（20封）已用完。请明天再试。',
@@ -3890,7 +3890,7 @@ class AppL10n {
   });
 
   String composeMinLengthError(int current) => _t({
-    'ko': '편지는 최소 20자 이상 작성해주세요 ✍️ (현재 ${current}자)',
+    'ko': '혜택은 최소 20자 이상 작성해주세요 ✍️ (현재 ${current}자)',
     'en': 'Please write at least 20 characters ✍️ (currently $current)',
     'ja': '最低20文字以上書いてください ✍️（現在${current}文字）',
     'zh': '请至少写20个字符 ✍️（当前${current}字）',
@@ -3958,7 +3958,7 @@ class AppL10n {
   });
 
   String composeBulkSent(int total, int countries) => _t({
-    'ko': '🌍  총 ${total}통의 편지가 ${countries}개 나라로 출발했어요!',
+    'ko': '🌍  총 ${total}통의 혜택이 ${countries}개 나라로 출발했어요!',
     'en': '🌍  $total letters departed to $countries countries!',
     'ja': '🌍  合計${total}通の手紙が${countries}か国へ出発しました！',
     'zh': '🌍  共${total}封信已发往${countries}个国家！',
@@ -4043,7 +4043,7 @@ class AppL10n {
   });
 
   String get composeExpressSentRandomBrand => _t({
-    'ko': '⚡ 특급 편지가 5분 내 세계 어딘가로 출발했어요!',
+    'ko': '⚡ 특급 혜택이 5분 내 세계 어딘가로 출발했어요!',
     'en': '⚡ Express letter departed somewhere in the world within 5 min!',
     'ja': '⚡ 特急手紙が5分以内に世界のどこかへ出発しました！',
     'zh': '⚡ 特快信5分钟内发往世界某处！',
@@ -4060,7 +4060,7 @@ class AppL10n {
   });
 
   String get composeExpressSentRandomPremium => _t({
-    'ko': '⚡ 특급 편지가 20분 내 세계 어딘가로 출발했어요!',
+    'ko': '⚡ 특급 혜택이 20분 내 세계 어딘가로 출발했어요!',
     'en': '⚡ Express letter departed somewhere in the world within 20 min!',
     'ja': '⚡ 特急手紙が20分以内に世界のどこかへ出発しました！',
     'zh': '⚡ 特快信20分钟内发往世界某处！',
@@ -4077,7 +4077,7 @@ class AppL10n {
   });
 
   String composeExpressSentTo(String flag, String country) => _t({
-    'ko': '⚡ 특급 편지가 $flag ${country}로 출발했어요!',
+    'ko': '⚡ 특급 혜택이 $flag ${country}로 출발했어요!',
     'en': '⚡ Express letter departed to $flag $country!',
     'ja': '⚡ 特急手紙が$flag ${country}へ出発しました！',
     'zh': '⚡ 特快信已发往$flag $country！',
@@ -4094,7 +4094,7 @@ class AppL10n {
   });
 
   String get composeLetterSentRandom => _t({
-    'ko': '✈️  편지가 세상 어딘가로 출발했어요! 🌍',
+    'ko': '✈️  혜택이 세상 어딘가로 출발했어요! 🌍',
     'en': '✈️  Your letter departed somewhere in the world! 🌍',
     'ja': '✈️  手紙が世界のどこかへ出発しました！🌍',
     'zh': '✈️  信件已发往世界某处！🌍',
@@ -4111,7 +4111,7 @@ class AppL10n {
   });
 
   String composeLetterSentTo(String flag, String country) => _t({
-    'ko': '✈️  편지가 $flag ${country}로 출발했어요!',
+    'ko': '✈️  혜택이 $flag ${country}로 출발했어요!',
     'en': '✈️  Your letter departed to $flag $country!',
     'ja': '✈️  手紙が$flag ${country}へ出発しました！',
     'zh': '✈️  信件已发往$flag $country！',
@@ -4162,7 +4162,7 @@ class AppL10n {
   });
 
   String get composeDestination => _t({
-    'ko': '편지를 보낼 목적지',
+    'ko': '혜택을 보낼 목적지',
     'en': 'Letter destination',
     'ja': '手紙の送り先',
     'zh': '信件目的地',
@@ -4385,7 +4385,7 @@ class AppL10n {
   });
 
   String get composeLuckyApplied => _t({
-    'ko': '오늘의 편지 적용됨 · 탭하면 다른 글귀로',
+    'ko': '오늘의 혜택 적용됨 · 탭하면 다른 글귀로',
     'en': 'Today\'s letter applied · Tap for another quote',
     'ja': '今日の手紙適用済み · タップで別の文章へ',
     'zh': '今日之信已应用 · 点击更换',
@@ -4402,7 +4402,7 @@ class AppL10n {
   });
 
   String get composeLuckySend => _t({
-    'ko': '오늘의 편지로 보내기',
+    'ko': '오늘의 혜택으로 보내기',
     'en': 'Send as today\'s letter',
     'ja': '今日の手紙として送る',
     'zh': '发送今日之信',
@@ -4488,7 +4488,7 @@ class AppL10n {
   });
 
   String get composeLetterFlows => _t({
-    'ko': '이 편지는 세상 어딘가로 흘러갑니다',
+    'ko': '이 혜택은 세상 어딘가로 흘러갑니다',
     'en': 'This letter will flow somewhere in the world',
     'ja': 'この手紙は世界のどこかへ流れていきます',
     'zh': '这封信将流向世界的某个角落',
@@ -4539,7 +4539,7 @@ class AppL10n {
   });
 
   String get composeBrandCategoryLabel => _t({
-    'ko': '편지 종류',
+    'ko': '혜택 종류',
     'en': 'Letter category',
     'ja': '手紙の種類',
     'zh': '信件类型',
@@ -4603,7 +4603,7 @@ class AppL10n {
     'th': 'บัตรแลก',
   });
 
-  // Build 223: Premium 전용 — 일반 홍보 발송 축소 + 홍보 편지로 직관 리프레임.
+  // Build 223: Premium 전용 — 일반 홍보 발송 축소 + 홍보 혜택으로 직관 리프레임.
   // Free/Brand 가 아닌 Premium 사용자는 카테고리 3종(general/coupon/voucher)
   // 칩 대신 "📣 내 홍보 편지" 단일 배지를 본다.
   String get composePremiumPromoLabel => _t({
@@ -4951,7 +4951,7 @@ class AppL10n {
   });
 
   String get weekendBoostDesc => _t({
-    'ko': '🌈 주말에는 더 많은 브랜드가 편지를 뿌려요. 오늘 더 많이 주워보세요!',
+    'ko': '🌈 주말에는 더 많은 브랜드가 혜택을 뿌려요. 오늘 더 많이 주워보세요!',
     'en': '🌈 Brands drop more letters on weekends — pick up extra today!',
     'ja': '🌈 週末はブランドが多くの手紙を届けます — 今日はたくさん拾おう！',
     'zh': '🌈 周末品牌投放更多信件 — 今天多拾取一些吧！',
@@ -5001,7 +5001,7 @@ class AppL10n {
     }
   }
 
-  // Build 152: 시간대별 인사 pill — 반경 안에 편지 있을 때 표시.
+  // Build 152: 시간대별 인사 pill — 반경 안에 혜택 있을 때 표시.
   String get dailyGreetingMorning => _t({
     'ko': '좋은 아침',
     'en': 'Good morning',
@@ -5121,7 +5121,7 @@ class AppL10n {
   });
 
   String get tutorialLetterContent => _t({
-    'ko': '환영합니다! ✨\n\nThiscount 에 오신 걸 환영해요. 이 편지를 주우면 줍기 경험을 미리 체험할 수 있어요.\n\n가까이 다가가서 편지를 탭해보세요. 지도 아래 📍 근처 카운터가 함께 반응할 거예요.\n\n앞으로 전 세계 브랜드들이 뿌리는 할인·이벤트 편지를 만나보세요!',
+    'ko': '환영합니다! ✨\n\nThiscount 에 오신 걸 환영해요. 이 혜택을 주우면 줍기 경험을 미리 체험할 수 있어요.\n\n가까이 다가가서 혜택을 탭해보세요. 지도 아래 📍 근처 카운터가 함께 반응할 거예요.\n\n앞으로 전 세계 브랜드들이 뿌리는 할인·이벤트 혜택을 만나보세요!',
     'en': 'Welcome to Thiscount! ✨\n\nPick up this letter to try the hunt experience. Walk close and tap it.\n\nThe 📍 Nearby counter on the map will light up as soon as you\'re in range.\n\nBrands from around the world drop coupons and event letters — happy hunting!',
     'ja': 'Thiscount へようこそ！✨\n\nこの手紙を拾って体験を始めましょう。近づいてタップしてください。\n\n範囲に入ると地図の 📍 近くのカウンターが反応します。\n\n世界中のブランドが落とす割引・イベント手紙をお楽しみください！',
     'zh': '欢迎来到 Thiscount！✨\n\n拾起这封信体验"拾取"玩法。靠近并点击它即可。\n\n进入范围后地图上的 📍 附近计数器会亮起。\n\n来自世界各地的品牌在此投放优惠与活动信件——祝你好运！',
@@ -5347,7 +5347,7 @@ class AppL10n {
   });
 
   String get brandPromoBody => _t({
-    'ko': '지도에서 가까이 걸어가 편지를 주우면 즉시 사용 가능한 할인권·교환권이 나와요. 새로 도착한 편지가 있으면 수집첩에서 확인해보세요!',
+    'ko': '지도에서 가까이 걸어가 혜택을 주우면 즉시 사용 가능한 할인권·교환권이 나와요. 새로 도착한 혜택이 있으면 수집첩에서 확인해보세요!',
     'en': 'Walk close to letters on the map to pick up ready-to-use coupons and vouchers. Check your Collection for what\'s new.',
     'ja': '地図上で手紙に近づいて拾うと、すぐ使える割引券や引換券がもらえます。コレクションで新着をチェック！',
     'zh': '走近地图上的信件即可获得可立即使用的优惠券和兑换券。请到收藏查看。',
@@ -5433,7 +5433,7 @@ class AppL10n {
   });
 
   String get composeExactDropPaywallBody => _t({
-    'ko': '원하는 매장·좌표에 편지를 정확히 뿌릴 수 있어요. 사용을 원하시면 관리자에게 문의해주세요.',
+    'ko': '원하는 매장·좌표에 혜택을 정확히 뿌릴 수 있어요. 사용을 원하시면 관리자에게 문의해주세요.',
     'en': 'Drop letters on exact store locations or coordinates. Contact the admin to enable this feature.',
     'ja': '特定の店舗・座標に手紙を正確に配置できます。利用希望は管理者にお問い合わせください。',
     'zh': '将信件精确投放到指定地点或坐标。如需使用请联系管理员。',
@@ -5762,7 +5762,7 @@ class AppL10n {
   });
 
   String get composeLinkAttachDesc => _t({
-    'ko': 'SNS, 블로그 링크를 편지에 첨부할 수 있어요.\n프리미엄·브랜드 회원 전용 기능이에요.',
+    'ko': 'SNS, 블로그 링크를 홍보에 첨부할 수 있어요.\n프리미엄·브랜드 회원 전용 기능이에요.',
     'en': 'Attach SNS or blog links to your letter.\nPremium & Brand members only.',
     'ja': 'SNSやブログのリンクを手紙に添付できます。\nプレミアム・ブランド会員限定機能です。',
     'zh': '可以在信中附加SNS或博客链接。\n仅限高级和品牌会员。',
@@ -6029,7 +6029,7 @@ class AppL10n {
   });
 
   String get composeBrandAutoExpireDesc => _t({
-    'ko': '설정 시간 후 편지가 자동으로 사라집니다', 'en': 'Letter will auto-disappear after the set time', 'ja': '設定時間後にレターが自動的に消えます', 'zh': '设定时间后信件将自动消失',
+    'ko': '설정 시간 후 혜택이 자동으로 사라집니다', 'en': 'Letter will auto-disappear after the set time', 'ja': '設定時間後にレターが自動的に消えます', 'zh': '设定时间后信件将自动消失',
     'fr': 'La lettre disparaîtra automatiquement', 'de': 'Brief verschwindet automatisch', 'es': 'La carta desaparecerá automáticamente',
     'pt': 'A carta desaparecerá automaticamente', 'ru': 'Письмо автоудалится', 'tr': 'Mektup otomatik silinir',
     'ar': 'ستختفي الرسالة تلقائياً', 'it': 'La lettera scomparirà automaticamente', 'hi': 'पत्र स्वतः गायब हो जाएगा', 'th': 'จดหมายจะหายไปโดยอัตโนมัติ',
@@ -6892,7 +6892,7 @@ class AppL10n {
   });
 
   String get composeLetterDeparting => _t({
-    'ko': '편지가 출발합니다...',
+    'ko': '혜택이 출발합니다...',
     'en': 'Your letter is departing...',
     'ja': '手紙が出発します...',
     'zh': '信件正在出发...',
@@ -7082,7 +7082,7 @@ class AppL10n {
   });
 
   String get inboxLocalOnly => _t({
-    'ko': '이 편지는 현지에서만 열어볼 수 있어요',
+    'ko': '이 혜택은 현지에서만 열어볼 수 있어요',
     'en': 'This letter can only be opened locally',
     'ja': 'この手紙は現地でのみ開けます',
     'zh': '此信只能在当地打开',
@@ -7099,7 +7099,7 @@ class AppL10n {
   });
 
   String get inboxLetterLocked => _t({
-    'ko': '편지 잠금',
+    'ko': '혜택 잠금',
     'en': 'Letter Locked',
     'ja': '手紙ロック',
     'zh': '信件已锁定',
@@ -7116,7 +7116,7 @@ class AppL10n {
   });
 
   String inboxSendMoreToRead(int remaining) => _t({
-    'ko': '다음 편지를 읽으려면 편지를 $remaining개 더 보내야 합니다.',
+    'ko': '다음 혜택을 읽으려면 혜택을 $remaining개 더 보내야 합니다.',
     'en': 'Send $remaining more letter${remaining == 1 ? "" : "s"} to read the next one.',
     'ja': '次の手紙を読むにはあと${remaining}通送ってください。',
     'zh': '再发送${remaining}封信即可阅读下一封。',
@@ -7184,7 +7184,7 @@ class AppL10n {
   });
 
   String get inboxDeleteBody => _t({
-    'ko': '이 편지를 삭제하시겠어요?\n삭제된 편지는 복구할 수 없어요.',
+    'ko': '이 혜택을 삭제하시겠어요?\n삭제된 혜택은 복구할 수 없어요.',
     'en': 'Delete this letter?\nDeleted letters cannot be recovered.',
     'ja': 'この手紙を削除しますか？\n削除した手紙は復元できません。',
     'zh': '确定删除这封信？\n删除后无法恢复。',
@@ -7201,7 +7201,7 @@ class AppL10n {
   });
 
   String get inboxDeleteConfirm => _t({
-    'ko': '이 편지를 삭제하면 복구할 수 없어요.\n정말 삭제할까요?',
+    'ko': '이 혜택을 삭제하면 복구할 수 없어요.\n정말 삭제할까요?',
     'en': 'This letter cannot be recovered once deleted.\nAre you sure?',
     'ja': 'この手紙を削除すると復元できません。\n本当に削除しますか？',
     'zh': '此信删除后无法恢复。\n确定删除吗？',
@@ -7252,7 +7252,7 @@ class AppL10n {
   });
 
   String get inboxDeleted => _t({
-    'ko': '편지가 삭제되었어요',
+    'ko': '혜택이 삭제되었어요',
     'en': 'Letter deleted',
     'ja': '手紙が削除されました',
     'zh': '信件已删除',
@@ -7321,7 +7321,7 @@ class AppL10n {
   });
 
   String get inboxAlreadyUsedSnack => _t({
-    'ko': '이미 사용 완료된 편지예요',
+    'ko': '이미 사용 완료된 혜택이에요',
     'en': 'Already marked as used',
     'ja': '既に使用済みです',
     'zh': '已是已使用状态',
@@ -7355,7 +7355,7 @@ class AppL10n {
   });
 
   String get inboxEmptyReceivedSub => _t({
-    'ko': '필터를 바꾸거나 지도에서 새 편지를 찾아보세요!',
+    'ko': '필터를 바꾸거나 지도에서 새 혜택을 찾아보세요!',
     'en': 'Try a different filter or find new letters on the map!',
     'ja': 'フィルターを変えるか、地図で新しい手紙を探してみましょう！',
     'zh': '试试其他筛选条件或在地图上查找新信件！',
@@ -7373,7 +7373,7 @@ class AppL10n {
 
   /// 필터명을 받아 "아직 X 혜택이 없어요" 식으로 조합. 빈 수집첩에서
   /// 어떤 필터가 걸렸는지 명시적으로 알려준다. "편지" 를 공통 명사로 붙여
-  /// 한국어 조사 처리 ((이)가) 를 피하고 "할인권 편지가", "브랜드 편지가"
+  /// 한국어 조사 처리 ((이)가) 를 피하고 "할인권 혜택이", "브랜드 혜택이"
   /// 식으로 매끄럽게 읽히도록 한다.
   String inboxEmptyForFilter(String filterName) {
     switch (languageCode) {
@@ -7818,7 +7818,7 @@ class AppL10n {
     'th': 'บัตรแลก',
   });
 
-  // Build 183: 받은 편지 필터에서 brand 제거 후 일반(general) 필터 신설.
+  // Build 183: 받은 혜택 필터에서 brand 제거 후 일반(general) 필터 신설.
   String get inboxFilterGeneral => _t({
     'ko': '일반',
     'en': 'General',
@@ -7836,7 +7836,7 @@ class AppL10n {
     'th': 'ทั่วไป',
   });
 
-  // Build 183: 수집첩 정렬에 "사용 완료" 추가. 이미 redeemed 된 편지만 보임.
+  // Build 183: 수집첩 정렬에 "사용 완료" 추가. 이미 redeemed 된 혜택만 보임.
   String get inboxSortUsedOnly => _t({
     'ko': '사용 완료',
     'en': 'Used',
@@ -7991,7 +7991,7 @@ class AppL10n {
   });
 
   String get inboxNoDMSub => _t({
-    'ko': '받은 편지에서 발신자를 팔로우하면\n맞팔 시 DM 대화가 시작돼요',
+    'ko': '받은 받은 혜택에서 발신자를 팔로우하면\n맞팔 시 DM 대화가 시작돼요',
     'en': 'Follow a sender from your inbox\nand DM opens when they follow back',
     'ja': '受信箱から送信者をフォローすると\n相互フォローでDMが開始されます',
     'zh': '在收件箱中关注发件人\n互相关注后即可开始私信',
@@ -8025,7 +8025,7 @@ class AppL10n {
   });
 
   String get inboxDMStartPrompt => _t({
-    'ko': '빠른 1:1 편지 대화를 시작하시겠어요?\n배송 없이 즉시 전달됩니다.',
+    'ko': '빠른 1:1 대화를 시작하시겠어요?\n배송 없이 즉시 전달됩니다.',
     'en': 'Start a quick 1:1 conversation?\nMessages are delivered instantly.',
     'ja': 'クイック1:1会話を始めますか？\nメッセージは即時配信されます。',
     'zh': '开始快速1:1对话？\n消息即时送达。',
@@ -8144,7 +8144,7 @@ class AppL10n {
   });
 
   String get inboxNoFollowingSub => _t({
-    'ko': '편지를 읽고 발신자를 팔로우 해보세요!',
+    'ko': '혜택을 읽고 발신자를 팔로우 해보세요!',
     'en': 'Read letters and follow the senders!',
     'ja': '手紙を読んで送信者をフォローしましょう！',
     'zh': '阅读信件并关注发件人吧！',
@@ -8178,7 +8178,7 @@ class AppL10n {
   });
 
   String get inboxNoFollowersSub => _t({
-    'ko': '편지를 더 보내면 팔로워가 생겨요!',
+    'ko': '혜택을 더 보내면 팔로워가 생겨요!',
     'en': 'Send more letters to gain followers!',
     'ja': 'もっと手紙を送ってフォロワーを増やしましょう！',
     'zh': '多发信件就能获得粉丝！',
@@ -8320,7 +8320,7 @@ class AppL10n {
   });
 
   String get premiumValueFeature3 => _t({
-    'ko': '이미지+링크 편지로 응답률 강화 (하루 20통)',
+    'ko': '이미지+링크 혜택으로 응답률 강화 (하루 20통)',
     'en': 'Boost response rate with image+link letters (20/day)',
     'ja': '画像+リンク付き手紙で応答率アップ（1日20通）',
     'zh': '图片+链接信件提高回复率（每日20封）',
@@ -8651,7 +8651,7 @@ class AppL10n {
   });
 
   String get premiumBrandFeature5 => _t({
-    'ko': '편지에 신고 버튼 미표시',
+    'ko': '혜택에 신고 버튼 미표시',
     'en': 'No report button on letters',
     'ja': '手紙に通報ボタン非表示',
     'zh': '信件不显示举报按钮',
@@ -8974,7 +8974,7 @@ class AppL10n {
   });
 
   String get premiumGiftShareBody => _t({
-    'ko': '앱에서 코드를 입력하면 1개월 프리미엄이 활성화돼요!\n✉️ 전 세계 편지로 인연을 만들어보세요.',
+    'ko': '앱에서 코드를 입력하면 1개월 프리미엄이 활성화돼요!\n✉️ 전 세계 혜택으로 인연을 만들어보세요.',
     'en': 'Enter the code in the app to activate 1 month of Premium!\n✉️ Connect with people worldwide through letters.',
     'ja': 'アプリでコードを入力すると1ヶ月プレミアムが有効に！\n✉️ 世界中の人と手紙でつながろう。',
     'zh': '在应用中输入代码即可激活1个月高级版！\n✉️ 通过信件与全世界建立联系。',
@@ -9280,7 +9280,7 @@ class AppL10n {
   });
 
   String get premiumInviteShareTagline => _t({
-    'ko': '전 세계와 편지로 연결되는 앱',
+    'ko': '전 세계와 혜택으로 연결되는 앱',
     'en': 'Connect with the world through letters',
     'ja': '世界中と手紙でつながるアプリ',
     'zh': '通过信件与全世界连接的应用',
@@ -9297,7 +9297,7 @@ class AppL10n {
   });
 
   String get premiumInviteShareBody => _t({
-    'ko': '코드 입력하면 보너스 발송권 지급!\n지도 위 편지가 실시간으로 여행하고,\n낯선 이에게 닿는 특별한 경험을 해보세요 🌍',
+    'ko': '코드 입력하면 보너스 발송권 지급!\n지도 위 혜택이 실시간으로 여행하고,\n낯선 이에게 닿는 특별한 경험을 해보세요 🌍',
     'en': 'Enter the code to get bonus credits!\nWatch letters travel across the map in real time\nand reach someone special 🌍',
     'ja': 'コードを入力してボーナス送信権をゲット！\n地図上を手紙がリアルタイムで旅し、\n見知らぬ人に届く特別な体験を 🌍',
     'zh': '输入代码获取奖励额度！\n观看信件在地图上实时旅行\n到达陌生人的特别体验 🌍',
@@ -9979,7 +9979,7 @@ class AppL10n {
   });
 
   String get mapLetterNotFound => _t({
-    'ko': '편지를 찾을 수 없습니다.',
+    'ko': '혜택을 찾을 수 없습니다.',
     'en': 'Letter not found.',
     'ja': '手紙が見つかりません。',
     'zh': '找不到信件。',
@@ -10588,7 +10588,7 @@ class AppL10n {
   });
 
   String mapReceivedLetterFrom(String country) => _t({
-    'ko': '${country}에서 온 편지를 받았어요!',
+    'ko': '${country}에서 온 혜택을 받았어요!',
     'en': 'You received a letter from $country!',
     'ja': '${country}からの手紙を受け取りました！',
     'zh': '收到了来自${country}的信！',
@@ -11012,7 +11012,7 @@ class AppL10n {
     (
       emoji: '🏖️',
       text: _t({
-        'ko': '해변에 편지병 ${count}개가 떠밀려 왔어요',
+        'ko': '해변에 혜택병 ${count}개가 떠밀려 왔어요',
         'en': '$count bottle(s) washed up on shore',
         'ja': '浜辺にボトルが${count}本漂着しました',
         'zh': '${count}个漂流瓶被冲上了岸',
@@ -11262,7 +11262,7 @@ class AppL10n {
   });
 
   String stateImageLimitExceeded(int limit) => _t({
-    'ko': '오늘 이미지 편지 한도(${limit}통)에 도달했어요. 내일 다시 시도해주세요.',
+    'ko': '오늘 이미지 혜택 한도(${limit}통)에 도달했어요. 내일 다시 시도해주세요.',
     'en': 'You\'ve reached today\'s image letter limit ($limit). Please try again tomorrow.',
     'ja': '本日の画像レター上限（${limit}通）に達しました。明日もう一度お試しください。',
     'zh': '已达到今日图片信件上限（$limit封）。请明天再试。',
@@ -11449,7 +11449,7 @@ class AppL10n {
   });
 
   String stateNearbyNotificationBody(String flag, String country) => _t({
-    'ko': '$flag ${country}에서 온 편지가 2km 이내에 도착했어요',
+    'ko': '$flag ${country}에서 온 혜택이 2km 이내에 도착했어요',
     'en': 'A letter from $flag $country arrived within 2km',
     'ja': '$flag ${country}からの手紙が2km以内に届きました',
     'zh': '来自$flag $country的信件已到达2km范围内',
@@ -11480,7 +11480,7 @@ class AppL10n {
       'zh': '🌏 世界某处寄来了一封信！',
     }),
     _t({
-      'ko': '🎐 바람을 타고 편지가 날아왔어요',
+      'ko': '🎐 바람을 타고 혜택이 날아왔어요',
       'en': '🎐 A letter drifted in on the wind',
       'ja': '🎐 風に乗って手紙が届きました',
       'zh': '🎐 一封信随风飘来',
@@ -11504,7 +11504,7 @@ class AppL10n {
       'zh': '🌊 一封信漂洋过海到达了',
     }),
     _t({
-      'ko': '🕊️ 비둘기가 편지를 물고 왔어요',
+      'ko': '🕊️ 비둘기가 혜택을 물고 왔어요',
       'en': '🕊️ A dove brought you a letter',
       'ja': '🕊️ 鳩が手紙を届けてくれました',
       'zh': '🕊️ 鸽子带来了一封信',
@@ -11516,7 +11516,7 @@ class AppL10n {
       'zh': '🌟 一个新故事到了',
     }),
     _t({
-      'ko': '📮 랜덤 편지가 배달 완료!',
+      'ko': '📮 랜덤 혜택이 배달 완료!',
       'en': '📮 Random letter delivered!',
       'ja': '📮 ランダムレター配達完了！',
       'zh': '📮 随机信件已送达！',
@@ -11543,7 +11543,7 @@ class AppL10n {
       'zh': '$flag $country有人给你寄了心意',
     }),
     _t({
-      'ko': '$flag $country에서 출발한 편지가 드디어 도착!',
+      'ko': '$flag $country에서 출발한 혜택이 드디어 도착!',
       'en': 'A letter from $flag $country finally arrived!',
       'ja': '$flag ${country}から出発した手紙がついに到着！',
       'zh': '从$flag $country出发的信终于到了！',
@@ -11555,7 +11555,7 @@ class AppL10n {
       'zh': '来自$flag $country的真挚信件到了',
     }),
     _t({
-      'ko': '$flag $country에서 온 편지를 지금 열어보세요',
+      'ko': '$flag $country에서 온 혜택을 지금 열어보세요',
       'en': 'Open the letter from $flag $country now',
       'ja': '$flag ${country}からの手紙を今すぐ開きましょう',
       'zh': '快打开来自$flag $country的信吧',
@@ -11567,13 +11567,13 @@ class AppL10n {
       'zh': '查看漂洋过海来自$flag $country的真心',
     }),
     _t({
-      'ko': '$flag $country에서 온 편지병이 도착했어요 🏖️',
+      'ko': '$flag $country에서 온 혜택병이 도착했어요 🏖️',
       'en': 'A bottle letter from $flag $country arrived 🏖️',
       'ja': '$flag ${country}からのボトルレターが届きました 🏖️',
       'zh': '来自$flag $country的漂流瓶到了 🏖️',
     }),
     _t({
-      'ko': '$flag $country 편지가 긴 여행을 마치고 도착했어요',
+      'ko': '$flag $country 혜택이 긴 여행을 마치고 도착했어요',
       'en': 'A $flag $country letter finished its long journey',
       'ja': '$flag ${country}の手紙が長い旅を終えて届きました',
       'zh': '$flag $country的信完成了漫长旅程',
@@ -11684,7 +11684,7 @@ class AppL10n {
   });
 
   String stateCooldownNearbyBody(String flag, String country, String timeStr) => _t({
-    'ko': '$flag $country에서 온 편지가 근처에 있지만, $timeStr 후에 수령할 수 있어요',
+    'ko': '$flag $country에서 온 혜택이 근처에 있지만, $timeStr 후에 수령할 수 있어요',
     'en': 'A letter from $flag $country is nearby, but you can pick it up in $timeStr',
     'ja': '$flag ${country}からの手紙が近くにありますが、${timeStr}後に受け取れます',
     'zh': '来自$flag $country的信在附近，但$timeStr后才能领取',
@@ -11702,7 +11702,7 @@ class AppL10n {
 
   // ── 신고 임시 차단 알림 (발송자에게) ───────────────────────────────────────
   String get stateReportBlockTitle => _t({
-    'ko': '⚠️ 편지가 신고되었습니다',
+    'ko': '⚠️ 혜택이 신고되었습니다',
     'en': '⚠️ Your letter has been reported',
     'ja': '⚠️ あなたの手紙が通報されました',
     'zh': '⚠️ 您的信件被举报了',
@@ -11736,7 +11736,7 @@ class AppL10n {
   });
 
   String get stateAlreadyRead => _t({
-    'ko': '이미 읽은 편지예요 📖',
+    'ko': '이미 읽은 혜택이에요 📖',
     'en': 'You\'ve already read this letter 📖',
     'ja': 'すでに読んだ手紙です 📖',
     'zh': '这封信已经读过了 📖',
@@ -11786,7 +11786,7 @@ class AppL10n {
     'th': '📣 แบรนด์ — ส่งเท่านั้น',
   });
   String get brandOnlySendBody => _t({
-    'ko': '홍보·이벤트·할인 편지를 지구 곳곳에 뿌려보세요. 혜택 줍기는 일반·프리미엄 회원의 메리트예요.',
+    'ko': '홍보·이벤트·할인 혜택을 지구 곳곳에 뿌려보세요. 혜택 줍기는 일반·프리미엄 회원의 메리트예요.',
     'en': 'Drop promos, events, and discounts around the world. Picking letters up is the Free/Premium member\'s perk.',
     'ja': '告知・イベント・割引の手紙を世界に配ってください。拾うのは一般・プレミアム会員の特典です。',
     'zh': '把宣传、活动和折扣信件撒到世界各地。收取是普通/高级会员的专属福利。',
@@ -11820,7 +11820,7 @@ class AppL10n {
   });
 
   String get stateAlreadyTaken => _t({
-    'ko': '누군가 이미 가져간 편지예요 😢',
+    'ko': '누군가 이미 가져간 혜택이에요 😢',
     'en': 'Someone already took this letter 😢',
     'ja': '誰かがすでに持って行った手紙です 😢',
     'zh': '这封信已经被别人拿走了 😢',
@@ -11837,7 +11837,7 @@ class AppL10n {
   });
 
   String stateMaxReadersReached(int maxReaders) => _t({
-    'ko': '이미 ${maxReaders}명이 읽은 편지예요 📪',
+    'ko': '이미 ${maxReaders}명이 읽은 혜택이에요 📪',
     'en': 'This letter has already been read by $maxReaders people 📪',
     'ja': 'すでに${maxReaders}人が読んだ手紙です 📪',
     'zh': '这封信已经被$maxReaders人读过了 📪',
@@ -11888,7 +11888,7 @@ class AppL10n {
   });
 
   String get stateDmReply2 => _t({
-    'ko': '편지로 이렇게 대화할 수 있다니 신기해요',
+    'ko': '혜택으로 이렇게 대화할 수 있다니 신기해요',
     'en': 'It\'s amazing we can chat like this through letters',
     'ja': '手紙でこうやって会話できるなんて不思議です',
     'zh': '能通过信件这样聊天真是太神奇了',
@@ -12491,7 +12491,7 @@ class AppL10n {
   });
 
   String get gpsTermsBody => _t({
-    'ko': '• 내 위치 주변의 편지를 주울 수 있어요\n• 내가 보낸 편지의 출발 지점을 기록해요\n• 위치 정보는 서비스 제공 외에 사용하지 않아요\n\n❗ 동의하지 않으면 홍보를 보내거나 줍을 수 없어요.',
+    'ko': '• 내 위치 주변의 혜택을 주울 수 있어요\n• 내가 보낸 혜택의 출발 지점을 기록해요\n• 위치 정보는 서비스 제공 외에 사용하지 않아요\n\n❗ 동의하지 않으면 홍보를 보내거나 줍을 수 없어요.',
     'en': '• Pick up letters dropped near you\n• Mark the origin of letters you send\n• Location is used only for this service\n\n❗ Without consent you cannot pick up or send letters.',
     'ja': '• 周辺の手紙を拾えます\n• 送った手紙の出発地点を記録します\n• 位置情報はサービス提供以外に使用しません\n\n❗ 同意しないと手紙を送ったり拾ったりできません。',
     'zh': '• 拾起你身边的信件\n• 记录你寄出信件的出发地\n• 位置信息仅用于本服务\n\n❗ 不同意将无法收发信件。',
@@ -13163,7 +13163,7 @@ class AppL10n {
   });
 
   String get stampEmptyBody => _t({
-    'ko': '편지를 받으면 발신 국가 우표가\n자동으로 수집됩니다',
+    'ko': '혜택을 받으면 발신 국가 우표가\n자동으로 수집됩니다',
     'en': 'When you receive a letter,\nthe sender\'s country stamp is collected automatically',
     'ja': '手紙を受け取ると、送信国の切手が\n自動的に収集されます',
     'zh': '收到信件后，发件国邮票\n会自动收集',
@@ -13460,7 +13460,7 @@ class AppL10n {
   });
 
   String get onboardingStatDeliveryRate => _t({
-    'ko': '편지 전달률',
+    'ko': '혜택 전달률',
     'en': 'Delivery rate',
     'ja': '配達率',
     'zh': '投递率',
@@ -13511,7 +13511,7 @@ class AppL10n {
   });
 
   String get onboardingReview1 => _t({
-    'ko': '"브랜드 편지가 일반 광고보다 훨씬 따뜻하게 느껴져요."',
+    'ko': '"브랜드 혜택이 일반 광고보다 훨씬 따뜻하게 느껴져요."',
     'en': '"Brand letters feel much warmer than regular ads."',
     'ja': '"ブランドレターは普通の広告よりずっと温かみがあります。"',
     'zh': '"品牌信件比普通广告感觉温暖得多。"',
@@ -13992,7 +13992,7 @@ class AppL10n {
   });
 
   String get letterReadRatePrompt => _t({
-    'ko': '이 편지를 평가해주세요',
+    'ko': '이 혜택을 평가해주세요',
     'en': 'Rate this letter',
     'ja': 'この手紙を評価してください',
     'zh': '请为这封信评分',
@@ -14196,7 +14196,7 @@ class AppL10n {
   });
 
   String get letterReadStartChatPrompt => _t({
-    'ko': '빠른 1:1 편지 대화를 시작하시겠어요?',
+    'ko': '빠른 1:1 대화를 시작하시겠어요?',
     'en': 'Would you like to start a 1:1 letter chat?',
     'ja': '1:1のレターチャットを始めますか？',
     'zh': '要开始1:1信件对话吗？',
@@ -14451,7 +14451,7 @@ class AppL10n {
     'th': 'ตอบแล้ว (ได้ครั้งเดียว)',
   });
 
-  // 브랜드 발송인이 "답장 받지 않음" 으로 설정한 편지에 표시되는 안내 카드 문구.
+  // 브랜드 발송인이 "답장 받지 않음" 으로 설정한 혜택에 표시되는 안내 카드 문구.
   // 답장 버튼이 사라진 대신 "이 캠페인은 답장을 받지 않아요" 한 줄을 띄운다.
   String get letterReadBrandNoReply => _t({
     'ko': '이 캠페인은 답장을 받지 않아요',
@@ -14659,7 +14659,7 @@ class AppL10n {
     'th': '🎟 ใกล้ $n',
   });
 
-  // 나침반 힌트 — 주변 반경 내 편지는 없지만 월드 편지 중 가장 가까운 것의
+  // 나침반 힌트 — 주변 반경 내 혜택은 없지만 월드 혜택 중 가장 가까운 것의
   // 방향과 거리. 방향은 화살표 이모지(↑ ↗ → ↘ ↓ ↙ ← ↖) 로 표현해 번역 불필요.
   String mapCompassHint(int meters, String arrow, String categoryEmoji) => _t({
     'ko': '🧭 $arrow ${meters}m — $categoryEmoji 혜택이 있어요',
@@ -14753,12 +14753,12 @@ class AppL10n {
   });
 
   // ─────────────────────────────────────────────────────────────────────
-  // Build 127 — 편지 카테고리 사용법 모달 + 할인권/교환권 구분 카피 +
+  // Build 127 — 혜택 카테고리 사용법 모달 + 할인권/교환권 구분 카피 +
   // Brand 사업자 인증 UI l10n.
   // ─────────────────────────────────────────────────────────────────────
 
   String get categoryHelpTitle => _t({
-    'ko': '편지 종류 사용법', 'en': 'Letter types', 'ja': '手紙の種類',
+    'ko': '혜택 종류 사용법', 'en': 'Letter types', 'ja': '手紙の種類',
     'zh': '信件类型', 'fr': 'Types de lettres', 'de': 'Brieftypen',
     'es': 'Tipos de carta', 'pt': 'Tipos de carta',
     'ru': 'Типы писем', 'tr': 'Mektup türleri',
@@ -14922,7 +14922,7 @@ class AppL10n {
   });
 
   String get brandExactDropCreditsHint => _t({
-    'ko': '정확한 좌표에 편지를 떨어뜨리려면 크레딧이 필요해요. 100통 단위로 구매.',
+    'ko': '정확한 좌표에 혜택을 떨어뜨리려면 크레딧이 필요해요. 100통 단위로 구매.',
     'en': 'Credits are required to drop letters at exact coordinates. Sold in 100-letter packs.',
     'ja': '正確な座標に手紙を配るには ExactDrop クレジットが必要。100通単位で購入。',
     'zh': '向精确坐标投放信件需要 ExactDrop 额度。以 100 封为单位购买。',
@@ -15431,7 +15431,7 @@ class AppL10n {
     'th': 'ใกล้คุณมีจดหมาย $n ฉบับ',
   });
 
-  // 4) 편지 읽기 화면 브랜드 팔로우 토글
+  // 4) 혜택 읽기 화면 브랜드 팔로우 토글
   String get letterReadFollowBrand => _t({
     'ko': '브랜드 팔로우', 'en': 'Follow brand', 'ja': 'ブランドをフォロー',
     'zh': '关注品牌', 'fr': 'Suivre la marque', 'de': 'Marke folgen',
@@ -15465,7 +15465,7 @@ class AppL10n {
 
   // 5) 첫 픽업 축하 모달
   String get firstPickupCelebrationTitle => _t({
-    'ko': '🎉 첫 편지를 주웠어요!',
+    'ko': '🎉 첫 혜택을 주웠어요!',
     'en': '🎉 First letter picked up!',
     'ja': '🎉 最初の手紙を拾いました！',
     'zh': '🎉 拾起你的第一封信！',
@@ -15481,7 +15481,7 @@ class AppL10n {
     'th': '🎉 เก็บจดหมายแรกแล้ว!',
   });
   String get firstPickupCelebrationBody => _t({
-    'ko': '이 동네에 흘린 혜택 편지를 계속 찾아보세요. 레벨이 오를수록 줍는 반경이 넓어져요.',
+    'ko': '이 동네에 흘린 혜택 혜택을 계속 찾아보세요. 레벨이 오를수록 줍는 반경이 넓어져요.',
     'en': 'Keep exploring — letters are dropped all around you. Every level you gain widens your pickup radius.',
     'ja': 'この街に散らばる手紙を探し続けましょう。レベルが上がるほど拾える範囲が広がります。',
     'zh': '继续探索——信件遍布你的周围。等级提升会扩大拾取范围。',
@@ -15569,7 +15569,7 @@ class AppL10n {
   });
 
   String get letterReadMutedToast => _t({
-    'ko': '이 브랜드의 새 편지가 수집첩에 더 이상 쌓이지 않아요',
+    'ko': '이 브랜드의 새 혜택이 수집첩에 더 이상 쌓이지 않아요',
     'en': 'New letters from this brand won\'t appear in your collection',
     'ja': 'このブランドの新しい手紙は受信されません',
     'zh': '此品牌的新信件将不再进入收件箱',
@@ -15654,7 +15654,7 @@ class AppL10n {
     'th': 'ทำเครื่องหมายแล้ว',
   });
 
-  // 수신자 측 편지 읽기 화면 쿠폰 박스
+  // 수신자 측 혜택 읽기 화면 쿠폰 박스
   String get letterReadRedemptionHeader => _t({
     'ko': '🎁 사용 방법',
     'en': '🎁 How to redeem',
@@ -16150,7 +16150,7 @@ class AppL10n {
     'th': 'สำรวจแผนที่',
   });
   String get mapHelpStep1Body => _t({
-    'ko': '내 위치 주변에 떨어진 편지를 확인. 반경 밖 편지는 상단 나침반에서 방향을 봐요.',
+    'ko': '내 위치 주변에 떨어진 혜택을 확인. 반경 밖 혜택은 상단 나침반에서 방향을 봐요.',
     'en': 'See letters near you. Outside the radius, the top compass shows direction.',
     'ja': '近くの手紙を確認。圏外の手紙は上部の方位で方向を確認。',
     'zh': '查看附近的信件。范围外的信件可在顶部方向指示查看。',
@@ -16182,7 +16182,7 @@ class AppL10n {
     'th': 'เดินไปเก็บ',
   });
   String get mapHelpStep2Body => _t({
-    'ko': '반경 안에 들어오면 편지가 밝아져요. 탭해서 열고 할인 혜택을 확인하세요.',
+    'ko': '반경 안에 들어오면 혜택이 밝아져요. 탭해서 열고 할인 혜택을 확인하세요.',
     'en': 'Letters light up when in range. Tap to open and view the offer.',
     'ja': '圏内に入ると手紙が光ります。タップして開いて特典を確認。',
     'zh': '进入范围后信件发光。点击打开并查看优惠。',
@@ -16385,7 +16385,7 @@ class AppL10n {
   });
 
   String get composeGateDesc => _t({
-    'ko': '편지를 세계에 뿌리고 싶다면 Premium 으로 업그레이드하세요.\n📸 사진 첨부 · 🔗 채널/SNS 링크로 나를 홍보할 수 있어요.\n무료 회원은 지도에서 혜택을 주워 혜택을 활용할 수 있어요.',
+    'ko': '혜택을 세계에 뿌리고 싶다면 Premium 으로 업그레이드하세요.\n📸 사진 첨부 · 🔗 채널/SNS 링크로 나를 홍보할 수 있어요.\n무료 회원은 지도에서 혜택을 주워 혜택을 활용할 수 있어요.',
     'en': 'Upgrade to Premium to drop your own letters worldwide.\n📸 Attach photos · 🔗 Add channel/SNS links to promote yourself.\nFree members keep picking up letters and claiming benefits.',
     'ja': 'Premium にアップグレードして、自分の手紙を世界に届けましょう。\n📸 写真添付 · 🔗 チャンネル/SNS リンクで自己PR。\n無料会員は地図で手紙を拾って特典を活用できます。',
     'zh': '升级 Premium 将你的信件发送到世界各地。\n📸 附加照片 · 🔗 添加频道/社交链接自我宣传。\n免费会员可以继续在地图上拾取信件。',
@@ -17454,14 +17454,14 @@ class AppL10n {
   });
 
   String get towerManageSent => _t({
-    'ko': '보낸 편지 관리', 'en': 'Manage Sent', 'ja': '送信済み管理', 'zh': '管理已发',
+    'ko': '보낸 혜택 관리', 'en': 'Manage Sent', 'ja': '送信済み管理', 'zh': '管理已发',
     'fr': 'Gérer envoyés', 'de': 'Gesendete verwalten', 'es': 'Gestionar enviados',
     'pt': 'Gerenciar enviados', 'ru': 'Управление отправленными', 'tr': 'Gönderilenler yönet',
     'ar': 'إدارة المرسلة', 'it': 'Gestisci inviati', 'hi': 'भेजे गए प्रबंधित करें', 'th': 'จัดการจดหมายที่ส่ง',
   });
 
   String get towerManageReceived => _t({
-    'ko': '받은 편지 관리', 'en': 'Manage Received', 'ja': '受信済み管理', 'zh': '管理已收',
+    'ko': '받은 혜택 관리', 'en': 'Manage Received', 'ja': '受信済み管理', 'zh': '管理已收',
     'fr': 'Gérer reçus', 'de': 'Empfangene verwalten', 'es': 'Gestionar recibidos',
     'pt': 'Gerenciar recebidos', 'ru': 'Управление полученными', 'tr': 'Alınanları yönet',
     'ar': 'إدارة المستلمة', 'it': 'Gestisci ricevuti', 'hi': 'प्राप्त प्रबंधित करें', 'th': 'จัดการจดหมายที่ได้รับ',
@@ -17659,7 +17659,7 @@ class AppL10n {
   });
 
   String get towerBadgePopular => _t({
-    'ko': '인기 편지꾼', 'en': 'Popular Penpal', 'ja': '人気のペンパル', 'zh': '人气笔友',
+    'ko': '인기 카운터', 'en': 'Popular Penpal', 'ja': '人気のペンパル', 'zh': '人气笔友',
     'fr': 'Correspondant populaire', 'de': 'Beliebter Brieffreund', 'es': 'Corresponsal popular',
     'pt': 'Correspondente popular', 'ru': 'Популярный друг по переписке', 'tr': 'Popüler mektup arkadaşı',
     'ar': 'صديق مراسلة مشهور', 'it': 'Amico di penna popolare', 'hi': 'लोकप्रिय पेनपाल', 'th': 'เพื่อนทางจดหมายยอดนิยม',
@@ -17724,7 +17724,7 @@ class AppL10n {
     'ar': 'محادثة فردية فورية', 'it': 'Chat 1:1 in tempo reale', 'hi': '1:1 रीयल-टाइम चैट', 'th': 'แชท 1:1 แบบเรียลไทม์',
   });
 
-  // Build 114: "펜팔 / 편지 친구" 문구를 "긴 대화 스레드" 로 교체. DM 기능은
+  // Build 114: "펜팔 / 혜택 친구" 문구를 "긴 대화 스레드" 로 교체. DM 기능은
   // Build 104 패치에서 UI 숨김 상태지만, 코드 경로가 살아있어 l10n 만이라도
   // 현재 헌트 포지셔닝과 충돌하지 않게 정리.
   String get dmGateFeature2 => _t({
@@ -18104,7 +18104,7 @@ class AppL10n {
   // ── Delivery Intro ──────────────────────────────────────────────────────
 
   String get deliveryIntroTitle => _t({
-    'ko': '편지가 배송을 시작했어요 🚚✈️🚢',
+    'ko': '혜택이 배송을 시작했어요 🚚✈️🚢',
     'en': 'Your letter is now in transit 🚚✈️🚢',
     'ja': 'お手紙の配送が始まりました 🚚✈️🚢',
     'zh': '您的信件已开始运送 🚚✈️🚢',
@@ -18139,7 +18139,7 @@ class AppL10n {
 
   /// 앱의 핵심 포지셔닝 태그라인. 온보딩·공유 카드·마케팅에 사용.
   String get appTagline => _t({
-    'ko': '편지는 천천히 여행합니다 — 육로, 항공, 해운으로',
+    'ko': '혜택은 천천히 여행합니다 — 육로, 항공, 해운으로',
     'en': 'Letters travel at their own pace — by land, air, and sea',
     'ja': 'お手紙はゆっくり旅をする — 陸路、空路、海路で',
     'zh': '信件按自己的节奏旅行 — 经陆、空、海',
@@ -18156,7 +18156,7 @@ class AppL10n {
   });
 
   /// 앱의 핵심 가치 한 줄 — Build 114 에서 "느린 소셜" 에서
-  /// "지도 위 할인·홍보 편지 헌트" 로 전환. 마케팅 기획서 Build 113 의
+  /// "지도 위 할인·홍보 혜택 헌트" 로 전환. 마케팅 기획서 Build 113 의
   /// 포지셔닝과 완전 일치.
   // Build 170: 보조 태그라인 — 포지셔닝 풀 (편지 포맷의 글로벌 공간 쿠폰 플랫폼).
   // 스플래시에서 메인 tagline 아래 노출. 감성 + 실용 동시 강조.
@@ -18181,7 +18181,7 @@ class AppL10n {
 
   /// 스플래시 sub-tagline — 메인 wordmark 아래 한 줄 설명.
   String get splashSub => _t({
-    'ko': '근처에 떠있는 쿠폰과 편지를\n주워 쓰는 지갑.',
+    'ko': '근처에 떠있는 쿠폰과 혜택을\n주워 쓰는 지갑.',
     'en': 'Pick up nearby coupons and letters\nright into your wallet.',
     'ja': '近くに浮かぶクーポンと手紙を\n拾って使う財布。',
     'zh': '附近的优惠券和信件\n捡起来,放进钱包。',
@@ -18348,7 +18348,7 @@ class AppL10n {
   });
 
   String get authTermsDesc => _t({
-    'ko': '편지 내용은 신고 접수 시에만 관리자가 검토할 수 있습니다.\n부적절한 콘텐츠 게시 시 서비스 이용이 제한될 수 있습니다.',
+    'ko': '혜택 내용은 신고 접수 시에만 관리자가 검토할 수 있습니다.\n부적절한 콘텐츠 게시 시 서비스 이용이 제한될 수 있습니다.',
     'en': 'Letter content may only be reviewed by administrators upon receiving a report.\nPosting inappropriate content may result in service restrictions.',
     'ja': '手紙の内容は、報告を受けた場合にのみ管理者が確認できます。\n不適切なコンテンツの投稿はサービス制限の対象となります。',
     'zh': '信件内容仅在收到举报时由管理员审查。\n发布不当内容可能导致服务限制。',
@@ -18384,8 +18384,8 @@ class AppL10n {
   });
 
   String get authPrivacySec5Body => _t({
-    'ko': '관리자는 사용자의 편지 내용을 일상적으로 열람하지 않습니다. '
-        '편지 내용은 다른 사용자로부터 신고가 접수된 경우에 한하여 검토됩니다. '
+    'ko': '관리자는 사용자의 혜택 내용을 일상적으로 열람하지 않습니다. '
+        '혜택 내용은 다른 사용자로부터 신고가 접수된 경우에 한하여 검토됩니다. '
         '검토는 커뮤니티 가이드라인 위반 여부를 판단하기 위한 목적으로만 수행되며, '
         '위반이 확인되면 해당 콘텐츠의 차단 및 계정 제한 조치가 이루어질 수 있습니다.',
     'en': 'Administrators do not routinely access your letter content. '
@@ -18745,13 +18745,13 @@ class AppL10n {
   String get contentPolicyBody => _t({
     'ko': 'Thiscount는 사용자의 프라이버시를 존중합니다.\n\n'
         '📋 기본 원칙\n'
-        '관리자는 사용자의 편지 내용을 일상적으로 열람하지 않습니다.\n\n'
+        '관리자는 사용자의 혜택 내용을 일상적으로 열람하지 않습니다.\n\n'
         '🔍 열람이 이루어지는 경우\n'
-        '• 다른 사용자가 해당 편지를 신고한 경우\n'
+        '• 다른 사용자가 해당 혜택을 신고한 경우\n'
         '• 법적 요청이 있는 경우\n'
         '• 서비스 안전에 중대한 위협이 있는 경우\n\n'
         '⚖️ 열람 절차\n'
-        '1. 신고 접수 후 관리자가 해당 편지만 확인\n'
+        '1. 신고 접수 후 관리자가 해당 혜택만 확인\n'
         '2. 커뮤니티 가이드라인 위반 여부 판단\n'
         '3. 위반 시: 콘텐츠 차단 + 발신자에게 경고\n'
         '4. 3회 이상 위반 시: 계정 영구 차단\n\n'
@@ -18959,10 +18959,10 @@ class AppL10n {
   });
 
   String get communityGuidelinesBody => _t({
-    'ko': 'Thiscount는 전 세계 사용자가 편지를 통해 따뜻한 소통을 나누는 공간입니다.\n'
+    'ko': 'Thiscount는 전 세계 사용자가 혜택을 통해 따뜻한 소통을 나누는 공간입니다.\n'
         '모든 사용자가 안전하고 즐거운 경험을 할 수 있도록 다음 규칙을 지켜주세요.\n\n'
         '✅ 권장 사항\n'
-        '• 정중하고 친근한 톤으로 편지를 쓰세요\n'
+        '• 정중하고 친근한 톤으로 혜택을 쓰세요\n'
         '• 다양한 문화와 언어를 존중하세요\n'
         '• 긍정적이고 건설적인 내용을 공유하세요\n\n'
         '❌ 금지 사항\n'
@@ -18976,7 +18976,7 @@ class AppL10n {
         '• 1회: 해당 콘텐츠 차단 + 경고\n'
         '• 2회: 일시적 서비스 제한\n'
         '• 3회 이상: 영구 계정 차단\n\n'
-        '부적절한 편지를 받으면 편지 읽기 화면에서 🚩 버튼으로 신고해 주세요.',
+        '부적절한 혜택을 받으면 혜택 읽기 화면에서 🚩 버튼으로 신고해 주세요.',
     'en': 'Thiscount is a space where users worldwide connect through letters.\n'
         'Please follow these rules so everyone can have a safe, enjoyable experience.\n\n'
         '✅ Encouraged\n'
@@ -19588,7 +19588,7 @@ class AppL10n {
   });
 
   String get streakMilestone14 => _t({
-    'ko': '14일 연속 접속! 편지가 익숙해졌어요',
+    'ko': '14일 연속 접속! 혜택이 익숙해졌어요',
     'en': '14-day streak! Letters feel like home',
     'ja': '14日連続アクセス！手紙が日課になりました',
     'zh': '连续14天签到！写信已成日常',
@@ -19622,7 +19622,7 @@ class AppL10n {
   });
 
   String get streakMilestone100 => _t({
-    'ko': '100일 연속 접속! 전설의 편지꾼 🏆',
+    'ko': '100일 연속 접속! 전설의 카운터 🏆',
     'en': '100-day streak! Legendary mailer 🏆',
     'ja': '100日連続アクセス！伝説の手紙使い 🏆',
     'zh': '连续100天签到！传说中的信使 🏆',
@@ -19809,7 +19809,7 @@ class AppL10n {
     'th': 'รับรางวัลแล้ว! สัปดาห์หน้าเจอกันอีกนะ',
   });
 
-  // ── 편지 커뮤니티 감성 메시지 (scarcity 제거, 함께 읽기 강조) ──────────
+  // ── 혜택 커뮤니티 감성 메시지 (scarcity 제거, 함께 읽기 강조) ──────────
   String get scarcityClosedTitle => _t({
     'ko': '많은 이들이 함께 읽은 편지',
     'en': 'A letter read by many',
@@ -19828,7 +19828,7 @@ class AppL10n {
   });
 
   String get scarcityClosedSub => _t({
-    'ko': '이 편지는 이미 여러 사람의 하루에 닿았어요',
+    'ko': '이 혜택은 이미 여러 사람의 하루에 닿았어요',
     'en': 'This letter has already touched many days',
     'ja': 'この手紙はすでにたくさんの人の一日に届きました',
     'zh': '这封信已经触动了许多人的一天',
@@ -19845,7 +19845,7 @@ class AppL10n {
   });
 
   String get scarcityLastReaderTitle => _t({
-    'ko': '이 편지가 당신에게 왔어요',
+    'ko': '이 혜택이 당신에게 왔어요',
     'en': 'This letter found you',
     'ja': 'この手紙はあなたに届きました',
     'zh': '这封信来到了你身边',
@@ -19896,7 +19896,7 @@ class AppL10n {
   });
 
   String scarcityCountSub(int remaining) => _t({
-    'ko': '같은 편지를 읽고 있는 다른 이들이 있어요',
+    'ko': '같은 혜택을 읽고 있는 다른 이들이 있어요',
     'en': 'Others are reading the same letter too',
     'ja': '同じ手紙を読んでいる人が他にもいます',
     'zh': '还有其他人也在读这封信',
@@ -19968,7 +19968,7 @@ class AppL10n {
   });
 
   String get userLevelCasualWelcome => _t({
-    'ko': '✉️ 오늘의 편지가 해금되었어요',
+    'ko': '✉️ 오늘의 혜택이 해금되었어요',
     'en': '✉️ Today\'s Letter is now available',
     'ja': '✉️ 今日の手紙が利用可能になりました',
     'zh': '✉️ 今日之信已解锁',
@@ -20245,7 +20245,7 @@ class AppL10n {
   });
 
   String letterContextFirstFromCountry(String country) => _t({
-    'ko': '$country에서 온 첫 편지예요',
+    'ko': '$country에서 온 첫 혜택이에요',
     'en': 'Your first letter from $country',
     'ja': '$countryからの最初の手紙',
     'zh': '来自$country的第一封信',
@@ -20451,7 +20451,7 @@ class AppL10n {
   });
 
   String get xpMilestonesSubtitle => _t({
-    'ko': '5 레벨마다 등급이 진화해요. 편지를 더 많이 주울수록, 멀리 보낼수록 빨라져요.',
+    'ko': '5 레벨마다 등급이 진화해요. 혜택을 더 많이 주울수록, 멀리 보낼수록 빨라져요.',
     'en': 'Your tier evolves every 5 levels. Pick up more, send further — climb faster.',
     'ja': '5レベルごとに称号が進化します。多く拾い、遠くへ送るほど早く上がります。',
     'zh': '每 5 级称号进化。拾得越多、送得越远，晋升越快。',
@@ -20609,7 +20609,7 @@ class AppL10n {
   });
 
   String get towerBenefitsBulletTitles => _t({
-    'ko': '명예 호칭 진화 — 견습→숙련→…→전설의 편지꾼', 'en': 'Title evolves — Apprentice → … → Legendary', 'ja': '称号進化 — 見習い→…→伝説', 'zh': '称号进化 — 学徒→…→传奇',
+    'ko': '명예 호칭 진화 — 견습→숙련→…→전설의 카운터', 'en': 'Title evolves — Apprentice → … → Legendary', 'ja': '称号進化 — 見習い→…→伝説', 'zh': '称号进化 — 学徒→…→传奇',
     'fr': 'Titres évoluent — Apprenti → … → Légendaire', 'de': 'Titel entwickeln sich', 'es': 'Títulos evolucionan',
     'pt': 'Títulos evoluem', 'ru': 'Звания развиваются', 'tr': 'Unvanlar gelişir',
     'ar': 'الألقاب تتطور', 'it': 'Titoli evolvono', 'hi': 'उपाधियाँ विकसित होती हैं', 'th': 'ฉายาก้าวหน้า',
