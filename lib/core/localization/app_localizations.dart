@@ -4386,7 +4386,7 @@ class AppL10n {
 
   String get composeLuckyApplied => _t({
     'ko': '오늘의 혜택 적용됨 · 탭하면 다른 글귀로',
-    'en': 'Today\'s letter applied · Tap for another quote',
+    'en': 'Today\'s promo applied · Tap for another quote',
     'ja': '今日の手紙適用済み · タップで別の文章へ',
     'zh': '今日之信已应用 · 点击更换',
     'fr': 'Lettre du jour appliquée · Tapez pour changer',
@@ -4403,7 +4403,7 @@ class AppL10n {
 
   String get composeLuckySend => _t({
     'ko': '오늘의 혜택으로 보내기',
-    'en': 'Send as today\'s letter',
+    'en': 'Send as today\'s promo',
     'ja': '今日の手紙として送る',
     'zh': '发送今日之信',
     'fr': 'Envoyer comme lettre du jour',
@@ -5451,7 +5451,7 @@ class AppL10n {
 
   String get composeExactDropPaywallPricing => _t({
     'ko': '100통 패키지 · 10,000원',
-    'en': '100-letter package · KRW 10,000',
+    'en': '100-promo package · KRW 10,000',
     'ja': '100通パッケージ · 10,000ウォン',
     'zh': '100 封套餐 · 10,000 韩元',
     'fr': '100 lettres · 10 000 KRW',
@@ -5501,7 +5501,7 @@ class AppL10n {
   });
   String get composeExactDropTitle => _t({
     'ko': '홍보 떨어뜨릴 위치',
-    'en': 'Letter drop location',
+    'en': 'Promo drop location',
     'ja': '手紙を落とす場所',
     'zh': '投放信件位置',
     'fr': "Lieu du dépôt",
@@ -5729,7 +5729,7 @@ class AppL10n {
   // 메시지·인사를 자유롭게 쓰도록 유도.
   String get composeHint => _t({
     'ko': '이 홍보에 담고 싶은 이야기를 적어보세요...',
-    'en': 'Write the message you want to send in this letter...',
+    'en': 'Write the message you want to send in this promo...',
     'ja': 'この手紙で伝えたいことを書いてみましょう...',
     'zh': '写下你想通过这封信传达的内容...',
     'fr': "Écris ce que tu veux partager dans cette lettre...",
@@ -5763,7 +5763,7 @@ class AppL10n {
 
   String get composeLinkAttachDesc => _t({
     'ko': 'SNS, 블로그 링크를 홍보에 첨부할 수 있어요.\n프리미엄·브랜드 회원 전용 기능이에요.',
-    'en': 'Attach SNS or blog links to your letter.\nPremium & Brand members only.',
+    'en': 'Attach SNS or blog links to your promo.\nPremium & Brand members only.',
     'ja': 'SNSやブログのリンクを手紙に添付できます。\nプレミアム・ブランド会員限定機能です。',
     'zh': '可以在信中附加SNS或博客链接。\n仅限高级和品牌会员。',
     'fr': 'Joignez des liens SNS ou blog à votre lettre.\nRéservé aux membres Premium et Brand.',
@@ -6015,7 +6015,7 @@ class AppL10n {
   });
 
   String get composeBrandUniquePerUserDesc => _t({
-    'ko': '같은 사용자에게 중복 발송되지 않습니다', 'en': 'Same user won\'t receive duplicate letters', 'ja': '同じユーザーに重複送信されません', 'zh': '同一用户不会收到重复信件',
+    'ko': '같은 사용자에게 중복 발송되지 않습니다', 'en': 'Same user won\'t receive duplicate rewards', 'ja': '同じユーザーに重複送信されません', 'zh': '同一用户不会收到重复信件',
     'fr': 'L\'utilisateur ne recevra pas de doublons', 'de': 'Benutzer erhält keine Duplikate', 'es': 'El usuario no recibirá duplicados',
     'pt': 'Usuário não receberá duplicatas', 'ru': 'Пользователь не получит дублей', 'tr': 'Kullanıcı mükerrer almaz',
     'ar': 'لن يتلقى المستخدم نسخاً مكررة', 'it': 'L\'utente non riceverà duplicati', 'hi': 'उपयोगकर्ता को डुप्लिकेट नहीं मिलेगा', 'th': 'ผู้ใช้จะไม่ได้รับซ้ำ',
@@ -6029,7 +6029,7 @@ class AppL10n {
   });
 
   String get composeBrandAutoExpireDesc => _t({
-    'ko': '설정 시간 후 혜택이 자동으로 사라집니다', 'en': 'Letter will auto-disappear after the set time', 'ja': '設定時間後にレターが自動的に消えます', 'zh': '设定时间后信件将自动消失',
+    'ko': '설정 시간 후 혜택이 자동으로 사라집니다', 'en': 'Promo will auto-disappear after the set time', 'ja': '設定時間後にレターが自動的に消えます', 'zh': '设定时间后信件将自动消失',
     'fr': 'La lettre disparaîtra automatiquement', 'de': 'Brief verschwindet automatisch', 'es': 'La carta desaparecerá automáticamente',
     'pt': 'A carta desaparecerá automaticamente', 'ru': 'Письмо автоудалится', 'tr': 'Mektup otomatik silinir',
     'ar': 'ستختفي الرسالة تلقائياً', 'it': 'La lettera scomparirà automaticamente', 'hi': 'पत्र स्वतः गायब हो जाएगा', 'th': 'จดหมายจะหายไปโดยอัตโนมัติ',
@@ -6300,14 +6300,14 @@ class AppL10n {
 
   String get composeBulkRandomDesc => _t({
     'ko': '198개국 중 랜덤으로 선택하여 발송합니다',
-    'en': 'Letters sent to random countries from 198 nations',
+    'en': 'Promos sent to random countries from 198 nations',
     'ja': '198カ国からランダムに選んで送信します',
     'zh': '从198个国家中随机选择发送',
   });
 
   String composeBulkRandomSummary(int count) => _t({
     'ko': '랜덤 국가 ${count}통 발송',
-    'en': '$count letters to random countries',
+    'en': '$count promos to random countries',
     'ja': 'ランダム国 ${count}通送信',
     'zh': '随机国家 $count封',
   });
@@ -6348,7 +6348,7 @@ class AppL10n {
 
   String get composeSendPerCountry => _t({
     'ko': '나라당 발송 횟수',
-    'en': 'Letters per country',
+    'en': 'Promos per country',
     'ja': '国ごとの送信回数',
     'zh': '每个国家的发送次数',
     'fr': 'Lettres par pays',
@@ -6365,7 +6365,7 @@ class AppL10n {
 
   String composeBulkExpressSummary(int total, int countries, int addresses) => _t({
     'ko': '⚡ 총 ${total}통 즉시 발송 · ${countries}개 나라 × ${addresses}주소씩',
-    'en': '⚡ $total letters instant · $countries countries × $addresses addresses each',
+    'en': '⚡ $total promos instant · $countries countries × $addresses addresses each',
     'ja': '⚡ 合計${total}通即時発送 · ${countries}か国 × ${addresses}アドレスずつ',
     'zh': '⚡ 共${total}封即时发送 · $countries个国家 × 每国${addresses}个地址',
     'fr': '⚡ $total lettres instantanées · $countries pays × $addresses adresses chacun',
@@ -6382,7 +6382,7 @@ class AppL10n {
 
   String composeBulkSendSummary(int total, int countries, int perCountry) => _t({
     'ko': '📬 총 ${total}통 발송 예정 · ${countries}개 나라 × ${perCountry}통씩',
-    'en': '📬 $total letters to send · $countries countries × $perCountry each',
+    'en': '📬 $total promos to send · $countries countries × $perCountry each',
     'ja': '📬 合計${total}通送信予定 · ${countries}か国 × ${perCountry}通ずつ',
     'zh': '📬 共${total}封待发送 · $countries个国家 × 每国${perCountry}封',
     'fr': '📬 $total lettres à envoyer · $countries pays × $perCountry chacun',
@@ -6893,7 +6893,7 @@ class AppL10n {
 
   String get composeLetterDeparting => _t({
     'ko': '혜택이 출발합니다...',
-    'en': 'Your letter is departing...',
+    'en': 'Your promo is departing...',
     'ja': '手紙が出発します...',
     'zh': '信件正在出发...',
     'fr': 'Votre lettre part...',
@@ -7083,7 +7083,7 @@ class AppL10n {
 
   String get inboxLocalOnly => _t({
     'ko': '이 혜택은 현지에서만 열어볼 수 있어요',
-    'en': 'This letter can only be opened locally',
+    'en': 'This reward can only be opened locally',
     'ja': 'この手紙は現地でのみ開けます',
     'zh': '此信只能在当地打开',
     'fr': 'Cette lettre ne peut être ouverte que sur place',
@@ -7100,7 +7100,7 @@ class AppL10n {
 
   String get inboxLetterLocked => _t({
     'ko': '혜택 잠금',
-    'en': 'Letter Locked',
+    'en': 'Reward Locked',
     'ja': '手紙ロック',
     'zh': '信件已锁定',
     'fr': 'Lettre verrouillée',
@@ -7117,7 +7117,7 @@ class AppL10n {
 
   String inboxSendMoreToRead(int remaining) => _t({
     'ko': '다음 혜택을 읽으려면 혜택을 $remaining개 더 보내야 합니다.',
-    'en': 'Send $remaining more letter${remaining == 1 ? "" : "s"} to read the next one.',
+    'en': 'Send $remaining more promo${remaining == 1 ? "" : "s"} to read the next one.',
     'ja': '次の手紙を読むにはあと${remaining}通送ってください。',
     'zh': '再发送${remaining}封信即可阅读下一封。',
     'fr': 'Envoyez encore $remaining lettre${remaining == 1 ? "" : "s"} pour lire la suivante.',
@@ -7168,7 +7168,7 @@ class AppL10n {
 
   String get inboxDeleteTitle => _t({
     'ko': '혜택 삭제',
-    'en': 'Delete Letter',
+    'en': 'Delete Reward',
     'ja': '手紙を削除',
     'zh': '删除信件',
     'fr': 'Supprimer la lettre',
@@ -7185,7 +7185,7 @@ class AppL10n {
 
   String get inboxDeleteBody => _t({
     'ko': '이 혜택을 삭제하시겠어요?\n삭제된 혜택은 복구할 수 없어요.',
-    'en': 'Delete this letter?\nDeleted letters cannot be recovered.',
+    'en': 'Delete this reward?\nDeleted rewards cannot be recovered.',
     'ja': 'この手紙を削除しますか？\n削除した手紙は復元できません。',
     'zh': '确定删除这封信？\n删除后无法恢复。',
     'fr': 'Supprimer cette lettre ?\nLes lettres supprimées ne peuvent pas être récupérées.',
@@ -7202,7 +7202,7 @@ class AppL10n {
 
   String get inboxDeleteConfirm => _t({
     'ko': '이 혜택을 삭제하면 복구할 수 없어요.\n정말 삭제할까요?',
-    'en': 'This letter cannot be recovered once deleted.\nAre you sure?',
+    'en': 'This reward cannot be recovered once deleted.\nAre you sure?',
     'ja': 'この手紙を削除すると復元できません。\n本当に削除しますか？',
     'zh': '此信删除后无法恢复。\n确定删除吗？',
     'fr': 'Cette lettre ne pourra pas être récupérée.\nÊtes-vous sûr ?',
@@ -7253,7 +7253,7 @@ class AppL10n {
 
   String get inboxDeleted => _t({
     'ko': '혜택이 삭제되었어요',
-    'en': 'Letter deleted',
+    'en': 'Reward deleted',
     'ja': '手紙が削除されました',
     'zh': '信件已删除',
     'fr': 'Lettre supprimée',
@@ -7339,7 +7339,7 @@ class AppL10n {
 
   String get inboxEmptyReceived => _t({
     'ko': '조건에 맞는 받은 혜택이 없어요',
-    'en': 'No received letters match the filter',
+    'en': 'No received rewards match the filter',
     'ja': '条件に合う受信メールはありません',
     'zh': '没有符合条件的收件',
     'fr': 'Aucune lettre reçue ne correspond au filtre',
@@ -7356,7 +7356,7 @@ class AppL10n {
 
   String get inboxEmptyReceivedSub => _t({
     'ko': '필터를 바꾸거나 지도에서 새 혜택을 찾아보세요!',
-    'en': 'Try a different filter or find new letters on the map!',
+    'en': 'Try a different filter or find new rewards on the map!',
     'ja': 'フィルターを変えるか、地図で新しい手紙を探してみましょう！',
     'zh': '试试其他筛选条件或在地图上查找新信件！',
     'fr': 'Changez de filtre ou cherchez de nouvelles lettres sur la carte !',
@@ -7430,7 +7430,7 @@ class AppL10n {
 
   String get settingsWithdrawItemsList => _t({
     'ko': '• 모든 혜택 및 DM 기록\n• 타워 및 활동 점수\n• 스탬프 앨범\n• 계정 정보',
-    'en': '• All letters and DM history\n• Tower and activity score\n• Stamp album\n• Account info',
+    'en': '• All rewards and DM history\n• Tower and activity score\n• Stamp album\n• Account info',
     'ja': '• すべての手紙とDM履歴\n• タワーとアクティビティスコア\n• スタンプアルバム\n• アカウント情報',
     'zh': '• 所有信件和私信记录\n• 塔和活跃度分数\n• 邮票收集册\n• 账号信息',
     'fr': '• Toutes les lettres et DM\n• Tour et score d’activité\n• Album de timbres\n• Info du compte',
@@ -7618,7 +7618,7 @@ class AppL10n {
 
   String get inboxEmptySent => _t({
     'ko': '조건에 맞는 보낸 혜택이 없어요',
-    'en': 'No sent letters match the filter',
+    'en': 'No sent promos match the filter',
     'ja': '条件に合う送信メールはありません',
     'zh': '没有符合条件的已发信件',
     'fr': 'Aucune lettre envoyée ne correspond au filtre',
@@ -7635,7 +7635,7 @@ class AppL10n {
 
   String get inboxEmptySentSub => _t({
     'ko': '필터를 바꾸거나 새 홍보를 보내보세요!',
-    'en': 'Try a different filter or send a new letter!',
+    'en': 'Try a different filter or send a new promo!',
     'ja': 'フィルターを変えるか、新しい手紙を送ってみましょう！',
     'zh': '试试其他筛选条件或发送新信件！',
     'fr': 'Changez de filtre ou envoyez une nouvelle lettre !',
@@ -7652,7 +7652,7 @@ class AppL10n {
 
   String get inboxAnonymousLetter => _t({
     'ko': '익명의 혜택',
-    'en': 'Anonymous Letter',
+    'en': 'Anonymous Reward',
     'ja': '匿名の手紙',
     'zh': '匿名信件',
     'fr': 'Lettre anonyme',
@@ -7703,7 +7703,7 @@ class AppL10n {
 
   String get inboxSend3ToOpen => _t({
     'ko': '혜택 3개 픽업 후 열기',
-    'en': 'Send 3 letters to open',
+    'en': 'Send 3 promos to open',
     'ja': '3通送ると開けます',
     'zh': '发送3封后可打开',
     'fr': 'Envoyez 3 lettres pour ouvrir',
@@ -7924,7 +7924,7 @@ class AppL10n {
 
   String get inboxStatusNewLetter => _t({
     'ko': '새 혜택',
-    'en': 'New Letter',
+    'en': 'New Reward',
     'ja': '新着',
     'zh': '新信',
     'fr': 'Nouvelle lettre',
@@ -8145,7 +8145,7 @@ class AppL10n {
 
   String get inboxNoFollowingSub => _t({
     'ko': '혜택을 읽고 발신자를 팔로우 해보세요!',
-    'en': 'Read letters and follow the senders!',
+    'en': 'Read rewards and follow the senders!',
     'ja': '手紙を読んで送信者をフォローしましょう！',
     'zh': '阅读信件并关注发件人吧！',
     'fr': 'Lisez des lettres et suivez les expéditeurs !',
@@ -8179,7 +8179,7 @@ class AppL10n {
 
   String get inboxNoFollowersSub => _t({
     'ko': '혜택을 더 보내면 팔로워가 생겨요!',
-    'en': 'Send more letters to gain followers!',
+    'en': 'Send more promos to gain followers!',
     'ja': 'もっと手紙を送ってフォロワーを増やしましょう！',
     'zh': '多发信件就能获得粉丝！',
     'fr': 'Envoyez plus de lettres pour gagner des followers !',
@@ -8321,7 +8321,7 @@ class AppL10n {
 
   String get premiumValueFeature3 => _t({
     'ko': '이미지+링크 혜택으로 응답률 강화 (하루 20통)',
-    'en': 'Boost response rate with image+link letters (20/day)',
+    'en': 'Boost response rate with image+link promos (20/day)',
     'ja': '画像+リンク付き手紙で応答率アップ（1日20通）',
     'zh': '图片+链接信件提高回复率（每日20封）',
     'fr': 'Boostez le taux de réponse avec des lettres image+lien (20/jour)',
@@ -8392,7 +8392,7 @@ class AppL10n {
 
   String get premiumFeature3 => _t({
     'ko': '📸 사진 + 🔗 채널 링크 홍보 메시지 · 하루 30통',
-    'en': '📸 Photo + 🔗 channel-link promo letters · 30/day',
+    'en': '📸 Photo + 🔗 channel-link promo messages · 30/day',
     'ja': '📸 写真 + 🔗 チャンネルリンクPR手紙 · 1日30通',
     'zh': '📸 照片 + 🔗 频道链接推广信件 · 每日 30 封',
     'fr': '📸 Photo + 🔗 lien de chaîne promo · 30/jour',
@@ -8448,7 +8448,7 @@ class AppL10n {
 
   String get premiumFreeFeature2 => _t({
     'ko': '하루 3통 발송 · 월 100통',
-    'en': '3 letters/day · 100/month',
+    'en': '3 promos/day · 100/month',
     'ja': '1日3通 · 月100通',
     'zh': '每日3封 · 每月100封',
     'fr': '3 lettres/jour · 100/mois',
@@ -8550,7 +8550,7 @@ class AppL10n {
 
   String get premiumPremiumTestDesc => _t({
     'ko': '하루 30통 발송 · 이미지+링크 홍보\n타워 커스텀 · 특급 배송',
-    'en': '30 letters/day · image+link letters\nCustom tower · express delivery',
+    'en': '30 promos/day · image+link promos\nCustom tower · express delivery',
     'ja': '1日30通 · 画像+リンク手紙\nタワーカスタム · 特急配送',
     'zh': '每日30封 · 图片+链接信件\n自定义塔楼 · 特快配送',
     'fr': '30 lettres/jour · lettres image+lien\nTour personnalisée · livraison express',
@@ -8584,7 +8584,7 @@ class AppL10n {
 
   String get premiumBrandFeature1 => _t({
     'ko': '하루 200통 발송 · 월 10,000통',
-    'en': '200 letters/day · 10,000/month',
+    'en': '200 promos/day · 10,000/month',
     'ja': '1日200通 · 月10,000通',
     'zh': '每日200封 · 每月10,000封',
     'fr': '200 lettres/jour · 10 000/mois',
@@ -13291,7 +13291,7 @@ class AppL10n {
 
   String get onboardingFreeFeat2 => _t({
     'ko': '하루 3통 홍보 발송 · 월 100통',
-    'en': '3 letters/day · 100/month',
+    'en': '3 promos/day · 100/month',
     'ja': '1日3通 · 月100通',
     'zh': '每天3封 · 每月100封',
     'fr': '3 lettres/jour · 100/mois',
@@ -17489,7 +17489,7 @@ class AppL10n {
   });
 
   String get towerAnonymousLetter => _t({
-    'ko': '익명 혜택', 'en': 'Anonymous Letter', 'ja': '匿名の手紙', 'zh': '匿名信件',
+    'ko': '익명 혜택', 'en': 'Anonymous Reward', 'ja': '匿名の手紙', 'zh': '匿名信件',
     'fr': 'Lettre anonyme', 'de': 'Anonymer Brief', 'es': 'Carta anónima',
     'pt': 'Carta anônima', 'ru': 'Анонимное письмо', 'tr': 'Anonim mektup',
     'ar': 'رسالة مجهولة', 'it': 'Lettera anonima', 'hi': 'गुमनाम पत्र', 'th': 'จดหมายนิรนาม',
