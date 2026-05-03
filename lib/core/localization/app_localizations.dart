@@ -11212,7 +11212,7 @@ class AppL10n {
 
   String get stateDmUnavailableBrand => _t({
     'ko': '브랜드 계정은 DM을 사용할 수 없어요.\n홍보 발송을 통해 수신자와 소통해보세요.',
-    'en': 'Brand accounts cannot use DM.\nPlease communicate with recipients through letters.',
+    'en': 'Brand accounts cannot use DM.\nPlease communicate with recipients through promos.',
     'ja': 'ブランドアカウントはDMを使用できません。\n手紙の送信で受信者とコミュニケーションしてください。',
     'zh': '品牌账号无法使用私信功能。\n请通过发送信件与收件人沟通。',
     'fr': 'Les comptes de marque ne peuvent pas utiliser les MP.\nCommuniquez avec les destinataires via les lettres.',
@@ -11229,7 +11229,7 @@ class AppL10n {
 
   String stateDmUnavailableFree(int premiumLimit) => _t({
     'ko': '빠른 메시지(DM)는 프리미엄 회원 전용이에요.\n프리미엄으로 업그레이드하면 DM 이용 및 하루 $premiumLimit통 발송이 가능해요.',
-    'en': 'Quick Letter (DM) is for premium members only.\nUpgrade to Premium for DM access and $premiumLimit letters/day.',
+    'en': 'Quick Message (DM) is for premium members only.\nUpgrade to Premium for DM access and $premiumLimit promos/day.',
     'ja': 'クイックレター（DM）はプレミアム会員限定です。\nプレミアムにアップグレードするとDMと1日${premiumLimit}通の送信が可能です。',
     'zh': '快信（私信）仅限高级会员使用。\n升级高级版即可使用私信功能，每日发送$premiumLimit封。',
     'fr': 'La lettre rapide (MP) est réservée aux membres premium.\nPassez au Premium pour les MP et $premiumLimit lettres/jour.',
@@ -11246,7 +11246,7 @@ class AppL10n {
 
   String statePremiumExpressLimitExceeded(int limit) => _t({
     'ko': '프리미엄 특급 배송은 하루 $limit통까지 가능해요.',
-    'en': 'Premium express delivery is limited to $limit letters/day.',
+    'en': 'Premium express delivery is limited to $limit promos/day.',
     'ja': 'プレミアム特急配送は1日${limit}通までです。',
     'zh': '高级特快配送每日限$limit封。',
     'fr': 'La livraison express premium est limitée à $limit lettres/jour.',
@@ -11297,7 +11297,7 @@ class AppL10n {
 
   String stateDailyLimitFreeValueCopy(int freeLimit, int premiumLimit) => _t({
     'ko': '오늘 무료 한도(${freeLimit}통)를 모두 사용했어요.\n프리미엄(월 ₩4,900)으로 업그레이드하면 하루 ${premiumLimit}통까지 보내서 답장 기회를 최대 10배까지 넓힐 수 있어요.',
-    'en': 'You\'ve used all $freeLimit free letters today.\nUpgrade to Premium to send up to $premiumLimit/day and multiply your reply chances by 10x.',
+    'en': 'You\'ve used all $freeLimit free promos today.\nUpgrade to Premium to send up to $premiumLimit/day and multiply your reply chances by 10x.',
     'ja': '本日の無料枠（${freeLimit}通）を使い切りました。\nプレミアムにアップグレードすると1日${premiumLimit}通まで送信でき、返信チャンスが最大10倍に。',
     'zh': '今日免费额度（$freeLimit封）已用完。\n升级Premium每日可发$premiumLimit封，回信机会增加10倍。',
     'fr': 'Vous avez utilisé vos $freeLimit lettres gratuites aujourd\'hui.\nPassez au Premium pour envoyer jusqu\'à $premiumLimit/jour et multiplier vos chances de réponse par 10.',
@@ -11314,7 +11314,7 @@ class AppL10n {
 
   String stateDailyLimitFree(int freeLimit, int premiumLimit) => _t({
     'ko': '무료 회원은 하루 ${freeLimit}통까지 발송할 수 있어요.\n프리미엄(월 ₩4,900)으로 업그레이드하면 하루 ${premiumLimit}통 발송 가능해요!',
-    'en': 'Free members can send up to $freeLimit letters/day.\nUpgrade to Premium for $premiumLimit letters/day!',
+    'en': 'Free members can send up to $freeLimit promos/day.\nUpgrade to Premium for $premiumLimit promos/day!',
     'ja': '無料会員は1日${freeLimit}通まで送信できます。\nプレミアムにアップグレードすると1日${premiumLimit}通送信可能！',
     'zh': '免费会员每日可发送$freeLimit封信件。\n升级Premium每日可发$premiumLimit封！',
     'fr': 'Les membres gratuits peuvent envoyer $freeLimit lettres/jour.\nPassez au Premium pour $premiumLimit lettres/jour !',
@@ -11331,7 +11331,7 @@ class AppL10n {
 
   String stateDailyLimitBrand(int brandLimit) => _t({
     'ko': '오늘 브랜드 발송 한도(${brandLimit}통)에 도달했어요. 추가 발송권(1,000통 ₩15,000)을 구매하거나 내일 다시 시도해주세요.',
-    'en': 'You\'ve reached today\'s brand limit ($brandLimit). Purchase extra quota (1,000 letters) or try again tomorrow.',
+    'en': 'You\'ve reached today\'s brand limit ($brandLimit). Purchase extra quota (1,000 promos) or try again tomorrow.',
     'ja': '本日のブランド送信上限（${brandLimit}通）に達しました。追加送信権（1,000通）を購入するか、明日再度お試しください。',
     'zh': '已达今日品牌发送上限（$brandLimit封）。请购买额外配额（1,000封）或明天再试。',
     'fr': 'Vous avez atteint la limite de marque ($brandLimit). Achetez un quota supplémentaire (1 000 lettres) ou réessayez demain.',
@@ -11365,7 +11365,7 @@ class AppL10n {
 
   String stateMonthlyLimitFreeValueCopy(int freeLimit, int premiumLimit) => _t({
     'ko': '이번 달 무료 한도(${freeLimit}통)를 모두 사용했어요.\n프리미엄으로 전환하면 월 ${premiumLimit}통까지 발송 가능해서 더 많은 국가와 연결을 만들 수 있어요.',
-    'en': 'You\'ve used all $freeLimit free letters this month.\nSwitch to Premium to send up to $premiumLimit/month and connect with more countries.',
+    'en': 'You\'ve used all $freeLimit free promos this month.\nSwitch to Premium to send up to $premiumLimit/month and connect with more countries.',
     'ja': '今月の無料枠（${freeLimit}通）を使い切りました。\nプレミアムに切り替えると月${premiumLimit}通まで送信でき、もっと多くの国とつながれます。',
     'zh': '本月免费额度（$freeLimit封）已用完。\n升级Premium月发$premiumLimit封，连接更多国家。',
     'fr': 'Vous avez utilisé vos $freeLimit lettres gratuites ce mois.\nPassez au Premium pour $premiumLimit/mois et connectez-vous avec plus de pays.',
@@ -11382,7 +11382,7 @@ class AppL10n {
 
   String stateMonthlyLimitFree(int freeLimit, int premiumLimit) => _t({
     'ko': '이번 달 발송 한도(${freeLimit}통)에 도달했어요.\n프리미엄으로 업그레이드하면 월 ${premiumLimit}통 발송 가능해요!',
-    'en': 'You\'ve reached this month\'s limit ($freeLimit).\nUpgrade to Premium for $premiumLimit letters/month!',
+    'en': 'You\'ve reached this month\'s limit ($freeLimit).\nUpgrade to Premium for $premiumLimit promos/month!',
     'ja': '今月の送信上限（${freeLimit}通）に達しました。\nプレミアムにアップグレードすると月${premiumLimit}通送信可能！',
     'zh': '已达本月发送上限（$freeLimit封）。\n升级Premium月发$premiumLimit封！',
     'fr': 'Vous avez atteint la limite mensuelle ($freeLimit).\nPassez au Premium pour $premiumLimit lettres/mois !',
@@ -11399,7 +11399,7 @@ class AppL10n {
 
   String stateMonthlyLimitBrand(int total) => _t({
     'ko': '이번 달 브랜드 발송 한도(${total}통)에 도달했어요.\n추가 발송권(1,000통 ₩15,000)을 구매하세요.',
-    'en': 'You\'ve reached this month\'s brand limit ($total).\nPurchase extra quota (1,000 letters).',
+    'en': 'You\'ve reached this month\'s brand limit ($total).\nPurchase extra quota (1,000 promos).',
     'ja': '今月のブランド送信上限（${total}通）に達しました。\n追加送信権（1,000通）を購入してください。',
     'zh': '已达本月品牌发送上限（$total封）。\n请购买额外配额（1,000封）。',
     'fr': 'Vous avez atteint la limite mensuelle de marque ($total).\nAchetez un quota supplémentaire (1 000 lettres).',
@@ -11433,7 +11433,7 @@ class AppL10n {
 
   String get stateNearbyNotificationTitle => _t({
     'ko': '📩 혜택이 근처에 있어요!',
-    'en': '📩 A letter is nearby!',
+    'en': '📩 A reward is nearby!',
     'ja': '📩 近くに手紙があります！',
     'zh': '📩 附近有一封信！',
     'fr': '📩 Une lettre est à proximité !',
@@ -11450,7 +11450,7 @@ class AppL10n {
 
   String stateNearbyNotificationBody(String flag, String country) => _t({
     'ko': '$flag ${country}에서 온 혜택이 2km 이내에 도착했어요',
-    'en': 'A letter from $flag $country arrived within 2km',
+    'en': 'A reward from $flag $country arrived within 2km',
     'ja': '$flag ${country}からの手紙が2km以内に届きました',
     'zh': '来自$flag $country的信件已到达2km范围内',
     'fr': 'Une lettre de $flag $country est arrivée dans un rayon de 2 km',
@@ -11469,19 +11469,19 @@ class AppL10n {
   List<String> get stateNearbyNotifTitles => [
     _t({
       'ko': '💌 랜덤 혜택이 도착했어요!',
-      'en': '💌 A random letter has arrived!',
+      'en': '💌 A random reward has arrived!',
       'ja': '💌 ランダムレターが届きました！',
       'zh': '💌 随机信件到了！',
     }),
     _t({
       'ko': '🌏 세계 어딘가에서 혜택이 왔어요!',
-      'en': '🌏 A letter came from somewhere in the world!',
+      'en': '🌏 A reward came from somewhere in the world!',
       'ja': '🌏 世界のどこかから手紙が来ました！',
       'zh': '🌏 世界某处寄来了一封信！',
     }),
     _t({
       'ko': '🎐 바람을 타고 혜택이 날아왔어요',
-      'en': '🎐 A letter drifted in on the wind',
+      'en': '🎐 A reward drifted in on the wind',
       'ja': '🎐 風に乗って手紙が届きました',
       'zh': '🎐 一封信随风飘来',
     }),
@@ -11493,19 +11493,19 @@ class AppL10n {
     }),
     _t({
       'ko': '📬 수집첩에 새 혜택이 왔어요!',
-      'en': '📬 New letter in your mailbox!',
+      'en': '📬 New reward in your collection!',
       'ja': '📬 新しい手紙が届きました！',
       'zh': '📬 信箱里有新信！',
     }),
     _t({
       'ko': '🌊 바다를 건너 혜택이 도착했어요',
-      'en': '🌊 A letter crossed the ocean to reach you',
+      'en': '🌊 A reward crossed the ocean to reach you',
       'ja': '🌊 海を越えて手紙が届きました',
       'zh': '🌊 一封信漂洋过海到达了',
     }),
     _t({
       'ko': '🕊️ 비둘기가 혜택을 물고 왔어요',
-      'en': '🕊️ A dove brought you a letter',
+      'en': '🕊️ A dove brought you a reward',
       'ja': '🕊️ 鳩が手紙を届けてくれました',
       'zh': '🕊️ 鸽子带来了一封信',
     }),
@@ -11517,13 +11517,13 @@ class AppL10n {
     }),
     _t({
       'ko': '📮 랜덤 혜택이 배달 완료!',
-      'en': '📮 Random letter delivered!',
+      'en': '📮 Random reward delivered!',
       'ja': '📮 ランダムレター配達完了！',
       'zh': '📮 随机信件已送达！',
     }),
     _t({
       'ko': '🗺️ 먼 나라에서 혜택이 도착했어요',
-      'en': '🗺️ A letter arrived from a distant land',
+      'en': '🗺️ A reward arrived from a distant land',
       'ja': '🗺️ 遠い国から手紙が届きました',
       'zh': '🗺️ 远方来信了',
     }),
@@ -11532,7 +11532,7 @@ class AppL10n {
   List<String> stateNearbyNotifBodies(String flag, String country) => [
     _t({
       'ko': '$flag $country에서 보낸 혜택이 도착했어요',
-      'en': 'A letter from $flag $country has arrived',
+      'en': 'A reward from $flag $country has arrived',
       'ja': '$flag ${country}からの手紙が届きました',
       'zh': '来自$flag $country的信到了',
     }),
@@ -11544,19 +11544,19 @@ class AppL10n {
     }),
     _t({
       'ko': '$flag $country에서 출발한 혜택이 드디어 도착!',
-      'en': 'A letter from $flag $country finally arrived!',
+      'en': 'A reward from $flag $country finally arrived!',
       'ja': '$flag ${country}から出発した手紙がついに到着！',
       'zh': '从$flag $country出发的信终于到了！',
     }),
     _t({
       'ko': '$flag $country의 마음이 담긴 혜택이 왔어요',
-      'en': 'A heartfelt letter from $flag $country is here',
+      'en': 'A heartfelt reward from $flag $country is here',
       'ja': '$flag ${country}の気持ちが込められた手紙が来ました',
       'zh': '来自$flag $country的真挚信件到了',
     }),
     _t({
       'ko': '$flag $country에서 온 혜택을 지금 열어보세요',
-      'en': 'Open the letter from $flag $country now',
+      'en': 'Open the reward from $flag $country now',
       'ja': '$flag ${country}からの手紙を今すぐ開きましょう',
       'zh': '快打开来自$flag $country的信吧',
     }),
