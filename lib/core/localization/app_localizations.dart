@@ -83,7 +83,7 @@ class AppL10n {
   // 메인 스플래시에는 한 번 만나는 순간이라 여운 있는 카피.
   String get tagline => _t({
     'ko': '오늘, 혜택이 당신을 기다려요',
-    'en': 'A letter is waiting for you today',
+    'en': 'A reward is waiting for you today',
     'ja': '今日、手紙があなたを待っています',
     'zh': '今天，有一封信在等你',
     'fr': "Aujourd'hui, une lettre vous attend",
@@ -441,7 +441,7 @@ class AppL10n {
   // ── Chain rule ────────────────────────────────────────────────────────────
   String get chainRuleLocked => _t({
     'ko': '다음 혜택을 읽으려면 혜택을 3개 보내야 합니다',
-    'en': 'Send 3 letters to unlock the next one',
+    'en': 'Send 3 promos to unlock the next one',
     'ja': '次の手紙を読むには3通送ってください',
     'zh': '发送3封信后可阅读下一封',
     'fr': 'Envoyez 3 lettres pour lire la suivante',
@@ -459,7 +459,7 @@ class AppL10n {
   // ── Compose ───────────────────────────────────────────────────────────────
   String get writeLetter => _t({
     'ko': '홍보 쓰기',
-    'en': 'Write Letter',
+    'en': 'Write Promo',
     'ja': '手紙を書く',
     'zh': '写信',
     'fr': 'Écrire une lettre',
@@ -475,7 +475,7 @@ class AppL10n {
   });
   String get sendLetter => _t({
     'ko': '홍보 보내기',
-    'en': 'Send Letter',
+    'en': 'Send Promo',
     'ja': '手紙を送る',
     'zh': '发送信件',
     'fr': 'Envoyer la lettre',
@@ -525,7 +525,7 @@ class AppL10n {
   });
   String get nearbyNotifBody => _t({
     'ko': '2km 이내에 혜택이 있어요. 앱에서 확인하세요!',
-    'en': 'A letter is within 2km. Check it in the app!',
+    'en': 'A reward is within 2km. Check it in the app!',
     'ja': '2km以内に手紙があります。アプリで確認してください！',
     'zh': '2公里内有一封信。在应用中查看！',
     'fr': 'Une lettre est à moins de 2km. Vérifiez dans l\'app!',
@@ -1021,7 +1021,7 @@ class AppL10n {
   });
   String get locationGrantedBody => _t({
     'ko': '주변 2km 이내에 도착한 혜택을\n수령할 수 있어요 🎉',
-    'en': 'You can receive letters that arrive\nwithin 2km of you 🎉',
+    'en': 'You can receive rewards that arrive\nwithin 2km of you 🎉',
     'ja': '2km以内に届いた手紙を\n受け取ることができます 🎉',
     'zh': '您可以接收到达\n2公里范围内的信件 🎉',
     'fr': 'Vous pouvez recevoir les lettres\narrivant à 2km de vous 🎉',
@@ -1368,7 +1368,7 @@ class AppL10n {
   });
   String get premiumExtraDesc => _t({
     'ko': '1,000통 ₩15,000',
-    'en': '1,000 letters ₩15,000',
+    'en': '1,000 promos ₩15,000',
     'ja': '1,000通 ₩15,000',
     'zh': '1,000封 ₩15,000',
     'fr': '1 000 lettres ₩15 000',
@@ -1658,7 +1658,7 @@ class AppL10n {
   });
   String get settingsNotifyNearby => _t({
     'ko': '주변 혜택 알림',
-    'en': 'Nearby Letter Notification',
+    'en': 'Nearby Reward Notification',
     'ja': '近くの手紙通知',
     'zh': '附近信件通知',
     'fr': 'Notification de lettre à proximité',
@@ -1818,7 +1818,7 @@ class AppL10n {
   });
   String get premiumCollectionsSub => _t({
     'ko': '하나의 패스 안에, 카드의 결을 바꾸는 세 가지 컬렉션.',
-    'en': 'One pass, three collections that change the grain of your letters.',
+    'en': 'One pass, three collections that change the grain of your promos.',
     'ja': '一つのパスで、手紙の質感を変える3つのコレクション。',
     'zh': '一张通行证，三种改变信件质地的合集。',
     'fr': 'Un seul Pass, trois collections qui changent la texture de vos lettres.',
@@ -1850,7 +1850,7 @@ class AppL10n {
   });
   String get premiumCollectionAuroraTagline => _t({
     'ko': '밤의 언어로 쓰는 홍보',
-    'en': 'Letters in the language of the night',
+    'en': 'Promos in the language of the night',
     'ja': '夜の言葉で綴る手紙',
     'zh': '以夜的语言写成的信',
     'fr': 'Des lettres dans la langue de la nuit',
@@ -2026,7 +2026,7 @@ class AppL10n {
   });
   String get weeklyReflectionTitle => _t({
     'ko': '이번 주의 회고',
-    'en': 'This Week in Letters',
+    'en': 'This Week in Rewards',
     'ja': '今週のふりかえり',
     'zh': '本周回顾',
     'fr': 'La semaine en lettres',
@@ -2097,7 +2097,7 @@ class AppL10n {
 
   String get replyAlreadyNotice => _t({
     'ko': '이 이미 답장을 보냈어요 · 한 한 번만 답장할 수 있어요',
-    'en': 'You\'ve already replied to this letter — one reply per letter',
+    'en': 'You\'ve already replied to this reward — one reply per reward',
     'ja': 'この手紙にはすでに返信済みです — 1通につき1回のみ',
     'zh': '你已经回复过这封信 · 每封信只能回复一次',
     'fr': 'Vous avez déjà répondu à cette lettre — une réponse par lettre',
@@ -2113,7 +2113,7 @@ class AppL10n {
   });
   String get replyOnePerLetterTip => _t({
     'ko': '한 한 번만 답장할 수 있어요',
-    'en': 'One reply per letter',
+    'en': 'One reply per reward',
     'ja': '1通につき1回のみ返信できます',
     'zh': '每封信只能回复一次',
     'fr': 'Une seule réponse par lettre',
@@ -2145,7 +2145,7 @@ class AppL10n {
   });
   String get aiLetterNoticeTitle => _t({
     'ko': '창작 혜택이에요',
-    'en': 'A curated letter',
+    'en': 'A curated reward',
     'ja': '創作の手紙です',
     'zh': '这是一封创作信件',
     'fr': 'Une lettre de curation',
@@ -2161,7 +2161,7 @@ class AppL10n {
   });
   String get aiLetterNoticeBody => _t({
     'ko': '실제 사람이 아닌 문학 봇이 보낸 메시지라, 답장은 전달되지 않아요. 다른 답장해보세요.',
-    'en': 'This letter was written by a literary bot, so replies won\'t reach anyone. Try replying to a real letter instead.',
+    'en': 'This reward message was written by a literary bot, so replies won\'t reach anyone. Try replying to a real reward instead.',
     'ja': '文学Botが書いた手紙なので、返信は届きません。他の手紙に返信してみてください。',
     'zh': '这封信由文学机器人撰写，回复不会被送达。可以回复其他信件。',
     'fr': 'Cette lettre vient d\'un bot littéraire — les réponses n\'atteindront personne. Répondez plutôt à une vraie lettre.',
@@ -2209,7 +2209,7 @@ class AppL10n {
   });
   String get reminderPrepromptBody => _t({
     'ko': '"오늘 나에게 혜택이 왔을까?"\n매일 아침 8시에 수집첩을 열어보도록 조용히 알려드릴게요.',
-    'en': '"Did a letter arrive for me today?"\nA quiet 8 AM nudge to open your mailbox — nothing noisy.',
+    'en': '"Did a reward arrive for me today?"\nA quiet 8 AM nudge to open your mailbox — nothing noisy.',
     'ja': '「今日、手紙は届いたかな？」\n毎朝8時に、そっと手紙箱を開くようお知らせします。',
     'zh': '"今天有我的信吗？"\n每天早上 8 点轻轻提醒你打开信箱——不喧哗。',
     'fr': '"Ai-je reçu une lettre aujourd\'hui ?"\nUn rappel doux à 8h pour ouvrir votre boîte.',
@@ -2369,7 +2369,7 @@ class AppL10n {
   });
   String get settingsNotifyDaily => _t({
     'ko': '오늘의 혜택 리마인더',
-    'en': "Today's Letter Reminder",
+    'en': "Today's Reward Reminder",
     'ja': '今日の手紙リマインダー',
     'zh': '今日信件提醒',
     'fr': 'Rappel des lettres du jour',
@@ -3327,7 +3327,7 @@ class AppL10n {
 
   String get authLocationDesc => _t({
     'ko': '가입 후 홍보 발송 시점에도 위치 권한을 요청할 수 있어요.\n지금 동의하면 위치 기반 기능을 바로 사용할 수 있습니다.',
-    'en': 'Location permission can also be requested when sending letters.\nAgree now to use location-based features right away.',
+    'en': 'Location permission can also be requested when sending promos.\nAgree now to use location-based features right away.',
     'ja': '手紙送信時にも位置情報の許可を求められます。\n今同意すると、位置情報機能をすぐに使用できます。',
     'zh': '发送信件时也可以请求位置权限。\n现在同意即可立即使用基于位置的功能。',
     'fr': 'La permission de localisation peut aussi être demandée lors de l\'envoi.\nAcceptez maintenant pour utiliser les fonctions de localisation immédiatement.',
@@ -3582,7 +3582,7 @@ class AppL10n {
 
   String get authPrivacySec2Body => _t({
     'ko': '서비스 제공, 홍보 발송 및 수신, 계정 관리',
-    'en': 'Service delivery, sending and receiving letters, account management',
+    'en': 'Service delivery, sending and receiving rewards, account management',
     'ja': 'サービス提供、手紙の送受信、アカウント管理',
     'zh': '服务提供、信件发送和接收、账号管理',
     'fr': 'Fourniture du service, envoi et réception de lettres, gestion du compte',
@@ -3840,7 +3840,7 @@ class AppL10n {
 
   String get composePhotoAttachDesc => _t({
     'ko': '홍보에 사진 1장을 첨부할 수 있어요.\n프리미엄 회원은 하루 20통까지 이미지 홍보 발송 가능.',
-    'en': 'Attach 1 photo to your letter.\nPremium members can send up to 20 image letters per day.',
+    'en': 'Attach 1 photo to your promo.\nPremium members can send up to 20 image promos per day.',
     'ja': '手紙に写真を1枚添付できます。\nプレミアム会員は1日20通まで画像付き手紙を送れます。',
     'zh': '可以给信附上1张照片。\n高级会员每天最多可发送20封带图片的信。',
     'fr': 'Joignez 1 photo à votre lettre.\nLes membres Premium peuvent envoyer jusqu\'à 20 lettres avec image par jour.',
@@ -3857,7 +3857,7 @@ class AppL10n {
 
   String get composeImageLimitReached => _t({
     'ko': '오늘 이미지 혜택 한도(20통)에 도달했어요. 내일 다시 시도해주세요.',
-    'en': 'You\'ve reached today\'s image letter limit (20). Please try again tomorrow.',
+    'en': 'You\'ve reached today\'s image promo limit (20). Please try again tomorrow.',
     'ja': '本日の画像手紙の上限（20通）に達しました。明日また試してください。',
     'zh': '今天的图片信件配额（20封）已用完。请明天再试。',
     'fr': 'Vous avez atteint la limite de lettres avec image (20). Réessayez demain.',
@@ -3874,7 +3874,7 @@ class AppL10n {
 
   String get composeEmptyError => _t({
     'ko': '홍보 내용을 작성해주세요 ✍️',
-    'en': 'Please write your letter ✍️',
+    'en': 'Please write your promo ✍️',
     'ja': '手紙の内容を書いてください ✍️',
     'zh': '请写信内容 ✍️',
     'fr': 'Veuillez écrire votre lettre ✍️',
@@ -3942,7 +3942,7 @@ class AppL10n {
 
   String composeExpressBulkSent(int countries, int addresses, int total) => _t({
     'ko': '⚡🌍 특송+대량! ${countries}개 나라 × $addresses주소 = 총 ${total}통 즉시 발송!',
-    'en': '⚡🌍 Express+Bulk! $countries countries × $addresses addresses = $total letters sent!',
+    'en': '⚡🌍 Express+Bulk! $countries countries × $addresses addresses = $total promos sent!',
     'ja': '⚡🌍 特送+大量！${countries}か国 × $addressesアドレス = 合計${total}通即時発送！',
     'zh': '⚡🌍 特快+批量！$countries个国家 × $addresses个地址 = 共${total}封即时发送！',
     'fr': '⚡🌍 Express+Masse ! $countries pays × $addresses adresses = $total lettres envoyées !',
@@ -3959,7 +3959,7 @@ class AppL10n {
 
   String composeBulkSent(int total, int countries) => _t({
     'ko': '🌍  총 ${total}통의 혜택이 ${countries}개 나라로 출발했어요!',
-    'en': '🌍  $total letters departed to $countries countries!',
+    'en': '🌍  $total promos departed to $countries countries!',
     'ja': '🌍  合計${total}通の手紙が${countries}か国へ出発しました！',
     'zh': '🌍  共${total}封信已发往${countries}个国家！',
     'fr': '🌍  $total lettres envoyées vers $countries pays !',
@@ -4044,7 +4044,7 @@ class AppL10n {
 
   String get composeExpressSentRandomBrand => _t({
     'ko': '⚡ 특급 혜택이 5분 내 세계 어딘가로 출발했어요!',
-    'en': '⚡ Express letter departed somewhere in the world within 5 min!',
+    'en': '⚡ Express promo departed somewhere in the world within 5 min!',
     'ja': '⚡ 特急手紙が5分以内に世界のどこかへ出発しました！',
     'zh': '⚡ 特快信5分钟内发往世界某处！',
     'fr': '⚡ Lettre express envoyée quelque part dans le monde en 5 min !',
@@ -4061,7 +4061,7 @@ class AppL10n {
 
   String get composeExpressSentRandomPremium => _t({
     'ko': '⚡ 특급 혜택이 20분 내 세계 어딘가로 출발했어요!',
-    'en': '⚡ Express letter departed somewhere in the world within 20 min!',
+    'en': '⚡ Express promo departed somewhere in the world within 20 min!',
     'ja': '⚡ 特急手紙が20分以内に世界のどこかへ出発しました！',
     'zh': '⚡ 特快信20分钟内发往世界某处！',
     'fr': '⚡ Lettre express envoyée quelque part dans le monde en 20 min !',
@@ -4078,7 +4078,7 @@ class AppL10n {
 
   String composeExpressSentTo(String flag, String country) => _t({
     'ko': '⚡ 특급 혜택이 $flag ${country}로 출발했어요!',
-    'en': '⚡ Express letter departed to $flag $country!',
+    'en': '⚡ Express promo departed to $flag $country!',
     'ja': '⚡ 特急手紙が$flag ${country}へ出発しました！',
     'zh': '⚡ 特快信已发往$flag $country！',
     'fr': '⚡ Lettre express envoyée vers $flag $country !',
@@ -4095,7 +4095,7 @@ class AppL10n {
 
   String get composeLetterSentRandom => _t({
     'ko': '✈️  혜택이 세상 어딘가로 출발했어요! 🌍',
-    'en': '✈️  Your letter departed somewhere in the world! 🌍',
+    'en': '✈️  Your promo departed somewhere in the world! 🌍',
     'ja': '✈️  手紙が世界のどこかへ出発しました！🌍',
     'zh': '✈️  信件已发往世界某处！🌍',
     'fr': '✈️  Votre lettre est partie quelque part dans le monde ! 🌍',
@@ -4112,7 +4112,7 @@ class AppL10n {
 
   String composeLetterSentTo(String flag, String country) => _t({
     'ko': '✈️  혜택이 $flag ${country}로 출발했어요!',
-    'en': '✈️  Your letter departed to $flag $country!',
+    'en': '✈️  Your promo departed to $flag $country!',
     'ja': '✈️  手紙が$flag ${country}へ出発しました！',
     'zh': '✈️  信件已发往$flag $country！',
     'fr': '✈️  Votre lettre est partie vers $flag $country !',
@@ -4163,7 +4163,7 @@ class AppL10n {
 
   String get composeDestination => _t({
     'ko': '혜택을 보낼 목적지',
-    'en': 'Letter destination',
+    'en': 'Promo destination',
     'ja': '手紙の送り先',
     'zh': '信件目的地',
     'fr': 'Destination de la lettre',
@@ -4489,7 +4489,7 @@ class AppL10n {
 
   String get composeLetterFlows => _t({
     'ko': '이 혜택은 세상 어딘가로 흘러갑니다',
-    'en': 'This letter will flow somewhere in the world',
+    'en': 'This promo will flow somewhere in the world',
     'ja': 'この手紙は世界のどこかへ流れていきます',
     'zh': '这封信将流向世界的某个角落',
     'fr': 'Cette lettre voyagera quelque part dans le monde',
@@ -4540,7 +4540,7 @@ class AppL10n {
 
   String get composeBrandCategoryLabel => _t({
     'ko': '혜택 종류',
-    'en': 'Letter category',
+    'en': 'Reward category',
     'ja': '手紙の種類',
     'zh': '信件类型',
     'fr': 'Type de lettre',
@@ -4608,7 +4608,7 @@ class AppL10n {
   // 칩 대신 "📣 내 홍보 편지" 단일 배지를 본다.
   String get composePremiumPromoLabel => _t({
     'ko': '📣 내 홍보 메시지',
-    'en': '📣 My Promo Letter',
+    'en': '📣 My Promo Message',
     'ja': '📣 マイ宣伝レター',
     'zh': '📣 我的推广信',
     'fr': '📣 Ma lettre promo',
@@ -4952,7 +4952,7 @@ class AppL10n {
 
   String get weekendBoostDesc => _t({
     'ko': '🌈 주말에는 더 많은 브랜드가 혜택을 뿌려요. 오늘 더 많이 주워보세요!',
-    'en': '🌈 Brands drop more letters on weekends — pick up extra today!',
+    'en': '🌈 Brands drop more rewards on weekends — pick up extra today!',
     'ja': '🌈 週末はブランドが多くの手紙を届けます — 今日はたくさん拾おう！',
     'zh': '🌈 周末品牌投放更多信件 — 今天多拾取一些吧！',
     'fr': '🌈 Les marques larguent plus de lettres le week-end — ramasse plus aujourd\'hui !',
@@ -5122,7 +5122,7 @@ class AppL10n {
 
   String get tutorialLetterContent => _t({
     'ko': '환영합니다! ✨\n\nThiscount 에 오신 걸 환영해요. 이 혜택을 주우면 줍기 경험을 미리 체험할 수 있어요.\n\n가까이 다가가서 혜택을 탭해보세요. 지도 아래 📍 근처 카운터가 함께 반응할 거예요.\n\n앞으로 전 세계 브랜드들이 뿌리는 할인·이벤트 혜택을 만나보세요!',
-    'en': 'Welcome to Thiscount! ✨\n\nPick up this letter to try the hunt experience. Walk close and tap it.\n\nThe 📍 Nearby counter on the map will light up as soon as you\'re in range.\n\nBrands from around the world drop coupons and event letters — happy hunting!',
+    'en': 'Welcome to Thiscount! ✨\n\nPick up this reward to try the hunt experience. Walk close and tap it.\n\nThe 📍 Nearby counter on the map will light up as soon as you\'re in range.\n\nBrands from around the world drop coupons and event rewards — happy hunting!',
     'ja': 'Thiscount へようこそ！✨\n\nこの手紙を拾って体験を始めましょう。近づいてタップしてください。\n\n範囲に入ると地図の 📍 近くのカウンターが反応します。\n\n世界中のブランドが落とす割引・イベント手紙をお楽しみください！',
     'zh': '欢迎来到 Thiscount！✨\n\n拾起这封信体验"拾取"玩法。靠近并点击它即可。\n\n进入范围后地图上的 📍 附近计数器会亮起。\n\n来自世界各地的品牌在此投放优惠与活动信件——祝你好运！',
     'fr': 'Bienvenue dans Thiscount ! ✨\n\nRamasse cette lettre pour découvrir l\'expérience. Approche-toi et appuie dessus.\n\nLe compteur 📍 À proximité s\'allumera dès que tu seras à portée.\n\nDes marques du monde entier déposent coupons et lettres promo — bonne chasse !',
@@ -5331,7 +5331,7 @@ class AppL10n {
   // 표시 경로 없음. 롤백 대비 키만 유지.
   String get brandPromoTitle => _t({
     'ko': '브랜드 할인 혜택이 도착하고 있어요',
-    'en': 'Brand coupon letters are on the map',
+    'en': 'Brand coupons are dropping on the map',
     'ja': 'ブランド割引手紙が届いています',
     'zh': '品牌折扣信件正在地图上传递',
     'fr': 'Des lettres de coupons de marque arrivent',
@@ -5348,7 +5348,7 @@ class AppL10n {
 
   String get brandPromoBody => _t({
     'ko': '지도에서 가까이 걸어가 혜택을 주우면 즉시 사용 가능한 할인권·교환권이 나와요. 새로 도착한 혜택이 있으면 수집첩에서 확인해보세요!',
-    'en': 'Walk close to letters on the map to pick up ready-to-use coupons and vouchers. Check your Collection for what\'s new.',
+    'en': 'Walk close to rewards on the map to pick up ready-to-use coupons and vouchers. Check your Collection for what\'s new.',
     'ja': '地図上で手紙に近づいて拾うと、すぐ使える割引券や引換券がもらえます。コレクションで新着をチェック！',
     'zh': '走近地图上的信件即可获得可立即使用的优惠券和兑换券。请到收藏查看。',
     'fr': 'Rapprochez-vous des lettres sur la carte pour recevoir coupons et bons immédiatement utilisables. Consultez votre Collection !',
@@ -5434,7 +5434,7 @@ class AppL10n {
 
   String get composeExactDropPaywallBody => _t({
     'ko': '원하는 매장·좌표에 혜택을 정확히 뿌릴 수 있어요. 사용을 원하시면 관리자에게 문의해주세요.',
-    'en': 'Drop letters on exact store locations or coordinates. Contact the admin to enable this feature.',
+    'en': 'Drop promos on exact store locations or coordinates. Contact the admin to enable this feature.',
     'ja': '特定の店舗・座標に手紙を正確に配置できます。利用希望は管理者にお問い合わせください。',
     'zh': '将信件精确投放到指定地点或坐标。如需使用请联系管理员。',
     'fr': 'Déposez des lettres à des points de vente ou coordonnées précis. Contactez l\'admin pour activer.',
@@ -7134,7 +7134,7 @@ class AppL10n {
 
   String inboxLettersSent(int sent, int total) => _t({
     'ko': '$sent/$total 홍보 발송',
-    'en': '$sent/$total letters sent',
+    'en': '$sent/$total promos sent',
     'ja': '$sent/$total通送信済み',
     'zh': '已发送 $sent/$total 封',
     'fr': '$sent/$total lettres envoyées',
@@ -10306,7 +10306,7 @@ class AppL10n {
   // Build 185: 근처 타워 → 근처 Letter 사용자.
   String mapNearbyTowers(int count) => _t({
     'ko': '근처 Letter $count명',
-    'en': '$count Nearby Letters',
+    'en': '$count Nearby Rewards',
     'ja': '近くの Letter ${count}人',
     'zh': '附近 $count 位 Letter',
     'fr': '$count Letters à proximité',
@@ -11263,7 +11263,7 @@ class AppL10n {
 
   String stateImageLimitExceeded(int limit) => _t({
     'ko': '오늘 이미지 혜택 한도(${limit}통)에 도달했어요. 내일 다시 시도해주세요.',
-    'en': 'You\'ve reached today\'s image letter limit ($limit). Please try again tomorrow.',
+    'en': 'You\'ve reached today\'s image promo limit ($limit). Please try again tomorrow.',
     'ja': '本日の画像レター上限（${limit}通）に達しました。明日もう一度お試しください。',
     'zh': '已达到今日图片信件上限（$limit封）。请明天再试。',
     'fr': 'Vous avez atteint la limite de lettres image ($limit). Réessayez demain.',
@@ -16916,7 +16916,7 @@ class AppL10n {
   });
 
   String get profileNearbyNotification => _t({
-    'ko': '근처 혜택 알림', 'en': 'Nearby Letter Notification', 'ja': '近くの手紙通知', 'zh': '附近信件通知',
+    'ko': '근처 혜택 알림', 'en': 'Nearby Reward Notification', 'ja': '近くの手紙通知', 'zh': '附近信件通知',
     'fr': 'Notification de lettre à proximité', 'de': 'Benachrichtigung über Briefe in der Nähe', 'es': 'Notificación de carta cercana',
     'pt': 'Notificação de carta próxima', 'ru': 'Уведомление о письме поблизости', 'tr': 'Yakındaki Mektup Bildirimi',
     'ar': 'إشعار الرسائل القريبة', 'it': 'Notifica lettera nelle vicinanze', 'hi': 'पास के पत्र की सूचना', 'th': 'แจ้งเตือนจดหมายใกล้เคียง',
@@ -20211,7 +20211,7 @@ class AppL10n {
 
   String get airMailPassTagline => _t({
     'ko': '무제한 하늘길 · 이미지 홍보 · 특급 배송',
-    'en': 'Unlimited sky · image letters · express delivery',
+    'en': 'Unlimited sky · image promos · express delivery',
     'ja': '無制限の空路・画像手紙・特急配達',
     'zh': '无限航线 · 图片信件 · 特快配送',
     'fr': 'Ciel illimité · lettres avec image · livraison express',
