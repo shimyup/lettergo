@@ -13529,7 +13529,7 @@ class AppL10n {
 
   String get onboardingReview2 => _t({
     'ko': '"프리미엄으로 올리니 홍보 무제한에 우선 배달까지, 완전 만족!"',
-    'en': '"Upgrading to Premium gave me unlimited letters and priority delivery!"',
+    'en': '"Upgrading to Premium gave me unlimited promos and priority delivery!"',
     'ja': '"プレミアムにしたら手紙無制限＋優先配達で大満足！"',
     'zh': '"升级到高级版后，信件无限+优先配送，超级满意！"',
     'fr': '"Passer en Premium m\'a donné des lettres illimitées et la livraison prioritaire !"',
@@ -13581,7 +13581,7 @@ class AppL10n {
 
   String get onboardingTimelineMorningFree => _t({
     'ko': '홍보 1통 발송',
-    'en': 'Send 1 letter',
+    'en': 'Send 1 promo',
     'ja': '手紙1通送信',
     'zh': '发送1封信',
     'fr': 'Envoyer 1 lettre',
@@ -13649,7 +13649,7 @@ class AppL10n {
 
   String get onboardingTimelineAfternoonPremium => _t({
     'ko': '특송 배달로 이미 3통 도착',
-    'en': '3 letters already arrived via express',
+    'en': '3 promos already arrived via express',
     'ja': '特急便で既に3通到着',
     'zh': '特快配送已收到3封',
     'fr': '3 lettres déjà arrivées par express',
@@ -13874,7 +13874,7 @@ class AppL10n {
 
   String get letterReadReportTitle => _t({
     'ko': '혜택 신고',
-    'en': 'Report Letter',
+    'en': 'Report Reward',
     'ja': '手紙を報告',
     'zh': '举报信件',
     'fr': 'Signaler la lettre',
@@ -13993,7 +13993,7 @@ class AppL10n {
 
   String get letterReadRatePrompt => _t({
     'ko': '이 혜택을 평가해주세요',
-    'en': 'Rate this letter',
+    'en': 'Rate this reward',
     'ja': 'この手紙を評価してください',
     'zh': '请为这封信评分',
     'fr': 'Évaluez cette lettre',
@@ -14061,7 +14061,7 @@ class AppL10n {
 
   String get letterReadReceivedLetter => _t({
     'ko': '🎟 받은 혜택',
-    'en': '✉️  Received Letter',
+    'en': '🎟 Received Reward',
     'ja': '✉️  受信した手紙',
     'zh': '✉️  收到的信',
     'fr': '✉️  Lettre reçue',
@@ -14197,7 +14197,7 @@ class AppL10n {
 
   String get letterReadStartChatPrompt => _t({
     'ko': '빠른 1:1 대화를 시작하시겠어요?',
-    'en': 'Would you like to start a 1:1 letter chat?',
+    'en': 'Would you like to start a 1:1 chat?',
     'ja': '1:1のレターチャットを始めますか？',
     'zh': '要开始1:1信件对话吗？',
     'fr': 'Voulez-vous démarrer une discussion 1:1 ?',
@@ -14663,7 +14663,7 @@ class AppL10n {
   // 방향과 거리. 방향은 화살표 이모지(↑ ↗ → ↘ ↓ ↙ ← ↖) 로 표현해 번역 불필요.
   String mapCompassHint(int meters, String arrow, String categoryEmoji) => _t({
     'ko': '🧭 $arrow ${meters}m — $categoryEmoji 혜택이 있어요',
-    'en': '🧭 $arrow ${meters}m — $categoryEmoji letter waiting',
+    'en': '🧭 $arrow ${meters}m — $categoryEmoji reward waiting',
     'ja': '🧭 $arrow ${meters}m に $categoryEmoji 手紙',
     'zh': '🧭 $arrow ${meters}m — $categoryEmoji 信件',
     'fr': "🧭 $arrow ${meters} m — lettre $categoryEmoji",
@@ -14758,7 +14758,7 @@ class AppL10n {
   // ─────────────────────────────────────────────────────────────────────
 
   String get categoryHelpTitle => _t({
-    'ko': '혜택 종류 사용법', 'en': 'Letter types', 'ja': '手紙の種類',
+    'ko': '혜택 종류 사용법', 'en': 'Reward types', 'ja': '手紙の種類',
     'zh': '信件类型', 'fr': 'Types de lettres', 'de': 'Brieftypen',
     'es': 'Tipos de carta', 'pt': 'Tipos de carta',
     'ru': 'Типы писем', 'tr': 'Mektup türleri',
@@ -14923,7 +14923,7 @@ class AppL10n {
 
   String get brandExactDropCreditsHint => _t({
     'ko': '정확한 좌표에 혜택을 떨어뜨리려면 크레딧이 필요해요. 100통 단위로 구매.',
-    'en': 'Credits are required to drop letters at exact coordinates. Sold in 100-letter packs.',
+    'en': 'Credits are required to drop promos at exact coordinates. Sold in 100-promo packs.',
     'ja': '正確な座標に手紙を配るには ExactDrop クレジットが必要。100通単位で購入。',
     'zh': '向精确坐标投放信件需要 ExactDrop 额度。以 100 封为单位购买。',
     'fr': 'Crédits requis pour lancer des lettres à des coordonnées précises. Packs de 100.',
@@ -15018,7 +15018,7 @@ class AppL10n {
 
   String get composeBrandVoucherDesc => _t({
     'ko': '교환권 이미지 URL(바코드·QR·도장). 받은 사람이 매장에서 화면에 띄워 사용. 부가 설명은 본문에.',
-    'en': 'Image URL for a physical voucher (barcode/QR/stamp). Receivers show it at the counter. Use the letter body for notes.',
+    'en': 'Image URL for a physical voucher (barcode/QR/stamp). Receivers show it at the counter. Use the promo body for notes.',
     'ja': '交換券画像の URL(バーコード/QR/スタンプ)。受取人が店舗で画面に表示。補足は本文に。',
     'zh': '兑换券图片 URL（条形码/QR/图章）。收件人到店显示画面。补充说明写在正文中。',
     'fr': "URL d'image pour bon physique (code-barre/QR/tampon). Destinataires la montrent en caisse.",
@@ -15466,7 +15466,7 @@ class AppL10n {
   // 5) 첫 픽업 축하 모달
   String get firstPickupCelebrationTitle => _t({
     'ko': '🎉 첫 혜택을 주웠어요!',
-    'en': '🎉 First letter picked up!',
+    'en': '🎉 First reward picked up!',
     'ja': '🎉 最初の手紙を拾いました！',
     'zh': '🎉 拾起你的第一封信！',
     'fr': '🎉 Première lettre ramassée !',
@@ -15482,7 +15482,7 @@ class AppL10n {
   });
   String get firstPickupCelebrationBody => _t({
     'ko': '이 동네에 흘린 혜택 혜택을 계속 찾아보세요. 레벨이 오를수록 줍는 반경이 넓어져요.',
-    'en': 'Keep exploring — letters are dropped all around you. Every level you gain widens your pickup radius.',
+    'en': 'Keep exploring — rewards are dropped all around you. Every level you gain widens your pickup radius.',
     'ja': 'この街に散らばる手紙を探し続けましょう。レベルが上がるほど拾える範囲が広がります。',
     'zh': '继续探索——信件遍布你的周围。等级提升会扩大拾取范围。',
     'fr': "Continue d'explorer — des lettres tombent autour de toi. Chaque niveau élargit ton rayon.",
@@ -15518,7 +15518,7 @@ class AppL10n {
   // 카테고리 패널 사용 방법 필드 아래 안내 라인에 표시.
   String get composeBrandPromoBodyHint => _t({
     'ko': '쿠폰·교환권은 본문을 짧게 써도 바로 보낼 수 있어요',
-    'en': 'Promo letters can be sent with just a short headline',
+    'en': 'Promo messages can be sent with just a short headline',
     'ja': '割引・プロモは短いタイトルだけでも送れます',
     'zh': '优惠信件只需简短标题即可发送',
     'fr': 'Les lettres promo peuvent partir avec un simple titre court',
@@ -15536,7 +15536,7 @@ class AppL10n {
   // 브랜드 뮤트 — 수신자가 "이 브랜드 혜택 받지 않기" 선택 시.
   String get letterReadMuteBrand => _t({
     'ko': '이 브랜드 혜택 받지 않기',
-    'en': 'Stop receiving letters from this brand',
+    'en': 'Stop receiving rewards from this brand',
     'ja': 'このブランドの手紙を受信しない',
     'zh': '不再接收此品牌的信件',
     'fr': 'Ne plus recevoir cette marque',
@@ -15570,7 +15570,7 @@ class AppL10n {
 
   String get letterReadMutedToast => _t({
     'ko': '이 브랜드의 새 혜택이 수집첩에 더 이상 쌓이지 않아요',
-    'en': 'New letters from this brand won\'t appear in your collection',
+    'en': 'New rewards from this brand won\'t appear in your collection',
     'ja': 'このブランドの新しい手紙は受信されません',
     'zh': '此品牌的新信件将不再进入收件箱',
     'fr': 'Les nouvelles lettres de cette marque n\'apparaîtront plus',
@@ -15875,7 +15875,7 @@ class AppL10n {
   // Letter 캐릭터가 성장하는 내러티브를 기대. Brand 만 광고주 기능 구분 유지.
   String get mapHelpTierFreeTitle => _t({
     'ko': 'Free — 🎟 레터 줍기',
-    'en': 'Free — 🎟 Pick up Letters',
+    'en': 'Free — 🎟 Pick up Rewards',
     'ja': 'Free — 🎟 Letter を拾う',
     'zh': 'Free — 🎟 拾取 Letter',
     'fr': 'Free — 🎟 Ramasser des Letters',
@@ -15891,7 +15891,7 @@ class AppL10n {
   });
   String get mapHelpTierFreeBody => _t({
     'ko': '200m 반경 안의 레터를 주워 내 수집첩에 담고 사용하세요. 레벨이 오를수록 반경이 늘어나고 레터가 함께 성장합니다. 쿨다운 60분.',
-    'en': 'Pick up Letters within 200 m into your inbox. Your radius grows with each level as your Letter levels up. 60-min cooldown.',
+    'en': 'Pick up Rewards within 200 m into your collection. Your radius grows with each level as your Counter levels up. 60-min cooldown.',
     'ja': '200m 圏内の Letter を拾って受信箱に集めよう。レベルが上がるほど半径も Letter も成長。クールダウン 60 分。',
     'zh': '拾取 200 米范围内的 Letter 到收件箱。等级越高半径越大，Letter 也一同成长。冷却 60 分钟。',
     'fr': 'Ramasse les Letters dans un rayon de 200 m — ta portée grandit avec ton Letter. Cooldown 60 min.',
@@ -15908,7 +15908,7 @@ class AppL10n {
 
   String get mapHelpTierPremiumTitle => _t({
     'ko': 'Premium — ✉️ 내 카운터 뿌리기',
-    'en': 'Premium — ✉️ Drop your Letters',
+    'en': 'Premium — 📣 Drop your Promos',
     'ja': 'Premium — ✉️ 自分の Letter を配る',
     'zh': 'Premium — ✉️ 投放自己的 Letter',
     'fr': 'Premium — ✉️ Déposer tes Letters',
@@ -15924,7 +15924,7 @@ class AppL10n {
   });
   String get mapHelpTierPremiumBody => _t({
     'ko': '1km 반경으로 주우면서 📸 사진 · 🔗 링크가 달린 내 레터를 세계 지도에 떨어뜨릴 수 있어요. 내 카운터가 빠르게 성장합니다. 쿨다운 10분.',
-    'en': '1 km pickup radius + drop your own Letters with 📸 photos and 🔗 links on the map. Your Letter levels up faster. 10-min cooldown.',
+    'en': '1 km pickup radius + drop your own Promos with 📸 photos and 🔗 links on the map. Your Counter levels up faster. 10-min cooldown.',
     'ja': '1km 圏で拾いつつ、📸 写真・🔗 リンクを添えた自分の Letter を世界に配れます。Letter の成長が早まります。クールダウン 10 分。',
     'zh': '1 公里范围内拾取 + 投放带 📸 照片和 🔗 链接的自己的 Letter。Letter 成长更快。冷却 10 分钟。',
     'fr': 'Rayon 1 km · dépose tes Letters avec photos et liens. Ton Letter grandit plus vite. Cooldown 10 min.',
@@ -16006,7 +16006,7 @@ class AppL10n {
   });
   String get mapHelpMarkerArrivedBody => _t({
     'ko': '도착 지점에 표시되며 가까이 다가가서 주울 수 있어요.',
-    'en': 'Walk up close to pick this letter up.',
+    'en': 'Walk up close to pick this reward up.',
     'ja': '到着地点に表示され、近づいて拾えます。',
     'zh': '显示在到达点，靠近即可拾起。',
     'fr': 'Approche-toi pour le ramasser.',
@@ -16022,7 +16022,7 @@ class AppL10n {
   });
   String get mapHelpMarkerCouponTitle => _t({
     'ko': '🎟 할인권',
-    'en': '🎟 Coupon letter',
+    'en': '🎟 Discount coupon',
     'ja': '🎟 割引券',
     'zh': '🎟 优惠券',
     'fr': '🎟 Coupon',
