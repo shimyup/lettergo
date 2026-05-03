@@ -3341,15 +3341,22 @@ class _ComposeScreenState extends State<ComposeScreen>
   // Build 113 에서 `_buildBrandOptions()` 의 상단 (카테고리 + 사용 방법) 을
   // 이 메서드로 분리해 ExpansionTile 밖에서 노출. 브랜드는 "무엇을 드롭할지"
   // (🎟 할인권 / 🎁 교환권 / ✉️ 일반) 를 destination 바로 아래에서 선택.
-  // 쿠폰·교환권일 때만 사용 방법 입력 필드가 함께 보인다. 나머지 고급 옵션
-  // (1-per-user · 답장 받기 · 자동 삭제) 은 `_buildBrandAdvancedOptions()`
-  // 로 이동.
-  // Build 128: Free/Premium 에게도 표시 — 쿠폰·교환권 칩은 🔒 비활성 상태로
-  // "이건 Brand 가 뿌리는 편지예요" 를 가시화. 탭하면 Brand 업그레이드 안내
-  // 시트 오픈.
+  // 쿠폰·교환권일 때만 사용 방법 입력 필드가 함께 보인다.
+  //
+  // Build 223: Premium 사용자 전용 분기 — 카테고리 3칩 대신 "📣 내 홍보 편지"
+  // 단일 배지로 단순화. Premium 은 어차피 general 만 발송 가능하므로 칩
+  // 선택 UI 가 의미 없고, "내 발송은 자동으로 홍보 편지" 라는 정체성을 더
+  // 직관적으로 전달. 일반 편지 발송 경로 축소 + 홍보 가치 강조.
   Widget _buildBrandCategoryPanel(AppState state) {
     final l10n = AppL10n.of(state.currentUser.languageCode);
     final isBrand = state.currentUser.isBrand;
+    final isPremium = state.currentUser.isPremium;
+
+    // Build 223: Premium (Brand 아님) → 단일 홍보 배지 카드.
+    if (!isBrand && isPremium) {
+      return _buildPremiumPromoBadgeCard(l10n);
+    }
+
     return Container(
       padding: const EdgeInsets.all(13),
       decoration: BoxDecoration(
@@ -3591,6 +3598,101 @@ class _ComposeScreenState extends State<ComposeScreen>
               ),
             ),
           ],
+        ],
+      ),
+    );
+  }
+
+  // Build 223: Premium 전용 홍보 편지 배지 카드 — 카테고리 3칩 단순화.
+  // "당신의 발송은 자동으로 홍보 편지" 정체성 + 첨부 가능 항목 안내.
+  Widget _buildPremiumPromoBadgeCard(AppL10n l10n) {
+    return Container(
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [
+            AppColors.gold.withValues(alpha: 0.18),
+            AppColors.gold.withValues(alpha: 0.06),
+          ],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(
+          color: AppColors.gold.withValues(alpha: 0.55),
+          width: 1.4,
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // 상단: 라벨 + ON 배지
+          Row(
+            children: [
+              Expanded(
+                child: Text(
+                  l10n.composePremiumPromoLabel,
+                  style: const TextStyle(
+                    color: AppColors.textPrimary,
+                    fontSize: 15,
+                    fontWeight: FontWeight.w900,
+                    letterSpacing: -0.2,
+                  ),
+                ),
+              ),
+              Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 9,
+                  vertical: 3.5,
+                ),
+                decoration: BoxDecoration(
+                  color: AppColors.gold,
+                  borderRadius: BorderRadius.circular(99),
+                ),
+                child: Text(
+                  l10n.composePremiumPromoBadge,
+                  style: const TextStyle(
+                    color: Colors.black,
+                    fontSize: 10,
+                    fontWeight: FontWeight.w900,
+                    letterSpacing: 0.5,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+          Text(
+            l10n.composePremiumPromoDesc,
+            style: const TextStyle(
+              color: AppColors.textSecondary,
+              fontSize: 12,
+              height: 1.45,
+            ),
+          ),
+          const SizedBox(height: 10),
+          // CTA 칩 — 사진/링크 첨부 안내
+          Container(
+            padding: const EdgeInsets.symmetric(
+              horizontal: 10,
+              vertical: 6,
+            ),
+            decoration: BoxDecoration(
+              color: AppColors.bgCard,
+              borderRadius: BorderRadius.circular(8),
+              border: Border.all(
+                color: AppColors.gold.withValues(alpha: 0.45),
+              ),
+            ),
+            child: Text(
+              l10n.composePremiumPromoCta,
+              style: const TextStyle(
+                color: AppColors.gold,
+                fontSize: 11.5,
+                fontWeight: FontWeight.w800,
+              ),
+            ),
+          ),
         ],
       ),
     );

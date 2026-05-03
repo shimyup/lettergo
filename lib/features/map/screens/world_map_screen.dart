@@ -2079,7 +2079,12 @@ class _WorldMapScreenState extends State<WorldMapScreen>
 
   void _showDeliveredFarDialog(BuildContext ctx, Letter letter, AppL10n l10n) {
     // 브랜드 편지는 카테고리 맞춤 이모지로 도착 상태를 알림.
-    final arrivalEmoji = letter.senderIsBrand ? letter.category.brandEmoji : '📬';
+    // Build 223: Premium 발신 편지는 📣 (홍보) 로 직관 구분
+    final arrivalEmoji = letter.senderIsBrand
+        ? letter.category.brandEmoji
+        : letter.senderTier == LetterSenderTier.premium
+            ? '📣'
+            : '📬';
     showDialog(
       context: ctx,
       builder: (_) => AlertDialog(

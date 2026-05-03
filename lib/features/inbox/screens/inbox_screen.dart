@@ -1730,9 +1730,14 @@ class _LetterCard extends StatelessWidget {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      // 브랜드 편지는 카테고리 맞춤 이모지로 "어떤 편지인지" 표시.
+                      // 브랜드 편지는 카테고리 맞춤 이모지(✉️/🎟/🎁), Premium 발신자는
+                      // 📣 (홍보 편지), 그 외는 📬 (일반).
                       Text(
-                        letter.senderIsBrand ? letter.category.brandEmoji : '📬',
+                        letter.senderIsBrand
+                            ? letter.category.brandEmoji
+                            : letter.senderTier == LetterSenderTier.premium
+                                ? '📣'
+                                : '📬',
                         style: const TextStyle(fontSize: 24),
                       ),
                       const SizedBox(height: 4),

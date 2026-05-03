@@ -4591,6 +4591,78 @@ class AppL10n {
     'hi': 'वाउचर',
     'th': 'บัตรแลก',
   });
+
+  // Build 223: Premium 전용 — 일반 편지 발송 축소 + 홍보 편지로 직관 리프레임.
+  // Free/Brand 가 아닌 Premium 사용자는 카테고리 3종(general/coupon/voucher)
+  // 칩 대신 "📣 내 홍보 편지" 단일 배지를 본다.
+  String get composePremiumPromoLabel => _t({
+    'ko': '📣 내 홍보 편지',
+    'en': '📣 My Promo Letter',
+    'ja': '📣 マイ宣伝レター',
+    'zh': '📣 我的推广信',
+    'fr': '📣 Ma lettre promo',
+    'de': '📣 Mein Promo-Brief',
+    'es': '📣 Mi carta promo',
+    'pt': '📣 Minha carta promo',
+    'ru': '📣 Моё промо-письмо',
+    'tr': '📣 Promo Mektubum',
+    'ar': '📣 رسالتي الترويجية',
+    'it': '📣 La mia lettera promo',
+    'hi': '📣 मेरा प्रोमो लेटर',
+    'th': '📣 จดหมายโปรของฉัน',
+  });
+
+  String get composePremiumPromoDesc => _t({
+    'ko': '내 SNS · 채널 · 제품을 1km 반경 사용자에게 자동 노출. 📸 사진 + 🔗 링크 첨부 가능.',
+    'en': 'Auto-promote your SNS · channel · product to users within 1 km. Attach 📸 photo + 🔗 link.',
+    'ja': '自分のSNS・チャンネル・商品を1km圏内のユーザーに自動配信。📸 写真 + 🔗 リンク添付可。',
+    'zh': '自动向 1 公里内用户推送你的 SNS · 频道 · 产品。可附 📸 照片 + 🔗 链接。',
+    'fr': 'Promeut auto. ton SNS · chaîne · produit aux utilisateurs à 1 km. 📸 photo + 🔗 lien.',
+    'de': 'Bewerbe deine SNS · Kanal · Produkt automatisch im 1-km-Radius. 📸 Foto + 🔗 Link.',
+    'es': 'Promociona tu SNS · canal · producto a usuarios en 1 km. 📸 foto + 🔗 enlace.',
+    'pt': 'Promove SNS · canal · produto para utilizadores a 1 km. 📸 foto + 🔗 link.',
+    'ru': 'Авто-продвижение SNS · канала · продукта в радиусе 1 км. 📸 фото + 🔗 ссылка.',
+    'tr': 'SNS · kanal · ürününü 1 km içindeki kullanıcılara otomatik tanıt. 📸 foto + 🔗 link.',
+    'ar': 'روّج لـ SNS · قناتك · منتجك تلقائيًا للمستخدمين ضمن 1 كم. 📸 صورة + 🔗 رابط.',
+    'it': 'Promuovi il tuo SNS · canale · prodotto a utenti entro 1 km. 📸 foto + 🔗 link.',
+    'hi': 'अपने SNS · चैनल · उत्पाद को 1 किमी में स्वचालित प्रचार। 📸 फ़ोटो + 🔗 लिंक।',
+    'th': 'โปรโมท SNS · ช่อง · สินค้าให้ผู้ใช้ในรัศมี 1 กม. แนบ 📸 รูป + 🔗 ลิงก์ได้',
+  });
+
+  String get composePremiumPromoBadge => _t({
+    'ko': '홍보',
+    'en': 'PROMO',
+    'ja': '宣伝',
+    'zh': '推广',
+    'fr': 'PROMO',
+    'de': 'PROMO',
+    'es': 'PROMO',
+    'pt': 'PROMO',
+    'ru': 'ПРОМО',
+    'tr': 'PROMO',
+    'ar': 'ترويج',
+    'it': 'PROMO',
+    'hi': 'प्रचार',
+    'th': 'โปร',
+  });
+
+  String get composePremiumPromoCta => _t({
+    'ko': '📸 사진 + 🔗 링크 첨부',
+    'en': '📸 Photo + 🔗 Link',
+    'ja': '📸 写真 + 🔗 リンク',
+    'zh': '📸 照片 + 🔗 链接',
+    'fr': '📸 Photo + 🔗 Lien',
+    'de': '📸 Foto + 🔗 Link',
+    'es': '📸 Foto + 🔗 Enlace',
+    'pt': '📸 Foto + 🔗 Link',
+    'ru': '📸 Фото + 🔗 Ссылка',
+    'tr': '📸 Foto + 🔗 Link',
+    'ar': '📸 صورة + 🔗 رابط',
+    'it': '📸 Foto + 🔗 Link',
+    'hi': '📸 फ़ोटो + 🔗 लिंक',
+    'th': '📸 รูป + 🔗 ลิงก์',
+  });
+
   String get composeExactDropToggle => _t({
     'ko': '🎯 정확한 위치 지정',
     'en': '🎯 Exact location',

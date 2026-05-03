@@ -774,6 +774,69 @@ class _LetterReadScreenState extends State<LetterReadScreen>
                       ),
                     ),
                   )
+                else if (letter.senderTier == LetterSenderTier.premium) ...[
+                  // Build 223: Premium 발신자는 "📣 홍보" 배지로 명시.
+                  // 일반 사용자가 발송한 게 아니라 자기 SNS·채널 홍보 편지임을
+                  // 직관적으로 알 수 있게.
+                  Flexible(
+                    flex: 0,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 9,
+                        vertical: 6,
+                      ),
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          colors: [
+                            AppColors.gold.withValues(alpha: 0.85),
+                            AppColors.goldDark.withValues(alpha: 0.85),
+                          ],
+                        ),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Text(
+                        '📣 ${l10n.composePremiumPromoBadge}',
+                        style: const TextStyle(
+                          color: Colors.black,
+                          fontSize: 11,
+                          fontWeight: FontWeight.w900,
+                          letterSpacing: 0.3,
+                        ),
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 6),
+                  // 공유 카드 버튼 (스토리·SNS 공유)
+                  GestureDetector(
+                    onTap: () async {
+                      await ShareCardService.shareLetterCard(
+                        letter: letter,
+                        langCode: state.currentUser.languageCode,
+                        tagline: l10n.appTagline,
+                        brandName: 'Thiscount',
+                      );
+                    },
+                    child: Tooltip(
+                      message: l10n.shareAction,
+                      child: Container(
+                        padding: const EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          color: AppColors.teal.withValues(alpha: 0.10),
+                          borderRadius: BorderRadius.circular(8),
+                          border: Border.all(
+                            color: AppColors.teal.withValues(alpha: 0.35),
+                          ),
+                        ),
+                        child: const Icon(
+                          Icons.ios_share_rounded,
+                          color: AppColors.teal,
+                          size: 18,
+                        ),
+                      ),
+                    ),
+                  ),
+                ]
                 else ...[
                   // 공유 카드 버튼 (스토리·SNS 공유)
                   GestureDetector(
