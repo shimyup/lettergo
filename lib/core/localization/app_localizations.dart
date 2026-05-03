@@ -671,98 +671,98 @@ class AppL10n {
   // 지도 위에서 출발지→내 위치로 여행한 여정이 시각화된다는 연결 고리로
   // 헌트 포지셔닝에 정렬. 보낸 혜택만 이동하는 것 아님을 명시.
   String get onboarding2Body => _t({
-    'ko': '주운 혜택도, 보낸 혜택도 🚚 → ✈️ → 🚚 순서로 지도 위를 이동해요. 실제 우편 이동 시간이 그대로 반영됩니다.',
+    'ko': '주운 혜택도, 보낸 홍보도 🚚 → ✈️ → 🚚 순서로 지도 위를 이동해요. 실제 우편 이동 시간이 그대로 반영됩니다.',
     'en':
-        'Both picked-up and sent letters travel 🚚 → ✈️ → 🚚 across the map, reflecting real postal transit times.',
-    'ja': '拾った手紙も送った手紙も🚚→✈️→🚚の順で地図を移動します。実際の郵便時間を反映します。',
-    'zh': '拾起的信和寄出的信都会沿🚚→✈️→🚚路线在地图上移动，反映真实邮递时间。',
+        'Picked-up rewards and sent promos travel 🚚 → ✈️ → 🚚 across the map, reflecting real postal transit times.',
+    'ja': '拾った特典も送った宣伝も🚚→✈️→🚚の順で地図を移動します。実際の配送時間を反映します。',
+    'zh': '拾取的特惠和发送的推广都会沿🚚→✈️→🚚路线在地图上移动，反映真实物流时间。',
     'fr':
-        'Les lettres ramassées et envoyées voyagent 🚚→✈️→🚚 sur la carte, selon les délais postaux réels.',
+        'Les récompenses ramassées et les promos envoyées voyagent 🚚→✈️→🚚 sur la carte, selon les délais postaux réels.',
     'de':
-        'Aufgesammelte wie gesendete Briefe reisen 🚚→✈️→🚚 auf der Karte — in echter Postzeit.',
+        'Aufgesammelte Vorteile und gesendete Promos reisen 🚚→✈️→🚚 auf der Karte — in echter Versandzeit.',
     'es':
-        'Tanto las cartas recogidas como las enviadas viajan 🚚→✈️→🚚 por el mapa, con tiempos postales reales.',
+        'Recompensas recogidas y promos enviadas viajan 🚚→✈️→🚚 por el mapa, con tiempos postales reales.',
     'pt':
-        'As cartas apanhadas e enviadas viajam 🚚→✈️→🚚 no mapa, em tempos postais reais.',
+        'Recompensas apanhadas e promos enviadas viajam 🚚→✈️→🚚 no mapa, em tempos postais reais.',
     'ru':
-        'И поднятые, и отправленные письма идут по карте 🚚→✈️→🚚 — в реальных сроках доставки.',
+        'Подобранные награды и отправленные промо идут по карте 🚚→✈️→🚚 — в реальных сроках доставки.',
     'tr':
-        'Toplanan ve gönderilen mektuplar haritada 🚚→✈️→🚚 ilerler — gerçek posta sürelerinde.',
+        'Toplanan ödüller ve gönderilen promolar haritada 🚚→✈️→🚚 ilerler — gerçek posta sürelerinde.',
     'ar':
-        'الرسائل الملتقطة والمرسلة تتنقل 🚚→✈️→🚚 على الخريطة بأوقات بريد حقيقية.',
+        'المكافآت الملتقطة والترويجات المرسلة تتنقل 🚚→✈️→🚚 على الخريطة بأوقات شحن حقيقية.',
     'it':
-        'Le lettere raccolte e inviate viaggiano 🚚→✈️→🚚 sulla mappa, in tempi postali reali.',
+        'Ricompense raccolte e promo inviate viaggiano 🚚→✈️→🚚 sulla mappa, in tempi postali reali.',
     'hi':
-        'उठाए गए और भेजे गए पत्र दोनों नक्शे पर 🚚→✈️→🚚 यात्रा करते हैं — असली डाक समय में।',
-    'th': 'ทั้งจดหมายที่คุณเก็บและส่งจะเดินทาง 🚚→✈️→🚚 บนแผนที่ ตามเวลาไปรษณีย์จริง',
+        'उठाए गए लाभ और भेजे गए प्रचार दोनों नक्शे पर 🚚→✈️→🚚 यात्रा करते हैं — असली डाक समय में।',
+    'th': 'ทั้งสิทธิประโยชน์ที่คุณเก็บและโปรที่คุณส่งจะเดินทาง 🚚→✈️→🚚 บนแผนที่ ตามเวลาขนส่งจริง',
   });
 
   // Build 107 재포지셔닝 — "느린 편지 보물찾기" 보다 "할인·홍보 편지 유통" 강조.
   String get onboarding3Title => _t({
     'ko': '🎟 혜택을 주워 바로 쓰세요',
-    'en': '🎟 Pick Up Letters. Redeem Instantly.',
-    'ja': '🎟 手紙を拾って、その場で使う',
-    'zh': '🎟 拾起信件，即刻使用',
-    'fr': '🎟 Ramasse la lettre. Utilise-la.',
-    'de': '🎟 Brief aufheben. Sofort einlösen.',
-    'es': '🎟 Recoge la carta. Úsala al instante.',
-    'pt': '🎟 Apanha a carta. Usa na hora.',
-    'ru': '🎟 Подбери письмо. Используй.',
-    'tr': '🎟 Mektubu al, hemen kullan.',
-    'ar': '🎟 التقط الرسالة. استخدمها فوراً.',
-    'it': '🎟 Raccogli la lettera. Usa subito.',
-    'hi': '🎟 पत्र उठाओ. तुरंत उपयोग करो.',
-    'th': '🎟 เก็บจดหมาย ใช้ทันที',
+    'en': '🎟 Pick Up Rewards. Redeem Instantly.',
+    'ja': '🎟 特典を拾って、その場で使う',
+    'zh': '🎟 拾起特惠，即刻使用',
+    'fr': '🎟 Ramasse la récompense. Utilise-la.',
+    'de': '🎟 Vorteil aufheben. Sofort einlösen.',
+    'es': '🎟 Recoge la recompensa. Úsala al instante.',
+    'pt': '🎟 Apanha a recompensa. Usa na hora.',
+    'ru': '🎟 Подбери награду. Используй.',
+    'tr': '🎟 Ödülü al, hemen kullan.',
+    'ar': '🎟 التقط المكافأة. استخدمها فوراً.',
+    'it': '🎟 Raccogli la ricompensa. Usa subito.',
+    'hi': '🎟 इनाम उठाओ. तुरंत उपयोग करो.',
+    'th': '🎟 เก็บสิทธิประโยชน์ ใช้ทันที',
   });
   // Build 170: "편지 형식의 글로벌 공간 쿠폰 플랫폼" 포지셔닝 강조.
   String get onboarding3Body => _t({
-    'ko': '브랜드의 할인권이 혜택이 되어 세계 곳곳 지도에 떨어집니다. 당신 주변 200m 안의 혜택을 주워 매장에서 바로 쓰세요. 감성과 실용성이 공존하는 글로벌 공간 쿠폰 플랫폼.',
+    'ko': '브랜드의 할인쿠폰·교환권·홍보 메시지가 세계 곳곳 지도에 떨어집니다. 당신 주변 200m 안의 혜택을 주워 매장에서 바로 쓰세요. 감성과 실용성이 공존하는 글로벌 공간 쿠폰 플랫폼.',
     'en':
-        'Brand coupons drop as letters on a worldwide map. Pick up letters within 200m of you and redeem them instantly. A global space-based coupon platform — in letter format.',
+        'Brand coupons, vouchers, and promo messages drop on the worldwide map. Pick up rewards within 200m of you and redeem them instantly. A global space-based coupon platform.',
     'ja':
-        'ブランドの割引券が手紙になって世界中の地図に落ちます。あなたの周り 200m 以内の手紙を拾って、お店でその場で使おう。感性と実用性が共存する、手紙フォーマットのグローバル空間クーポンプラットフォーム。',
+        'ブランドの割引券・引換券・宣伝メッセージが世界中の地図に落ちます。あなたの周り 200m 以内の特典を拾って、お店でその場で使おう。感性と実用性が共存する、グローバル空間クーポンプラットフォーム。',
     'zh':
-        '品牌优惠券化作信件落在全球地图上。捡起你身边 200 米内的信件，即刻在门店使用。情感与实用兼具的信件式全球空间优惠券平台。',
+        '品牌的折扣券、兑换券和推广讯息落在全球地图上。拾取你身边 200 米内的特惠，即刻在门店使用。情感与实用兼具的全球空间优惠券平台。',
     'fr':
-        'Les coupons des marques deviennent des lettres sur la carte mondiale. Ramasse les lettres dans un rayon de 200 m et utilise-les tout de suite en boutique. Plateforme mondiale de coupons spatiaux au format lettre.',
+        'Coupons, bons et messages promo des marques tombent sur la carte mondiale. Ramasse les récompenses dans un rayon de 200 m et utilise-les en boutique tout de suite. Plateforme mondiale de coupons spatiaux.',
     'de':
-        'Marken-Coupons fallen als Briefe auf die Weltkarte. Hebe Briefe im 200-m-Radius auf und löse sie sofort im Geschäft ein. Globale Coupon-Plattform im Briefformat.',
+        'Marken-Coupons, Gutscheine und Promo-Nachrichten fallen auf die Weltkarte. Hol dir Vorteile im 200-m-Radius und löse sie sofort im Geschäft ein. Globale Coupon-Plattform im Raum.',
     'es':
-        'Los cupones de las marcas caen como cartas en el mapa mundial. Recoge las cartas a 200 m de ti y canjea al instante en tienda. Plataforma global de cupones espaciales en formato carta.',
+        'Cupones, vales y mensajes promo de marcas caen en el mapa mundial. Recoge recompensas a 200 m de ti y úsalas al instante. Plataforma global de cupones espaciales.',
     'pt':
-        'Cupões de marcas caem como cartas no mapa mundial. Apanha as cartas a 200 m de ti e usa na loja imediatamente. Plataforma global de cupões espaciais em formato carta.',
+        'Cupões, vales e mensagens promo das marcas caem no mapa mundial. Apanha recompensas a 200 m de ti e usa na hora. Plataforma global de cupões espaciais.',
     'ru':
-        'Купоны брендов падают письмами на мировой карте. Подбирайте письма в радиусе 200 м и используйте их сразу в магазине. Глобальная платформа купонов в формате писем.',
+        'Купоны, ваучеры и промо-сообщения брендов падают на мировой карте. Подбирайте награды в радиусе 200 м и используйте сразу. Глобальная платформа пространственных купонов.',
     'tr':
-        'Marka kuponları mektup olarak dünya haritasına düşer. Etrafındaki 200 m içindeki mektupları topla ve mağazada hemen kullan. Mektup formatında küresel konum tabanlı kupon platformu.',
+        'Marka kuponları, çekleri ve promo mesajları dünya haritasına düşer. Etrafındaki 200 m içindeki ödülleri topla ve hemen kullan. Küresel mekânsal kupon platformu.',
     'ar':
-        'قسائم الماركات تسقط كرسائل على خريطة العالم. التقط الرسائل ضمن 200 م حولك واستخدمها فورًا في المتجر. منصة عالمية لقسائم مكانية بصيغة الرسائل.',
+        'قسائم العلامات التجارية وكوبوناتها ورسائلها الترويجية تسقط على خريطة العالم. التقط المكافآت ضمن 200 م حولك واستخدمها فورًا. منصة عالمية للقسائم المكانية.',
     'it':
-        'I coupon dei brand cadono come lettere sulla mappa mondiale. Raccogli le lettere entro 200 m e usale subito in negozio. Piattaforma globale di coupon spaziali in formato lettera.',
+        'Coupon, buoni e messaggi promo dei brand cadono sulla mappa mondiale. Raccogli le ricompense entro 200 m e usale subito. Piattaforma globale di coupon spaziali.',
     'hi':
-        'ब्रांड कूपन पत्र बनकर विश्व मानचित्र पर गिरते हैं. 200 मी के भीतर पत्र उठाएँ और तुरंत दुकान में उपयोग करें. पत्र फ़ॉर्मेट का वैश्विक स्थान-आधारित कूपन प्लेटफ़ॉर्म.',
+        'ब्रांड कूपन, वाउचर और प्रचार संदेश विश्व मानचित्र पर गिरते हैं. 200 मी के भीतर इनाम उठाएँ और तुरंत उपयोग करें. वैश्विक स्थान-आधारित कूपन प्लेटफ़ॉर्म.',
     'th':
-        'คูปองของแบรนด์ตกลงมาเป็นจดหมายบนแผนที่โลก เก็บจดหมายในรัศมี 200 ม. แล้วใช้ที่ร้านทันที แพลตฟอร์มคูปองเชิงพื้นที่ระดับโลกในรูปแบบจดหมาย',
+        'คูปอง วาวเชอร์ และข้อความโปรของแบรนด์ตกบนแผนที่โลก เก็บสิทธิประโยชน์ในรัศมี 200 ม. แล้วใช้ทันที แพลตฟอร์มคูปองเชิงพื้นที่ระดับโลก',
   });
 
   // Build 140 재포지셔닝 — 새 3-티어 정체성에 맞춰 "📸 나만의 편지 뿌리기"
   // 로 전면 개편. Free 는 줍기, Premium 은 홍보, Brand 는 캠페인 이라는
   // 3 단 역할 분리를 이 한 슬라이드에서 요약.
   String get onboarding4Title => _t({
-    'ko': '📸 내 혜택을 세계에 뿌리다',
-    'en': '📸 Drop Your Own Letters',
-    'ja': '📸 自分の手紙を世界に届ける',
-    'zh': '📸 向世界投放自己的信件',
-    'fr': '📸 Lance tes lettres',
-    'de': '📸 Eigene Briefe verteilen',
-    'es': '📸 Lanza tus propias cartas',
-    'pt': '📸 Espalha as tuas cartas',
-    'ru': '📸 Распространяйте свои письма',
-    'tr': '📸 Kendi mektuplarını bırak',
-    'ar': '📸 انشر رسائلك',
-    'it': '📸 Lancia le tue lettere',
-    'hi': '📸 अपने पत्र बिखेरें',
-    'th': '📸 ส่งจดหมายของคุณ',
+    'ko': '📸 내 홍보를 세계에 뿌리다',
+    'en': '📸 Drop Your Own Promos',
+    'ja': '📸 自分の宣伝を世界に届ける',
+    'zh': '📸 向世界投放自己的推广',
+    'fr': '📸 Lance tes promos',
+    'de': '📸 Eigene Promos verteilen',
+    'es': '📸 Lanza tus propias promos',
+    'pt': '📸 Espalha as tuas promos',
+    'ru': '📸 Распространяйте свои промо',
+    'tr': '📸 Kendi promolarını bırak',
+    'ar': '📸 انشر ترويجاتك',
+    'it': '📸 Lancia le tue promo',
+    'hi': '📸 अपने प्रचार बिखेरें',
+    'th': '📸 ส่งโปรของคุณ',
   });
   String get onboarding4Body => _t({
     'ko': 'Premium은 📸 사진과 🔗 채널 링크로 나를 홍보하고, Brand는 🎟 할인권·🎁 교환권 캠페인으로 비즈니스를 알려요. Free는 줍는 데 집중!',

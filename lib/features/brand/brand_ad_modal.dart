@@ -275,11 +275,26 @@ class _BrandAdDialog extends StatelessWidget {
 
   void _pickUp(BuildContext context) {
     final state = context.read<AppState>();
+    // Build 230: 배너 모달에서 "혜택 받기" 탭 시 흐름 정상화.
+    // 1) 인박스에 이미 픽업된 letter 면 readLetter 만, 없으면 pickUpLetter 로
+    //    인박스 추가 후 read. (테스트 모드에서는 거리 검증 우회)
+    // 2) modal 닫고 → letter_read_screen 으로 이동해 본문 표시.
+    final inboxHas = state.inbox.any((l) => l.id == letter.id);
+    if (!inboxHas) {
+      // 거리 검증 우회 — 배너 노출 = 사용자가 명시적으로 받기 의사
+      state.pickUpLetter(letter.id, distanceCheck: false);
+    }
     state.readLetter(letter.id);
+    // 인박스에서 최신 letter 객체 (status=read, arrivedAt 채워진) 가져오기
+    final picked = state.inbox.firstWhere(
+      (l) => l.id == letter.id,
+      orElse: () => letter,
+    );
+    Navigator.of(context).pop(); // modal 닫기
     Navigator.of(context).push(
       MaterialPageRoute(
         builder: (_) => LetterReadScreen(
-          letter: letter,
+          letter: picked,
           userLanguageCode: state.currentUser.languageCode,
         ),
       ),

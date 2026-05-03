@@ -161,6 +161,36 @@ class _ComposeScreenState extends State<ComposeScreen>
           '내일 자정 자동 종료 — 알림 받으시고 놓치지 마세요.\n\n'
           '🔗 지금 쇼핑: \n'
           '#플래시세일 #오늘만',
+      // 11. 유튜브 신규 영상
+      '🎬 새 영상 업로드 알림!\n\n'
+          '한 달 동안 준비한 시리즈의 첫 편이 공개됐어요.\n'
+          '구독·좋아요는 큰 힘이 됩니다 🙏\n\n'
+          '📺 채널: \n'
+          '#유튜브 #신작 #구독',
+      // 12. 인스타 릴스
+      '📸 오늘의 릴스, 1분 안에 끝나요\n\n'
+          '댓글로 다음 영상 주제 추천받습니다.\n'
+          '뽑힌 분께는 이번 주 라이브에서 호명 + 작은 선물.\n\n'
+          '🎯 인스타: @brandhandle\n'
+          '#릴스 #일상',
+      // 13. 라이브 방송 예고
+      '🔴 오늘 밤 9시 라이브!\n\n'
+          '오랜만에 깊은 이야기 — Q&A 시간도 있어요.\n'
+          '실시간 댓글 위주로 진행합니다. 미리 질문 남겨주세요.\n\n'
+          '📺 채널: \n'
+          '#라이브 #Q&A',
+      // 14. 구독자 감사
+      '🎉 1만 구독자 감사합니다!\n\n'
+          '여러분이 한 분 한 분 모여 만들어주신 결과예요.\n'
+          '기념으로 추첨 이벤트 진행 — 댓글 한 줄이면 자동 응모.\n\n'
+          '🎁 이벤트 안내: \n'
+          '#감사이벤트 #1만구독',
+      // 15. 멤버십 / 클래스 모집
+      '🌟 멤버십 1기 모집 (선착순 50명)\n\n'
+          '저만의 콘텐츠 제작 노트 + 매주 멘토링 라이브.\n'
+          '일반 영상에는 절대 안 들어가는 비하인드 공유합니다.\n\n'
+          '🎯 신청: \n'
+          '#멤버십 #1기모집 #한정',
     ],
     'en': [
       // 1. Local cafe 1+1
@@ -223,6 +253,36 @@ class _ComposeScreenState extends State<ComposeScreen>
           'Ends midnight tomorrow — set your reminder.\n\n'
           '🔗 Shop now: \n'
           '#flashsale #todayonly',
+      // 11. New YouTube upload
+      '🎬 New video is live!\n\n'
+          'Month-long project — episode 1 of the series.\n'
+          'Subs and likes mean a lot 🙏\n\n'
+          '📺 Channel: \n'
+          '#youtube #newupload',
+      // 12. Instagram reels
+      '📸 Today\'s reel — under a minute.\n\n'
+          'Drop your next-video ideas in the comments.\n'
+          'Picked one gets a shoutout in the live + a small gift.\n\n'
+          '🎯 Insta: @brandhandle\n'
+          '#reels #dailyvibe',
+      // 13. Live show preview
+      '🔴 Live tonight 9pm!\n\n'
+          'A deeper conversation + live Q&A.\n'
+          'Follow comments will drive the show — drop questions early.\n\n'
+          '📺 Channel: \n'
+          '#live #qa',
+      // 14. Subscriber milestone
+      '🎉 10K subscribers — thank you!\n\n'
+          'Every single one of you made this happen.\n'
+          'Giveaway to celebrate — one comment auto-enters you.\n\n'
+          '🎁 Details: \n'
+          '#thanks #10k',
+      // 15. Membership recruitment
+      '🌟 Membership cohort 1 — 50 spots, first-come\n\n'
+          'My content notebook + weekly mentor live.\n'
+          'Behind-the-scenes you\'ll never see in regular videos.\n\n'
+          '🎯 Apply: \n'
+          '#membership #cohort1',
     ],
     'ja': [
       // 1. カフェ 1+1
@@ -285,6 +345,36 @@ class _ComposeScreenState extends State<ComposeScreen>
           '明日の0時で終了 — リマインダーを設定してお見逃しなく。\n\n'
           '🔗 今すぐ買い物: \n'
           '#フラッシュセール #本日限定',
+      // 11. YouTube 新着動画
+      '🎬 新作動画、公開しました！\n\n'
+          '1ヶ月かけて準備したシリーズの第1話です。\n'
+          '登録・いいねは大きな力になります 🙏\n\n'
+          '📺 チャンネル: \n'
+          '#YouTube #新作 #登録',
+      // 12. インスタ リール
+      '📸 今日のリール、1分で見られます\n\n'
+          'コメントで次の動画テーマを募集中。\n'
+          '採用された方には次回ライブで紹介＋小さなプレゼント。\n\n'
+          '🎯 インスタ: @brandhandle\n'
+          '#リール #日常',
+      // 13. ライブ配信予告
+      '🔴 今夜21時ライブ配信！\n\n'
+          '久しぶりに深い話を — Q&Aの時間もあります。\n'
+          'リアルタイムコメント中心。事前に質問送ってください。\n\n'
+          '📺 チャンネル: \n'
+          '#ライブ #QA',
+      // 14. 登録者感謝
+      '🎉 登録者1万人ありがとうございます！\n\n'
+          'お一人お一人のおかげで実現しました。\n'
+          '記念抽選 — コメント1つで自動応募。\n\n'
+          '🎁 詳細: \n'
+          '#感謝 #1万人',
+      // 15. メンバーシップ募集
+      '🌟 メンバーシップ1期生 50名募集 (先着順)\n\n'
+          '私だけのコンテンツノート＋毎週メンタリングライブ。\n'
+          '通常動画には絶対入らない裏話を共有します。\n\n'
+          '🎯 申し込み: \n'
+          '#メンバーシップ #1期 #限定',
     ],
   };
 
