@@ -627,7 +627,7 @@ class AppL10n {
   String get onboarding1Body => _t({
     'ko': '내 주변 지도 위에 떠 있는 할인·쿠폰을 주워 바로 사용해요. 브랜드는 혜택으로 홍보하고, 회원은 보물처럼 줍습니다.',
     'en':
-        'Pick up discounts and coupons floating on the map around you, redeem instantly. Brands promote via letters; members hunt for treasures.',
+        'Pick up discounts and coupons floating on the map around you, redeem instantly. Brands promote via promos; members hunt for treasures.',
     'ja': '近くの地図に浮かぶ割引・クーポンを拾って即使用。ブランドは手紙で宣伝し、会員は宝物のように拾います。',
     'zh': '捡起你身边地图上漂浮的折扣和优惠券，立即使用。品牌用信件推广，会员像寻宝一样捡取。',
     'fr':
@@ -814,7 +814,7 @@ class AppL10n {
     // 부차적. 네비 소개보다 "지도에서 혜택 줍기" 를 최우선 메시지로.
     'ko': '지도를 열어 근처의 할인·홍보 혜택을 주워보세요. 받은 혜택 안 코드·링크로 바로 혜택을 사용할 수 있어요.',
     'en':
-        'Open the map and pick up nearby promo and coupon letters. Use the code or link inside each letter right away.',
+        'Open the map and pick up nearby promos and coupon rewards. Use the code or link inside each reward right away.',
     'ja':
         '地図を開いて近くの割引・プロモ手紙を拾いましょう。中のコードやリンクですぐに特典を使えます。',
     'zh':
@@ -1038,7 +1038,7 @@ class AppL10n {
   String get locationRequiredBody => _t({
     'ko': '혜택이 내 위치 2km 이내에 도착하면\n알림을 받을 수 있어요.\n위치 정보는 앱 내에서만 사용됩니다.',
     'en':
-        'Get notified when a letter arrives\nwithin 2km of you.\nLocation is only used within the app.',
+        'Get notified when a reward arrives\nwithin 2km of you.\nLocation is only used within the app.',
     'ja': '2km以内に手紙が届いたとき\n通知を受け取れます。\n位置情報はアプリ内のみで使用されます。',
     'zh': '当信件到达2公里范围内时\n您将收到通知。\n位置仅在应用内使用。',
     'fr':
@@ -7380,7 +7380,7 @@ class AppL10n {
       case 'ko':
         return '아직 $filterName 혜택이 없어요';
       case 'en':
-        return 'No $filterName letters yet';
+        return 'No $filterName rewards yet';
       case 'ja':
         return 'まだ$filterNameの手紙がありません';
       case 'zh':
@@ -7406,7 +7406,7 @@ class AppL10n {
       case 'th':
         return 'ยังไม่มีจดหมาย$filterName';
       default:
-        return 'No $filterName letters yet';
+        return 'No $filterName rewards yet';
     }
   }
 
@@ -15416,7 +15416,7 @@ class AppL10n {
   // 3) 인박스 빈 상태 근처 혜택 카운터 (부제)
   String inboxEmptyNearbyCount(int n) => _t({
     'ko': '지금 근처에 $n통의 혜택이 있어요',
-    'en': '$n letter${n == 1 ? '' : 's'} nearby right now',
+    'en': '$n reward${n == 1 ? '' : 's'} nearby right now',
     'ja': '今、近くに$n通の手紙があります',
     'zh': '附近有 $n 封信件',
     'fr': '$n lettre${n == 1 ? '' : 's'} à proximité',
@@ -16054,7 +16054,7 @@ class AppL10n {
   });
   String get mapHelpMarkerVoucherTitle => _t({
     'ko': '🎁 교환권',
-    'en': '🎁 Voucher letter',
+    'en': '🎁 Voucher',
     'ja': '🎁 交換券',
     'zh': '🎁 代金券',
     'fr': '🎁 Bon',
@@ -16151,7 +16151,7 @@ class AppL10n {
   });
   String get mapHelpStep1Body => _t({
     'ko': '내 위치 주변에 떨어진 혜택을 확인. 반경 밖 혜택은 상단 나침반에서 방향을 봐요.',
-    'en': 'See letters near you. Outside the radius, the top compass shows direction.',
+    'en': 'See rewards near you. Outside the radius, the top compass shows direction.',
     'ja': '近くの手紙を確認。圏外の手紙は上部の方位で方向を確認。',
     'zh': '查看附近的信件。范围外的信件可在顶部方向指示查看。',
     'fr': 'Voir les lettres près de toi. Hors portée, la boussole montre la direction.',
@@ -16183,7 +16183,7 @@ class AppL10n {
   });
   String get mapHelpStep2Body => _t({
     'ko': '반경 안에 들어오면 혜택이 밝아져요. 탭해서 열고 할인 혜택을 확인하세요.',
-    'en': 'Letters light up when in range. Tap to open and view the offer.',
+    'en': 'Rewards light up when in range. Tap to open and view the offer.',
     'ja': '圏内に入ると手紙が光ります。タップして開いて特典を確認。',
     'zh': '进入范围后信件发光。点击打开并查看优惠。',
     'fr': 'Les lettres s\'illuminent à portée. Appuie pour ouvrir.',
@@ -16369,7 +16369,7 @@ class AppL10n {
 
   String get composeGateFeatureName => _t({
     'ko': '홍보 홍보 발송',
-    'en': 'Promo letter sending',
+    'en': 'Promo sending',
     'ja': 'プロモ手紙の送信',
     'zh': '推广信件发送',
     'fr': 'Envoi de lettres promo',
@@ -16386,7 +16386,7 @@ class AppL10n {
 
   String get composeGateDesc => _t({
     'ko': '혜택을 세계에 뿌리고 싶다면 Premium 으로 업그레이드하세요.\n📸 사진 첨부 · 🔗 채널/SNS 링크로 나를 홍보할 수 있어요.\n무료 회원은 지도에서 혜택을 주워 혜택을 활용할 수 있어요.',
-    'en': 'Upgrade to Premium to drop your own letters worldwide.\n📸 Attach photos · 🔗 Add channel/SNS links to promote yourself.\nFree members keep picking up letters and claiming benefits.',
+    'en': 'Upgrade to Premium to drop your own promos worldwide.\n📸 Attach photos · 🔗 Add channel/SNS links to promote yourself.\nFree members keep picking up rewards and claiming benefits.',
     'ja': 'Premium にアップグレードして、自分の手紙を世界に届けましょう。\n📸 写真添付 · 🔗 チャンネル/SNS リンクで自己PR。\n無料会員は地図で手紙を拾って特典を活用できます。',
     'zh': '升级 Premium 将你的信件发送到世界各地。\n📸 附加照片 · 🔗 添加频道/社交链接自我宣传。\n免费会员可以继续在地图上拾取信件。',
     'fr': 'Passe à Premium pour envoyer tes lettres dans le monde entier.\n📸 Joins des photos · 🔗 Ajoute des liens de chaîne / réseaux.\nLes membres gratuits continuent de ramasser des lettres.',
@@ -16923,7 +16923,7 @@ class AppL10n {
   });
 
   String get profileNearbyNotificationDesc => _t({
-    'ko': '2km 이내 도착 혜택 알림', 'en': 'Notify when letter arrives within 2km', 'ja': '2km以内に届いた手紙を通知', 'zh': '信件到达2km以内时通知',
+    'ko': '2km 이내 도착 혜택 알림', 'en': 'Notify when reward arrives within 2km', 'ja': '2km以内に届いた手紙を通知', 'zh': '信件到达2km以内时通知',
     'fr': 'Notifier quand une lettre arrive à moins de 2 km', 'de': 'Benachrichtigen, wenn ein Brief innerhalb von 2 km ankommt', 'es': 'Notificar cuando una carta llegue a menos de 2 km',
     'pt': 'Notificar quando uma carta chegar a menos de 2 km', 'ru': 'Уведомлять, когда письмо прибудет в радиусе 2 км', 'tr': '2 km içinde mektup geldiğinde bildir',
     'ar': 'إشعار عند وصول رسالة في نطاق 2 كم', 'it': 'Notifica quando una lettera arriva entro 2 km', 'hi': '2 किमी के भीतर पत्र आने पर सूचित करें', 'th': 'แจ้งเตือนเมื่อจดหมายมาถึงภายใน 2 กม.',
@@ -17372,14 +17372,14 @@ class AppL10n {
   });
 
   String get towerSentLetters => _t({
-    'ko': '보낸 혜택', 'en': 'Sent Letters', 'ja': '送った手紙', 'zh': '已发信件',
+    'ko': '보낸 혜택', 'en': 'Sent Promos', 'ja': '送った手紙', 'zh': '已发信件',
     'fr': 'Lettres envoyées', 'de': 'Gesendete Briefe', 'es': 'Cartas enviadas',
     'pt': 'Cartas enviadas', 'ru': 'Отправленные письма', 'tr': 'Gönderilen mektuplar',
     'ar': 'الرسائل المرسلة', 'it': 'Lettere inviate', 'hi': 'भेजे गए पत्र', 'th': 'จดหมายที่ส่ง',
   });
 
   String get towerReceivedLetters => _t({
-    'ko': '받은 혜택', 'en': 'Received Letters', 'ja': '受け取った手紙', 'zh': '已收信件',
+    'ko': '받은 혜택', 'en': 'Received Rewards', 'ja': '受け取った手紙', 'zh': '已收信件',
     'fr': 'Lettres reçues', 'de': 'Empfangene Briefe', 'es': 'Cartas recibidas',
     'pt': 'Cartas recebidas', 'ru': 'Полученные письма', 'tr': 'Alınan mektuplar',
     'ar': 'الرسائل المستلمة', 'it': 'Lettere ricevute', 'hi': 'प्राप्त पत्र', 'th': 'จดหมายที่ได้รับ',
@@ -17568,21 +17568,21 @@ class AppL10n {
   });
 
   String get towerBadgeFirstStepDesc => _t({
-    'ko': '첫 홍보 발송', 'en': 'Send your first letter', 'ja': '初めての手紙を送る', 'zh': '发送第一封信',
+    'ko': '첫 홍보 발송', 'en': 'Send your first promo', 'ja': '初めての手紙を送る', 'zh': '发送第一封信',
     'fr': 'Envoyer votre première lettre', 'de': 'Sende deinen ersten Brief', 'es': 'Envía tu primera carta',
     'pt': 'Envie sua primeira carta', 'ru': 'Отправьте первое письмо', 'tr': 'İlk mektubunu gönder',
     'ar': 'أرسل رسالتك الأولى', 'it': 'Invia la tua prima lettera', 'hi': 'अपना पहला पत्र भेजें', 'th': 'ส่งจดหมายฉบับแรก',
   });
 
   String get towerBadgeCollector => _t({
-    'ko': '혜택 수집가', 'en': 'Letter Collector', 'ja': '手紙コレクター', 'zh': '信件收藏家',
+    'ko': '혜택 수집가', 'en': 'Reward Collector', 'ja': '手紙コレクター', 'zh': '信件收藏家',
     'fr': 'Collectionneur de lettres', 'de': 'Briefesammler', 'es': 'Coleccionista de cartas',
     'pt': 'Colecionador de cartas', 'ru': 'Коллекционер писем', 'tr': 'Mektup koleksiyoncusu',
     'ar': 'جامع الرسائل', 'it': 'Collezionista di lettere', 'hi': 'पत्र संग्रहकर्ता', 'th': 'นักสะสมจดหมาย',
   });
 
   String get towerBadgeCollectorDesc => _t({
-    'ko': '혜택 10통 수집', 'en': 'Collect 10 letters', 'ja': '手紙を10通集める', 'zh': '收集10封信',
+    'ko': '혜택 10통 수집', 'en': 'Collect 10 rewards', 'ja': '手紙を10通集める', 'zh': '收集10封信',
     'fr': 'Collectez 10 lettres', 'de': 'Sammle 10 Briefe', 'es': 'Recopila 10 cartas',
     'pt': 'Colete 10 cartas', 'ru': 'Соберите 10 писем', 'tr': '10 mektup topla',
     'ar': 'اجمع 10 رسائل', 'it': 'Raccogli 10 lettere', 'hi': '10 पत्र संग्रह करें', 'th': 'สะสมจดหมาย 10 ฉบับ',
@@ -17610,7 +17610,7 @@ class AppL10n {
   });
 
   String get towerBadgeTravelerDesc => _t({
-    'ko': '5개국 혜택 수신', 'en': 'Receive letters from 5 countries', 'ja': '5か国から手紙を受け取る', 'zh': '收到来自5个国家的信',
+    'ko': '5개국 혜택 수신', 'en': 'Receive rewards from 5 countries', 'ja': '5か国から手紙を受け取る', 'zh': '收到来自5个国家的信',
     'fr': 'Recevez des lettres de 5 pays', 'de': 'Erhalte Briefe aus 5 Ländern', 'es': 'Recibe cartas de 5 países',
     'pt': 'Receba cartas de 5 países', 'ru': 'Получите письма из 5 стран', 'tr': '5 ülkeden mektup al',
     'ar': 'استلم رسائل من 5 دول', 'it': 'Ricevi lettere da 5 paesi', 'hi': '5 देशों से पत्र प्राप्त करें', 'th': 'รับจดหมายจาก 5 ประเทศ',
@@ -18105,7 +18105,7 @@ class AppL10n {
 
   String get deliveryIntroTitle => _t({
     'ko': '혜택이 배송을 시작했어요 🚚✈️🚢',
-    'en': 'Your letter is now in transit 🚚✈️🚢',
+    'en': 'Your reward is now in transit 🚚✈️🚢',
     'ja': 'お手紙の配送が始まりました 🚚✈️🚢',
     'zh': '您的信件已开始运送 🚚✈️🚢',
     'fr': 'Votre lettre est en acheminement 🚚✈️🚢',
@@ -18140,7 +18140,7 @@ class AppL10n {
   /// 앱의 핵심 포지셔닝 태그라인. 온보딩·공유 카드·마케팅에 사용.
   String get appTagline => _t({
     'ko': '혜택은 천천히 여행합니다 — 육로, 항공, 해운으로',
-    'en': 'Letters travel at their own pace — by land, air, and sea',
+    'en': 'Rewards travel at their own pace — by land, air, and sea',
     'ja': 'お手紙はゆっくり旅をする — 陸路、空路、海路で',
     'zh': '信件按自己的节奏旅行 — 经陆、空、海',
     'fr': 'Les lettres voyagent à leur rythme — par terre, air et mer',
@@ -18162,7 +18162,7 @@ class AppL10n {
   // 스플래시에서 메인 tagline 아래 노출. 감성 + 실용 동시 강조.
   String get appSubTagline => _t({
     'ko': '혜택을 줍는 글로벌 공간 쿠폰 플랫폼',
-    'en': 'The global space-based coupon platform — in letter format',
+    'en': 'The global space-based coupon platform — pick rewards near you',
     'ja': '手紙フォーマットのグローバル空間クーポンプラットフォーム',
     'zh': '以信件形式的全球空间优惠券平台',
     'fr': 'Plateforme mondiale de coupons spatiaux au format lettre',
@@ -18182,7 +18182,7 @@ class AppL10n {
   /// 스플래시 sub-tagline — 메인 wordmark 아래 한 줄 설명.
   String get splashSub => _t({
     'ko': '근처에 떠있는 쿠폰과 혜택을\n주워 쓰는 지갑.',
-    'en': 'Pick up nearby coupons and letters\nright into your wallet.',
+    'en': 'Pick up nearby coupons and rewards\nright into your wallet.',
     'ja': '近くに浮かぶクーポンと手紙を\n拾って使う財布。',
     'zh': '附近的优惠券和信件\n捡起来,放进钱包。',
     'fr': 'Une cartera para coger les coupons\net les lettres autour de toi.',
@@ -18200,7 +18200,7 @@ class AppL10n {
   /// 브랜드 광고 모달 "혜택 받기" CTA.
   String get brandAdPickup => _t({
     'ko': '혜택 받기',
-    'en': 'Pick up letter',
+    'en': 'Pick up reward',
     'ja': '手紙を受け取る',
     'zh': '领取信件',
     'fr': 'Recevoir la lettre',
@@ -18349,7 +18349,7 @@ class AppL10n {
 
   String get authTermsDesc => _t({
     'ko': '혜택 내용은 신고 접수 시에만 관리자가 검토할 수 있습니다.\n부적절한 콘텐츠 게시 시 서비스 이용이 제한될 수 있습니다.',
-    'en': 'Letter content may only be reviewed by administrators upon receiving a report.\nPosting inappropriate content may result in service restrictions.',
+    'en': 'Reward content may only be reviewed by administrators upon receiving a report.\nPosting inappropriate content may result in service restrictions.',
     'ja': '手紙の内容は、報告を受けた場合にのみ管理者が確認できます。\n不適切なコンテンツの投稿はサービス制限の対象となります。',
     'zh': '信件内容仅在收到举报时由管理员审查。\n发布不当内容可能导致服务限制。',
     'fr': 'Le contenu des lettres ne peut être examiné par les administrateurs que sur signalement.\nLa publication de contenu inapproprié peut entraîner des restrictions de service.',
@@ -18388,8 +18388,8 @@ class AppL10n {
         '혜택 내용은 다른 사용자로부터 신고가 접수된 경우에 한하여 검토됩니다. '
         '검토는 커뮤니티 가이드라인 위반 여부를 판단하기 위한 목적으로만 수행되며, '
         '위반이 확인되면 해당 콘텐츠의 차단 및 계정 제한 조치가 이루어질 수 있습니다.',
-    'en': 'Administrators do not routinely access your letter content. '
-        'Letters are reviewed only when a report is filed by another user. '
+    'en': 'Administrators do not routinely access your reward content. '
+        'Rewards are reviewed only when a report is filed by another user. '
         'Reviews are conducted solely to determine violations of community guidelines. '
         'If a violation is confirmed, content may be blocked and account restrictions may apply.',
     'ja': '管理者は日常的にあなたの手紙の内容を閲覧しません。'
@@ -18977,10 +18977,10 @@ class AppL10n {
         '• 2회: 일시적 서비스 제한\n'
         '• 3회 이상: 영구 계정 차단\n\n'
         '부적절한 혜택을 받으면 혜택 읽기 화면에서 🚩 버튼으로 신고해 주세요.',
-    'en': 'Thiscount is a space where users worldwide connect through letters.\n'
+    'en': 'Thiscount is a space where users worldwide connect through rewards.\n'
         'Please follow these rules so everyone can have a safe, enjoyable experience.\n\n'
         '✅ Encouraged\n'
-        '• Write letters with a polite, friendly tone\n'
+        '• Write rewards with a polite, friendly tone\n'
         '• Respect diverse cultures and languages\n'
         '• Share positive, constructive content\n\n'
         '❌ Prohibited\n'
@@ -18994,7 +18994,7 @@ class AppL10n {
         '• 1st offense: Content blocked + warning\n'
         '• 2nd offense: Temporary service restriction\n'
         '• 3+ offenses: Permanent account suspension\n\n'
-        'If you receive an inappropriate letter, please report it using the 🚩 button on the letter screen.',
+        'If you receive an inappropriate reward, please report it using the 🚩 button on the reward screen.',
     'ja': 'Thiscountは世界中のユーザーが手紙でつながる場所です。\n'
         '安全で楽しい体験のために、以下のルールを守ってください。\n\n'
         '✅ 推奨事項\n'
@@ -19236,7 +19236,7 @@ class AppL10n {
 
   String get composeRecallLast => _t({
     'ko': '마지막 보낸 홍보 내용 불러오기',
-    'en': 'Load last sent letter content',
+    'en': 'Load last sent promo content',
     'ja': '最後に送った手紙の内容を読み込む',
     'zh': '加载上次发送的信件内容',
     'fr': 'Charger le contenu de la dernière lettre envoyée',
@@ -19253,7 +19253,7 @@ class AppL10n {
 
   String get composeNoLastLetter => _t({
     'ko': '이전에 보낸 혜택이 없습니다',
-    'en': 'No previously sent letter found',
+    'en': 'No previously sent promo found',
     'ja': '以前送った手紙がありません',
     'zh': '没有找到之前发送的信件',
     'fr': 'Aucune lettre précédemment envoyée trouvée',
@@ -19270,7 +19270,7 @@ class AppL10n {
 
   String get composeLoadLastTitle => _t({
     'ko': '마지막 보낸 홍보',
-    'en': 'Last Sent Letter',
+    'en': 'Last Sent Promo',
     'ja': '最後に送った手紙',
     'zh': '上次发送的信件',
     'fr': 'Dernière lettre envoyée',
@@ -19589,7 +19589,7 @@ class AppL10n {
 
   String get streakMilestone14 => _t({
     'ko': '14일 연속 접속! 혜택이 익숙해졌어요',
-    'en': '14-day streak! Letters feel like home',
+    'en': '14-day streak! Rewards feel like home',
     'ja': '14日連続アクセス！手紙が日課になりました',
     'zh': '连续14天签到！写信已成日常',
     'fr': '14 jours consécutifs ! Les lettres deviennent routine',
@@ -19709,7 +19709,7 @@ class AppL10n {
 
   String weeklyChallengeDescription(int goal) => _t({
     'ko': '이번 주에 $goal개 나라로 홍보를 보내보세요',
-    'en': 'Send letters to $goal countries this week',
+    'en': 'Send promos to $goal countries this week',
     'ja': '今週$goalカ国に手紙を送ってみましょう',
     'zh': '本周向$goal个国家寄信',
     'fr': 'Envoyez des lettres à $goal pays cette semaine',
@@ -19812,7 +19812,7 @@ class AppL10n {
   // ── 혜택 커뮤니티 감성 메시지 (scarcity 제거, 함께 읽기 강조) ──────────
   String get scarcityClosedTitle => _t({
     'ko': '많은 이들이 함께 읽은 혜택',
-    'en': 'A letter read by many',
+    'en': 'A reward read by many',
     'ja': '多くの人が読んだ手紙',
     'zh': '被许多人一起读过的信',
     'fr': 'Une lettre lue par beaucoup',
@@ -19829,7 +19829,7 @@ class AppL10n {
 
   String get scarcityClosedSub => _t({
     'ko': '이 혜택은 이미 여러 사람의 하루에 닿았어요',
-    'en': 'This letter has already touched many days',
+    'en': 'This reward has already touched many days',
     'ja': 'この手紙はすでにたくさんの人の一日に届きました',
     'zh': '这封信已经触动了许多人的一天',
     'fr': 'Cette lettre a déjà touché bien des journées',
@@ -19846,7 +19846,7 @@ class AppL10n {
 
   String get scarcityLastReaderTitle => _t({
     'ko': '이 혜택이 당신에게 왔어요',
-    'en': 'This letter found you',
+    'en': 'This reward found you',
     'ja': 'この手紙はあなたに届きました',
     'zh': '这封信来到了你身边',
     'fr': 'Cette lettre vous a trouvé',
@@ -19897,7 +19897,7 @@ class AppL10n {
 
   String scarcityCountSub(int remaining) => _t({
     'ko': '같은 혜택을 읽고 있는 다른 이들이 있어요',
-    'en': 'Others are reading the same letter too',
+    'en': 'Others are reading the same reward too',
     'ja': '同じ手紙を読んでいる人が他にもいます',
     'zh': '还有其他人也在读这封信',
     'fr': 'D\'autres lisent aussi cette lettre',
@@ -19934,7 +19934,7 @@ class AppL10n {
 
   String get userLevelNewbieWelcome => _t({
     'ko': '첫 홍보를 보내볼까요?',
-    'en': 'Ready to send your first letter?',
+    'en': 'Ready to send your first promo?',
     'ja': '最初の手紙を送ってみませんか？',
     'zh': '要寄出第一封信吗？',
     'fr': 'Prêt à envoyer votre première lettre ?',
@@ -19969,7 +19969,7 @@ class AppL10n {
 
   String get userLevelCasualWelcome => _t({
     'ko': '✉️ 오늘의 혜택이 해금되었어요',
-    'en': '✉️ Today\'s Letter is now available',
+    'en': '✉️ Today\'s Reward is now available',
     'ja': '✉️ 今日の手紙が利用可能になりました',
     'zh': '✉️ 今日之信已解锁',
     'fr': '✉️ La Lettre du jour est disponible',
@@ -20031,7 +20031,7 @@ class AppL10n {
 
   String get cityOfMonthCta => _t({
     'ko': '이 도시로 홍보 쓰기',
-    'en': 'Write a letter to this city',
+    'en': 'Write a promo to this city',
     'ja': 'この都市に手紙を書く',
     'zh': '写信给这座城市',
     'fr': 'Écrire une lettre à cette ville',
@@ -20049,7 +20049,7 @@ class AppL10n {
   // ── 공유 카드 ───────────────────────────────────────────────────────────
   String shareCardHeader(String country) => _t({
     'ko': '$country에서 혜택이 도착했어요',
-    'en': 'A letter arrived from $country',
+    'en': 'A reward arrived from $country',
     'ja': '$countryから手紙が届きました',
     'zh': '来自$country的信件已送达',
     'fr': 'Une lettre est arrivée de $country',
@@ -20140,7 +20140,7 @@ class AppL10n {
 
   String get journeyLongestDistance => _t({
     'ko': '가장 멀리 떠난 혜택',
-    'en': 'Farthest letter sent',
+    'en': 'Farthest promo sent',
     'ja': '最も遠くまで届いた手紙',
     'zh': '最远抵达的信件',
     'fr': 'Lettre la plus lointaine',
@@ -20229,7 +20229,7 @@ class AppL10n {
   // ── 편지 맥락 배지 ──────────────────────────────────────────────────────
   String letterContextReceivedOrdinal(int n) => _t({
     'ko': '당신이 받은 $n번째 혜택',
-    'en': 'Your ${_ordinalEn(n)} received letter',
+    'en': 'Your ${_ordinalEn(n)} received reward',
     'ja': 'あなたの受け取った$n通目の手紙',
     'zh': '你收到的第 $n 封信',
     'fr': '$n${_ordinalFr(n)} lettre reçue',
@@ -20246,7 +20246,7 @@ class AppL10n {
 
   String letterContextFirstFromCountry(String country) => _t({
     'ko': '$country에서 온 첫 혜택이에요',
-    'en': 'Your first letter from $country',
+    'en': 'Your first reward from $country',
     'ja': '$countryからの最初の手紙',
     'zh': '来自$country的第一封信',
     'fr': 'Première lettre de $country',
@@ -20263,7 +20263,7 @@ class AppL10n {
 
   String letterContextNthFromCountry(int n, String country) => _t({
     'ko': '$country에서 온 $n번째 혜택',
-    'en': 'Your ${_ordinalEn(n)} letter from $country',
+    'en': 'Your ${_ordinalEn(n)} reward from $country',
     'ja': '$countryからの$n通目の手紙',
     'zh': '来自$country的第 $n 封信',
     'fr': '$n${_ordinalFr(n)} lettre de $country',
@@ -20293,7 +20293,7 @@ class AppL10n {
   // ── 빈 상태 CTA ─────────────────────────────────────────────────────────
   String get emptyStateWriteCta => _t({
     'ko': '첫 홍보 쓰기',
-    'en': 'Write your first letter',
+    'en': 'Write your first promo',
     'ja': '最初の手紙を書く',
     'zh': '写下第一封信',
     'fr': 'Écrire votre première lettre',
@@ -20644,7 +20644,7 @@ class AppL10n {
   });
 
   String get towerBenefitsFreeFeat3 => _t({
-    'ko': '받은 혜택 답장은 가능', 'en': 'Replies to received letters allowed', 'ja': '受信した手紙への返信可能', 'zh': '可回复已收信件',
+    'ko': '받은 혜택 답장은 가능', 'en': 'Replies to received rewards allowed', 'ja': '受信した手紙への返信可能', 'zh': '可回复已收信件',
     'fr': 'Réponses possibles', 'de': 'Antworten möglich', 'es': 'Respuestas posibles',
     'pt': 'Respostas possíveis', 'ru': 'Можно отвечать', 'tr': 'Yanıt verilebilir',
     'ar': 'يمكن الرد', 'it': 'Risposte consentite', 'hi': 'उत्तर देना संभव', 'th': 'ตอบจดหมายได้',
@@ -20744,7 +20744,7 @@ class AppL10n {
 
   String piiDialogBody(String label) => _t({
     'ko': '홍보 본문은 받는 사람이 누구나 읽을 수 있어요.\n$label 같은 개인정보는 빼고 보내는 게 안전해요.\n그래도 그대로 보낼까요?',
-    'en': 'Letter content is publicly readable.\nIt is safer to remove $label before sending.\nSend it anyway?',
+    'en': 'Promo content is publicly readable.\nIt is safer to remove $label before sending.\nSend it anyway?',
     'ja': '手紙本文は誰でも読めます。\n$label のような個人情報は除いた方が安全です。\nそのまま送りますか？',
     'zh': '信件正文任何人都能阅读。\n建议移除$label等个人信息。\n仍然发送吗？',
     'fr': 'Le contenu est public.\nMieux vaut retirer $label.\nEnvoyer quand même ?',
