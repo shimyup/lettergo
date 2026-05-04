@@ -4147,9 +4147,9 @@ class _ComposeScreenState extends State<ComposeScreen>
                           borderRadius: BorderRadius.circular(12),
                         ),
                       ),
-                      child: const Text(
-                        '완료',
-                        style: TextStyle(
+                      child: Text(
+                        l10n.composeAttachDone,
+                        style: const TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.w800,
                         ),

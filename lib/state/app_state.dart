@@ -54,6 +54,11 @@ class MapUser {
   final TowerTier tier;
   final int floors;
   final int rank;
+  // Build 240: 실제 사용자 레벨 (1~50). receivedCount/sentCount 기반 근사 XP 로
+  // 계산 — Firestore 에 km 데이터가 저장되지 않아 정확한 XP 는 불가하지만
+  // 마커 라벨 용도엔 충분히 정합. 이전엔 floors(1~15) 를 'Lv N' 으로
+  // 잘못 노출해서 실 사용자 레벨과 mismatch 했음.
+  final int level;
   final String? username;
   final String? towerName; // 사용자 지정 타워 이름
   final String towerColor; // 타워 커스텀 색상 (hex)
@@ -69,6 +74,7 @@ class MapUser {
     required this.tier,
     required this.floors,
     required this.rank,
+    this.level = 1,
     this.username,
     this.towerName,
     this.towerColor = '#FFD700',
@@ -85,6 +91,7 @@ class MapUser {
     tier: tier,
     floors: floors,
     rank: rank ?? this.rank,
+    level: level,
     username: username,
     towerName: towerName,
     towerColor: towerColor,
@@ -3838,16 +3845,18 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
       final now = DateTime.now();
       final rand = Random(now.millisecondsSinceEpoch);
 
-      // 8 방위 + 거리 (반경 200~1000m 내 분산)
+      // 8 방위 + 거리 (Build 240: Free 픽업 반경 200m 안으로 압축 — 60~180m).
+      // 이전엔 230m/280m 가 Free 반경 밖이라 픽업 시 "거리 너무 멀다" 에러로
+      // 첫인상 혼동을 유발. 이제 모든 데모 쿠폰이 Free 사용자에게도 줍기 가능.
       const samples = <Map<String, Object>>[
         {'bearingDeg': 0,   'distM': 60,  'sender': 'Emma',     'country': '영국',     'flag': '🇬🇧'},
         {'bearingDeg': 45,  'distM': 110, 'sender': 'Yuki',     'country': '일본',     'flag': '🇯🇵'},
         {'bearingDeg': 90,  'distM': 170, 'sender': 'Lucas',    'country': '브라질',   'flag': '🇧🇷'},
-        {'bearingDeg': 135, 'distM': 230, 'sender': 'Marie',    'country': '프랑스',   'flag': '🇫🇷'},
+        {'bearingDeg': 135, 'distM': 130, 'sender': 'Marie',    'country': '프랑스',   'flag': '🇫🇷'},
         {'bearingDeg': 180, 'distM': 90,  'sender': 'James',    'country': '미국',     'flag': '🇺🇸'},
         {'bearingDeg': 225, 'distM': 150, 'sender': 'Lina',     'country': '독일',     'flag': '🇩🇪'},
-        {'bearingDeg': 270, 'distM': 200, 'sender': 'Carlos',   'country': '스페인',   'flag': '🇪🇸'},
-        {'bearingDeg': 315, 'distM': 280, 'sender': 'Sofia',    'country': '아르헨티나','flag': '🇦🇷'},
+        {'bearingDeg': 270, 'distM': 80,  'sender': 'Carlos',   'country': '스페인',   'flag': '🇪🇸'},
+        {'bearingDeg': 315, 'distM': 180, 'sender': 'Sofia',    'country': '아르헨티나','flag': '🇦🇷'},
       ];
 
       // 카테고리 풀 — Premium 카테고리 선호도 부스트가 켜져 있으면 50% 매칭.
@@ -4985,6 +4994,10 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
             final towerAccentRaw = parseString(fields, 'towerAccentEmoji');
             final towerAccent = towerAccentRaw.isEmpty ? null : towerAccentRaw;
 
+            // Build 240: receivedCount + sentCount 기반 근사 XP → level.
+            // Firestore 에 km 누적은 없지만 활동량 비례하므로 마커 라벨엔 충분.
+            final approxXp = score.receivedCount * 10 + score.sentCount * 5;
+            final approxLevel = UserProgress.calcLevel(approxXp);
             users.add(
               MapUser(
                 id: id,
@@ -4994,6 +5007,7 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
                 tier: score.tier,
                 floors: score.towerFloors,
                 rank: 0,
+                level: approxLevel,
                 username: isPublic ? username : null,
                 towerName: towerName,
                 towerColor: towerColorRaw,

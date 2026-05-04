@@ -16383,21 +16383,22 @@ class AppL10n {
     'th': 'ส่งจดหมายโปรโมต',
   });
 
+  // Build 240: 14개 언어 letter/편지/手紙 잔존 → promos/rewards 통일
   String get composeGateDesc => _t({
-    'ko': '혜택을 세계에 뿌리고 싶다면 Premium 으로 업그레이드하세요.\n📸 사진 첨부 · 🔗 채널/SNS 링크로 나를 홍보할 수 있어요.\n무료 회원은 지도에서 혜택을 주워 혜택을 활용할 수 있어요.',
+    'ko': '혜택을 세계에 뿌리고 싶다면 Premium 으로 업그레이드하세요.\n📸 사진 첨부 · 🔗 채널/SNS 링크로 나를 홍보할 수 있어요.\n무료 회원은 지도에서 혜택을 주워 사용할 수 있어요.',
     'en': 'Upgrade to Premium to drop your own promos worldwide.\n📸 Attach photos · 🔗 Add channel/SNS links to promote yourself.\nFree members keep picking up rewards and claiming benefits.',
-    'ja': 'Premium にアップグレードして、自分の手紙を世界に届けましょう。\n📸 写真添付 · 🔗 チャンネル/SNS リンクで自己PR。\n無料会員は地図で手紙を拾って特典を活用できます。',
-    'zh': '升级 Premium 将你的信件发送到世界各地。\n📸 附加照片 · 🔗 添加频道/社交链接自我宣传。\n免费会员可以继续在地图上拾取信件。',
-    'fr': 'Passe à Premium pour envoyer tes lettres dans le monde entier.\n📸 Joins des photos · 🔗 Ajoute des liens de chaîne / réseaux.\nLes membres gratuits continuent de ramasser des lettres.',
-    'de': 'Mit Premium sendest du eigene Briefe weltweit.\n📸 Fotos anhängen · 🔗 Kanal-/Social-Links für Selbstvermarktung.\nFreie Mitglieder sammeln weiterhin Briefe auf der Karte.',
-    'es': 'Actualiza a Premium para lanzar tus cartas al mundo.\n📸 Adjunta fotos · 🔗 Añade enlaces de canal/redes.\nLos miembros gratuitos siguen recogiendo cartas.',
-    'pt': 'Atualiza para Premium e lança as tuas cartas ao mundo.\n📸 Anexa fotos · 🔗 Adiciona links de canal/redes.\nMembros gratuitos continuam a apanhar cartas.',
-    'ru': 'Перейдите на Premium, чтобы отправлять письма по всему миру.\n📸 Прикрепляйте фото · 🔗 Добавляйте ссылки на канал/соцсети.\nБесплатные пользователи продолжают собирать письма.',
-    'tr': "Premium'a yükselt ve mektuplarını dünyaya bırak.\n📸 Fotoğraf ekle · 🔗 Kanal/SNS bağlantısıyla kendini tanıt.\nÜcretsiz üyeler haritadan mektup toplamaya devam eder.",
-    'ar': 'ارتقِ إلى Premium لإرسال رسائلك للعالم.\n📸 أرفق الصور · 🔗 أضف روابط قناتك/وسائلك.\nالأعضاء المجانيون يواصلون التقاط الرسائل.',
-    'it': 'Passa a Premium per lanciare le tue lettere nel mondo.\n📸 Allega foto · 🔗 Aggiungi link canale/social.\nI membri gratuiti continuano a raccogliere lettere.',
-    'hi': 'Premium में अपग्रेड करें और अपने पत्र दुनिया में भेजें।\n📸 फ़ोटो संलग्न करें · 🔗 चैनल/SNS लिंक जोड़ें।\nमुफ़्त सदस्य मानचित्र पर पत्र उठाते रहें।',
-    'th': 'อัปเกรด Premium เพื่อส่งจดหมายไปทั่วโลก\n📸 แนบรูป · 🔗 ใส่ลิงก์ช่อง/โซเชียล\nสมาชิกฟรียังเก็บจดหมายบนแผนที่ได้',
+    'ja': 'Premium にアップグレードして、自分のプロモを世界に届けましょう。\n📸 写真添付 · 🔗 チャンネル/SNS リンクで自己PR。\n無料会員は地図で特典を拾って活用できます。',
+    'zh': '升级 Premium 将你的促销发送到世界各地。\n📸 附加照片 · 🔗 添加频道/社交链接自我宣传。\n免费会员可以继续在地图上拾取奖励。',
+    'fr': 'Passe à Premium pour envoyer tes promos dans le monde entier.\n📸 Joins des photos · 🔗 Ajoute des liens de chaîne / réseaux.\nLes membres gratuits continuent de ramasser des récompenses.',
+    'de': 'Mit Premium sendest du eigene Promos weltweit.\n📸 Fotos anhängen · 🔗 Kanal-/Social-Links für Selbstvermarktung.\nFreie Mitglieder sammeln weiterhin Belohnungen auf der Karte.',
+    'es': 'Actualiza a Premium para lanzar tus promos al mundo.\n📸 Adjunta fotos · 🔗 Añade enlaces de canal/redes.\nLos miembros gratuitos siguen recogiendo recompensas.',
+    'pt': 'Atualiza para Premium e lança as tuas promoções ao mundo.\n📸 Anexa fotos · 🔗 Adiciona links de canal/redes.\nMembros gratuitos continuam a apanhar recompensas.',
+    'ru': 'Перейдите на Premium, чтобы отправлять промо по всему миру.\n📸 Прикрепляйте фото · 🔗 Добавляйте ссылки на канал/соцсети.\nБесплатные пользователи продолжают собирать награды.',
+    'tr': "Premium'a yükselt ve promolarını dünyaya bırak.\n📸 Fotoğraf ekle · 🔗 Kanal/SNS bağlantısıyla kendini tanıt.\nÜcretsiz üyeler haritadan ödül toplamaya devam eder.",
+    'ar': 'ارتقِ إلى Premium لإرسال عروضك للعالم.\n📸 أرفق الصور · 🔗 أضف روابط قناتك/وسائلك.\nالأعضاء المجانيون يواصلون التقاط المكافآت.',
+    'it': 'Passa a Premium per lanciare le tue promo nel mondo.\n📸 Allega foto · 🔗 Aggiungi link canale/social.\nI membri gratuiti continuano a raccogliere ricompense.',
+    'hi': 'Premium में अपग्रेड करें और अपनी प्रोमो दुनिया में भेजें।\n📸 फ़ोटो संलग्न करें · 🔗 चैनल/SNS लिंक जोड़ें।\nमुफ़्त सदस्य मानचित्र पर पुरस्कार उठाते रहें।',
+    'th': 'อัปเกรด Premium เพื่อส่งโปรโมไปทั่วโลก\n📸 แนบรูป · 🔗 ใส่ลิงก์ช่อง/โซเชียล\nสมาชิกฟรียังเก็บรางวัลบนแผนที่ได้',
   });
 
   String get letterReadRedemptionTodayOnly => _t({
@@ -20835,5 +20836,178 @@ class AppL10n {
     if (entry == null) return koreanKey;
     return entry[languageCode] ?? entry['en'] ?? koreanKey;
   }
+
+  // ── Build 240: Brand Comparison Sheet (14개 언어) ───────────────────────
+  String get brandCompTitle => _t({
+    'ko': '📣 Premium 발송 가이드',
+    'en': '📣 Premium Send Guide',
+    'ja': '📣 Premium 配信ガイド',
+    'zh': '📣 Premium 发送指南',
+    'fr': '📣 Guide d\'envoi Premium',
+    'de': '📣 Premium-Sendeanleitung',
+    'es': '📣 Guía de envío Premium',
+    'pt': '📣 Guia de envio Premium',
+    'ru': '📣 Гид по отправке Premium',
+    'tr': '📣 Premium Gönderim Rehberi',
+    'ar': '📣 دليل إرسال Premium',
+    'it': '📣 Guida invio Premium',
+    'hi': '📣 Premium भेजने की गाइड',
+    'th': '📣 คู่มือส่ง Premium',
+  });
+
+  String get brandCompSubtitle => _t({
+    'ko': '내 홍보 메시지를 세계에 뿌릴 수 있어요. 더 큰 광고가 필요하면 Brand 로 이동하세요.',
+    'en': 'Spread your promo messages worldwide. For larger campaigns, switch to Brand.',
+    'ja': 'プロモメッセージを世界に届けましょう。大規模な広告には Brand へ。',
+    'zh': '将促销信息发送到全世界。需要更大规模广告请切换到 Brand。',
+    'fr': 'Diffusez vos promos dans le monde. Pour de plus grandes campagnes, passez à Brand.',
+    'de': 'Verbreite deine Promos weltweit. Für größere Kampagnen wechsle zu Brand.',
+    'es': 'Difunde tus promos por el mundo. Para campañas más grandes, pásate a Brand.',
+    'pt': 'Espalha as tuas promos pelo mundo. Para campanhas maiores, muda para Brand.',
+    'ru': 'Распространите промо по миру. Для больших кампаний — Brand.',
+    'tr': 'Promolarını dünyaya yay. Büyük kampanyalar için Brand\'e geç.',
+    'ar': 'انشر عروضك حول العالم. للحملات الأكبر، انتقل إلى Brand.',
+    'it': 'Diffondi le tue promo nel mondo. Per campagne più grandi, passa a Brand.',
+    'hi': 'अपनी प्रोमो विश्वभर में फैलाएँ। बड़े अभियानों के लिए Brand पर जाएँ।',
+    'th': 'กระจายโปรโมไปทั่วโลก หากต้องการแคมเปญใหญ่ ให้เปลี่ยนเป็น Brand',
+  });
+
+  String get brandCompCurrentBadge => _t({
+    'ko': '내 등급', 'en': 'Yours', 'ja': '現在', 'zh': '当前',
+    'fr': 'Vous', 'de': 'Aktiv', 'es': 'Tuyo', 'pt': 'Teu',
+    'ru': 'Ваш', 'tr': 'Senin', 'ar': 'لك', 'it': 'Tuo',
+    'hi': 'आपका', 'th': 'ของคุณ',
+  });
+
+  String get brandCompFootnote => _t({
+    'ko': 'Brand 는 광고주 트랙입니다. 사업자/브랜드 인증 후 쿠폰을 발행할 수 있어요.',
+    'en': 'Brand is an advertiser track. Issue coupons after business/brand verification.',
+    'ja': 'Brand は広告主向けです。事業者/ブランド認証後にクーポンを発行できます。',
+    'zh': 'Brand 是广告主通道。完成商家/品牌认证后可发行优惠券。',
+    'fr': 'Brand est un parcours annonceur. Émettez des coupons après vérification commerciale/marque.',
+    'de': 'Brand ist eine Werbespur. Coupons nach Geschäfts-/Markenverifizierung ausgeben.',
+    'es': 'Brand es la pista de anunciantes. Emite cupones tras verificación comercial/marca.',
+    'pt': 'Brand é o canal de anunciantes. Emite cupões após verificação de negócio/marca.',
+    'ru': 'Brand — трек для рекламодателей. Выпуск купонов после бизнес-верификации.',
+    'tr': 'Brand reklamveren parkurudur. İş/marka doğrulamasından sonra kupon yayınlayın.',
+    'ar': 'Brand مسار للمعلنين. أصدِر القسائم بعد التحقق من العمل/العلامة.',
+    'it': 'Brand è il canale degli inserzionisti. Emetti coupon dopo verifica business/marca.',
+    'hi': 'Brand विज्ञापनदाता ट्रैक है। व्यवसाय/ब्रांड सत्यापन के बाद कूपन जारी करें।',
+    'th': 'Brand เป็นเส้นทางสำหรับผู้ลงโฆษณา ออกคูปองได้หลังยืนยันธุรกิจ/แบรนด์',
+  });
+
+  String get brandCompCta => _t({
+    'ko': '내 홍보 메시지 작성하기',
+    'en': 'Write my promo message',
+    'ja': '自分のプロモを作成',
+    'zh': '撰写我的促销信息',
+    'fr': 'Rédiger ma promo',
+    'de': 'Promo verfassen',
+    'es': 'Escribir mi promo',
+    'pt': 'Escrever minha promo',
+    'ru': 'Написать промо',
+    'tr': 'Promomu yaz',
+    'ar': 'اكتب عرضي',
+    'it': 'Scrivi la mia promo',
+    'hi': 'मेरी प्रोमो लिखें',
+    'th': 'เขียนโปรโมของฉัน',
+  });
+
+  String get brandCompDontShowAgain => _t({
+    'ko': '다시 보지 않기',
+    'en': 'Don\'t show again',
+    'ja': '次回から表示しない',
+    'zh': '不再显示',
+    'fr': 'Ne plus afficher',
+    'de': 'Nicht erneut anzeigen',
+    'es': 'No mostrar de nuevo',
+    'pt': 'Não mostrar novamente',
+    'ru': 'Больше не показывать',
+    'tr': 'Tekrar gösterme',
+    'ar': 'لا تظهر مرة أخرى',
+    'it': 'Non mostrare più',
+    'hi': 'दोबारा न दिखाएँ',
+    'th': 'ไม่ต้องแสดงอีก',
+  });
+
+  // Premium feature items (5)
+  String get brandCompPremPhoto => _t({
+    'ko': '📸 사진 첨부', 'en': '📸 Photo attach', 'ja': '📸 写真添付', 'zh': '📸 附加照片',
+    'fr': '📸 Photo', 'de': '📸 Foto', 'es': '📸 Foto', 'pt': '📸 Foto',
+    'ru': '📸 Фото', 'tr': '📸 Foto', 'ar': '📸 صورة', 'it': '📸 Foto',
+    'hi': '📸 फोटो', 'th': '📸 รูป',
+  });
+
+  String get brandCompPremLink => _t({
+    'ko': '🔗 채널/SNS 링크', 'en': '🔗 Channel/SNS link', 'ja': '🔗 チャンネル/SNS リンク', 'zh': '🔗 频道/社交链接',
+    'fr': '🔗 Lien chaîne/réseaux', 'de': '🔗 Kanal/Social-Link', 'es': '🔗 Enlace canal/redes', 'pt': '🔗 Link canal/redes',
+    'ru': '🔗 Ссылка на канал/соцсети', 'tr': '🔗 Kanal/SNS bağlantısı', 'ar': '🔗 رابط القناة/الشبكات', 'it': '🔗 Link canale/social',
+    'hi': '🔗 चैनल/SNS लिंक', 'th': '🔗 ลิงก์ช่อง/โซเชียล',
+  });
+
+  String get brandCompPremFast => _t({
+    'ko': '⚡ 빠른 배송', 'en': '⚡ Fast delivery', 'ja': '⚡ 高速配送', 'zh': '⚡ 快速送达',
+    'fr': '⚡ Livraison rapide', 'de': '⚡ Schnelle Zustellung', 'es': '⚡ Entrega rápida', 'pt': '⚡ Entrega rápida',
+    'ru': '⚡ Быстрая доставка', 'tr': '⚡ Hızlı teslimat', 'ar': '⚡ توصيل سريع', 'it': '⚡ Consegna rapida',
+    'hi': '⚡ तेज़ डिलीवरी', 'th': '⚡ ส่งเร็ว',
+  });
+
+  String get brandCompPremPromo => _t({
+    'ko': '✉️ 일반 홍보 메시지', 'en': '✉️ Standard promo message', 'ja': '✉️ 通常プロモ', 'zh': '✉️ 普通促销信息',
+    'fr': '✉️ Message promo standard', 'de': '✉️ Standard-Promo', 'es': '✉️ Promo estándar', 'pt': '✉️ Promo padrão',
+    'ru': '✉️ Стандартное промо', 'tr': '✉️ Standart promo', 'ar': '✉️ عرض قياسي', 'it': '✉️ Promo standard',
+    'hi': '✉️ मानक प्रोमो', 'th': '✉️ โปรโมมาตรฐาน',
+  });
+
+  String get brandCompPremGeneral => _t({
+    'ko': '✅ 일반 카테고리 발송', 'en': '✅ General category sends', 'ja': '✅ 一般カテゴリで送信', 'zh': '✅ 普通类别发送',
+    'fr': '✅ Catégorie générale', 'de': '✅ Allgemeine Kategorie', 'es': '✅ Categoría general', 'pt': '✅ Categoria geral',
+    'ru': '✅ Общая категория', 'tr': '✅ Genel kategori', 'ar': '✅ فئة عامة', 'it': '✅ Categoria generale',
+    'hi': '✅ सामान्य श्रेणी', 'th': '✅ หมวดทั่วไป',
+  });
+
+  // Brand feature items (5)
+  String get brandCompBrandCoupon => _t({
+    'ko': '🎟 할인 쿠폰 발행', 'en': '🎟 Issue discount coupons', 'ja': '🎟 割引クーポン発行', 'zh': '🎟 发行折扣券',
+    'fr': '🎟 Émettre coupons remise', 'de': '🎟 Rabattcoupons ausgeben', 'es': '🎟 Emitir cupones', 'pt': '🎟 Emitir cupões',
+    'ru': '🎟 Выпуск купонов', 'tr': '🎟 İndirim kuponu', 'ar': '🎟 إصدار قسائم خصم', 'it': '🎟 Emetti coupon',
+    'hi': '🎟 छूट कूपन जारी करें', 'th': '🎟 ออกคูปองส่วนลด',
+  });
+
+  String get brandCompBrandVoucher => _t({
+    'ko': '🎁 교환권 발행', 'en': '🎁 Issue vouchers', 'ja': '🎁 引換券発行', 'zh': '🎁 发行兑换券',
+    'fr': '🎁 Émettre bons', 'de': '🎁 Gutscheine ausgeben', 'es': '🎁 Emitir vales', 'pt': '🎁 Emitir vales',
+    'ru': '🎁 Выпуск ваучеров', 'tr': '🎁 Kupon yayınla', 'ar': '🎁 إصدار قسائم', 'it': '🎁 Emetti voucher',
+    'hi': '🎁 वाउचर जारी करें', 'th': '🎁 ออกบัตรกำนัล',
+  });
+
+  String get brandCompBrandExact => _t({
+    'ko': '📍 ExactDrop (정확 좌표)', 'en': '📍 ExactDrop (precise coords)', 'ja': '📍 ExactDrop (正確な座標)', 'zh': '📍 ExactDrop (精确坐标)',
+    'fr': '📍 ExactDrop (coordonnées)', 'de': '📍 ExactDrop (genaue Koordinaten)', 'es': '📍 ExactDrop (coords precisas)', 'pt': '📍 ExactDrop (coords exatas)',
+    'ru': '📍 ExactDrop (точные коорд.)', 'tr': '📍 ExactDrop (kesin koord.)', 'ar': '📍 ExactDrop (إحداثيات دقيقة)', 'it': '📍 ExactDrop (coord. precise)',
+    'hi': '📍 ExactDrop (सटीक स्थान)', 'th': '📍 ExactDrop (พิกัดแม่นยำ)',
+  });
+
+  String get brandCompBrandAnalytics => _t({
+    'ko': '📊 캠페인 분석', 'en': '📊 Campaign analytics', 'ja': '📊 キャンペーン分析', 'zh': '📊 活动分析',
+    'fr': '📊 Analyses campagne', 'de': '📊 Kampagnenanalyse', 'es': '📊 Análisis campaña', 'pt': '📊 Análise de campanha',
+    'ru': '📊 Аналитика кампаний', 'tr': '📊 Kampanya analizi', 'ar': '📊 تحليلات الحملات', 'it': '📊 Analisi campagne',
+    'hi': '📊 अभियान विश्लेषण', 'th': '📊 วิเคราะห์แคมเปญ',
+  });
+
+  String get brandCompBrandBulk => _t({
+    'ko': '🌊 대량 발송', 'en': '🌊 Bulk sending', 'ja': '🌊 一括送信', 'zh': '🌊 批量发送',
+    'fr': '🌊 Envoi en masse', 'de': '🌊 Massenversand', 'es': '🌊 Envío masivo', 'pt': '🌊 Envio em massa',
+    'ru': '🌊 Массовая отправка', 'tr': '🌊 Toplu gönderim', 'ar': '🌊 إرسال جماعي', 'it': '🌊 Invio massivo',
+    'hi': '🌊 बल्क भेजें', 'th': '🌊 ส่งจำนวนมาก',
+  });
+
+  // Build 240: Premium 첨부 시트 완료 버튼 (이전 한국어 하드코딩)
+  String get composeAttachDone => _t({
+    'ko': '완료', 'en': 'Done', 'ja': '完了', 'zh': '完成',
+    'fr': 'Terminé', 'de': 'Fertig', 'es': 'Listo', 'pt': 'Concluir',
+    'ru': 'Готово', 'tr': 'Tamam', 'ar': 'تم', 'it': 'Fatto',
+    'hi': 'पूर्ण', 'th': 'เสร็จ',
+  });
 
 }

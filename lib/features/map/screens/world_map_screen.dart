@@ -1123,8 +1123,9 @@ class _WorldMapScreenState extends State<WorldMapScreen>
       final totalW = max(64.0, avatarSize + 24 + auraExtra * 2);
       final totalH =
           avatarSize + 36 * scale + (hasLabel ? 14.0 : 0.0) + auraExtra;
-      // 활동 점수 라벨 (Lv N 으로 표시 — 옛 floor 표기 대체)
-      final levelLabel = 'Lv ${rep.floors}';
+      // Build 240: 실제 사용자 레벨 (1~50, MapUser.level 근사) — 옛 floors(1~15)
+      // 'Lv N' 으로 잘못 노출하던 버그 픽스. 데이터 정합성 확보.
+      final levelLabel = 'Lv ${rep.level}';
       // 캐릭터 컨텍스트: Brand 는 🏢, 그 외 회원은 🎟 (카운터)
       final centerEmoji = rep.tier == TowerTier.landmark ? '👑' : '🎟';
 
@@ -1840,8 +1841,9 @@ class _WorldMapScreenState extends State<WorldMapScreen>
                       ],
                     ),
                     child: Center(
+                      // Build 240: 타워 건물 이모지 → 카운터 통일 (마커 비주얼과 정합).
                       child: Text(
-                        '${tier.emoji} $flag',
+                        '🎟 $flag',
                         style: const TextStyle(fontSize: 14),
                         maxLines: 1,
                         overflow: TextOverflow.fade,
@@ -1865,8 +1867,9 @@ class _WorldMapScreenState extends State<WorldMapScreen>
                               color: tierColor.withValues(alpha: 0.4),
                             ),
                           ),
+                          // Build 240: 티어 라벨 이모지 → 🎟 (모달 안 모든 곳 카운터 통일).
                           child: Text(
-                            '${tier.emoji}  ${tier.labelL(l10n.languageCode)}',
+                            '🎟  ${tier.labelL(l10n.languageCode)}',
                             style: TextStyle(
                               color: tierColor,
                               fontSize: 12,
