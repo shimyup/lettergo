@@ -110,6 +110,8 @@ class _GlobalDriftAppState extends State<GlobalDriftApp> {
   final PurchaseService _purchaseService = PurchaseService();
   Timer? _themeTimer;
   TimeOfDayPeriod? _lastPeriod;
+  // Build 254: 푸시 알림 탭 시 네비게이션 라우팅용 키.
+  final GlobalKey<NavigatorState> _navKey = GlobalKey<NavigatorState>();
 
   void _onPurchaseChanged() {
     _purchaseService.setPreferredLanguageCode(
@@ -132,6 +134,18 @@ class _GlobalDriftAppState extends State<GlobalDriftApp> {
     super.initState();
     _appState = AppState();
     _appState.addListener(_onAppStateChanged);
+    // Build 254: 푸시 알림 탭 → 인박스 화면 이동. 향후 payload 별 deep link
+    // (예: 'inbox?letter=xxx') 분기 추가 가능. 현재는 모든 알림 → /home_inbox.
+    NotificationService.onNotificationTap = (payload) {
+      try {
+        _navKey.currentState?.pushNamedAndRemoveUntil(
+          '/home_inbox',
+          (route) => false,
+        );
+      } catch (_) {
+        // 네비게이터 미준비 또는 라우트 미존재 시 silent fail
+      }
+    };
     _purchaseService.setPreferredLanguageCode(
       _appState.currentUser.languageCode,
     );
@@ -267,6 +281,8 @@ class _GlobalDriftAppState extends State<GlobalDriftApp> {
           return MaterialApp(
             title: 'Thiscount',
             debugShowCheckedModeBanner: false,
+            // Build 254: 푸시 알림 탭 시 라우팅용 키 (state 의 _navKey 와 연결)
+            navigatorKey: _navKey,
             theme: _buildTheme(state),
             locale: appLocale,
             localizationsDelegates: const [

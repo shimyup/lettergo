@@ -381,6 +381,10 @@ class NotificationService {
     }
   }
 
+  /// Build 254: 푸시 알림 탭 시 호출되는 콜백. main.dart 에서 등록.
+  /// payload 에 따라 deep link 라우팅 가능. 현재 기본 동작 = 인박스 이동.
+  static void Function(String? payload)? onNotificationTap;
+
   static Future<void> initialize() async {
     if (_initialized) return;
     _initLocalTimezone();
@@ -396,7 +400,15 @@ class NotificationService {
       android: androidInit,
       iOS: iosInit,
     );
-    await _plugin.initialize(initSettings);
+    await _plugin.initialize(
+      initSettings,
+      // Build 254: 알림 탭 → onNotificationTap 콜백으로 라우팅 위임.
+      // foreground/background/killed 모두 동일 핸들러 진입.
+      onDidReceiveNotificationResponse: (response) {
+        final payload = response.payload;
+        onNotificationTap?.call(payload);
+      },
+    );
     _initialized = true;
   }
 

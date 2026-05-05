@@ -21172,6 +21172,24 @@ class AppL10n {
     'th': 'ต้องการตำแหน่งแม่นยำ เปิดในตั้งค่า',
   });
 
+  // Build 254: 비행기 모드/오프라인 상태에서 발송 시도 시 안내
+  String get composeNoNetwork => _t({
+    'ko': '네트워크 연결이 없어요. 비행기 모드를 끄거나 Wi-Fi 를 확인해 주세요.',
+    'en': 'No network. Disable airplane mode or check Wi-Fi.',
+    'ja': 'ネットワーク接続がありません。機内モードを解除するか Wi-Fi を確認してください。',
+    'zh': '无网络连接。请关闭飞行模式或检查 Wi-Fi。',
+    'fr': 'Pas de réseau. Désactive le mode avion ou vérifie le Wi-Fi.',
+    'de': 'Kein Netzwerk. Flugmodus aus oder WLAN prüfen.',
+    'es': 'Sin red. Desactiva modo avión o revisa Wi-Fi.',
+    'pt': 'Sem rede. Desativa o modo avião ou verifica Wi-Fi.',
+    'ru': 'Нет сети. Отключите режим полёта или проверьте Wi-Fi.',
+    'tr': 'Ağ yok. Uçak modunu kapatın veya Wi-Fi\'yi kontrol edin.',
+    'ar': 'لا توجد شبكة. أوقف وضع الطيران أو تحقق من Wi-Fi.',
+    'it': 'Nessuna rete. Disattiva modalità aereo o controlla Wi-Fi.',
+    'hi': 'नेटवर्क नहीं है। फ़्लाइट मोड बंद करें या Wi-Fi जांचें।',
+    'th': 'ไม่มีเครือข่าย ปิดโหมดเครื่องบินหรือตรวจสอบ Wi-Fi',
+  });
+
   // Build 240: Premium 첨부 시트 완료 버튼 (이전 한국어 하드코딩)
   String get composeAttachDone => _t({
     'ko': '완료', 'en': 'Done', 'ja': '完了', 'zh': '完成',

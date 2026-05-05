@@ -1019,9 +1019,19 @@ class _InboxTab extends StatelessWidget {
           // "🔒 3통 보내야 다음 읽기" 체인 배너 제거 — 답장 무제한 정책과
           // 정합 맞추기. `sentSinceLastUnlock` 카운터는 통계용으로 유지.
           Expanded(
-            child: ListView.builder(
+            // Build 254: Pull-to-refresh — 서버 letter 동기화 + UI 갱신.
+            child: RefreshIndicator(
+              color: AppColors.gold,
+              backgroundColor: AppColors.bgCard,
+              onRefresh: () async {
+                final s = context.read<AppState>();
+                await s.syncWorldLettersFromServer();
+                await s.fetchMapUsers(force: true);
+              },
+              child: ListView.builder(
               controller: scrollController,
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              physics: const AlwaysScrollableScrollPhysics(),
               itemCount: rows.length,
               itemBuilder: (ctx, i) {
                 final row = rows[i];
@@ -1201,6 +1211,7 @@ class _InboxTab extends StatelessWidget {
                 );
               },
             ),
+            ),  // close RefreshIndicator (Build 254 pull-to-refresh)
           ),
         ],
       ],

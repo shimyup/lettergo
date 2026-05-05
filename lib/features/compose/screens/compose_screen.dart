@@ -483,7 +483,17 @@ class _ComposeScreenState extends State<ComposeScreen>
     );
     _sendAnim = CurvedAnimation(parent: _sendController, curve: Curves.easeOut);
     _contentController.addListener(() {
-      final text = _contentController.text;
+      var text = _contentController.text;
+      // Build 254: 본문 5KB (5000 chars) cap — 서버 보안 cap (Build 207) 과 정합.
+      // 클라이언트에서 미리 잘라서 사용자가 발송 직전 reject 안 당하게.
+      const maxBodyChars = 5000;
+      if (text.length > maxBodyChars) {
+        text = text.substring(0, maxBodyChars);
+        _contentController.value = TextEditingValue(
+          text: text,
+          selection: TextSelection.collapsed(offset: text.length),
+        );
+      }
       // 오늘의 편지 글귀와 달라지면 플래그 해제 (직접 수정한 것으로 간주).
       // 앞뒤 공백 추가/제거는 사용자 편집으로 간주하지 않음 → trim 후 비교.
       final langCode = context.read<AppState>().currentUser.languageCode;
@@ -1009,6 +1019,19 @@ class _ComposeScreenState extends State<ComposeScreen>
         _brandCategory != LetterCategory.general;
     if (content.isEmpty) {
       _showError(l10n.composeEmptyError);
+      return;
+    }
+    // Build 254: 네트워크 연결 사전 체크. 비행기 모드/오프라인 상태에서
+    // 발송 시도해도 로컬엔 추가되지만 서버 동기화 안 돼 다른 사용자가 못 봄.
+    // 사용자에게 명확히 안내 후 진행 의사 확인.
+    try {
+      final lookup = await InternetAddress.lookup('thiscount.io')
+          .timeout(const Duration(seconds: 3));
+      if (lookup.isEmpty || lookup.first.rawAddress.isEmpty) {
+        throw const SocketException('No DNS');
+      }
+    } catch (_) {
+      _showError(l10n.composeNoNetwork);
       return;
     }
     if (!isBrandPromo && content.length < 20) {
