@@ -3102,22 +3102,21 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
   }
 
   /// Build 216: Brand 가 보낸 편지 중 가장 최근에 누군가 픽업한 letter.
-  /// 지도 상단에 "캠페인이 도착한 장소" 인포로 노출 → 캠페인 효과 시각화.
-  /// status 가 delivered / read / nearYou / deliveredFar 중 하나이고 arrivedAt
-  /// 이 가장 최근인 항목 반환. 없으면 null.
+  /// Build 248: 정보 불일치 픽스 — 배너 카피 "캠페인이 픽업됐어요" 와 정합.
+  /// 이전엔 delivered/nearYou/deliveredFar (단순 "도착") 도 포함해 misleading.
+  /// 진짜 "픽업" = 수신자가 줍고 본문 읽음 (status=read) OR readCount>0
+  /// (다중 수신자 letter 의 경우 누군가 픽업했음).
+  /// readAt 기준 정렬, 없으면 null (배너 미노출).
   Letter? get brandMostRecentlyPickedUpLetter {
     if (!_currentUser.isBrand) return null;
     Letter? best;
     DateTime? bestAt;
     for (final l in _sent) {
       if (!l.senderIsBrand) continue;
-      final st = l.status;
-      final isPicked = st == DeliveryStatus.delivered ||
-          st == DeliveryStatus.read ||
-          st == DeliveryStatus.nearYou ||
-          st == DeliveryStatus.deliveredFar;
-      if (!isPicked) continue;
-      final at = l.arrivedAt ?? l.readAt;
+      final isTrulyPicked =
+          l.status == DeliveryStatus.read || l.readCount > 0;
+      if (!isTrulyPicked) continue;
+      final at = l.readAt ?? l.arrivedAt;
       if (at == null) continue;
       if (bestAt == null || at.isAfter(bestAt)) {
         bestAt = at;

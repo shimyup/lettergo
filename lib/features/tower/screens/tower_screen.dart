@@ -14,7 +14,7 @@ import '../../../state/app_state.dart';
 import '../../settings/settings_screen.dart';
 import '../../premium/premium_screen.dart';
 import '../../../widgets/shared_profile_dialogs.dart';
-import '../../brand/brand_analytics_card.dart';
+// Build 248: brand_analytics_card import 제거 — 프로필 단일 노출로 정리
 
 /// Build 220: Brand 티어별 "돈 쌓이는" 이모지.
 /// 광고 캠페인 누적량 → 화폐 가치 진화로 시각화.
@@ -245,16 +245,16 @@ class _TowerScreenState extends State<TowerScreen>
                       // 1) 인라인 신원 칩 — 작은 타워 미니어처 + 브랜드명
                       _buildBrandInlineIdentity(context, user, score),
                       const SizedBox(height: 14),
-                      // 2) 캠페인 분석 — 브랜드 계정의 핵심 지표 (가장 prominent).
-                      const BrandAnalyticsCard(),
-                      const SizedBox(height: 14),
-                      // 3) 활동 통계 — 캠페인 활동량.
+                      // Build 248: BrandAnalyticsCard 제거 — 프로필 화면에만 단일
+                      // 노출 (사용자 요청: 중복 제거). 타워 화면은 활동 통계 +
+                      // 마일스톤 + 커뮤니티 비교에 집중.
+                      // 활동 통계 — 캠페인 활동량.
                       _buildStatsGrid(context, score),
                       const SizedBox(height: 14),
-                      // 4) 다음 마일스톤 (캠페인 리듬).
+                      // 다음 마일스톤 (캠페인 리듬).
                       _buildLevelUpGuide(context, score),
                       const SizedBox(height: 14),
-                      // 5) 커뮤니티 비교.
+                      // 커뮤니티 비교.
                       _buildCommunityTowers(context, state),
                     ] else ...[
                       _buildCombinedIdentityStats(context, user, score),
