@@ -106,7 +106,7 @@ class _AuthScreenState extends State<AuthScreen>
             colors: [AppColors.goldLight, AppColors.gold, AppColors.goldDark],
           ).createShader(b),
           child: const Text(
-            'Letter Go',
+            'Thiscount',
             style: TextStyle(
               color: Colors.white,
               fontSize: 28,

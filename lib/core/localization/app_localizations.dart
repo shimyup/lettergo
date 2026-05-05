@@ -8018,20 +8018,20 @@ class AppL10n {
   });
 
   String get mapLocationPermissionDesc => _t({
-    'ko': 'LetterGo는 편지를 보내고 받기 위해 위치 권한이 필요합니다.\n설정 앱에서 위치 권한을 "앱 사용 중 허용" 으로 변경해주세요.',
-    'en': 'LetterGo needs location permission to send and receive letters.\nPlease change location permission to "While Using the App" in Settings.',
-    'ja': 'LetterGoは手紙の送受信に位置情報の許可が必要です。\n設定アプリで位置情報を「アプリ使用中のみ許可」に変更してください。',
-    'zh': 'LetterGo需要位置权限来发送和接收信件。\n请在设置中将位置权限更改为"使用App时允许"。',
-    'fr': 'LetterGo a besoin de la localisation pour envoyer et recevoir des lettres.\nVeuillez activer « En cours d\'utilisation » dans les paramètres.',
-    'de': 'LetterGo benötigt den Standortzugriff zum Senden und Empfangen von Briefen.\nBitte ändern Sie die Standortberechtigung in den Einstellungen auf „Während der Nutzung".',
-    'es': 'LetterGo necesita permisos de ubicación para enviar y recibir cartas.\nPor favor, cambia el permiso a "Mientras se usa la app" en Ajustes.',
-    'pt': 'O LetterGo precisa de permissão de localização para enviar e receber cartas.\nAltere a permissão para "Durante o uso do app" nas Configurações.',
-    'ru': 'LetterGo нужен доступ к геолокации для отправки и получения писем.\nИзмените разрешение на «При использовании приложения» в Настройках.',
-    'tr': 'LetterGo mektup gönderip almak için konum iznine ihtiyaç duyar.\nLütfen Ayarlar\'dan konum iznini "Uygulama Kullanılırken" olarak değiştirin.',
-    'ar': 'يحتاج LetterGo إلى إذن الموقع لإرسال واستلام الرسائل.\nيرجى تغيير إذن الموقع إلى "أثناء استخدام التطبيق" في الإعدادات.',
-    'it': 'LetterGo ha bisogno del permesso di localizzazione per inviare e ricevere lettere.\nModifica il permesso su "Durante l\'uso dell\'app" nelle Impostazioni.',
-    'hi': 'LetterGo को पत्र भेजने और प्राप्त करने के लिए स्थान अनुमति चाहिए।\nकृपया सेटिंग्स में स्थान अनुमति को "ऐप उपयोग के दौरान" में बदलें।',
-    'th': 'LetterGo ต้องการสิทธิ์ตำแหน่งเพื่อส่งและรับจดหมาย\nกรุณาเปลี่ยนสิทธิ์ตำแหน่งเป็น "ขณะใช้แอป" ในการตั้งค่า',
+    'ko': 'Thiscount는 편지를 보내고 받기 위해 위치 권한이 필요합니다.\n설정 앱에서 위치 권한을 "앱 사용 중 허용" 으로 변경해주세요.',
+    'en': 'Thiscount needs location permission to send and receive letters.\nPlease change location permission to "While Using the App" in Settings.',
+    'ja': 'Thiscountは手紙の送受信に位置情報の許可が必要です。\n設定アプリで位置情報を「アプリ使用中のみ許可」に変更してください。',
+    'zh': 'Thiscount需要位置权限来发送和接收信件。\n请在设置中将位置权限更改为"使用App时允许"。',
+    'fr': 'Thiscount a besoin de la localisation pour envoyer et recevoir des lettres.\nVeuillez activer « En cours d\'utilisation » dans les paramètres.',
+    'de': 'Thiscount benötigt den Standortzugriff zum Senden und Empfangen von Briefen.\nBitte ändern Sie die Standortberechtigung in den Einstellungen auf „Während der Nutzung".',
+    'es': 'Thiscount necesita permisos de ubicación para enviar y recibir cartas.\nPor favor, cambia el permiso a "Mientras se usa la app" en Ajustes.',
+    'pt': 'O Thiscount precisa de permissão de localização para enviar e receber cartas.\nAltere a permissão para "Durante o uso do app" nas Configurações.',
+    'ru': 'Thiscount нужен доступ к геолокации для отправки и получения писем.\nИзмените разрешение на «При использовании приложения» в Настройках.',
+    'tr': 'Thiscount mektup gönderip almak için konum iznine ihtiyaç duyar.\nLütfen Ayarlar\'dan konum iznini "Uygulama Kullanılırken" olarak değiştirin.',
+    'ar': 'يحتاج Thiscount إلى إذن الموقع لإرسال واستلام الرسائل.\nيرجى تغيير إذن الموقع إلى "أثناء استخدام التطبيق" في الإعدادات.',
+    'it': 'Thiscount ha bisogno del permesso di localizzazione per inviare e ricevere lettere.\nModifica il permesso su "Durante l\'uso dell\'app" nelle Impostazioni.',
+    'hi': 'Thiscount को पत्र भेजने और प्राप्त करने के लिए स्थान अनुमति चाहिए।\nकृपया सेटिंग्स में स्थान अनुमति को "ऐप उपयोग के दौरान" में बदलें।',
+    'th': 'Thiscount ต้องการสิทธิ์ตำแหน่งเพื่อส่งและรับจดหมาย\nกรุณาเปลี่ยนสิทธิ์ตำแหน่งเป็น "ขณะใช้แอป" ในการตั้งค่า',
   });
 
   String get mapLater => _t({
@@ -12945,11 +12945,11 @@ class AppL10n {
 
   // ── Hardcoded string l10n (formerly hardcoded) ─────────────────────────
 
-  String get labelLetterGoPremium => _t({
-    'ko': 'LETTER GO PREMIUM', 'en': 'LETTER GO PREMIUM', 'ja': 'LETTER GO PREMIUM', 'zh': 'LETTER GO PREMIUM',
-    'fr': 'LETTER GO PREMIUM', 'de': 'LETTER GO PREMIUM', 'es': 'LETTER GO PREMIUM',
-    'pt': 'LETTER GO PREMIUM', 'ru': 'LETTER GO PREMIUM', 'tr': 'LETTER GO PREMIUM',
-    'ar': 'LETTER GO PREMIUM', 'it': 'LETTER GO PREMIUM', 'hi': 'LETTER GO PREMIUM', 'th': 'LETTER GO PREMIUM',
+  String get labelThiscountPremium => _t({
+    'ko': 'THISCOUNT PREMIUM', 'en': 'THISCOUNT PREMIUM', 'ja': 'THISCOUNT PREMIUM', 'zh': 'THISCOUNT PREMIUM',
+    'fr': 'THISCOUNT PREMIUM', 'de': 'THISCOUNT PREMIUM', 'es': 'THISCOUNT PREMIUM',
+    'pt': 'THISCOUNT PREMIUM', 'ru': 'THISCOUNT PREMIUM', 'tr': 'THISCOUNT PREMIUM',
+    'ar': 'THISCOUNT PREMIUM', 'it': 'THISCOUNT PREMIUM', 'hi': 'THISCOUNT PREMIUM', 'th': 'THISCOUNT PREMIUM',
   });
 
   String get tierFree => _t({
@@ -13453,7 +13453,7 @@ class AppL10n {
   });
 
   String get contentPolicyBody => _t({
-    'ko': 'Letter Go는 사용자의 프라이버시를 존중합니다.\n\n'
+    'ko': 'Thiscount는 사용자의 프라이버시를 존중합니다.\n\n'
         '📋 기본 원칙\n'
         '관리자는 사용자의 편지 내용을 일상적으로 열람하지 않습니다.\n\n'
         '🔍 열람이 이루어지는 경우\n'
@@ -13467,7 +13467,7 @@ class AppL10n {
         '4. 3회 이상 위반 시: 계정 영구 차단\n\n'
         '🔒 투명성\n'
         '열람 사유와 조치 결과를 기록하며, 사용자는 자신의 콘텐츠에 대한 조치 사유를 문의할 수 있습니다.',
-    'en': 'Letter Go respects your privacy.\n\n'
+    'en': 'Thiscount respects your privacy.\n\n'
         '📋 Core Principle\n'
         'Administrators do not routinely access your letter content.\n\n'
         '🔍 When Review Occurs\n'
@@ -13481,7 +13481,7 @@ class AppL10n {
         '4. 3+ violations: permanent account suspension\n\n'
         '🔒 Transparency\n'
         'Review reasons and outcomes are logged. Users may inquire about actions taken on their content.',
-    'ja': 'Letter Goはあなたのプライバシーを尊重します。\n\n'
+    'ja': 'Thiscountはあなたのプライバシーを尊重します。\n\n'
         '📋 基本原則\n'
         '管理者はあなたの手紙の内容を日常的に閲覧しません。\n\n'
         '🔍 閲覧が行われる場合\n'
@@ -13495,7 +13495,7 @@ class AppL10n {
         '4. 3回以上の違反：アカウント永久停止\n\n'
         '🔒 透明性\n'
         '閲覧理由と措置結果を記録し、ユーザーは自身のコンテンツに対する措置理由を問い合わせできます。',
-    'zh': 'Letter Go 尊重您的隐私。\n\n'
+    'zh': 'Thiscount 尊重您的隐私。\n\n'
         '📋 核心原则\n'
         '管理员不会日常访问您的信件内容。\n\n'
         '🔍 审查发生的情况\n'
@@ -13509,7 +13509,7 @@ class AppL10n {
         '4. 违规3次以上：永久封禁账号\n\n'
         '🔒 透明度\n'
         '审查原因和结果会被记录，用户可以查询对其内容采取的措施原因。',
-    'fr': 'Letter Go respecte votre vie privée.\n\n'
+    'fr': 'Thiscount respecte votre vie privée.\n\n'
         '📋 Principe fondamental\n'
         'Les administrateurs n\'accèdent pas régulièrement au contenu de vos lettres.\n\n'
         '🔍 Quand un examen a lieu\n'
@@ -13523,7 +13523,7 @@ class AppL10n {
         '4. 3+ violations : suspension permanente du compte\n\n'
         '🔒 Transparence\n'
         'Les raisons et résultats sont enregistrés. Les utilisateurs peuvent demander des explications.',
-    'de': 'Letter Go respektiert Ihre Privatsphäre.\n\n'
+    'de': 'Thiscount respektiert Ihre Privatsphäre.\n\n'
         '📋 Grundprinzip\n'
         'Administratoren greifen nicht routinemäßig auf Ihre Briefinhalte zu.\n\n'
         '🔍 Wann eine Überprüfung stattfindet\n'
@@ -13537,7 +13537,7 @@ class AppL10n {
         '4. 3+ Verstöße: dauerhafte Kontosperrung\n\n'
         '🔒 Transparenz\n'
         'Gründe und Ergebnisse werden protokolliert. Benutzer können Erklärungen anfordern.',
-    'es': 'Letter Go respeta su privacidad.\n\n'
+    'es': 'Thiscount respeta su privacidad.\n\n'
         '📋 Principio fundamental\n'
         'Los administradores no acceden rutinariamente al contenido de sus cartas.\n\n'
         '🔍 Cuándo se realiza una revisión\n'
@@ -13551,7 +13551,7 @@ class AppL10n {
         '4. 3+ violaciones: suspensión permanente\n\n'
         '🔒 Transparencia\n'
         'Las razones y resultados se registran. Los usuarios pueden consultar las acciones tomadas.',
-    'pt': 'Letter Go respeita sua privacidade.\n\n'
+    'pt': 'Thiscount respeita sua privacidade.\n\n'
         '📋 Princípio fundamental\n'
         'Administradores não acessam rotineiramente o conteúdo de suas cartas.\n\n'
         '🔍 Quando ocorre revisão\n'
@@ -13565,7 +13565,7 @@ class AppL10n {
         '4. 3+ violações: suspensão permanente\n\n'
         '🔒 Transparência\n'
         'Razões e resultados são registrados. Usuários podem consultar ações tomadas.',
-    'ru': 'Letter Go уважает вашу конфиденциальность.\n\n'
+    'ru': 'Thiscount уважает вашу конфиденциальность.\n\n'
         '📋 Основной принцип\n'
         'Администраторы не просматривают содержание ваших писем на регулярной основе.\n\n'
         '🔍 Когда проводится проверка\n'
@@ -13579,7 +13579,7 @@ class AppL10n {
         '4. 3+ нарушений: постоянная блокировка аккаунта\n\n'
         '🔒 Прозрачность\n'
         'Причины и результаты проверок фиксируются. Пользователи могут запросить информацию.',
-    'tr': 'Letter Go gizliliğinize saygı duyar.\n\n'
+    'tr': 'Thiscount gizliliğinize saygı duyar.\n\n'
         '📋 Temel İlke\n'
         'Yöneticiler mektup içeriğinize rutin olarak erişmez.\n\n'
         '🔍 İnceleme Ne Zaman Yapılır\n'
@@ -13593,7 +13593,7 @@ class AppL10n {
         '4. 3+ ihlal: kalıcı hesap askıya alma\n\n'
         '🔒 Şeffaflık\n'
         'İnceleme nedenleri ve sonuçları kaydedilir. Kullanıcılar bilgi talep edebilir.',
-    'ar': 'Letter Go يحترم خصوصيتك.\n\n'
+    'ar': 'Thiscount يحترم خصوصيتك.\n\n'
         '📋 المبدأ الأساسي\n'
         'لا يصل المسؤولون بشكل روتيني إلى محتوى رسائلك.\n\n'
         '🔍 متى تتم المراجعة\n'
@@ -13607,7 +13607,7 @@ class AppL10n {
         '4. 3+ مخالفات: تعليق دائم للحساب\n\n'
         '🔒 الشفافية\n'
         'يتم تسجيل الأسباب والنتائج. يمكن للمستخدمين الاستفسار عن الإجراءات المتخذة.',
-    'it': 'Letter Go rispetta la tua privacy.\n\n'
+    'it': 'Thiscount rispetta la tua privacy.\n\n'
         '📋 Principio fondamentale\n'
         'Gli amministratori non accedono regolarmente al contenuto delle tue lettere.\n\n'
         '🔍 Quando avviene la revisione\n'
@@ -13621,7 +13621,7 @@ class AppL10n {
         '4. 3+ violazioni: sospensione permanente dell\'account\n\n'
         '🔒 Trasparenza\n'
         'Motivazioni e risultati vengono registrati. Gli utenti possono richiedere informazioni.',
-    'hi': 'Letter Go आपकी गोपनीयता का सम्मान करता है।\n\n'
+    'hi': 'Thiscount आपकी गोपनीयता का सम्मान करता है।\n\n'
         '📋 मूल सिद्धांत\n'
         'प्रशासक आपके पत्र सामग्री को नियमित रूप से नहीं देखते।\n\n'
         '🔍 समीक्षा कब होती है\n'
@@ -13635,7 +13635,7 @@ class AppL10n {
         '4. 3+ उल्लंघन: स्थायी खाता निलंबन\n\n'
         '🔒 पारदर्शिता\n'
         'कारण और परिणाम दर्ज किए जाते हैं। उपयोगकर्ता कार्रवाई के बारे में पूछ सकते हैं।',
-    'th': 'Letter Go เคารพความเป็นส่วนตัวของคุณ\n\n'
+    'th': 'Thiscount เคารพความเป็นส่วนตัวของคุณ\n\n'
         '📋 หลักการพื้นฐาน\n'
         'ผู้ดูแลระบบไม่เข้าถึงเนื้อหาจดหมายของคุณเป็นประจำ\n\n'
         '🔍 เมื่อใดที่มีการตรวจสอบ\n'
@@ -13669,7 +13669,7 @@ class AppL10n {
   });
 
   String get communityGuidelinesBody => _t({
-    'ko': 'Letter Go는 전 세계 사용자가 편지를 통해 따뜻한 소통을 나누는 공간입니다.\n'
+    'ko': 'Thiscount는 전 세계 사용자가 편지를 통해 따뜻한 소통을 나누는 공간입니다.\n'
         '모든 사용자가 안전하고 즐거운 경험을 할 수 있도록 다음 규칙을 지켜주세요.\n\n'
         '✅ 권장 사항\n'
         '• 정중하고 친근한 톤으로 편지를 쓰세요\n'
@@ -13687,7 +13687,7 @@ class AppL10n {
         '• 2회: 일시적 서비스 제한\n'
         '• 3회 이상: 영구 계정 차단\n\n'
         '부적절한 편지를 받으면 편지 읽기 화면에서 🚩 버튼으로 신고해 주세요.',
-    'en': 'Letter Go is a space where users worldwide connect through letters.\n'
+    'en': 'Thiscount is a space where users worldwide connect through letters.\n'
         'Please follow these rules so everyone can have a safe, enjoyable experience.\n\n'
         '✅ Encouraged\n'
         '• Write letters with a polite, friendly tone\n'
@@ -13705,7 +13705,7 @@ class AppL10n {
         '• 2nd offense: Temporary service restriction\n'
         '• 3+ offenses: Permanent account suspension\n\n'
         'If you receive an inappropriate letter, please report it using the 🚩 button on the letter screen.',
-    'ja': 'Letter Goは世界中のユーザーが手紙でつながる場所です。\n'
+    'ja': 'Thiscountは世界中のユーザーが手紙でつながる場所です。\n'
         '安全で楽しい体験のために、以下のルールを守ってください。\n\n'
         '✅ 推奨事項\n'
         '• 丁寧で親しみやすいトーンで手紙を書いてください\n'
@@ -13723,7 +13723,7 @@ class AppL10n {
         '• 2回目：一時的なサービス制限\n'
         '• 3回以上：アカウント永久停止\n\n'
         '不適切な手紙を受け取った場合は、手紙画面の🚩ボタンで報告してください。',
-    'zh': 'Letter Go 是全球用户通过信件连接的空间。\n'
+    'zh': 'Thiscount 是全球用户通过信件连接的空间。\n'
         '请遵守以下规则，让每个人都能有安全、愉快的体验。\n\n'
         '✅ 鼓励的行为\n'
         '• 用礼貌、友好的语气写信\n'
@@ -13741,7 +13741,7 @@ class AppL10n {
         '• 第2次：暂时限制服务\n'
         '• 3次以上：永久封禁账号\n\n'
         '如收到不当信件，请在信件页面点击🚩按钮举报。',
-    'fr': 'Letter Go est un espace où les utilisateurs du monde entier communiquent par lettres.\n'
+    'fr': 'Thiscount est un espace où les utilisateurs du monde entier communiquent par lettres.\n'
         'Suivez ces règles pour que chacun puisse vivre une expérience sûre et agréable.\n\n'
         '✅ Recommandé\n'
         '• Écrivez avec un ton poli et amical\n'
@@ -13759,7 +13759,7 @@ class AppL10n {
         '• 2e infraction : Restriction temporaire\n'
         '• 3+ infractions : Suspension permanente\n\n'
         'Si vous recevez une lettre inappropriée, signalez-la avec le bouton 🚩.',
-    'de': 'Letter Go ist ein Raum, in dem Benutzer weltweit durch Briefe verbunden sind.\n'
+    'de': 'Thiscount ist ein Raum, in dem Benutzer weltweit durch Briefe verbunden sind.\n'
         'Bitte befolgen Sie diese Regeln für eine sichere, angenehme Erfahrung.\n\n'
         '✅ Empfohlen\n'
         '• Schreiben Sie höflich und freundlich\n'
@@ -13777,7 +13777,7 @@ class AppL10n {
         '• 2. Verstoß: Vorübergehende Einschränkung\n'
         '• 3+ Verstöße: Dauerhafte Kontosperrung\n\n'
         'Melden Sie unangemessene Briefe mit der 🚩-Taste.',
-    'es': 'Letter Go es un espacio donde usuarios de todo el mundo se conectan a través de cartas.\n'
+    'es': 'Thiscount es un espacio donde usuarios de todo el mundo se conectan a través de cartas.\n'
         'Siga estas reglas para que todos tengan una experiencia segura y agradable.\n\n'
         '✅ Recomendado\n'
         '• Escriba con un tono educado y amigable\n'
@@ -13795,7 +13795,7 @@ class AppL10n {
         '• 2ª infracción: Restricción temporal\n'
         '• 3+ infracciones: Suspensión permanente\n\n'
         'Si recibe una carta inapropiada, repórtela con el botón 🚩.',
-    'pt': 'Letter Go é um espaço onde usuários do mundo todo se conectam por cartas.\n'
+    'pt': 'Thiscount é um espaço onde usuários do mundo todo se conectam por cartas.\n'
         'Siga estas regras para que todos tenham uma experiência segura e agradável.\n\n'
         '✅ Recomendado\n'
         '• Escreva com um tom educado e amigável\n'
@@ -13813,7 +13813,7 @@ class AppL10n {
         '• 2ª infração: Restrição temporária\n'
         '• 3+ infrações: Suspensão permanente\n\n'
         'Se receber uma carta inadequada, denuncie com o botão 🚩.',
-    'ru': 'Letter Go — пространство, где пользователи со всего мира общаются через письма.\n'
+    'ru': 'Thiscount — пространство, где пользователи со всего мира общаются через письма.\n'
         'Соблюдайте эти правила для безопасного и приятного опыта.\n\n'
         '✅ Рекомендуется\n'
         '• Пишите вежливым и дружелюбным тоном\n'
@@ -13831,7 +13831,7 @@ class AppL10n {
         '• 2-е нарушение: Временное ограничение\n'
         '• 3+ нарушений: Постоянная блокировка аккаунта\n\n'
         'Если получите неприемлемое письмо, пожалуйтесь через кнопку 🚩.',
-    'tr': 'Letter Go, dünya genelinde kullanıcıların mektuplarla bağlandığı bir alandır.\n'
+    'tr': 'Thiscount, dünya genelinde kullanıcıların mektuplarla bağlandığı bir alandır.\n'
         'Herkesin güvenli ve keyifli bir deneyim yaşaması için bu kurallara uyun.\n\n'
         '✅ Önerilen\n'
         '• Kibar ve samimi bir tonla yazın\n'
@@ -13849,7 +13849,7 @@ class AppL10n {
         '• 2. ihlal: Geçici kısıtlama\n'
         '• 3+ ihlal: Kalıcı hesap askıya alma\n\n'
         'Uygunsuz bir mektup alırsanız 🚩 düğmesiyle bildirin.',
-    'ar': 'Letter Go مساحة يتواصل فيها المستخدمون حول العالم عبر الرسائل.\n'
+    'ar': 'Thiscount مساحة يتواصل فيها المستخدمون حول العالم عبر الرسائل.\n'
         'يرجى اتباع هذه القواعد ليحظى الجميع بتجربة آمنة وممتعة.\n\n'
         '✅ مُشجع\n'
         '• اكتب بنبرة مهذبة وودية\n'
@@ -13867,7 +13867,7 @@ class AppL10n {
         '• المخالفة الثانية: تقييد مؤقت\n'
         '• 3+ مخالفات: تعليق دائم للحساب\n\n'
         'إذا تلقيت رسالة غير لائقة، أبلغ عنها باستخدام زر 🚩.',
-    'it': 'Letter Go è uno spazio dove utenti di tutto il mondo si connettono tramite lettere.\n'
+    'it': 'Thiscount è uno spazio dove utenti di tutto il mondo si connettono tramite lettere.\n'
         'Segui queste regole per un\'esperienza sicura e piacevole per tutti.\n\n'
         '✅ Consigliato\n'
         '• Scrivi con un tono educato e amichevole\n'
@@ -13885,7 +13885,7 @@ class AppL10n {
         '• 2ª violazione: Restrizione temporanea\n'
         '• 3+ violazioni: Sospensione permanente\n\n'
         'Se ricevi una lettera inappropriata, segnalala con il pulsante 🚩.',
-    'hi': 'Letter Go एक ऐसा स्थान है जहां दुनिया भर के उपयोगकर्ता पत्रों के माध्यम से जुड़ते हैं।\n'
+    'hi': 'Thiscount एक ऐसा स्थान है जहां दुनिया भर के उपयोगकर्ता पत्रों के माध्यम से जुड़ते हैं।\n'
         'कृपया इन नियमों का पालन करें ताकि सभी को सुरक्षित, आनंददायक अनुभव मिले।\n\n'
         '✅ प्रोत्साहित\n'
         '• विनम्र, मैत्रीपूर्ण स्वर में लिखें\n'
@@ -13903,7 +13903,7 @@ class AppL10n {
         '• दूसरा उल्लंघन: अस्थायी प्रतिबंध\n'
         '• 3+ उल्लंघन: स्थायी खाता निलंबन\n\n'
         'अनुचित पत्र मिलने पर 🚩 बटन से रिपोर्ट करें।',
-    'th': 'Letter Go เป็นพื้นที่ที่ผู้ใช้ทั่วโลกเชื่อมต่อกันผ่านจดหมาย\n'
+    'th': 'Thiscount เป็นพื้นที่ที่ผู้ใช้ทั่วโลกเชื่อมต่อกันผ่านจดหมาย\n'
         'กรุณาปฏิบัติตามกฎเหล่านี้เพื่อให้ทุกคนมีประสบการณ์ที่ปลอดภัยและสนุกสนาน\n\n'
         '✅ แนะนำ\n'
         '• เขียนด้วยน้ำเสียงที่สุภาพและเป็นมิตร\n'

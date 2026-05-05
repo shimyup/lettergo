@@ -37,7 +37,7 @@ class ShareCardService {
     required Letter letter,
     required String langCode,
     String tagline = '',
-    String brandName = 'Letter Go',
+    String brandName = 'Thiscount',
     String shareText = '',
   }) async {
     try {
@@ -370,7 +370,7 @@ class ShareCardService {
     required JourneyStats stats,
     required String langCode,
     required String username,
-    String brandName = 'Letter Go',
+    String brandName = 'Thiscount',
   }) async {
     if (stats.isEmpty) return false;
     try {

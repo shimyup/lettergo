@@ -2525,7 +2525,7 @@ class _MapHeader extends StatelessWidget {
                           ),
                         ),
                         const Text(
-                          'Letter Go',
+                          'Thiscount',
                           style: TextStyle(
                             color: AppColors.textPrimary,
                             fontSize: 18,
