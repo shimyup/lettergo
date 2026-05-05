@@ -32,10 +32,10 @@ Use this in **App Store Connect** in the order below.
 ## 3) App Privacy (URL fields)
 
 ### Privacy Policy URL
-`https://shimyup.github.io/lettergo/privacy.html`
+`https://shimyup.github.io/thiscount-pages/privacy.html`
 
 ### Support URL
-`https://shimyup.github.io/lettergo/support.html`
+`https://shimyup.github.io/thiscount-pages/support.html`
 
 ### Marketing URL (optional)
 `https://lettergo.app`
