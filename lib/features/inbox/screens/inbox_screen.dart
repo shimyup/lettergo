@@ -1994,8 +1994,8 @@ class _BrandSentSummaryView extends StatelessWidget {
                   ),
                   const SizedBox(width: 6),
                   Text(
-                    '통',
-                    style: TextStyle(
+                    l.brandStatsUnit,
+                    style: const TextStyle(
                       color: AppColors.textMuted,
                       fontSize: 16,
                       fontWeight: FontWeight.w700,
@@ -2006,9 +2006,9 @@ class _BrandSentSummaryView extends StatelessWidget {
               const SizedBox(height: 10),
               Row(
                 children: [
-                  _RatePill(label: '픽업률', value: '${pickRate.toStringAsFixed(1)}%'),
+                  _RatePill(label: l.brandStatsPickRate, value: '${pickRate.toStringAsFixed(1)}%'),
                   const SizedBox(width: 8),
-                  _RatePill(label: '사용률', value: '${useRate.toStringAsFixed(1)}%', accent: true),
+                  _RatePill(label: l.brandStatsUseRate, value: '${useRate.toStringAsFixed(1)}%', accent: true),
                 ],
               ),
             ],
@@ -2016,16 +2016,16 @@ class _BrandSentSummaryView extends StatelessWidget {
         ),
         const SizedBox(height: 16),
 
-        // ── 4-stat 그리드 ──
+        // ── 4-stat 그리드 (Build 249: i18n 14개 언어 적용) ──
         Row(
           children: [
             Expanded(
               child: _BrandStatBlock(
                 emoji: '🎯',
-                label: '픽업됨',
+                label: l.brandStatsPickedLabel,
                 value: picked,
                 color: AppColors.success,
-                onTap: () => _showCategoryDetail(context, '픽업된 편지',
+                onTap: () => _showCategoryDetail(context, l.brandStatsPickedDetailTitle,
                     letters
                         .where((l) =>
                             l.status == DeliveryStatus.delivered ||
@@ -2039,10 +2039,10 @@ class _BrandSentSummaryView extends StatelessWidget {
             Expanded(
               child: _BrandStatBlock(
                 emoji: '✈️',
-                label: '배송 중',
+                label: l.brandStatsInTransitLabel,
                 value: inTransit,
                 color: AppColors.teal,
-                onTap: () => _showCategoryDetail(context, '배송 중 편지',
+                onTap: () => _showCategoryDetail(context, l.brandStatsInTransitDetailTitle,
                     letters
                         .where((l) =>
                             l.status == DeliveryStatus.inTransit ||
@@ -2058,12 +2058,12 @@ class _BrandSentSummaryView extends StatelessWidget {
             Expanded(
               child: _BrandStatBlock(
                 emoji: '✅',
-                label: '사용 완료',
+                label: l.brandStatsUsedLabel,
                 value: used,
                 color: AppColors.coupon,
                 onTap: () {
                   final state2 = context.read<AppState>();
-                  _showCategoryDetail(context, '사용된 편지',
+                  _showCategoryDetail(context, l.brandStatsUsedDetailTitle,
                       letters
                           .where((l) => state2.isLetterRedeemed(l.id))
                           .toList());
@@ -2074,10 +2074,10 @@ class _BrandSentSummaryView extends StatelessWidget {
             Expanded(
               child: _BrandStatBlock(
                 emoji: '📬',
-                label: '미확인',
+                label: l.brandStatsUnconfirmedLabel,
                 value: unconfirmed,
                 color: AppColors.warning,
-                onTap: () => _showCategoryDetail(context, '미확인 편지',
+                onTap: () => _showCategoryDetail(context, l.brandStatsUnconfirmedDetailTitle,
                     letters
                         .where((l) =>
                             l.status == DeliveryStatus.deliveredFar ||
@@ -2093,11 +2093,11 @@ class _BrandSentSummaryView extends StatelessWidget {
             Expanded(
               child: _BrandStatBlock(
                 emoji: '💌',
-                label: '답장 받음',
+                label: l.brandStatsRepliedLabel,
                 value: replied,
                 color: AppColors.gold,
                 highlight: true,
-                onTap: () => _showCategoryDetail(context, '답장 받은 편지',
+                onTap: () => _showCategoryDetail(context, l.brandStatsRepliedDetailTitle,
                     letters.where((l) => l.hasReplied).toList()),
               ),
             ),
@@ -2105,11 +2105,11 @@ class _BrandSentSummaryView extends StatelessWidget {
             Expanded(
               child: _BrandStatBlock(
                 emoji: '📋',
-                label: '전체 보기',
+                label: l.brandStatsViewAllLabel,
                 value: total,
                 color: AppColors.textSecondary,
                 onTap: () =>
-                    _showCategoryDetail(context, '전체 발송 편지', letters),
+                    _showCategoryDetail(context, l.brandStatsAllDetailTitle, letters),
               ),
             ),
           ],
@@ -2132,7 +2132,7 @@ class _BrandSentSummaryView extends StatelessWidget {
               const SizedBox(width: 12),
               Expanded(
                 child: Text(
-                  '카드를 탭하면 해당 분류의 편지 상세를 볼 수 있어요.',
+                  l.brandStatsTapHint,
                   style: const TextStyle(
                     color: AppColors.textSecondary,
                     fontSize: 12,

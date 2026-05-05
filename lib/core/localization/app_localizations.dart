@@ -20971,6 +20971,143 @@ class AppL10n {
     'hi': '🌊 बल्क भेजें', 'th': '🌊 ส่งจำนวนมาก',
   });
 
+  // ── Build 249: Brand 인박스 캠페인 통계 (이전 한국어 하드코딩) ──────────
+  String get brandStatsUnit => _t({
+    'ko': '통', 'en': '', 'ja': '通', 'zh': '封',
+    'fr': '', 'de': '', 'es': '', 'pt': '',
+    'ru': '', 'tr': '', 'ar': '', 'it': '',
+    'hi': '', 'th': 'ฉบับ',
+  });
+
+  String get brandStatsPickRate => _t({
+    'ko': '픽업률', 'en': 'Pickup rate', 'ja': '受取率', 'zh': '领取率',
+    'fr': 'Taux ramassage', 'de': 'Abholrate', 'es': 'Tasa recogida',
+    'pt': 'Taxa de recolha', 'ru': 'Уровень получения', 'tr': 'Alma oranı',
+    'ar': 'معدل الاستلام', 'it': 'Tasso ritiro', 'hi': 'पिकअप दर',
+    'th': 'อัตรารับ',
+  });
+
+  String get brandStatsUseRate => _t({
+    'ko': '사용률', 'en': 'Usage rate', 'ja': '使用率', 'zh': '使用率',
+    'fr': 'Taux utilisation', 'de': 'Nutzungsrate', 'es': 'Tasa uso',
+    'pt': 'Taxa uso', 'ru': 'Уровень использования', 'tr': 'Kullanım oranı',
+    'ar': 'معدل الاستخدام', 'it': 'Tasso utilizzo', 'hi': 'उपयोग दर',
+    'th': 'อัตราใช้',
+  });
+
+  String get brandStatsPickedLabel => _t({
+    'ko': '픽업됨', 'en': 'Picked up', 'ja': '受取済', 'zh': '已领取',
+    'fr': 'Ramassé', 'de': 'Abgeholt', 'es': 'Recogido', 'pt': 'Apanhado',
+    'ru': 'Получено', 'tr': 'Alındı', 'ar': 'تم الاستلام', 'it': 'Ritirato',
+    'hi': 'उठाया', 'th': 'รับแล้ว',
+  });
+
+  String get brandStatsInTransitLabel => _t({
+    'ko': '배송 중', 'en': 'In transit', 'ja': '配送中', 'zh': '配送中',
+    'fr': 'En transit', 'de': 'Unterwegs', 'es': 'En tránsito',
+    'pt': 'Em trânsito', 'ru': 'В пути', 'tr': 'Yolda', 'ar': 'قيد التوصيل',
+    'it': 'In transito', 'hi': 'पहुँच रहा', 'th': 'กำลังส่ง',
+  });
+
+  String get brandStatsUsedLabel => _t({
+    'ko': '사용 완료', 'en': 'Used', 'ja': '使用済', 'zh': '已使用',
+    'fr': 'Utilisé', 'de': 'Eingelöst', 'es': 'Usado', 'pt': 'Usado',
+    'ru': 'Использовано', 'tr': 'Kullanıldı', 'ar': 'تم الاستخدام',
+    'it': 'Usato', 'hi': 'उपयोग किया', 'th': 'ใช้แล้ว',
+  });
+
+  String get brandStatsUnconfirmedLabel => _t({
+    'ko': '미확인', 'en': 'Unread', 'ja': '未確認', 'zh': '未查看',
+    'fr': 'Non lu', 'de': 'Ungesehen', 'es': 'Sin leer', 'pt': 'Não lido',
+    'ru': 'Непрочитано', 'tr': 'Okunmadı', 'ar': 'غير مقروء',
+    'it': 'Non letto', 'hi': 'अनदेखा', 'th': 'ยังไม่ดู',
+  });
+
+  String get brandStatsRepliedLabel => _t({
+    'ko': '답장 받음', 'en': 'Replied', 'ja': '返信あり', 'zh': '已回复',
+    'fr': 'Répondu', 'de': 'Geantwortet', 'es': 'Respondido',
+    'pt': 'Respondido', 'ru': 'Ответили', 'tr': 'Yanıtlandı',
+    'ar': 'تم الرد', 'it': 'Risposto', 'hi': 'जवाब मिला', 'th': 'ตอบกลับ',
+  });
+
+  String get brandStatsViewAllLabel => _t({
+    'ko': '전체 보기', 'en': 'View all', 'ja': '全て表示', 'zh': '查看全部',
+    'fr': 'Voir tout', 'de': 'Alle ansehen', 'es': 'Ver todo',
+    'pt': 'Ver tudo', 'ru': 'Все', 'tr': 'Tümü', 'ar': 'عرض الكل',
+    'it': 'Vedi tutto', 'hi': 'सभी देखें', 'th': 'ดูทั้งหมด',
+  });
+
+  String get brandStatsPickedDetailTitle => _t({
+    'ko': '픽업된 캠페인', 'en': 'Picked up campaigns', 'ja': '受取済キャンペーン',
+    'zh': '已领取活动', 'fr': 'Campagnes ramassées', 'de': 'Abgeholte Kampagnen',
+    'es': 'Campañas recogidas', 'pt': 'Campanhas apanhadas',
+    'ru': 'Полученные кампании', 'tr': 'Alınmış kampanyalar',
+    'ar': 'حملات مستلمة', 'it': 'Campagne ritirate',
+    'hi': 'उठाए गए अभियान', 'th': 'แคมเปญที่รับแล้ว',
+  });
+
+  String get brandStatsInTransitDetailTitle => _t({
+    'ko': '배송 중 캠페인', 'en': 'In-transit campaigns', 'ja': '配送中キャンペーン',
+    'zh': '配送中活动', 'fr': 'Campagnes en transit', 'de': 'Kampagnen unterwegs',
+    'es': 'Campañas en tránsito', 'pt': 'Campanhas em trânsito',
+    'ru': 'Кампании в пути', 'tr': 'Yoldaki kampanyalar',
+    'ar': 'حملات قيد التوصيل', 'it': 'Campagne in transito',
+    'hi': 'अभियान पहुँच रहे', 'th': 'แคมเปญกำลังส่ง',
+  });
+
+  String get brandStatsUsedDetailTitle => _t({
+    'ko': '사용된 캠페인', 'en': 'Used campaigns', 'ja': '使用済キャンペーン',
+    'zh': '已使用活动', 'fr': 'Campagnes utilisées', 'de': 'Eingelöste Kampagnen',
+    'es': 'Campañas usadas', 'pt': 'Campanhas usadas',
+    'ru': 'Использованные кампании', 'tr': 'Kullanılmış kampanyalar',
+    'ar': 'حملات مستخدمة', 'it': 'Campagne usate',
+    'hi': 'उपयोग किए अभियान', 'th': 'แคมเปญที่ใช้แล้ว',
+  });
+
+  String get brandStatsUnconfirmedDetailTitle => _t({
+    'ko': '미확인 캠페인', 'en': 'Unread campaigns', 'ja': '未確認キャンペーン',
+    'zh': '未查看活动', 'fr': 'Campagnes non lues', 'de': 'Ungesehene Kampagnen',
+    'es': 'Campañas sin leer', 'pt': 'Campanhas não lidas',
+    'ru': 'Непрочитанные кампании', 'tr': 'Okunmamış kampanyalar',
+    'ar': 'حملات غير مقروءة', 'it': 'Campagne non lette',
+    'hi': 'अनदेखे अभियान', 'th': 'แคมเปญที่ยังไม่ดู',
+  });
+
+  String get brandStatsRepliedDetailTitle => _t({
+    'ko': '답장 받은 캠페인', 'en': 'Replied campaigns', 'ja': '返信されたキャンペーン',
+    'zh': '收到回复的活动', 'fr': 'Campagnes avec réponse', 'de': 'Beantwortete Kampagnen',
+    'es': 'Campañas con respuesta', 'pt': 'Campanhas com resposta',
+    'ru': 'Кампании с ответами', 'tr': 'Yanıtlanmış kampanyalar',
+    'ar': 'حملات تم الرد عليها', 'it': 'Campagne con risposta',
+    'hi': 'जवाब मिले अभियान', 'th': 'แคมเปญที่ได้รับการตอบกลับ',
+  });
+
+  String get brandStatsAllDetailTitle => _t({
+    'ko': '전체 발송 캠페인', 'en': 'All sent campaigns', 'ja': '全送信キャンペーン',
+    'zh': '全部发送活动', 'fr': 'Toutes campagnes envoyées', 'de': 'Alle gesendeten Kampagnen',
+    'es': 'Todas campañas enviadas', 'pt': 'Todas campanhas enviadas',
+    'ru': 'Все отправленные кампании', 'tr': 'Gönderilen tüm kampanyalar',
+    'ar': 'جميع الحملات المرسلة', 'it': 'Tutte campagne inviate',
+    'hi': 'सभी भेजे अभियान', 'th': 'แคมเปญที่ส่งทั้งหมด',
+  });
+
+  String get brandStatsTapHint => _t({
+    'ko': '카드를 탭하면 해당 분류의 캠페인 상세를 볼 수 있어요.',
+    'en': 'Tap a card to see campaigns of that category.',
+    'ja': 'カードをタップすると分類別キャンペーン詳細が見られます。',
+    'zh': '点击卡片可查看该分类的活动详情。',
+    'fr': 'Tape une carte pour voir les campagnes de cette catégorie.',
+    'de': 'Karte antippen für Kampagnen der Kategorie.',
+    'es': 'Toca una tarjeta para ver campañas de esa categoría.',
+    'pt': 'Toca um cartão para ver campanhas dessa categoria.',
+    'ru': 'Нажмите карту, чтобы увидеть кампании категории.',
+    'tr': 'Kategori kampanyalarını görmek için karta dokun.',
+    'ar': 'اضغط البطاقة لعرض حملات الفئة.',
+    'it': 'Tocca una card per vedere le campagne.',
+    'hi': 'श्रेणी के अभियान देखने के लिए कार्ड टैप करें।',
+    'th': 'แตะการ์ดเพื่อดูแคมเปญในหมวดนั้น',
+  });
+
   // Build 240: Premium 첨부 시트 완료 버튼 (이전 한국어 하드코딩)
   String get composeAttachDone => _t({
     'ko': '완료', 'en': 'Done', 'ja': '完了', 'zh': '完成',

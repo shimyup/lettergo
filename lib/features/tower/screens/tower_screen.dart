@@ -863,7 +863,8 @@ class _TowerScreenState extends State<TowerScreen>
                     builder: (animCtx, __) => Column(
                       children: [
                         Text(
-                          _l10n(animCtx).koEn('글자의 건축가', 'ARCHITECT OF WORDS'),
+                          // Build 249: "글자의 건축가" → "혜택의 발견자" (Thiscount 테마 정합)
+                          _l10n(animCtx).koEn('혜택의 발견자', 'REWARD HUNTER'),
                           style: TextStyle(
                             color: tierColor.withValues(
                               alpha: 0.5 + _glow.value * 0.3,
