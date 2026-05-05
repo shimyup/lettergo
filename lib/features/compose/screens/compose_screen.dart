@@ -671,6 +671,15 @@ class _ComposeScreenState extends State<ComposeScreen>
         }
       } else {
         for (final target in _bulkTargets) {
+          // 정확한 위치로 저장된 target 은 모든 letter 를 그 좌표 단일점에 발송
+          // (랜덤 도시 산포 X). target['precise']==true 면 사용자가 _selectedCountry
+          // 와 같은 나라를 bulk 에 추가해서 _destLat/_destLng 가 들어간 경우.
+          final preciseLat = target['precise'] == true
+              ? (target['lat'] as num).toDouble()
+              : null;
+          final preciseLng = target['precise'] == true
+              ? (target['lng'] as num).toDouble()
+              : null;
           totalSent += await state.sendBrandExpressBlast(
             content: content,
             destinationCountry: target['country'] as String,
@@ -685,6 +694,8 @@ class _ComposeScreenState extends State<ComposeScreen>
             brandUniquePerUser: _brandUniquePerUser,
             brandAutoExpireHours: _brandAutoExpireHours,
             imageUrl: _imageFilePath,
+            preciseLat: preciseLat,
+            preciseLng: preciseLng,
           );
         }
       }
@@ -2591,11 +2602,18 @@ class _ComposeScreenState extends State<ComposeScreen>
                     if (selected) {
                       _bulkTargets.removeWhere((t) => t['country'] == c['name']);
                     } else {
+                      // 사용자가 이전에 정확한 위치(예: 매장 좌표)를 골랐고 그 나라가
+                      // 같으면 country 중심이 아니라 정확한 좌표로 저장. 이렇게
+                      // 하지 않으면 대량 발송 시 country 중심으로 풀어져 산포됨.
+                      final isPrecise = c['name'] == _selectedCountry &&
+                          _destLat != 0 &&
+                          _destLng != 0;
                       _bulkTargets.add({
                         'country': c['name'],
                         'flag': c['flag'],
-                        'lat': double.parse(c['lat']!),
-                        'lng': double.parse(c['lng']!),
+                        'lat': isPrecise ? _destLat : double.parse(c['lat']!),
+                        'lng': isPrecise ? _destLng : double.parse(c['lng']!),
+                        if (isPrecise) 'precise': true,
                       });
                     }
                   }),

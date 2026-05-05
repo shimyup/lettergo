@@ -213,7 +213,7 @@ class _SplashScreenState extends State<SplashScreen>
 
                     const SizedBox(height: 36),
 
-                    // ── 앱 이름 "Letter Go" ──────────────────────────────────
+                    // ── 앱 이름 "Thiscount" ──────────────────────────────────
                     ShaderMask(
                       shaderCallback: (bounds) => const LinearGradient(
                         colors: [
@@ -225,7 +225,7 @@ class _SplashScreenState extends State<SplashScreen>
                         end: Alignment.bottomRight,
                       ).createShader(bounds),
                       child: const Text(
-                        'Letter Go',
+                        'Thiscount',
                         style: TextStyle(
                           fontSize: 38,
                           fontWeight: FontWeight.w800,

@@ -260,7 +260,7 @@ class _GlobalDriftAppState extends State<GlobalDriftApp> {
           final appLocale = Locale(langCode);
           final isRtl = LanguageConfig.isRtl(langCode);
           return MaterialApp(
-            title: 'Letter Go',
+            title: 'Thiscount',
             debugShowCheckedModeBanner: false,
             theme: _buildTheme(state),
             locale: appLocale,

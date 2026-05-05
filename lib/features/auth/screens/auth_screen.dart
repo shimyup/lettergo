@@ -106,7 +106,7 @@ class _AuthScreenState extends State<AuthScreen>
             colors: [AppColors.goldLight, AppColors.gold, AppColors.goldDark],
           ).createShader(b),
           child: const Text(
-            'Letter Go',
+            'Thiscount',
             style: TextStyle(
               color: Colors.white,
               fontSize: 28,
@@ -590,7 +590,7 @@ class _LoginTabState extends State<_LoginTab> {
                           await AuthService.signUp(
                             username: testUser,
                             password: testPw,
-                            email: 'test@lettergo.app',
+                            email: 'test@thiscount.io',
                             country: '대한민국',
                             countryFlag: '🇰🇷',
                             langCode: _deviceLangCode(),

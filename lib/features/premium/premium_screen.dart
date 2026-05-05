@@ -105,7 +105,7 @@ class PremiumScreen extends StatelessWidget {
                 Text(
                   isWelcomeMode
                       ? '🎉 ${l.premiumPlanTitle}'
-                      : 'Letter Go Premium',
+                      : 'Thiscount Premium',
                   style: const TextStyle(
                     color: AppColors.textPrimary,
                     fontSize: 17,
@@ -615,7 +615,7 @@ class _PremiumHeroBanner extends StatelessWidget {
           const Text('👑', style: TextStyle(fontSize: 52)),
           const SizedBox(height: 12),
           const Text(
-            'Letter Go Premium',
+            'Thiscount Premium',
             style: TextStyle(
               color: AppColors.gold,
               fontSize: 20,
@@ -1080,14 +1080,14 @@ class _GiftCardSuccessDialog extends StatelessWidget {
               onPressed: () async {
                 if (!context.mounted) return;
                 final shareText =
-                    '🎁 Letter Go ${l.premiumGiftShareTitle}\n'
+                    '🎁 Thiscount ${l.premiumGiftShareTitle}\n'
                     '${l.premiumGiftShareCode}: $code\n\n'
                     '${l.premiumGiftShareBody}\n'
-                    '📲 https://lettergo.app/gift/$code';
+                    '📲 https://thiscount.io/gift/$code';
                 await _showShareOptions(
                   context,
                   shareText,
-                  '🎁 Letter Go ${l.premiumGiftShareTitle} (${l.premiumGiftShareCode}: $code)',
+                  '🎁 Thiscount ${l.premiumGiftShareTitle} (${l.premiumGiftShareCode}: $code)',
                 );
               },
               icon: const Icon(Icons.share_rounded, size: 16),
@@ -1335,14 +1335,14 @@ class _InviteRewardTileState extends State<_InviteRewardTile> {
                       onPressed: () async {
                         if (!context.mounted) return;
                         final shareText =
-                            '✉️ Letter Go — ${l10n.premiumInviteShareTagline}\n\n'
+                            '✉️ Thiscount — ${l10n.premiumInviteShareTagline}\n\n'
                             '${l10n.premiumMyInviteCode} 👉 $inviteCode\n\n'
                             '${l10n.premiumInviteShareBody}\n\n'
-                            '📲 https://lettergo.app/invite/$inviteCode';
+                            '📲 https://thiscount.io/invite/$inviteCode';
                         await _showShareOptions(
                           context,
                           shareText,
-                          '✉️ Letter Go ${l10n.premiumInviteShareSubject} — ${l10n.premiumGiftShareCode}: $inviteCode',
+                          '✉️ Thiscount ${l10n.premiumInviteShareSubject} — ${l10n.premiumGiftShareCode}: $inviteCode',
                         );
                       },
                       style: OutlinedButton.styleFrom(

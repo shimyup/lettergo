@@ -37,7 +37,7 @@ class ShareCardService {
     required Letter letter,
     required String langCode,
     String tagline = '',
-    String brandName = 'Letter Go',
+    String brandName = 'Thiscount',
     String shareText = '',
   }) async {
     try {
@@ -54,7 +54,7 @@ class ShareCardService {
 
       final dir = await getTemporaryDirectory();
       final path =
-          '${dir.path}/lettergo_share_${DateTime.now().millisecondsSinceEpoch}.png';
+          '${dir.path}/thiscount_share_${DateTime.now().millisecondsSinceEpoch}.png';
       final file = await File(path).writeAsBytes(bytes);
 
       await Share.shareXFiles(
@@ -370,7 +370,7 @@ class ShareCardService {
     required JourneyStats stats,
     required String langCode,
     required String username,
-    String brandName = 'Letter Go',
+    String brandName = 'Thiscount',
   }) async {
     if (stats.isEmpty) return false;
     try {
@@ -384,7 +384,7 @@ class ShareCardService {
 
       final dir = await getTemporaryDirectory();
       final path =
-          '${dir.path}/lettergo_journey_${DateTime.now().millisecondsSinceEpoch}.png';
+          '${dir.path}/thiscount_journey_${DateTime.now().millisecondsSinceEpoch}.png';
       final file = await File(path).writeAsBytes(bytes);
 
       final l10n = AppL10n.of(langCode);

@@ -1,6 +1,11 @@
-# LetterGo
+# Thiscount
 
 Flutter mobile app for global letter exchange, map-based delivery tracking, and profile/tower progression.
+
+> Bundle ID is `io.thiscount`. Firebase project remains `lettergo-147eb`
+> (legacy slug, separate iOS/Android apps registered for `io.thiscount`).
+> Parent folder on disk is still `Lettergo/` (rename pending — affects
+> all worktrees, planned for separate session).
 
 ## Local setup
 
@@ -45,7 +50,7 @@ Both scripts load `.env.local` and inject `--dart-define` values automatically.
   - `./scripts/manage_firebase_secrets.sh status`
 
 Default vault path:
-- `../.secrets/lettergo`
+- `../.secrets/thiscount` (legacy `../.secrets/lettergo` 도 보존됨)
 
 Sensitive files managed:
 - `android/app/google-services.json`

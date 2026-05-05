@@ -742,7 +742,7 @@ class _PremiumPage extends StatelessWidget {
                     ),
                     const SizedBox(height: 16),
                     Text(
-                      l.labelLetterGoPremium,
+                      l.labelThiscountPremium,
                       style: TextStyle(
                         color: AppColors.gold,
                         fontSize: 11,

@@ -682,7 +682,7 @@ class _LetterReadScreenState extends State<LetterReadScreen>
                         letter: letter,
                         langCode: state.currentUser.languageCode,
                         tagline: l10n.appTagline,
-                        brandName: 'Letter Go',
+                        brandName: 'Thiscount',
                       );
                     },
                     child: Tooltip(
@@ -1787,7 +1787,7 @@ class _FullscreenImageViewerState extends State<_FullscreenImageViewer> {
         final tmpDir = await getTemporaryDirectory();
         final ext = widget.imageUrl.contains('.png') ? 'png' : 'jpg';
         final tmpFile = File(
-          '${tmpDir.path}/lettergo_photo_${DateTime.now().millisecondsSinceEpoch}.$ext',
+          '${tmpDir.path}/thiscount_photo_${DateTime.now().millisecondsSinceEpoch}.$ext',
         );
         await tmpFile.writeAsBytes(response.bodyBytes);
         await Gal.putImage(tmpFile.path);
