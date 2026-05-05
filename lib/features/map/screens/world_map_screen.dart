@@ -2558,10 +2558,22 @@ class _MyLocationButtonState extends State<_MyLocationButton> {
       if (permission == LocationPermission.deniedForever ||
           permission == LocationPermission.denied) {
         if (context.mounted) {
+          // Build 253: deniedForever 시 설정으로 이동 안내 액션 추가.
+          // 시스템이 더 이상 권한 프롬프트 안 띄우므로 사용자가 직접 설정에서
+          // 변경해야 함 → SnackBar action 으로 openAppSettings 트리거.
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(l10n.mapLocationPermissionRequired),
               backgroundColor: AppColors.bgSurface,
+              behavior: SnackBarBehavior.floating,
+              duration: const Duration(seconds: 6),
+              action: permission == LocationPermission.deniedForever
+                  ? SnackBarAction(
+                      label: l10n.openSettings,
+                      textColor: AppColors.gold,
+                      onPressed: () => Geolocator.openAppSettings(),
+                    )
+                  : null,
             ),
           );
         }
@@ -2574,6 +2586,23 @@ class _MyLocationButtonState extends State<_MyLocationButton> {
       ).timeout(const Duration(seconds: 8));
       widget.onLocationUpdated(pos.latitude, pos.longitude);
       widget.mapController.move(ll.LatLng(pos.latitude, pos.longitude), 14.0);
+      // Build 253: iOS Approximate Location 감지 — accuracy 가 500m 초과면
+      // 픽업 정밀도 충분치 않음. 사용자에게 정확한 위치 활성화 안내.
+      if (context.mounted && pos.accuracy > 500) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(l10n.gpsAccuracyLow),
+            backgroundColor: AppColors.warning.withValues(alpha: 0.92),
+            behavior: SnackBarBehavior.floating,
+            duration: const Duration(seconds: 5),
+            action: SnackBarAction(
+              label: l10n.openSettings,
+              textColor: Colors.white,
+              onPressed: () => Geolocator.openAppSettings(),
+            ),
+          ),
+        );
+      }
     } catch (_) {
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -3400,17 +3429,25 @@ class _ArrowBtn extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Build 253: RTL 언어 (아랍어 등) 에서 좌/우 화살표 의미 반전 — `Icon` 의
+    // `textDirection` 를 명시적으로 LTR 로 고정해 chevron 자체는 그대로 유지하되,
+    // Material `chevron_left/right` 자체는 directionality-aware 가 아니라
+    // 시각적 좌우만 의미. 사용자 mental model: "왼쪽" 버튼 누르면 이전 국가, RTL 에서도 동일.
     return Material(
       color: AppColors.bgCard,
       shape: const CircleBorder(),
       clipBehavior: Clip.antiAlias,
       child: InkWell(
         onTap: onTap,
-        // Build 250: 화살표 버튼도 44→34 로 축소
         child: SizedBox(
           width: 34,
           height: 34,
-          child: Icon(icon, color: AppColors.textPrimary, size: 20),
+          child: Icon(
+            icon,
+            color: AppColors.textPrimary,
+            size: 20,
+            textDirection: TextDirection.ltr,
+          ),
         ),
       ),
     );

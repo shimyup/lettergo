@@ -122,6 +122,10 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
   List<MapUser> get mapUsers => List.unmodifiable(_mapUsers);
   DateTime? _lastMapUsersFetchedAt;
   bool _isFetchingMapUsers = false;
+  // Build 253: 시스템 시간 조작 감지 플래그. 다음 실행 시 lastSeenAt 보다
+  // 1분 이상 과거면 true. 향후 anti-cheat 백엔드 연동 신호.
+  bool _clockTamperingDetected = false;
+  bool get clockTamperingDetected => _clockTamperingDetected;
   // Build 218: 베타 빌드에서는 30초로 짧게 — 테스터들이 같은 지도에서 서로
   // 빨리 보이도록. 정식 빌드는 10분 유지 (비용/배터리).
   static Duration get _mapUsersMinRefreshInterval =>
@@ -2618,6 +2622,18 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
       _saveToPrefs();
     }
 
+    // Build 253: SharedPreferences 스키마 버전 — iCloud/Android 백업 복구 시
+    // 옛 키 형식이 들어와도 안전하게 무시/마이그레이션. 현재 schema=1 으로
+    // 시작. 추후 키 이름이 바뀌거나 형식이 변경되면 schema 증가시키고
+    // _migrateSharedPrefs(oldVer, newVer) 분기 추가.
+    final schemaVer = prefs.getInt('shared_prefs_schema_version') ?? 1;
+    if (schemaVer < 1) {
+      // 미래의 마이그레이션 분기 (현재 v1 베이스라인)
+    }
+    if (schemaVer != 1) {
+      await prefs.setInt('shared_prefs_schema_version', 1);
+    }
+
     // AI 자동 편지 생성 (하루 5통)
     _lastAiLetterDateKey = prefs.getString('lastAiLetterDateKey') ?? '';
     _generateDailyAiLetters();
@@ -2626,6 +2642,25 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
 
     // ── Firebase 익명 로그인 + 서버 편지 동기화 ─────────────────────────────
     await _initFirebaseAndSync();
+
+    // Build 253: 시스템 시간 조작 감지 (client-side mitigation).
+    // 마지막 앱 실행 시각 (lastSeenAt) 기록 → 다음 실행 시 현재 시각이 그보다
+    // 과거이거나 7일 이상 미래로 점프했으면 "시간 변경 감지" 로 logged.
+    // 향후 anti-cheat 백엔드 연동 시 신호로 활용 가능.
+    final nowMs = DateTime.now().millisecondsSinceEpoch;
+    final lastSeenMs = prefs.getInt('lastSeenAtMs') ?? 0;
+    if (lastSeenMs > 0) {
+      final delta = nowMs - lastSeenMs;
+      if (delta < -60000) {
+        // 1분 이상 거꾸로 — 명백한 조작 가능성
+        if (kDebugMode) debugPrint('[CLOCK] backward jump detected: ${delta}ms');
+        _clockTamperingDetected = true;
+      } else if (delta > 7 * 24 * 3600 * 1000) {
+        // 7일 이상 미래 점프 — 의심 (단, 정상적으로 7일 이상 안 켰을 가능성도 있음)
+        if (kDebugMode) debugPrint('[CLOCK] suspicious forward jump: ${delta}ms');
+      }
+    }
+    await prefs.setInt('lastSeenAtMs', nowMs);
 
     // ── 시간 기반 편지 상태 보정 ─────────────────────────────────────────────
     // 앱이 꺼져 있던 동안 arrivalTime이 지난 편지를 즉시 도착 처리

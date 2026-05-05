@@ -21146,6 +21146,32 @@ class AppL10n {
     'th': 'แตะการ์ดเพื่อดูแคมเปญในหมวดนั้น',
   });
 
+  // Build 253: deniedForever 시 설정 이동 SnackBar 액션 + GPS 정확도 경고
+  String get openSettings => _t({
+    'ko': '설정 열기', 'en': 'Open Settings', 'ja': '設定を開く', 'zh': '打开设置',
+    'fr': 'Ouvrir Réglages', 'de': 'Einstellungen', 'es': 'Abrir ajustes',
+    'pt': 'Abrir definições', 'ru': 'Открыть настройки', 'tr': 'Ayarları aç',
+    'ar': 'فتح الإعدادات', 'it': 'Apri impostazioni',
+    'hi': 'सेटिंग्स खोलें', 'th': 'เปิดการตั้งค่า',
+  });
+
+  String get gpsAccuracyLow => _t({
+    'ko': '정확한 위치가 필요해요. 설정에서 "정확한 위치" 를 켜주세요',
+    'en': 'Precise Location needed. Enable "Precise Location" in Settings.',
+    'ja': '正確な位置情報が必要です。設定で「正確な位置情報」をオンに。',
+    'zh': '需要精确位置。请在设置中启用"精确位置"。',
+    'fr': 'Localisation précise requise. Activer dans Réglages.',
+    'de': 'Genaue Position benötigt. In Einstellungen aktivieren.',
+    'es': 'Ubicación precisa necesaria. Activa en ajustes.',
+    'pt': 'Localização precisa necessária. Ative nas definições.',
+    'ru': 'Нужна точная геолокация. Включите в настройках.',
+    'tr': 'Hassas konum gerekli. Ayarlardan açın.',
+    'ar': 'يلزم الموقع الدقيق. فعّل في الإعدادات.',
+    'it': 'Posizione precisa necessaria. Attiva in impostazioni.',
+    'hi': 'सटीक स्थान आवश्यक। सेटिंग्स में चालू करें।',
+    'th': 'ต้องการตำแหน่งแม่นยำ เปิดในตั้งค่า',
+  });
+
   // Build 240: Premium 첨부 시트 완료 버튼 (이전 한국어 하드코딩)
   String get composeAttachDone => _t({
     'ko': '완료', 'en': 'Done', 'ja': '完了', 'zh': '完成',
