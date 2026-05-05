@@ -14,22 +14,26 @@ class FirebaseConfig {
   static bool get kFirebaseEnabled =>
       projectId.isNotEmpty && apiKey.isNotEmpty && storageBucket.isNotEmpty;
 
-  /// Firebase 프로젝트 ID
+  /// Firebase 프로젝트 ID. dart-define 미주입 시 빈 문자열 →
+  /// `kFirebaseEnabled` false → 앱은 오프라인 전용 모드로 기동.
+  /// 정식 빌드 시 `scripts/release_preflight.sh` 가 누락 검증.
   static const String projectId = String.fromEnvironment(
     'FIREBASE_PROJECT_ID',
-    defaultValue: 'lettergo-147eb',
+    defaultValue: '',
   );
 
-  /// Firebase Web API Key (프로젝트 설정 → 일반 탭에서 확인)
+  /// Firebase Web API Key. 소스에 하드코딩하지 말고 빌드 시 dart-define 으로
+  /// 주입. (Web API Key 는 client-exposed 가 정상 설계이지만, 키 값을 git
+  /// 히스토리에 남기지 않는 것이 회전 시 비용을 줄여 줌)
   static const String apiKey = String.fromEnvironment(
     'FIREBASE_API_KEY',
-    defaultValue: 'AIzaSyDGFvwa11HSDN45lMi2D_RwvD3SAfGf9qI',
+    defaultValue: '',
   );
 
   /// Firebase Storage Bucket
   static const String storageBucket = String.fromEnvironment(
     'FIREBASE_STORAGE_BUCKET',
-    defaultValue: 'lettergo-147eb.firebasestorage.app',
+    defaultValue: '',
   );
 
   // Firestore REST API 기본 URL
