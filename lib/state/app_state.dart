@@ -4992,6 +4992,9 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
       }
     } else {
       // 기존: 선택된 나라에 나라당 sendCount만큼 발송
+      // target['precise']==true 이면 country 중심이 아닌 사용자가 고른
+      // 정확한 좌표 (예: 매장 위치) 가 target['lat']/['lng'] 에 들어와 있으므로
+      // 그 좌표를 그대로 사용. precise 가 아니면 country 중심 좌표.
       for (final target in targets) {
         for (int i = 0; i < sendCount; i++) {
           if (!_canSendLetterByDailyLimit()) break;
@@ -5031,6 +5034,8 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
     String? imageUrl,
     bool brandUniquePerUser = false,
     int? brandAutoExpireHours,
+    double? preciseLat,
+    double? preciseLng,
   }) async {
     if (!_currentUser.isBrand) return 0;
 
@@ -5039,31 +5044,43 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
     final fromCity = LatLng(_currentUser.latitude, _currentUser.longitude);
     final usedCityKeys = <String>{};
     int sent = 0;
+    final usePrecise = preciseLat != null && preciseLng != null;
 
     for (int i = 0; i < count; i++) {
       if (!_canSendLetterByDailyLimit()) break;
 
-      var cityData = CountryCities.randomCityWithOffset(
-        destinationCountry,
-        usedCityKeys: usedCityKeys,
-        languageCode: _currentUser.languageCode,
-      );
-      if (cityData == null) {
-        if (usedCityKeys.isEmpty) break; // 해당 국가 도시 데이터 없음
-        usedCityKeys.clear(); // 모든 도시 소진 → 중복 허용으로 재시도
-        cityData = CountryCities.randomCityWithOffset(
+      String cityName;
+      double cityLat;
+      double cityLng;
+
+      if (usePrecise) {
+        // 정확한 위치 모드: 모든 letter 가 동일 좌표 단일점에 발송 (산포 X)
+        cityName = '';
+        cityLat = preciseLat;
+        cityLng = preciseLng;
+      } else {
+        var cityData = CountryCities.randomCityWithOffset(
           destinationCountry,
           usedCityKeys: usedCityKeys,
           languageCode: _currentUser.languageCode,
         );
-        if (cityData == null) break;
+        if (cityData == null) {
+          if (usedCityKeys.isEmpty) break; // 해당 국가 도시 데이터 없음
+          usedCityKeys.clear(); // 모든 도시 소진 → 중복 허용으로 재시도
+          cityData = CountryCities.randomCityWithOffset(
+            destinationCountry,
+            usedCityKeys: usedCityKeys,
+            languageCode: _currentUser.languageCode,
+          );
+          if (cityData == null) break;
+        }
+
+        cityName = cityData['name'] as String? ?? '';
+        usedCityKeys.add(CountryCities.cityKey(destinationCountry, cityName));
+
+        cityLat = (cityData['lat'] as num).toDouble();
+        cityLng = (cityData['lng'] as num).toDouble();
       }
-
-      final cityName = cityData['name'] as String? ?? '';
-      usedCityKeys.add(CountryCities.cityKey(destinationCountry, cityName));
-
-      final cityLat = (cityData['lat'] as num).toDouble();
-      final cityLng = (cityData['lng'] as num).toDouble();
       final toCity = LatLng(cityLat, cityLng);
 
       final segments = LogisticsHubs.buildRoute(
