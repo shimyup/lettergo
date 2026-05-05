@@ -13,6 +13,7 @@ import '../../progression/user_level.dart';
 import '../../../core/localization/app_localizations.dart';
 import '../../../core/localization/country_names.dart';
 import '../../../core/theme/app_theme.dart';
+import '../../../core/utils/person_emoji.dart';
 import '../../../models/letter.dart';
 import '../../../models/user_profile.dart';
 import '../../../state/app_state.dart';
@@ -1160,20 +1161,12 @@ class _WorldMapScreenState extends State<WorldMapScreen>
       final totalW = max(64.0, avatarSize + 24 + auraExtra * 2);
       final totalH =
           avatarSize + 36 * scale + (hasLabel ? 14.0 : 0.0) + auraExtra;
-      // Build 246: Lv N 뱃지 제거 (사용자 요청 — 아이디만 노출).
-      // Build 247: 카운터 → 인물 이모지 (사용자별 stable 변형). 사용자 ID 해시로
-      // 인물 이모지 풀에서 1개 선택 → 같은 사용자는 항상 같은 이모지. 인간미 +
-      // 다양성 양립. landmark 티어(최고)는 👑 유지.
-      const personEmojis = [
-        '🧑', '👨', '👩', '🧒', '🧓',
-        '🧑‍🦱', '👨‍🦰', '👩‍🦱', '🧑‍🦳', '👨‍🦲',
-        '🧑‍🎓', '🧑‍💼', '🧑‍🚀', '🧑‍🎨', '🧑‍🍳',
-        '🥷', '🧙', '🦸', '🧝', '🤴',
-      ];
-      final hashIdx = rep.id.hashCode.abs() % personEmojis.length;
-      final centerEmoji = rep.tier == TowerTier.landmark
-          ? '👑'
-          : personEmojis[hashIdx];
+      // Build 252: 인물 이모지 매핑을 공통 helper (`personEmojiForId`) 로 통합.
+      // 마커 / 인박스 카드 / 인포 시트 모두 동일 매핑 → 사용자 식별 시각 일관성.
+      final centerEmoji = personEmojiForId(
+        rep.id,
+        isLandmark: rep.tier == TowerTier.landmark,
+      );
 
       markers.add(
         Marker(
@@ -1747,19 +1740,12 @@ class _WorldMapScreenState extends State<WorldMapScreen>
                     ),
                     child: Row(
                       children: [
-                        // Build 247: 인물 이모지 (마커와 동일 매핑)
+                        // Build 252: 공통 helper 로 통합 (마커와 동일 매핑)
                         Text(
-                          u.tier == TowerTier.landmark
-                              ? '👑'
-                              : (() {
-                                  const pool = [
-                                    '🧑', '👨', '👩', '🧒', '🧓',
-                                    '🧑‍🦱', '👨‍🦰', '👩‍🦱', '🧑‍🦳', '👨‍🦲',
-                                    '🧑‍🎓', '🧑‍💼', '🧑‍🚀', '🧑‍🎨', '🧑‍🍳',
-                                    '🥷', '🧙', '🦸', '🧝', '🤴',
-                                  ];
-                                  return pool[u.id.hashCode.abs() % pool.length];
-                                })(),
+                          personEmojiForId(
+                            u.id,
+                            isLandmark: u.tier == TowerTier.landmark,
+                          ),
                           style: const TextStyle(fontSize: 22),
                         ),
                         const SizedBox(width: 10),
@@ -1874,22 +1860,9 @@ class _WorldMapScreenState extends State<WorldMapScreen>
                       ],
                     ),
                     child: Center(
-                      // Build 247: 인포 시트 이모지 — 마커와 동일한 인물 이모지 매핑.
+                      // Build 252: 공통 helper 로 통합 — 인포 시트 이모지가 마커와 정확히 일치.
                       child: Text(
-                        () {
-                          if (tier == TowerTier.landmark) return '👑 $flag';
-                          if (other != null) {
-                            const pool = [
-                              '🧑', '👨', '👩', '🧒', '🧓',
-                              '🧑‍🦱', '👨‍🦰', '👩‍🦱', '🧑‍🦳', '👨‍🦲',
-                              '🧑‍🎓', '🧑‍💼', '🧑‍🚀', '🧑‍🎨', '🧑‍🍳',
-                              '🥷', '🧙', '🦸', '🧝', '🤴',
-                            ];
-                            final e = pool[other.id.hashCode.abs() % pool.length];
-                            return '$e $flag';
-                          }
-                          return '🧑 $flag';
-                        }(),
+                        '${personEmojiForId(other?.id ?? "self", isLandmark: tier == TowerTier.landmark)} $flag',
                         style: const TextStyle(fontSize: 16),
                         maxLines: 1,
                         overflow: TextOverflow.fade,

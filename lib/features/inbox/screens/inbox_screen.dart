@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import '../../../core/localization/app_localizations.dart';
 import '../../../core/localization/country_names.dart';
 import '../../../core/theme/app_theme.dart';
+import '../../../core/utils/person_emoji.dart';
 import '../../../models/letter.dart';
 import '../../../models/direct_message.dart';
 import '../../../state/app_state.dart';
@@ -1449,7 +1450,9 @@ class _LetterCard extends StatelessWidget {
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // 국가 플래그
+                // Build 252: leading 영역 — 마커와 동일한 인물 이모지 + 국기 stack.
+                // 받는편지: senderId 해시로 인물 이모지 (= 지도 마커와 일치).
+                // 보낸편지: 수신 국가 플래그만 (sender 가 본인이라 인물 표시 의미 적음).
                 Container(
                   width: 48,
                   height: 48,
@@ -1458,12 +1461,27 @@ class _LetterCard extends StatelessWidget {
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Center(
-                    child: Text(
-                      isInbox
-                          ? letter.senderCountryFlag
-                          : letter.destinationCountryFlag,
-                      style: const TextStyle(fontSize: 26),
-                    ),
+                    child: isInbox
+                        ? Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text(
+                                letter.senderIsBrand
+                                    ? '🏢'
+                                    : personEmojiForId(letter.senderId),
+                                style: const TextStyle(fontSize: 16),
+                              ),
+                              Text(
+                                letter.senderCountryFlag,
+                                style: const TextStyle(fontSize: 14),
+                              ),
+                            ],
+                          )
+                        : Text(
+                            letter.destinationCountryFlag,
+                            style: const TextStyle(fontSize: 26),
+                          ),
                   ),
                 ),
                 const SizedBox(width: 12),
