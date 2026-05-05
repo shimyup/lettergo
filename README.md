@@ -1,6 +1,10 @@
-# LetterGo
+# Thiscount
 
 Flutter mobile app for global letter exchange, map-based delivery tracking, and profile/tower progression.
+
+> Codebase identifiers (Dart package `letter_go`, Bundle ID `com.globaldrift.lettergo`,
+> Firebase project `lettergo-147eb`, parent folder `Lettergo/`) are intentionally
+> preserved for backwards compatibility. Display name only is "Thiscount".
 
 ## Local setup
 
