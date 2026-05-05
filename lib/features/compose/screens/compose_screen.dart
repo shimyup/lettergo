@@ -1030,6 +1030,15 @@ class _ComposeScreenState extends State<ComposeScreen>
       _showError(state.dailyLimitExceededMessage);
       return;
     }
+    // Build 246: ExactDrop 가드 — _isExactDropped 플래그만 켜진 상태에서
+    // _destLat/_destLng 가 0,0 이면 무효한 좌표로 발송 시도 → 멈춤/오류.
+    // 좌표가 누락되면 즉시 에러 안내 후 발송 중단.
+    if (_isExactDropped && !_isReply &&
+        _destLat == 0.0 && _destLng == 0.0) {
+      _showError(l10n.composeExactDropOutOfCredits);
+      setState(() => _isExactDropped = false);
+      return;
+    }
     final useExpressSingle = _isExpressMode && !_isBulkMode && !_isReply;
     if (useExpressSingle &&
         !state.currentUser.isBrand &&

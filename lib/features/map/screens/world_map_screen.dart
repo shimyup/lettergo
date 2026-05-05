@@ -154,6 +154,10 @@ class _WorldMapScreenState extends State<WorldMapScreen>
       }
     } catch (_) {}
     // 저장값 없거나 실패 → 기존 로직 (유저 현재 위치).
+    // Build 246: 첫 시작 시 클로즈업 줌 (15.0) — 사용자가 즉시 주변 카운터/혜택을
+    // 볼 수 있도록. 이전엔 zoom 11 (도시 단위) 이라 마커가 너무 멀어 보였음.
+    // 기본 좌표 (서울 시청, lat 37.5665) 인 경우엔 zoom 13 (구 단위) — 신규
+    // 사용자가 위치 권한 허용 전이므로 너무 가까이 보면 빈 지도 인상.
     if (!mounted) return;
     final lat = state.currentUser.latitude;
     final lng = state.currentUser.longitude;
@@ -162,7 +166,7 @@ class _WorldMapScreenState extends State<WorldMapScreen>
     if (lat != 0 && lng != 0) {
       _mapController.move(
         ll.LatLng(lat, lng),
-        isDefault ? 5.0 : 11.0,
+        isDefault ? 13.0 : 15.0,
       );
     }
   }
@@ -1123,9 +1127,7 @@ class _WorldMapScreenState extends State<WorldMapScreen>
       final totalW = max(64.0, avatarSize + 24 + auraExtra * 2);
       final totalH =
           avatarSize + 36 * scale + (hasLabel ? 14.0 : 0.0) + auraExtra;
-      // Build 240: 실제 사용자 레벨 (1~50, MapUser.level 근사) — 옛 floors(1~15)
-      // 'Lv N' 으로 잘못 노출하던 버그 픽스. 데이터 정합성 확보.
-      final levelLabel = 'Lv ${rep.level}';
+      // Build 246: Lv N 뱃지 제거 (사용자 요청 — 아이디만 노출).
       // 캐릭터 컨텍스트: Brand 는 🏢, 그 외 회원은 🎟 (카운터)
       final centerEmoji = rep.tier == TowerTier.landmark ? '👑' : '🎟';
 
@@ -1221,33 +1223,8 @@ class _WorldMapScreenState extends State<WorldMapScreen>
                         ),
                       ),
                     ),
-                    // Lv N 뱃지 (우하단)
-                    Positioned(
-                      right: -4 * scale,
-                      bottom: -2 * scale,
-                      child: Container(
-                        padding: EdgeInsets.symmetric(
-                          horizontal: 5 * scale,
-                          vertical: 1.5 * scale,
-                        ),
-                        decoration: BoxDecoration(
-                          color: tierColor,
-                          borderRadius: BorderRadius.circular(8 * scale),
-                          border: Border.all(
-                            color: AppColors.bgCard,
-                            width: 1.2,
-                          ),
-                        ),
-                        child: Text(
-                          levelLabel,
-                          style: TextStyle(
-                            fontSize: 8 * scale,
-                            color: Colors.white,
-                            fontWeight: FontWeight.w900,
-                          ),
-                        ),
-                      ),
-                    ),
+                    // Build 246: Lv N 뱃지 제거 — 사용자 요청 (아이디만 노출).
+                    // 레벨 정보는 마커 탭 시 인포 시트에서 확인 가능.
                     // ── 클러스터 뱃지 ──
                     if (isCluster)
                       Positioned(
@@ -1726,10 +1703,8 @@ class _WorldMapScreenState extends State<WorldMapScreen>
                     ),
                     child: Row(
                       children: [
-                        Text(
-                          u.tier.emoji,
-                          style: const TextStyle(fontSize: 24),
-                        ),
+                        // Build 246: 옛 타워 이모지 → 🎟 카운터 통일
+                        const Text('🎟', style: TextStyle(fontSize: 22)),
                         const SizedBox(width: 10),
                         Text(
                           u.flag,
@@ -1744,17 +1719,18 @@ class _WorldMapScreenState extends State<WorldMapScreen>
                                 name,
                                 style: const TextStyle(
                                   color: AppColors.textPrimary,
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w600,
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.w800,
                                 ),
                                 overflow: TextOverflow.ellipsis,
                               ),
+                              // Build 246: 'SHACK · 1F' 옛 티어/층수 라벨 → 활동 레벨 (Lv N)
                               Text(
-                                '${u.tier.name.toUpperCase()} · ${u.floors}F',
+                                'Lv ${u.level}',
                                 style: TextStyle(
                                   color: tierColor,
                                   fontSize: 11,
-                                  fontWeight: FontWeight.w500,
+                                  fontWeight: FontWeight.w600,
                                 ),
                               ),
                             ],
@@ -1855,36 +1831,15 @@ class _WorldMapScreenState extends State<WorldMapScreen>
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 10,
-                            vertical: 4,
-                          ),
-                          decoration: BoxDecoration(
-                            color: tierColor.withValues(alpha: 0.15),
-                            borderRadius: BorderRadius.circular(8),
-                            border: Border.all(
-                              color: tierColor.withValues(alpha: 0.4),
-                            ),
-                          ),
-                          // Build 240: 티어 라벨 이모지 → 🎟 (모달 안 모든 곳 카운터 통일).
-                          child: Text(
-                            '🎟  ${tier.labelL(l10n.languageCode)}',
-                            style: TextStyle(
-                              color: tierColor,
-                              fontSize: 12,
-                              fontWeight: FontWeight.w700,
-                            ),
-                          ),
-                        ),
-                        const SizedBox(height: 6),
+                        // Build 246: 티어 라벨 ('오두막'/'SHACK' 등) 제거 — 옛 타워 잔재
+                        // 사용자 식별 우선 = @username 만 prominent 노출
                         if (username != null && username.isNotEmpty)
                           Text(
                             '@$username',
                             style: const TextStyle(
                               color: AppColors.textPrimary,
-                              fontSize: 14,
-                              fontWeight: FontWeight.w700,
+                              fontSize: 16,
+                              fontWeight: FontWeight.w900,
                             ),
                           ),
                         if (towerName != null && towerName.isNotEmpty) ...[

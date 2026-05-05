@@ -40,6 +40,16 @@ class _ExactDropPickerState extends State<ExactDropPicker> {
   // 이전엔 zoom=4 (대륙) 으로 시작해 사용자가 매번 +확대해야 했음.
   double _zoom = 11;
 
+  // Build 246: 🚨 LateInitializationError 픽스 — _ctrl 과 _center 가 late 로
+  // 선언됐지만 initState 가 없어서 build 시 무한 hang 발생 (Brand ExactDrop
+  // 화면 멈춤 보고). MapController 와 initial 좌표 명시적 초기화.
+  @override
+  void initState() {
+    super.initState();
+    _ctrl = MapController();
+    _center = widget.initial;
+  }
+
   @override
   void dispose() {
     _ctrl.dispose();

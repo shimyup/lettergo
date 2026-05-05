@@ -73,7 +73,18 @@ class _BrandAdDialog extends StatelessWidget {
     final l10n = AppL10n.of(state.currentUser.languageCode);
     final mq = MediaQuery.of(context);
     final modalHeight = mq.size.height * 0.62;
-    final imageUrl = letter.imageUrl;
+    // Build 246: 이미지 fallback — Voucher 의 경우 redemptionInfo 가 이미지 URL/path.
+    // 이전엔 imageUrl 만 보고 → Voucher 발송 시 팝업 이미지 빈 상태였음.
+    String? imageUrl = letter.imageUrl;
+    if ((imageUrl == null || imageUrl.isEmpty) &&
+        letter.category == LetterCategory.voucher) {
+      final ri = letter.redemptionInfo?.trim() ?? '';
+      if (ri.startsWith('http') ||
+          ri.startsWith('/') ||
+          ri.startsWith('file:')) {
+        imageUrl = ri;
+      }
+    }
 
     return Dialog(
       backgroundColor: Colors.transparent,
@@ -195,10 +206,11 @@ class _BrandAdDialog extends StatelessWidget {
                           Expanded(
                             flex: 3,
                             child: GestureDetector(
-                              onTap: () {
-                                Navigator.of(context).pop();
-                                _pickUp(context);
-                              },
+                              // Build 246: 이중 Navigator.pop 버그 픽스 — onTap 에서
+                              // pop 하지 않고 _pickUp 안에서만 처리. 이전엔 onTap pop
+                              // + _pickUp 내부 pop = 부모 화면(지도) 까지 닫혀서
+                              // "혜택받기 누르면 멈춤" 증상.
+                              onTap: () => _pickUp(context),
                               child: Container(
                                 height: 52,
                                 alignment: Alignment.center,
@@ -275,27 +287,30 @@ class _BrandAdDialog extends StatelessWidget {
 
   void _pickUp(BuildContext context) {
     final state = context.read<AppState>();
-    // Build 230: 배너 모달에서 "혜택 받기" 탭 시 흐름 정상화.
+    // Build 246: Navigator state 캡처 후 작업 수행 — async gap 이나 중첩 호출에서
+    // context invalidate 되어도 안전하게 navigation 가능.
+    final navigator = Navigator.of(context);
+    final lang = state.currentUser.languageCode;
+
     // 1) 인박스에 이미 픽업된 letter 면 readLetter 만, 없으면 pickUpLetter 로
     //    인박스 추가 후 read. (테스트 모드에서는 거리 검증 우회)
     // 2) modal 닫고 → letter_read_screen 으로 이동해 본문 표시.
     final inboxHas = state.inbox.any((l) => l.id == letter.id);
     if (!inboxHas) {
-      // 거리 검증 우회 — 배너 노출 = 사용자가 명시적으로 받기 의사
       state.pickUpLetter(letter.id, distanceCheck: false);
     }
     state.readLetter(letter.id);
-    // 인박스에서 최신 letter 객체 (status=read, arrivedAt 채워진) 가져오기
     final picked = state.inbox.firstWhere(
       (l) => l.id == letter.id,
       orElse: () => letter,
     );
-    Navigator.of(context).pop(); // modal 닫기
-    Navigator.of(context).push(
+    // 단일 pop + push (이전 onTap pop 이중 호출 버그 제거됨)
+    navigator.pop();
+    navigator.push(
       MaterialPageRoute(
         builder: (_) => LetterReadScreen(
           letter: picked,
-          userLanguageCode: state.currentUser.languageCode,
+          userLanguageCode: lang,
         ),
       ),
     );
