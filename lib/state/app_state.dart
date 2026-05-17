@@ -3777,9 +3777,14 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
     _inviteCode = _deriveInviteCode();
     notifyListeners();
     // Firestore에 내 정보 저장 + 다른 회원 타워 불러오기
-    _saveUserToFirestore();
+    // Build 293 (P1 race): _saveUserToFirestore 가 완료된 다음 fetchMapUsers
+    // 가 실행되도록 보장. 이전엔 fire-and-forget 으로 두 작업이 race —
+    // fetch 가 먼저 끝나면 새 가입자가 자기 자신 + 다른 device 에서 안 보임.
+    // 본 빌드: chain 으로 _saveUserToFirestore() 끝나면 force refresh.
+    unawaited(
+      _saveUserToFirestore().then((_) => fetchMapUsers(force: true)),
+    );
     unawaited(_ensureInviteIdentityOnServer());
-    fetchMapUsers(force: true);
     // AI 자동 편지 생성 (하루 5통)
     _generateDailyAiLetters();
     // 서버 복원: 앱 업데이트/재설치로 로컬 데이터가 비어 있어도
