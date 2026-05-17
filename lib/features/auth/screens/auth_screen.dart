@@ -1311,26 +1311,20 @@ class _SignupTabState extends State<_SignupTab> {
       return;
     }
 
-    // 이메일로 OTP 발송 (SendGrid — 미설정 시 디버그 화면에만 표시)
+    // 이메일로 OTP 발송 (Resend → SendGrid 폴백, 둘 다 미설정 시 화면 fallback)
     final sendErr = await EmailService.sendOtp(
       to: emailVal,
       code: code,
       langCode: _langCode,
     );
     if (!mounted) return;
-    if (sendErr != null) {
-      setState(() {
-        _isLoading = false;
-        _error = sendErr;
-      });
-      return;
-    }
-
+    // Build 295: 발송 실패해도 OTP 화면 진입 + 화면에 코드 fallback 노출.
+    // 이전엔 sendErr 면 early return → 사용자가 OTP 입력란 자체 못 보고 막힘.
     setState(() {
       _isLoading = false;
       _showOtpScreen = true;
-      _devOtpCode = code; // DEBUG 빌드에서만 화면에 표시됨
-      _otpError = null;
+      _devOtpCode = code;
+      _otpError = sendErr; // 발송 실패 시 사용자에게 알림 (화면 fallback 함께 표시)
       _otpCountdown = AuthService.otpRemainingSeconds;
     });
     _startOtpTimer();
@@ -1410,9 +1404,12 @@ class _SignupTabState extends State<_SignupTab> {
   }
 
   /// OTP 재발송 (이메일)
-  void _resendOtp() {
+  /// Build 295: 실제 이메일 발송 호출 추가 — 이전엔 코드만 새로 생성하고 이메일
+  /// 발송이 빠져 release 빌드에서 "재발송 눌러도 코드 안 옴" 회귀였음.
+  Future<void> _resendOtp() async {
     _otpTimer?.cancel();
-    final code = AuthService.generateEmailOtp(_emailCtrl.text.trim());
+    final emailVal = _emailCtrl.text.trim();
+    final code = AuthService.generateEmailOtp(emailVal);
     if (code == null) {
       final cooldown = AuthService.otpCooldownSecondsRemaining;
       setState(() {
@@ -1422,9 +1419,16 @@ class _SignupTabState extends State<_SignupTab> {
       });
       return;
     }
+    // Build 295: 실제 이메일 발송. 실패해도 on-screen fallback 노출 가능.
+    final sendErr = await EmailService.sendOtp(
+      to: emailVal,
+      code: code,
+      langCode: _langCode,
+    );
+    if (!mounted) return;
     setState(() {
       _otpCtrl.clear();
-      _otpError = null;
+      _otpError = sendErr; // 발송 실패 시 사용자에게 알림 + 화면 fallback 코드 노출
       _devOtpCode = code;
       _otpCountdown = AuthService.otpRemainingSeconds;
     });
@@ -2034,10 +2038,13 @@ class _SignupTabState extends State<_SignupTab> {
 
           // OTP 코드 표시:
           //   - DEBUG 빌드: 항상 표시
-          //   - RELEASE 빌드: SendGrid 미설정 시에만 표시 (베타 테스트 구제)
-          //     → SendGrid API 키가 dart-define 으로 주입되면 자동으로 숨김
-          if ((kDebugMode || !EmailService.isConfigured) &&
-              _devOtpCode != null) ...[
+          //   - RELEASE 빌드: SendGrid/Resend 미설정 시 OR 발송 실패 시 표시
+          //     → 사용자가 "이메일 안 옴" 으로 막히는 회귀 차단 (Build 295)
+          if ((kDebugMode ||
+                  !EmailService.isConfigured ||
+                  _otpError != null) &&
+              _devOtpCode != null &&
+              _devOtpCode!.isNotEmpty) ...[
             Container(
               width: double.infinity,
               padding: const EdgeInsets.all(12),

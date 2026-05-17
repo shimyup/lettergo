@@ -322,14 +322,12 @@ class _LetterReadScreenState extends State<LetterReadScreen>
                             // 답장 버튼 (AI 편지는 "닿지 않음" 카드로 대체)
                             if (_isOpened) _buildAiLetterNotice(context, letter),
                             // 브랜드 발송인이 답장 미수락으로 설정한 편지는 답장
-                            // 버튼 대신 안내만. 일반 letter 는 _buildReplyButton.
-                            // Build 259: 브랜드 쿠폰/홍보 letter 는 단일 답장 버튼이
-                            // 아니라 답장/보관/삭제 3-action chooser 로 표시.
-                            if (_isOpened && letter.senderIsBrand && !letter.senderId.startsWith('ai_'))
-                              _buildBrandActionChooser(context, letter)
-                            else if (_isOpened &&
-                                !letter.senderId.startsWith('ai_'))
-                              _buildReplyButton(context, letter),
+                            // 버튼 대신 안내만.
+                            // Build 259: 브랜드 쿠폰/홍보 letter 는 답장/보관/삭제 3-action.
+                            // Build 295: 모든 픽업 letter (일반 + 브랜드) 에 3-action 적용.
+                            //   사용자 요청: 픽업 후 수집첩 저장 / 삭제 선택권 제공.
+                            if (_isOpened && !letter.senderId.startsWith('ai_'))
+                              _buildBrandActionChooser(context, letter),
                             if (_isOpened &&
                                 letter.senderIsBrand &&
                                 !letter.acceptsReplies)
