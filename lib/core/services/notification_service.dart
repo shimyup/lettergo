@@ -429,7 +429,7 @@ class NotificationService {
       final abs = hours.abs();
       tz.setLocalLocation(tz.getLocation('Etc/GMT$sign$abs'));
     } catch (e) {
-      debugPrint('Timezone init error: $e');
+      if (kDebugMode) debugPrint('Timezone init error: $e');
     }
   }
 
@@ -458,7 +458,7 @@ class NotificationService {
       // 둘 중 어느 하나라도 true면 권한 허용으로 본다 (플랫폼별 단일 응답)
       return (iosResult ?? false) || (androidResult ?? false);
     } catch (e) {
-      debugPrint('Notification permission error: $e');
+      if (kDebugMode) debugPrint('Notification permission error: $e');
       return false;
     }
   }
@@ -537,7 +537,7 @@ class NotificationService {
       );
       await _plugin.show(0, title, body, details);
     } catch (e) {
-      debugPrint('Notification show error: $e');
+      if (kDebugMode) debugPrint('Notification show error: $e');
     }
   }
 
@@ -574,7 +574,7 @@ class NotificationService {
 
       await _plugin.show(1, title, body, details);
     } catch (e) {
-      debugPrint('Letter notification error: $e');
+      if (kDebugMode) debugPrint('Letter notification error: $e');
     }
   }
 
@@ -610,7 +610,7 @@ class NotificationService {
         details,
       );
     } catch (e) {
-      debugPrint('DM notification error: $e');
+      if (kDebugMode) debugPrint('DM notification error: $e');
     }
   }
 
@@ -641,7 +641,7 @@ class NotificationService {
       );
       await _plugin.show(3, title, body, details);
     } catch (e) {
-      debugPrint('Cooldown notification error: $e');
+      if (kDebugMode) debugPrint('Cooldown notification error: $e');
     }
   }
 
@@ -672,7 +672,7 @@ class NotificationService {
       );
       await _plugin.show(4, title, body, details);
     } catch (e) {
-      debugPrint('Report block notification error: $e');
+      if (kDebugMode) debugPrint('Report block notification error: $e');
     }
   }
 
@@ -740,7 +740,7 @@ class NotificationService {
         matchDateTimeComponents: DateTimeComponents.time,
       );
     } catch (e) {
-      debugPrint('Daily reminder schedule error: $e');
+      if (kDebugMode) debugPrint('Daily reminder schedule error: $e');
     }
   }
 
@@ -748,7 +748,7 @@ class NotificationService {
     try {
       await _plugin.cancel(_dailyReminderId);
     } catch (e) {
-      debugPrint('Daily reminder cancel error: $e');
+      if (kDebugMode) debugPrint('Daily reminder cancel error: $e');
     }
   }
 
@@ -816,7 +816,7 @@ class NotificationService {
             UILocalNotificationDateInterpretation.absoluteTime,
       );
     } catch (e) {
-      debugPrint('Arrival countdown schedule error: $e');
+      if (kDebugMode) debugPrint('Arrival countdown schedule error: $e');
     }
   }
 
@@ -824,7 +824,7 @@ class NotificationService {
     try {
       await _plugin.cancel(_arrivalCountdownId);
     } catch (e) {
-      debugPrint('Arrival countdown cancel error: $e');
+      if (kDebugMode) debugPrint('Arrival countdown cancel error: $e');
     }
   }
 
@@ -892,7 +892,7 @@ class NotificationService {
             UILocalNotificationDateInterpretation.absoluteTime,
       );
     } catch (e) {
-      debugPrint('Coupon expiry schedule error: $e');
+      if (kDebugMode) debugPrint('Coupon expiry schedule error: $e');
     }
   }
 
@@ -901,7 +901,7 @@ class NotificationService {
     try {
       await _plugin.cancel(_couponExpiryNotificationId(letterId));
     } catch (e) {
-      debugPrint('Coupon expiry cancel error: $e');
+      if (kDebugMode) debugPrint('Coupon expiry cancel error: $e');
     }
   }
 

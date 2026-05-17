@@ -88,6 +88,18 @@ const Map<String, Map<String, String>> _authMessages = {
     'pt': 'Muitas tentativas falhas. Solicite um novo código.',
     'ru': 'Слишком много неудачных попыток. Запросите новый код.',
   },
+  // Build 294: 로그인 brute-force lockout 메시지. {minutes} 토큰은 호출처가 치환.
+  'login_locked': {
+    'ko': '로그인 시도가 너무 많아 잠시 차단됐어요. {minutes}분 후 다시 시도해주세요.',
+    'en': 'Too many login attempts. Try again in {minutes} minutes.',
+    'ja': 'ログイン試行が多すぎます。{minutes}分後に再度お試しください。',
+    'zh': '登录尝试过多。请在 {minutes} 分钟后再试。',
+    'es': 'Demasiados intentos. Inténtalo de nuevo en {minutes} minutos.',
+    'fr': 'Trop de tentatives. Réessayez dans {minutes} minutes.',
+    'de': 'Zu viele Versuche. Bitte in {minutes} Minuten erneut versuchen.',
+    'pt': 'Muitas tentativas. Tente novamente em {minutes} minutos.',
+    'ru': 'Слишком много попыток. Повторите через {minutes} минут.',
+  },
   'username_min': {
     'ko': '2자 이상 입력해주세요',
     'en': 'Must be at least 2 characters',
@@ -1003,6 +1015,13 @@ class AuthService {
   }
 
   /// 로그인 - nickname + password
+  // Build 294 (P1 보안): 비밀번호 brute-force 차단. OTP 5회 잠금과 동일 패턴.
+  // 5회 연속 실패 시 15분 lockout. 정상 사용자는 자기 비밀번호 알므로 영향 없음.
+  static const _keyLoginAttempts = 'login_failed_attempts';
+  static const _keyLoginLockoutUntil = 'login_lockout_until';
+  static const _maxLoginAttempts = 5;
+  static const _loginLockoutDuration = Duration(minutes: 15);
+
   static Future<String?> login({
     required String username,
     required String password,
@@ -1014,11 +1033,32 @@ class AuthService {
     final prefs = await SharedPreferences.getInstance();
     await _migrateLegacyAuthDataIfNeeded(prefs);
 
+    // Build 294: lockout 체크. 15분 윈도우 내 5회 실패 후 잠금.
+    final lockoutUntilMs = prefs.getInt(_keyLoginLockoutUntil) ?? 0;
+    if (lockoutUntilMs > 0 &&
+        DateTime.now().millisecondsSinceEpoch < lockoutUntilMs) {
+      final remainingMin = ((lockoutUntilMs -
+                  DateTime.now().millisecondsSinceEpoch) /
+              60000)
+          .ceil();
+      return _authMsg('login_locked', langCode)
+          .replaceAll('{minutes}', '$remainingMin');
+    }
+    // 만료된 lockout 은 클리어.
+    if (lockoutUntilMs > 0 &&
+        DateTime.now().millisecondsSinceEpoch >= lockoutUntilMs) {
+      await prefs.remove(_keyLoginLockoutUntil);
+      await prefs.setInt(_keyLoginAttempts, 0);
+    }
+
     final savedUsername = await _readSecure(_keyUsername);
     final savedPassword = await _readSecure(_keyPassword);
 
     if (savedUsername == null) return _authMsg('no_account', langCode);
-    if (savedUsername != username.trim()) return _authMsg('login_failed', langCode);
+    if (savedUsername != username.trim()) {
+      await _recordLoginFailure(prefs);
+      return _authMsg('login_failed', langCode);
+    }
 
     // 비밀번호 검증 (v2 강화 해시 → v1 레거시 → 평문 순, 자동 마이그레이션 포함)
     final primaryPasswordMatched =
@@ -1051,14 +1091,31 @@ class AuthService {
         await _deleteSecure(_keyTempPasswordExpiresAt);
       }
 
+      await _recordLoginFailure(prefs);
       return _authMsg('login_failed', langCode);
     }
+
+    // Build 294: 성공 시 attempts counter 리셋.
+    await prefs.setInt(_keyLoginAttempts, 0);
+    await prefs.remove(_keyLoginLockoutUntil);
 
     await _deleteSecure(_keyTempPasswordHash);
     await _deleteSecure(_keyTempPasswordExpiresAt);
     await _writeSecure(_keyMustChangePassword, 'false');
     await _writeSecure(_keyIsLoggedIn, 'true');
     return null; // null = 성공
+  }
+
+  // Build 294: 로그인 실패 카운팅 + 5회 도달 시 15분 lockout 발화.
+  static Future<void> _recordLoginFailure(SharedPreferences prefs) async {
+    final attempts = (prefs.getInt(_keyLoginAttempts) ?? 0) + 1;
+    await prefs.setInt(_keyLoginAttempts, attempts);
+    if (attempts >= _maxLoginAttempts) {
+      final lockoutUntil = DateTime.now()
+          .add(_loginLockoutDuration)
+          .millisecondsSinceEpoch;
+      await prefs.setInt(_keyLoginLockoutUntil, lockoutUntil);
+    }
   }
 
   /// 영구 어드민 계정 자동 부트스트랩.
