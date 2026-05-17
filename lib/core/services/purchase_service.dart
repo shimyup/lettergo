@@ -1182,19 +1182,32 @@ class PurchaseService extends ChangeNotifier {
     return null;
   }
 
+  // Build 293 (P1): _resolvePackage 3회 재시도 + exponential backoff.
+  // 사용자가 "상품 정보를 불러올 수 없습니다" 보던 회귀: RevenueCat offerings
+  // 가 일시적으로 null 일 때 단 1회 retry 만 → 네트워크 일순간 끊김 / RC SDK
+  // 초기화 지연 시 실패 확률 높았음. 본 빌드부터 3회 재시도 (300ms / 600ms /
+  // 1200ms backoff) 로 transient 오류에 강건.
   Future<Package?> _resolvePackage(String productId) async {
     var pkg = _findPackage(productId);
     if (pkg != null) return pkg;
     if (_isTestMode) return null;
-    try {
-      _offerings = await Purchases.getOfferings();
-      pkg = _findPackage(productId);
-      return pkg;
-    } on PlatformException catch (e) {
-      if (kDebugMode)
-        debugPrint('[PurchaseService] 상품 재조회 실패 ($productId): $e');
-      return null;
+    for (int attempt = 0; attempt < 3; attempt++) {
+      try {
+        _offerings = await Purchases.getOfferings();
+        pkg = _findPackage(productId);
+        if (pkg != null) return pkg;
+      } on PlatformException catch (e) {
+        if (kDebugMode) {
+          debugPrint(
+              '[PurchaseService] 상품 재조회 실패 attempt ${attempt + 1}/3 ($productId): $e');
+        }
+      }
+      // 다음 시도까지 대기 (마지막 attempt 후엔 대기 안 함).
+      if (attempt < 2) {
+        await Future.delayed(Duration(milliseconds: 300 * (1 << attempt)));
+      }
     }
+    return null;
   }
 
   Future<CustomerInfo?> _purchaseByPackageOrStoreProduct(
@@ -1218,6 +1231,9 @@ class PurchaseService extends ChangeNotifier {
     return null;
   }
 
+  // Build 293 (P1): StoreProduct 조회도 카테고리당 2회 재시도. offerings 가
+  // null 일 때 fallback 경로 — 여기마저 실패하면 사용자에게 "상품 정보 없음"
+  // 노출. transient 오류 시 회복 가능성 ↑.
   Future<StoreProduct?> _resolveStoreProduct(
     String productId, {
     required bool preferNonSubscription,
@@ -1237,21 +1253,28 @@ class PurchaseService extends ChangeNotifier {
           ];
 
     for (final category in categories) {
-      try {
-        final products = await Purchases.getProducts([
-          productId,
-        ], productCategory: category);
-        for (final product in products) {
-          if (product.identifier == productId) {
-            _storeProductsById[productId] = product;
-            return product;
+      for (int attempt = 0; attempt < 2; attempt++) {
+        try {
+          final products = await Purchases.getProducts([
+            productId,
+          ], productCategory: category);
+          for (final product in products) {
+            if (product.identifier == productId) {
+              _storeProductsById[productId] = product;
+              return product;
+            }
+          }
+          // 결과 비어있으면 retry 한 번 더.
+        } on PlatformException catch (e) {
+          if (kDebugMode) {
+            debugPrint(
+              '[PurchaseService] StoreProduct 조회 실패 attempt ${attempt + 1}/2 ($productId/${category.name}): $e',
+            );
           }
         }
-      } on PlatformException catch (e) {
-        if (kDebugMode)
-          debugPrint(
-            '[PurchaseService] StoreProduct 조회 실패 ($productId/${category.name}): $e',
-          );
+        if (attempt == 0) {
+          await Future.delayed(const Duration(milliseconds: 400));
+        }
       }
     }
     return null;
@@ -1335,10 +1358,11 @@ class PurchaseService extends ChangeNotifier {
       );
       return;
     }
+    // Build 293: 사용자 친화 메시지 + 재시도 안내. 이전엔 기술 용어 (RevenueCat
+     // / Offering) 그대로 노출 → 사용자가 어떤 조치할지 모름.
     _setError(
-      '상품 정보를 불러올 수 없습니다.\n'
-      'App Store 상품 상태, RevenueCat Offering(default) 연결, '
-      '테스트 계정(App Store Sandbox) 로그인을 확인해주세요.',
+      '상품 정보를 불러올 수 없어요.\n'
+      '잠시 후 다시 시도해주세요. 문제가 계속되면 앱을 재시작해보세요.',
     );
   }
 

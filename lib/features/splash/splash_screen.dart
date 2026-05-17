@@ -30,7 +30,9 @@ class _SplashScreenState extends State<SplashScreen>
       duration: const Duration(seconds: 1),
     )..repeat();
 
-    _navigationTimer = Timer(const Duration(milliseconds: 1800), _go);
+    // Build 293: splash 시간 단축 (1800ms → 1200ms). 사용자가 splash 가 너무
+    // 길게 노출돼 "온보딩 자동 진행" 으로 오인하는 케이스 완화.
+    _navigationTimer = Timer(const Duration(milliseconds: 1200), _go);
   }
 
   Future<void> _go() async {

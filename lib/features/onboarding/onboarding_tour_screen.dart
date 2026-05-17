@@ -105,8 +105,12 @@ class _OnboardingTourScreenState extends State<OnboardingTourScreen> {
             Expanded(
               child: PageView(
                 controller: _ctrl,
-                // Build 287: 스크롤(swipe) 로 한장씩 넘김 명시.
-                physics: const PageScrollPhysics(),
+                // Build 293: BouncingScrollPhysics → iOS 네이티브 느낌 + 가로
+                // swipe 감지 더 적극적. 내부 SingleChildScrollView 와의 제스처
+                // 경합 시 PageView 가 horizontal 을 우선 차지하도록.
+                physics: const BouncingScrollPhysics(
+                  parent: AlwaysScrollableScrollPhysics(),
+                ),
                 onPageChanged: (i) => setState(() => _page = i),
                 children: const [
                   _WelcomePage(),
