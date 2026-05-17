@@ -1,3 +1,5 @@
+import 'package:flutter/foundation.dart';
+
 /// SharedPreferences / SecureStorage 키 상수 모음
 ///
 /// 여러 파일에서 공유하는 키는 여기에 정의하여 오타·불일치를 방지합니다.
@@ -82,10 +84,20 @@ abstract class BetaConstants {
   /// 입력된 이메일이 어드민 이메일과 일치하는지 검사 (대소문자 무시).
   /// `permanentAdminEmail` 은 항상 우선 적용 (release 빌드 + disableInRelease=true
   /// 환경에서도 통과). 그 외엔 BETA_ADMIN_EMAIL 일치 여부.
+  ///
+  /// Build 294 (P2): release 빌드 + disableInRelease=true 면 BETA_ADMIN_EMAIL
+  /// 일치 여부와 무관하게 false 반환. 빌드 스크립트 실수로 BETA_ADMIN_EMAIL 이
+  /// 남아있어도 production 에서 admin 권한 부여 차단.
   static bool isAdmin(String? email) {
     if (email == null || email.isEmpty) return false;
     final lower = email.toLowerCase();
-    if (lower == permanentAdminEmail.toLowerCase()) return true;
+    // permanentAdminEmail 은 모든 빌드에서 항상 admin 으로 인정.
+    if (permanentAdminEmail.isNotEmpty &&
+        lower == permanentAdminEmail.toLowerCase()) {
+      return true;
+    }
+    // BETA_ADMIN_EMAIL 은 release + disableInRelease 일 땐 절대 인정 안 함.
+    if (disableInRelease && kReleaseMode) return false;
     if (adminEmail.isEmpty) return false;
     return lower == adminEmail.toLowerCase();
   }
