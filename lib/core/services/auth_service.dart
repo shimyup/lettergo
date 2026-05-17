@@ -555,8 +555,12 @@ class AuthService {
     }());
     // Build 207: 릴리스 빌드에서는 OTP 코드를 클라이언트로 반환하지 않는다.
     // 이전엔 SendGrid 미설정·발송 실패 시 화면에 OTP 가 표시돼 인증 우회 가능.
-    // DEBUG 빌드만 코드 반환 (개발자 화면 확인용).
-    return kReleaseMode ? '' : code;
+    //
+    // Build 295 (수정): release 에서도 code 반환. 단 화면 표시 여부는 호출처
+    // (auth_screen) 가 `EmailService.isConfigured && sendErr == null` 조건으로
+    // 직접 결정. 이렇게 해야 이메일 발송 실패 시 on-screen fallback 가능 →
+    // 사용자가 "OTP 안 뜸" 으로 막히는 회귀 차단.
+    return code;
   }
 
   /// OTP 검증. null = 성공, 문자열 = 오류 메시지
@@ -688,7 +692,8 @@ class AuthService {
       );
       return true;
     }());
-    return kReleaseMode ? '' : code;
+    // Build 295: phone OTP 도 동일 — code 반환. 화면 표시 여부는 호출처 결정.
+    return code;
   }
 
   /// SMS OTP 검증. null = 성공, 문자열 = 오류 메시지.
@@ -1052,10 +1057,20 @@ class AuthService {
     }
 
     final savedUsername = await _readSecure(_keyUsername);
+    final savedEmail = await _readSecure(_keyEmail);
     final savedPassword = await _readSecure(_keyPassword);
 
     if (savedUsername == null) return _authMsg('no_account', langCode);
-    if (savedUsername != username.trim()) {
+    // Build 295: 사용자가 username 자리에 이메일을 입력해도 로그인 허용 —
+    // 특히 admin (ceo@airony.xyz) 이 'ceo' 가 아니라 이메일로 로그인 시도하는
+    // 경우 보호. saved email 과 일치하면 통과.
+    final input = username.trim();
+    final inputLower = input.toLowerCase();
+    final usernameMatch = savedUsername == input;
+    final emailMatch = savedEmail != null &&
+        savedEmail.isNotEmpty &&
+        savedEmail.toLowerCase() == inputLower;
+    if (!usernameMatch && !emailMatch) {
       await _recordLoginFailure(prefs);
       return _authMsg('login_failed', langCode);
     }

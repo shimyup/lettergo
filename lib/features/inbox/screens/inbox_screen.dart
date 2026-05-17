@@ -343,12 +343,17 @@ class InboxScreen extends StatefulWidget {
   State<InboxScreen> createState() => _InboxScreenState();
 }
 
+// Build 295: 수집첩 정렬 모드. 사용자 요청 — 유효기간 / 최신 / 중요도.
+enum InboxSortMode { latest, expiry, importance }
+
 class _InboxScreenState extends State<InboxScreen>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
   final ScrollController _inboxScrollController = ScrollController();
   LetterFilterType _inboxFilter = LetterFilterType.all;
   LetterFilterType _sentFilter = LetterFilterType.all;
+  // Build 295: 사용자 선택 정렬 모드. default = 최신순 (기존 동작).
+  InboxSortMode _sortMode = InboxSortMode.latest;
   String _searchQuery = '';
   bool _searchMode = false;
   final TextEditingController _searchController = TextEditingController();
@@ -523,13 +528,48 @@ class _InboxScreenState extends State<InboxScreen>
   // Build 290 (P1): inbox/sent letter 를 도착(또는 발송) 시각 DESC 로 정렬.
   // 이전엔 `.reversed.toList()` 만 사용 → 원본 list 가 ASC 정렬됐다는 전제
   // 가 깨지면 무작위 순서. arrivedAt 이 null 이면 sentAt 으로 fallback.
+  // Build 295: 정렬 모드 분기. _sortMode 기반.
   List<Letter> _sortByArrivedDesc(List<Letter> letters) {
     final sorted = List<Letter>.from(letters);
-    sorted.sort((a, b) {
-      final ta = a.arrivedAt ?? a.sentAt;
-      final tb = b.arrivedAt ?? b.sentAt;
-      return tb.compareTo(ta); // DESC
-    });
+    switch (_sortMode) {
+      case InboxSortMode.latest:
+        sorted.sort((a, b) {
+          final ta = a.arrivedAt ?? a.sentAt;
+          final tb = b.arrivedAt ?? b.sentAt;
+          return tb.compareTo(ta); // DESC: 최신 먼저
+        });
+        break;
+      case InboxSortMode.expiry:
+        // 만료 임박 먼저. expiresAt null → 맨 뒤로.
+        sorted.sort((a, b) {
+          final ea = a.expiresAt;
+          final eb = b.expiresAt;
+          if (ea == null && eb == null) return 0;
+          if (ea == null) return 1;
+          if (eb == null) return -1;
+          return ea.compareTo(eb); // ASC: 빨리 만료되는 것 먼저
+        });
+        break;
+      case InboxSortMode.importance:
+        // 중요도 가중치: Brand=4, Coupon=3, Voucher=3, Followed=2, Unread=1
+        int weight(Letter l) {
+          int w = 0;
+          if (l.senderIsBrand) w += 4;
+          final cat = l.category.key;
+          if (cat == 'coupon' || cat == 'voucher') w += 3;
+          if (!l.isReadByRecipient) w += 1;
+          return w;
+        }
+        sorted.sort((a, b) {
+          final wa = weight(a);
+          final wb = weight(b);
+          if (wa != wb) return wb.compareTo(wa); // 가중치 DESC
+          final ta = a.arrivedAt ?? a.sentAt;
+          final tb = b.arrivedAt ?? b.sentAt;
+          return tb.compareTo(ta); // tiebreaker = 최신
+        });
+        break;
+    }
     return sorted;
   }
 
@@ -905,6 +945,37 @@ class _InboxScreenState extends State<InboxScreen>
                     ),
                   ],
                 ),
+              ),
+              // Build 295: 정렬 모드 선택 (유효기간 / 최신 / 중요도).
+              PopupMenuButton<InboxSortMode>(
+                tooltip: '정렬',
+                icon: const Icon(
+                  Icons.sort_rounded,
+                  color: AppColors.textSecondary,
+                  size: 22,
+                ),
+                color: AppColors.bgCard,
+                onSelected: (mode) => setState(() => _sortMode = mode),
+                itemBuilder: (_) => [
+                  CheckedPopupMenuItem(
+                    value: InboxSortMode.latest,
+                    checked: _sortMode == InboxSortMode.latest,
+                    child: const Text('최신순',
+                        style: TextStyle(color: AppColors.textPrimary)),
+                  ),
+                  CheckedPopupMenuItem(
+                    value: InboxSortMode.expiry,
+                    checked: _sortMode == InboxSortMode.expiry,
+                    child: const Text('유효기간 임박순',
+                        style: TextStyle(color: AppColors.textPrimary)),
+                  ),
+                  CheckedPopupMenuItem(
+                    value: InboxSortMode.importance,
+                    checked: _sortMode == InboxSortMode.importance,
+                    child: const Text('중요도순',
+                        style: TextStyle(color: AppColors.textPrimary)),
+                  ),
+                ],
               ),
               // 검색 버튼
               IconButton(
