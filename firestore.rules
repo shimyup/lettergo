@@ -59,6 +59,23 @@ service cloud.firestore {
           ]);
     }
 
+    // Build 297 (HIGH security audit): 카운터 변경 폭 검증.
+    // 화이트리스트만으로는 누구나 likeCount 를 +999 시키는 review-bombing
+    // 가능했음. 단일 호출에서 +1/-1/0 만 허용 (카운터 자연 증가) + 음수 차단.
+    function _delta(field) {
+      return (field in request.resource.data ? request.resource.data[field] : 0)
+           - (field in resource.data ? resource.data[field] : 0);
+    }
+    function isReasonableLetterCounterDelta() {
+      return _delta('pickupCount') >= 0 && _delta('pickupCount') <= 1
+          && _delta('redeemedCount') >= 0 && _delta('redeemedCount') <= 1
+          && _delta('readCount') >= 0 && _delta('readCount') <= 1
+          && _delta('likeCount') >= -1 && _delta('likeCount') <= 1
+          && _delta('ratingTotal') >= 0 && _delta('ratingTotal') <= 5
+          && _delta('ratingCount') >= 0 && _delta('ratingCount') <= 1
+          && _delta('reportCount') >= 0 && _delta('reportCount') <= 1;
+    }
+
     // ── users 컬렉션 ──────────────────────────────────────────────────
     // Build 297 (P0 security audit): update/delete 를 isSignedIn() 만으로 허용
     // 하면 어떤 인증 사용자든 다른 사용자 doc 을 덮어쓰거나 삭제 (PII 변조 +
@@ -122,7 +139,10 @@ service cloud.firestore {
       allow create: if isSignedIn() && isValidLetterCreate(request.resource.data);
 
       // update 는 카운터·상태 필드만. 본문/발신자/좌표/카테고리는 immutable.
-      allow update: if isSignedIn() && isAllowedLetterUpdate();
+      // Build 297: 카운터 폭 검증 추가 (review-bombing 차단).
+      allow update: if isSignedIn()
+                  && isAllowedLetterUpdate()
+                  && isReasonableLetterCounterDelta();
 
       // delete 차단 — admin REST 만 가능.
       allow delete: if false;
@@ -169,10 +189,18 @@ service cloud.firestore {
           .hasOnly(['redeemedCount']);
     }
 
+    // Build 297 (HIGH security audit): redeemedCount 증분 0 또는 +1 만 허용.
+    // quota fake-exhaustion 공격 차단.
+    function isReasonableBrandZoneCounterDelta() {
+      return _delta('redeemedCount') >= 0 && _delta('redeemedCount') <= 1;
+    }
+
     match /brand_zones/{zoneId} {
       allow read, list: if true;
       allow create: if isSignedIn() && isValidBrandZoneCreate(request.resource.data);
-      allow update: if isSignedIn() && isAllowedBrandZoneUpdate();
+      allow update: if isSignedIn()
+                  && isAllowedBrandZoneUpdate()
+                  && isReasonableBrandZoneCounterDelta();
       allow delete: if false;
     }
 

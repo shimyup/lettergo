@@ -1455,8 +1455,15 @@ class _SignupTabState extends State<_SignupTab> {
 
     // Build 262: 신규 가입 무료 Premium 부여 (cold-start 해소).
     // Build 271: 7일 → 3일 단축.
+    // Build 298 (HIGH audit): server-side claim 검증 — Firestore 의
+    // welcomeTrialClaimedAt 가 비어있을 때만 부여. 계정 삭제 후 재가입 → 무한
+    // trial farming 차단.
     try {
-      await context.read<PurchaseService>().grantWelcomeTrial(days: 3);
+      final purchase = context.read<PurchaseService>();
+      final state = context.read<AppState>();
+      await state.tryClaimWelcomeTrial(
+        grant: () => purchase.grantWelcomeTrial(days: 3),
+      );
     } catch (_) {}
 
     final user = await AuthService.getCurrentUser();

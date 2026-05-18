@@ -27,27 +27,33 @@ service firebase.storage {
       return request.resource.size < 10 * 1024 * 1024;
     }
 
+    // Build 297 (HIGH security audit): delete 룰 일괄 차단.
+    // 익명 Firebase Auth 환경에서 isSignedIn() 만 요구하면 어떤 사용자든 다른
+    // 사용자의 voucher / letter / profile 이미지 삭제 가능 → 악의적 사용자가
+    // 모든 브랜드 voucher / 프로필 사진을 wipe 할 수 있는 위협 표면.
+    // 삭제는 admin REST 전용 (account scrub 흐름 + Cloud Function cron).
+
     // ── 교환권 이미지 ──────────────────────────────────────────────────
     // Brand 가 발송하는 voucher 카테고리 편지의 첨부 이미지.
     // 수신자 누구나 read (편지 픽업 후 사용해야 하므로).
     match /vouchers/{file=**} {
       allow read: if isSignedIn();
       allow write: if isSignedIn() && isImage() && maxImageSize();
-      allow delete: if isSignedIn();
+      allow delete: if false;
     }
 
     // ── 일반 편지 첨부 이미지 ──────────────────────────────────────────
     match /letters/{file=**} {
       allow read: if isSignedIn();
       allow write: if isSignedIn() && isImage() && maxImageSize();
-      allow delete: if isSignedIn();
+      allow delete: if false;
     }
 
     // ── 프로필 사진 ────────────────────────────────────────────────────
     match /profile/{userId}/{file=**} {
       allow read: if isSignedIn();
       allow write: if isSignedIn() && isImage() && maxImageSize();
-      allow delete: if isSignedIn();
+      allow delete: if false;
     }
 
     // ── 브랜드 광고 이미지 ─────────────────────────────────────────────

@@ -951,8 +951,58 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
   // 다이얼로그로 안내. 1통 발송 시 1 크레딧 차감.
   int _brandExactDropCredits = 0;
   int get brandExactDropCredits => _brandExactDropCredits;
+
+  // Build 298 (HIGH billing audit): Welcome trial farming 차단을 위한 server-side
+  // claim timestamp. 사용자가 계정 삭제 후 재가입해도 동일 user 에 대해 trial
+  // 이 한 번만 부여됨. _saveUserToFirestore 가 자동 영구화하고
+  // _fetchInviteIdentityFromServer 가 cold-start 시 복원.
+  DateTime? _welcomeTrialClaimedAt;
+  DateTime? get welcomeTrialClaimedAt => _welcomeTrialClaimedAt;
   bool get canUseExactDrop =>
       _currentUser.isBrand && _brandExactDropCredits > 0;
+
+  // Build 298 (HIGH billing audit): Welcome trial 1회 한정 claim.
+  // server-as-truth — Firestore 의 welcomeTrialClaimedAt 가 비어있을 때만
+  // trial 부여 (PurchaseService.grantWelcomeTrial) + timestamp 기록.
+  // 사용자가 계정 삭제 → 재가입 해도 동일 user.id 면 grant 거부 (anonymous
+  // Firebase Auth uid 가 device 별로 안정적이라 farming 방지에 충분).
+  //
+  // Returns true 면 trial 부여 진행됨, false 면 이미 수령했거나 server 통신
+  // 실패로 skip. UI 는 결과를 사용자 표시할 필요 없음 (조용히 fallback).
+  Future<bool> tryClaimWelcomeTrial({
+    required Future<void> Function() grant,
+  }) async {
+    if (_currentUser.id == 'guest') return false;
+    if (_welcomeTrialClaimedAt != null) return false;
+
+    // Firestore 의 현재 user doc 에서 welcomeTrialClaimedAt 만 읽기.
+    if (FirebaseConfig.kFirebaseEnabled) {
+      try {
+        final doc =
+            await FirestoreService.getDocument('users/${_currentUser.id}');
+        if (doc != null) {
+          final data = FirestoreService.fromFirestoreDoc(doc);
+          final serverClaimedRaw = data['welcomeTrialClaimedAt'] as String?;
+          if (serverClaimedRaw != null && serverClaimedRaw.isNotEmpty) {
+            final parsed = DateTime.tryParse(serverClaimedRaw)?.toLocal();
+            if (parsed != null) {
+              _welcomeTrialClaimedAt = parsed;
+              return false; // 이미 server 가 claim 보유 → 재부여 차단.
+            }
+          }
+        }
+      } catch (_) {
+        // Firestore 통신 실패 — 안전 측면에서 grant skip.
+        return false;
+      }
+    }
+
+    await grant();
+    _welcomeTrialClaimedAt = DateTime.now();
+    await _saveUserToFirestore();
+    notifyListeners();
+    return true;
+  }
 
   Future<void> adminGrantExactDropCredits(int amount) async {
     if (amount <= 0) return;
@@ -4184,6 +4234,14 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
         'brandExactDropCredits': {
           'integerValue': '$_brandExactDropCredits',
         },
+        // Build 298 (HIGH audit): Welcome trial 1회 한정 claim timestamp.
+        // 사용자가 계정 삭제 후 재가입해도 동일 user.id 에 대해 trial 한 번만
+        // 부여됨. null 이면 미수령, ISO timestamp 면 수령 완료.
+        if (_welcomeTrialClaimedAt != null)
+          'welcomeTrialClaimedAt': {
+            'timestampValue':
+                _welcomeTrialClaimedAt!.toUtc().toIso8601String(),
+          },
         if (_appliedInviteCode != null)
           'inviteAppliedCode': {'stringValue': _appliedInviteCode!},
         if (_lastInviteRewardAt != null)
@@ -4287,6 +4345,15 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
         final prefs = await SharedPreferences.getInstance();
         await prefs.setInt('brandExactDropCredits', _brandExactDropCredits);
         changed = true;
+      }
+      // Build 298 (HIGH audit): Welcome trial 1회 한정 — server-as-truth.
+      final claimedAtRaw = data['welcomeTrialClaimedAt'] as String?;
+      if (claimedAtRaw != null && claimedAtRaw.isNotEmpty) {
+        final parsed = DateTime.tryParse(claimedAtRaw)?.toLocal();
+        if (parsed != null && _welcomeTrialClaimedAt != parsed) {
+          _welcomeTrialClaimedAt = parsed;
+          changed = true;
+        }
       }
       final normalizedApplied =
           (serverAppliedCode != null && serverAppliedCode.isNotEmpty)

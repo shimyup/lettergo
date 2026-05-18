@@ -49,7 +49,16 @@ class _SplashScreenState extends State<SplashScreen>
     if (!onboardingDone) {
       // Build 284: 첫 방문 → 인포그래픽 투어 → 기존 onboarding 으로.
       // SharedPreferences `seen_onboarding_tour` 가 true 면 투어 건너뜀.
-      final seenTour = prefs.getBool('seen_onboarding_tour') ?? false;
+      // Build 298 (P0 i18n audit): tour 콘텐츠가 한국어 only — 비-ko 단말은
+      // 자동 skip 처리 후 markSeen 까지 호출해 한글 화면 노출 차단.
+      var seenTour = prefs.getBool('seen_onboarding_tour') ?? false;
+      if (!seenTour) {
+        final locale = WidgetsBinding.instance.platformDispatcher.locale;
+        if (locale.languageCode.toLowerCase() != 'ko') {
+          await prefs.setBool('seen_onboarding_tour', true);
+          seenTour = true;
+        }
+      }
       if (!mounted) return;
       Navigator.of(context).pushReplacementNamed(
         seenTour ? '/onboarding' : '/onboarding_tour',
