@@ -1,5 +1,4 @@
-"NSLocationWhenInUseUsageDescription" = "Tu ubicación es necesaria para descubrir cartas cercanas.";
-"NSLocationAlwaysAndWhenInUseUsageDescription" = "Tu ubicación es necesaria para descubrir cartas cercanas.";
-"NSPhotoLibraryUsageDescription" = "Se necesita acceso a la fototeca para cambiar tu foto de perfil.";
-"NSPhotoLibraryAddUsageDescription" = "Se necesita permiso para guardar tu foto de perfil seleccionada.";
-"NSCameraUsageDescription" = "Se necesita acceso a la cámara para tomar fotos para tus cartas.";
+"NSLocationWhenInUseUsageDescription" = "Tu ubicación se usa para mostrar cupones de tiendas cercanas.";
+"NSLocationAlwaysAndWhenInUseUsageDescription" = "Tu ubicación se usa para mostrar cupones de tiendas cercanas.";
+"NSPhotoLibraryUsageDescription" = "Se necesita acceso a la fototeca para cambiar tu foto de perfil e imágenes de cupones.";
+"NSPhotoLibraryAddUsageDescription" = "Se necesita permiso para guardar las fotos seleccionadas en la app.";

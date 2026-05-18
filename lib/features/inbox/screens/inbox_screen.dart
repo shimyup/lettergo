@@ -947,8 +947,9 @@ class _InboxScreenState extends State<InboxScreen>
                 ),
               ),
               // Build 295: 정렬 모드 선택 (유효기간 / 최신 / 중요도).
+              // Build 297 (P0 i18n): 14언어 번역.
               PopupMenuButton<InboxSortMode>(
-                tooltip: '정렬',
+                tooltip: l10n.inboxSortTooltip,
                 icon: const Icon(
                   Icons.sort_rounded,
                   color: AppColors.textSecondary,
@@ -960,20 +961,20 @@ class _InboxScreenState extends State<InboxScreen>
                   CheckedPopupMenuItem(
                     value: InboxSortMode.latest,
                     checked: _sortMode == InboxSortMode.latest,
-                    child: const Text('최신순',
-                        style: TextStyle(color: AppColors.textPrimary)),
+                    child: Text(l10n.inboxSortLatest,
+                        style: const TextStyle(color: AppColors.textPrimary)),
                   ),
                   CheckedPopupMenuItem(
                     value: InboxSortMode.expiry,
                     checked: _sortMode == InboxSortMode.expiry,
-                    child: const Text('유효기간 임박순',
-                        style: TextStyle(color: AppColors.textPrimary)),
+                    child: Text(l10n.inboxSortExpiry,
+                        style: const TextStyle(color: AppColors.textPrimary)),
                   ),
                   CheckedPopupMenuItem(
                     value: InboxSortMode.importance,
                     checked: _sortMode == InboxSortMode.importance,
-                    child: const Text('중요도순',
-                        style: TextStyle(color: AppColors.textPrimary)),
+                    child: Text(l10n.inboxSortImportance,
+                        style: const TextStyle(color: AppColors.textPrimary)),
                   ),
                 ],
               ),
@@ -2755,9 +2756,13 @@ class _BrandSentSummaryView extends StatelessWidget {
     List<Letter> subset,
   ) {
     if (subset.isEmpty) {
+      // Build 297 (P0 i18n): 한국어 조사 (가) 가정 + 한글 하드코딩 제거.
+      final l10n = AppL10n.of(
+        context.read<AppState>().currentUser.languageCode,
+      );
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('$title 가 없어요'),
+          content: Text(l10n.inboxNothingForFilter(title)),
           backgroundColor: AppColors.bgCard,
           behavior: SnackBarBehavior.floating,
         ),

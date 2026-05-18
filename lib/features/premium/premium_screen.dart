@@ -9,6 +9,7 @@ import '../../core/theme/app_theme.dart';
 import '../../core/services/feedback_service.dart';
 import '../../core/services/purchase_service.dart';
 import '../../core/localization/app_localizations.dart';
+import '../../core/config/app_links.dart';
 import '../../state/app_state.dart';
 
 class PremiumScreen extends StatefulWidget {
@@ -662,6 +663,61 @@ class _PremiumScreenState extends State<PremiumScreen> {
                       height: 1.6,
                     ),
                   ),
+                ),
+                // Build 297 (P0 audit, Apple 3.1.2): paywall 에 Terms 와 Privacy
+                // 링크 노출. 자동갱신 구독에는 두 링크가 모두 필수 (5.1.1 / 3.1.2).
+                const SizedBox(height: 10),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    TextButton(
+                      onPressed: () => launchUrl(
+                        Uri.parse(AppLinks.termsOfService),
+                        mode: LaunchMode.inAppBrowserView,
+                      ),
+                      style: TextButton.styleFrom(
+                        minimumSize: Size.zero,
+                        padding: const EdgeInsets.symmetric(horizontal: 8),
+                        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                      ),
+                      child: Text(
+                        l.settingsTerms,
+                        style: const TextStyle(
+                          color: AppColors.teal,
+                          fontSize: 11,
+                          fontWeight: FontWeight.w600,
+                          decoration: TextDecoration.underline,
+                        ),
+                      ),
+                    ),
+                    const Text(
+                      '·',
+                      style: TextStyle(
+                        color: AppColors.textMuted,
+                        fontSize: 11,
+                      ),
+                    ),
+                    TextButton(
+                      onPressed: () => launchUrl(
+                        Uri.parse(AppLinks.privacyPolicy),
+                        mode: LaunchMode.inAppBrowserView,
+                      ),
+                      style: TextButton.styleFrom(
+                        minimumSize: Size.zero,
+                        padding: const EdgeInsets.symmetric(horizontal: 8),
+                        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                      ),
+                      child: Text(
+                        l.settingsPrivacy,
+                        style: const TextStyle(
+                          color: AppColors.teal,
+                          fontSize: 11,
+                          fontWeight: FontWeight.w600,
+                          decoration: TextDecoration.underline,
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ],
             ),

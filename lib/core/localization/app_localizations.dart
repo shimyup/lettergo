@@ -3000,6 +3000,50 @@ class AppL10n {
     'th': 'เพื่อความปลอดภัย รหัสผ่านชั่วคราวจะไม่แสดงบนหน้าจอ',
   });
 
+  // Build 297 (P0 audit): release 빌드에서 임시 비번 이메일 전송 후 결과 메시지.
+  String authTempPasswordSentToEmail(String email) => _t({
+    'ko': '임시 비밀번호를 $email 로 전송했어요.',
+    'en': 'A temporary password has been sent to $email.',
+    'ja': '仮パスワードを $email に送信しました。',
+    'zh': '已将临时密码发送至 $email。',
+    'fr': 'Un mot de passe temporaire a été envoyé à $email.',
+    'de': 'Ein vorübergehendes Passwort wurde an $email gesendet.',
+    'es': 'Se envió una contraseña temporal a $email.',
+    'pt': 'Uma senha temporária foi enviada para $email.',
+    'ru': 'Временный пароль отправлен на $email.',
+    'tr': 'Geçici şifre $email adresine gönderildi.',
+    'ar': 'تم إرسال كلمة المرور المؤقتة إلى $email.',
+    'it': 'Una password temporanea è stata inviata a $email.',
+    'hi': 'एक अस्थायी पासवर्ड $email पर भेज दिया गया है।',
+    'th': 'ส่งรหัสผ่านชั่วคราวไปยัง $email แล้ว',
+  });
+
+  String get authTempPasswordSendFailed => _t({
+    'ko': '임시 비밀번호 이메일 전송에 실패했어요. 잠시 후 다시 시도하거나 고객센터로 문의해주세요.',
+    'en':
+        'Failed to send the temporary password email. Please try again later or contact support.',
+    'ja': '仮パスワードのメール送信に失敗しました。後でもう一度お試しください。',
+    'zh': '临时密码邮件发送失败。请稍后再试或联系客服。',
+    'fr':
+        'Échec de l\'envoi du mot de passe temporaire. Réessayez plus tard ou contactez le support.',
+    'de':
+        'Senden des temporären Passworts fehlgeschlagen. Bitte später erneut versuchen.',
+    'es':
+        'Error al enviar la contraseña temporal. Inténtalo de nuevo o contacta a soporte.',
+    'pt':
+        'Falha ao enviar a senha temporária. Tente novamente ou contate o suporte.',
+    'ru':
+        'Не удалось отправить временный пароль. Попробуйте позже или обратитесь в поддержку.',
+    'tr':
+        'Geçici şifre e-postası gönderilemedi. Daha sonra tekrar deneyin veya destek ile iletişime geçin.',
+    'ar': 'فشل إرسال كلمة المرور المؤقتة. حاول لاحقًا أو تواصل مع الدعم.',
+    'it':
+        'Impossibile inviare la password temporanea. Riprova più tardi o contatta il supporto.',
+    'hi':
+        'अस्थायी पासवर्ड भेजने में विफल। बाद में पुनः प्रयास करें या सहायता से संपर्क करें।',
+    'th': 'ส่งอีเมลรหัสผ่านชั่วคราวไม่สำเร็จ ลองอีกครั้งหรือติดต่อฝ่ายช่วยเหลือ',
+  });
+
   String authTempPasswordExpiry(dynamic minutes) => _t({
     'ko': '$minutes분 후 만료 · 로그인 후 반드시 변경해주세요',
     'en': 'Expires in $minutes min · Please change after login',
@@ -7900,6 +7944,93 @@ class AppL10n {
     'th': 'ใช้แล้วอยู่แล้ว',
   });
 
+  // Build 297 (P0 i18n): 인박스 정렬 필터 (Build 295) 14언어 번역.
+  String get inboxSortTooltip => _t({
+    'ko': '정렬',
+    'en': 'Sort',
+    'ja': '並び替え',
+    'zh': '排序',
+    'fr': 'Trier',
+    'de': 'Sortieren',
+    'es': 'Ordenar',
+    'pt': 'Ordenar',
+    'ru': 'Сортировка',
+    'tr': 'Sırala',
+    'ar': 'فرز',
+    'it': 'Ordina',
+    'hi': 'क्रमबद्ध करें',
+    'th': 'เรียง',
+  });
+
+  String get inboxSortLatest => _t({
+    'ko': '최신순',
+    'en': 'Latest',
+    'ja': '新着順',
+    'zh': '最新',
+    'fr': 'Plus récent',
+    'de': 'Neueste zuerst',
+    'es': 'Más reciente',
+    'pt': 'Mais recente',
+    'ru': 'Сначала новые',
+    'tr': 'En yeni',
+    'ar': 'الأحدث',
+    'it': 'Più recenti',
+    'hi': 'नवीनतम',
+    'th': 'ล่าสุด',
+  });
+
+  String get inboxSortExpiry => _t({
+    'ko': '유효기간 임박순',
+    'en': 'Expiring soon',
+    'ja': '有効期限が近い順',
+    'zh': '即将过期',
+    'fr': 'Expirant bientôt',
+    'de': 'Bald ablaufend',
+    'es': 'Por vencer',
+    'pt': 'Vencendo em breve',
+    'ru': 'Скоро истекают',
+    'tr': 'Yakında dolacak',
+    'ar': 'ينتهي قريبًا',
+    'it': 'In scadenza',
+    'hi': 'जल्द समाप्त',
+    'th': 'ใกล้หมดอายุ',
+  });
+
+  String get inboxSortImportance => _t({
+    'ko': '중요도순',
+    'en': 'Importance',
+    'ja': '重要度順',
+    'zh': '重要度',
+    'fr': 'Importance',
+    'de': 'Wichtigkeit',
+    'es': 'Importancia',
+    'pt': 'Importância',
+    'ru': 'По важности',
+    'tr': 'Önem',
+    'ar': 'الأهمية',
+    'it': 'Importanza',
+    'hi': 'महत्व',
+    'th': 'ความสำคัญ',
+  });
+
+  // Build 297 (P0 i18n): 빈-필터 토스트 — 이전 `$title 가 없어요` 한국어 조사 가정.
+  String inboxNothingForFilter(String title) => _t({
+    'ko': '$title 가 없어요',
+    'en': 'No $title',
+    'ja': '$title はありません',
+    'zh': '没有 $title',
+    'fr': 'Aucun $title',
+    'de': 'Keine $title',
+    'es': 'No hay $title',
+    'pt': 'Nenhum $title',
+    'ru': 'Нет $title',
+    'tr': '$title yok',
+    'ar': 'لا يوجد $title',
+    'it': 'Nessun $title',
+    'hi': '$title नहीं है',
+    'th': 'ไม่มี $title',
+  });
+
   String get inboxEmptyReceived => _t({
     'ko': '조건에 맞는 받은 혜택이 없어요',
     'en': 'No received rewards match the filter',
@@ -8136,6 +8267,75 @@ class AppL10n {
     'it': 'Modifica in App Store / Google Play',
     'hi': 'App Store / Google Play से बदलें',
     'th': 'เปลี่ยนใน App Store / Google Play',
+  });
+
+  // Build 297 (P0 audit, Apple 3.1.1): Restore Purchases Settings 타일.
+  String get settingsRestorePurchases => _t({
+    'ko': '구매 복원',
+    'en': 'Restore Purchases',
+    'ja': '購入を復元',
+    'zh': '恢复购买',
+    'fr': 'Restaurer les achats',
+    'de': 'Käufe wiederherstellen',
+    'es': 'Restaurar compras',
+    'pt': 'Restaurar compras',
+    'ru': 'Восстановить покупки',
+    'tr': 'Satın alımları geri yükle',
+    'ar': 'استعادة المشتريات',
+    'it': 'Ripristina acquisti',
+    'hi': 'खरीदारी पुनर्स्थापित करें',
+    'th': 'กู้คืนการซื้อ',
+  });
+
+  String get settingsRestorePurchasesDesc => _t({
+    'ko': '기기 변경·재설치 후 결제 내역을 복구합니다.',
+    'en': 'Restore your subscription after reinstall or device change.',
+    'ja': '機種変更や再インストール後に購入を復元します。',
+    'zh': '更换设备或重新安装后恢复您的订阅。',
+    'fr': 'Restaurez votre abonnement après réinstallation ou changement d\'appareil.',
+    'de': 'Stellen Sie Ihr Abonnement nach Neuinstallation oder Gerätewechsel wieder her.',
+    'es': 'Restaura tu suscripción tras reinstalar o cambiar de dispositivo.',
+    'pt': 'Restaure sua assinatura após reinstalar ou trocar de dispositivo.',
+    'ru': 'Восстановите подписку после переустановки или смены устройства.',
+    'tr': 'Yeniden yükleme veya cihaz değişikliği sonrası aboneliğinizi geri yükleyin.',
+    'ar': 'استعد اشتراكك بعد إعادة التثبيت أو تغيير الجهاز.',
+    'it': 'Ripristina l\'abbonamento dopo reinstallazione o cambio dispositivo.',
+    'hi': 'पुनर्स्थापना या डिवाइस बदलने के बाद सदस्यता पुनर्स्थापित करें।',
+    'th': 'กู้คืนการสมัครสมาชิกหลังติดตั้งใหม่หรือเปลี่ยนอุปกรณ์',
+  });
+
+  String get settingsRestorePurchasesOk => _t({
+    'ko': '구매 내역이 복원됐어요.',
+    'en': 'Your purchases have been restored.',
+    'ja': '購入が復元されました。',
+    'zh': '已成功恢复购买。',
+    'fr': 'Vos achats ont été restaurés.',
+    'de': 'Käufe wurden wiederhergestellt.',
+    'es': 'Tus compras se han restaurado.',
+    'pt': 'Suas compras foram restauradas.',
+    'ru': 'Покупки восстановлены.',
+    'tr': 'Satın alımlarınız geri yüklendi.',
+    'ar': 'تم استعادة مشترياتك.',
+    'it': 'Acquisti ripristinati.',
+    'hi': 'आपकी खरीदारी पुनर्स्थापित कर दी गई है।',
+    'th': 'กู้คืนการซื้อแล้ว',
+  });
+
+  String get settingsRestorePurchasesEmpty => _t({
+    'ko': '복원할 구매 내역이 없어요.',
+    'en': 'No purchases to restore.',
+    'ja': '復元する購入はありません。',
+    'zh': '没有可恢复的购买。',
+    'fr': 'Aucun achat à restaurer.',
+    'de': 'Keine Käufe zum Wiederherstellen.',
+    'es': 'No hay compras para restaurar.',
+    'pt': 'Nenhuma compra para restaurar.',
+    'ru': 'Нет покупок для восстановления.',
+    'tr': 'Geri yüklenecek satın alma yok.',
+    'ar': 'لا توجد مشتريات للاستعادة.',
+    'it': 'Nessun acquisto da ripristinare.',
+    'hi': 'पुनर्स्थापित करने के लिए कोई खरीदारी नहीं।',
+    'th': 'ไม่มีการซื้อให้กู้คืน',
   });
 
   // 수집첩 상단의 숫자 칩 3개 — 새 편지 / 배달중 / 총 수신

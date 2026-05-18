@@ -1,5 +1,4 @@
-"NSLocationWhenInUseUsageDescription" = "Ihr Standort wird benötigt, um Briefe in der Nähe zu entdecken.";
-"NSLocationAlwaysAndWhenInUseUsageDescription" = "Ihr Standort wird benötigt, um Briefe in der Nähe zu entdecken.";
-"NSPhotoLibraryUsageDescription" = "Zugriff auf die Fotobibliothek wird benötigt, um Ihr Profilbild zu ändern.";
-"NSPhotoLibraryAddUsageDescription" = "Berechtigung wird benötigt, um Ihr ausgewähltes Profilfoto zu speichern.";
-"NSCameraUsageDescription" = "Kamerazugriff wird benötigt, um Fotos für Ihre Briefe aufzunehmen.";
+"NSLocationWhenInUseUsageDescription" = "Ihr Standort wird verwendet, um Gutscheine von Geschäften in der Nähe anzuzeigen.";
+"NSLocationAlwaysAndWhenInUseUsageDescription" = "Ihr Standort wird verwendet, um Gutscheine von Geschäften in der Nähe anzuzeigen.";
+"NSPhotoLibraryUsageDescription" = "Zugriff auf die Fotobibliothek wird benötigt, um Profilbild und Gutscheinbilder zu ändern.";
+"NSPhotoLibraryAddUsageDescription" = "Berechtigung wird benötigt, um ausgewählte Fotos in der App zu speichern.";

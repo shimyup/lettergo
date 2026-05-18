@@ -1143,6 +1143,12 @@ class AuthService {
   ///   - country : 대한민국 / 🇰🇷
   /// signUp 의 password 형식 검증은 어드민 이메일에 한해 우회되므로 0000 가능.
   static Future<void> bootstrapAdminIfNeeded({String langCode = 'ko'}) async {
+    // Build 297 (P0 security): release 빌드에서 '0000' 하드코딩 비번 어드민
+    // 자동 생성 차단. 리뷰어가 신규 디바이스에서 앱 첫 실행 시 admin 권한
+    // 으로 들어오는 경로 — App Store Review 5.1.1 / KISA 안전성 위반.
+    // 개발 빌드에서만 편의용으로 유지.
+    if (!kDebugMode) return;
+
     final adminEmail = BetaConstants.permanentAdminEmail;
     if (adminEmail.isEmpty) return;
 

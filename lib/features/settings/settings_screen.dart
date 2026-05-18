@@ -926,6 +926,31 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         );
                       },
                     ),
+                    // Build 297 (P0 audit, Apple 3.1.1): Restore Purchases 타일
+                    // 을 Premium 여부와 무관하게 노출. 사용자가 재설치/기기 변경
+                    // 후 entitlement 가 빠진 상태에서도 Settings 로 복구 가능.
+                    Consumer<PurchaseService>(
+                      builder: (ctx2, purchase, _) {
+                        return _tile(
+                          icon: Icons.restore_rounded,
+                          label: l.settingsRestorePurchases,
+                          subtitle: l.settingsRestorePurchasesDesc,
+                          onTap: () async {
+                            final ok = await purchase.restorePurchases();
+                            if (!ctx2.mounted) return;
+                            ScaffoldMessenger.of(ctx2).showSnackBar(
+                              SnackBar(
+                                content: Text(ok
+                                    ? l.settingsRestorePurchasesOk
+                                    : l.settingsRestorePurchasesEmpty),
+                                backgroundColor: AppColors.bgCard,
+                                behavior: SnackBarBehavior.floating,
+                              ),
+                            );
+                          },
+                        );
+                      },
+                    ),
 
                     const SizedBox(height: 8),
                     // ── 데이터 및 개인정보 ──────────────────────────────────

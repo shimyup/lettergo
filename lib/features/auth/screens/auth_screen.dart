@@ -765,6 +765,25 @@ class _LoginTabState extends State<_LoginTab> {
                         langCode: _deviceLangCode(),
                       );
 
+                      // Build 297 (P0 audit): release 빌드에서 임시 비번 이메일 전송.
+                      // 이전엔 화면 노출만 차단되어 사용자가 임시 비번을 받을 채널이
+                      // 없어 영구 잠금.
+                      bool pwEmailDelivered = false;
+                      String? pwEmailError;
+                      if (pwResult['success'] == true && !kDebugMode) {
+                        final pw = pwResult['tempPassword'] as String?;
+                        if (pw != null && pw.isNotEmpty) {
+                          pwEmailError = await EmailService.sendTempPassword(
+                            to: email,
+                            tempPassword: pw,
+                            expiresInMinutes:
+                                (pwResult['expiresInMinutes'] as int?) ?? 30,
+                            langCode: _deviceLangCode(),
+                          );
+                          pwEmailDelivered = pwEmailError == null;
+                        }
+                      }
+
                       if (!mounted || !context.mounted || !dialogCtx.mounted)
                         return;
                       Navigator.pop(dialogCtx);
@@ -869,9 +888,14 @@ class _LoginTabState extends State<_LoginTab> {
                                         )
                                       else
                                         Text(
-                                          l10n.authTempPasswordHidden,
-                                          style: const TextStyle(
-                                            color: AppColors.textPrimary,
+                                          pwEmailDelivered
+                                              ? l10n.authTempPasswordSentToEmail(email)
+                                              : (pwEmailError ??
+                                                    l10n.authTempPasswordSendFailed),
+                                          style: TextStyle(
+                                            color: pwEmailDelivered
+                                                ? AppColors.textPrimary
+                                                : AppColors.error,
                                             fontSize: 12,
                                             fontWeight: FontWeight.w600,
                                           ),
@@ -1001,14 +1025,34 @@ class _LoginTabState extends State<_LoginTab> {
           ),
           ElevatedButton(
             onPressed: () async {
+              final inputEmail = emailCtrl.text.trim();
+              final lang = _deviceLangCode();
               final result = await AuthService.resetPassword(
                 username: usernameCtrl.text.trim(),
-                email: emailCtrl.text.trim(),
-                langCode: _deviceLangCode(),
+                email: inputEmail,
+                langCode: lang,
               );
               if (!mounted) return;
-              Navigator.pop(context);
               final bool ok = result['success'] == true;
+              // Build 297 (P0 audit): release 빌드에서 화면 노출 차단된 임시 비번
+              // 을 이메일로 전송. 이전엔 어떤 채널로도 전달되지 않아 영구 잠금.
+              bool emailDelivered = false;
+              String? emailError;
+              if (ok && !kDebugMode) {
+                final pw = result['tempPassword'] as String?;
+                if (pw != null && pw.isNotEmpty) {
+                  emailError = await EmailService.sendTempPassword(
+                    to: inputEmail,
+                    tempPassword: pw,
+                    expiresInMinutes:
+                        (result['expiresInMinutes'] as int?) ?? 30,
+                    langCode: lang,
+                  );
+                  emailDelivered = emailError == null;
+                }
+              }
+              if (!mounted) return;
+              Navigator.pop(context);
               showDialog(
                 context: context,
                 builder: (_) => AlertDialog(
@@ -1026,12 +1070,17 @@ class _LoginTabState extends State<_LoginTab> {
                               ? '${l10n.authTempPasswordLabel}: ${result['tempPassword']}\n'
                                     '${l10n.authExpiresInMinutes(result['expiresInMinutes'])}\n'
                                     '${l10n.authMustChangeAfterLogin}'
-                              : '${l10n.authExpiresInMinutes(result['expiresInMinutes'])}\n'
-                                    '${l10n.authTempPasswordHidden}\n'
-                                    '${l10n.authMustChangeAfterLogin}')
+                              : (emailDelivered
+                                    ? '${l10n.authTempPasswordSentToEmail(inputEmail)}\n'
+                                          '${l10n.authExpiresInMinutes(result['expiresInMinutes'])}\n'
+                                          '${l10n.authMustChangeAfterLogin}'
+                                    : (emailError ??
+                                          l10n.authTempPasswordSendFailed)))
                         : (result['error'] ?? l10n.authErrorOccurred),
                     style: TextStyle(
-                      color: ok ? AppColors.teal : AppColors.error,
+                      color: ok && (kDebugMode || emailDelivered)
+                          ? AppColors.teal
+                          : AppColors.error,
                     ),
                   ),
                   actions: [

@@ -1,5 +1,4 @@
-"NSLocationWhenInUseUsageDescription" = "Ваше местоположение необходимо для обнаружения ближайших писем.";
-"NSLocationAlwaysAndWhenInUseUsageDescription" = "Ваше местоположение необходимо для обнаружения ближайших писем.";
-"NSPhotoLibraryUsageDescription" = "Доступ к фотобиблиотеке необходим для изменения фото профиля.";
-"NSPhotoLibraryAddUsageDescription" = "Разрешение необходимо для сохранения выбранного фото профиля.";
-"NSCameraUsageDescription" = "Доступ к камере необходим для съёмки фото для ваших писем.";
+"NSLocationWhenInUseUsageDescription" = "Ваше местоположение используется для показа купонов магазинов поблизости.";
+"NSLocationAlwaysAndWhenInUseUsageDescription" = "Ваше местоположение используется для показа купонов магазинов поблизости.";
+"NSPhotoLibraryUsageDescription" = "Доступ к фотобиблиотеке используется для изменения фото профиля и изображений купонов.";
+"NSPhotoLibraryAddUsageDescription" = "Разрешение необходимо для сохранения выбранных фото в приложении.";
