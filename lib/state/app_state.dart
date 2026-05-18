@@ -959,6 +959,9 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
     _brandExactDropCredits += amount;
     final prefs = await SharedPreferences.getInstance();
     await prefs.setInt('brandExactDropCredits', _brandExactDropCredits);
+    // Build 296 (P0 audit): Firestore 즉시 동기화 — 충전 직후 다른 기기/재설치
+    // 에서도 즉시 복구 가능. await 으로 묶어 결제 → 충전 → 다음 액션 일관성.
+    await _saveUserToFirestore();
     notifyListeners();
   }
 
@@ -969,6 +972,9 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
     _brandExactDropCredits--;
     final prefs = await SharedPreferences.getInstance();
     await prefs.setInt('brandExactDropCredits', _brandExactDropCredits);
+    // Build 296 (P0 audit): 발송 흐름 막지 않도록 fire-and-forget 으로 sync.
+    // _saveUserToFirestore 자체가 3-retry 내장이라 transient 실패 흡수.
+    unawaited(_saveUserToFirestore());
     notifyListeners();
     return true;
   }

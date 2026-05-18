@@ -894,20 +894,22 @@ class _ComposeScreenState extends State<ComposeScreen>
         minHeight: 200,
         keepExif: false,
       );
-      if (mounted) {
-        setState(() {
-          _imageFilePath = result?.path ?? picked.path;
-          _isCompressingImage = false;
-        });
-      }
+      if (!mounted) return;
+      // Build 296 (P0 audit): result == null 도 실패로 취급 — 이전엔
+      // `result?.path ?? picked.path` 로 EXIF 원본 (GPS 좌표 포함) 을 그대로
+      // 첨부하던 누출 경로. compress 가 null/throw 면 첨부 거부 + 사용자 알림.
+      if (result?.path == null) throw StateError('compressAndGetFile returned null');
+      setState(() {
+        _imageFilePath = result!.path;
+        _isCompressingImage = false;
+      });
     } catch (e) {
-      // Build 291: 압축 실패 시 silent fall-through 대신 사용자 알림 + 원본
-      // path 그대로 사용 (이전엔 사용자가 첨부 성공한 줄 알았지만 실제로는
-      // 원본 그대로 — EXIF 미제거 위험 OR 큰 용량 그대로 업로드).
+      // Build 291: 압축 실패 시 silent fall-through 대신 사용자 알림.
+      // Build 296: 원본 path 도 쓰지 않음 — EXIF/GPS 누출 차단.
       if (mounted) {
         final l = AppL10n.of(state.currentUser.languageCode);
         setState(() {
-          _imageFilePath = picked.path;
+          _imageFilePath = null;
           _isCompressingImage = false;
         });
         ScaffoldMessenger.of(context).showSnackBar(
@@ -3483,7 +3485,9 @@ class _ComposeScreenState extends State<ComposeScreen>
       maxHeight: 1280,
     );
     if (picked == null || !mounted) return;
-    String finalPath = picked.path;
+    // Build 296 (P0 audit): EXIF/GPS 좌표 포함 원본은 절대 업로드하지 않음.
+    // compress 가 null/throw 면 첨부 거부 + 사용자 알림 (이전엔 silent fall-back).
+    String? finalPath;
     try {
       final targetPath = '${picked.path}_voucher.jpg';
       final result = await FlutterImageCompress.compressAndGetFile(
@@ -3494,16 +3498,31 @@ class _ComposeScreenState extends State<ComposeScreen>
         minHeight: 200,
         keepExif: false,
       );
-      if (result?.path != null) finalPath = result!.path;
-    } catch (_) {
-      // 압축 실패 시 원본 경로 그대로 사용.
+      finalPath = result?.path;
+    } catch (e) {
+      if (kDebugMode) debugPrint('[compose] voucher compress failed: $e');
     }
     if (!mounted) return;
+    if (finalPath == null) {
+      final l = AppL10n.of(
+        Provider.of<AppState>(context, listen: false).currentUser.languageCode,
+      );
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(l.composeImageCompressWarning),
+          backgroundColor: AppColors.gold,
+          behavior: SnackBarBehavior.floating,
+          duration: const Duration(seconds: 3),
+        ),
+      );
+      return;
+    }
+    final compressedPath = finalPath;
 
     // 우선 로컬 썸네일을 바로 보여주고 "업로드 중" 상태 표시.
     setState(() {
-      _voucherImageLocalPath = finalPath;
-      _redemptionInfoController.text = finalPath;
+      _voucherImageLocalPath = compressedPath;
+      _redemptionInfoController.text = compressedPath;
       _isUploadingVoucher = true;
     });
 
@@ -3514,7 +3533,7 @@ class _ComposeScreenState extends State<ComposeScreen>
         'voucher_${DateTime.now().millisecondsSinceEpoch}',
       );
       final url = await StorageService.uploadImage(
-        file: File(finalPath),
+        file: File(compressedPath),
         path: uploadPath,
       );
       if (!mounted) return;

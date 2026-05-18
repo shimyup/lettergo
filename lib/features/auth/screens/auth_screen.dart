@@ -1504,7 +1504,10 @@ class _SignupTabState extends State<_SignupTab> {
                     final name = country['name']!;
                     final flag = country['flag']!;
                     final code = _countryCodes[name] ?? '+1';
-                    final isSelected = code == _selectedCountryCode;
+                    // Build 296 (P2 audit): 코드(+1) 가 미국/캐나다 둘에 공유돼
+                    // 코드만 비교하면 양쪽 모두 selected 로 보이는 cosmetic 버그.
+                    // 국가명 기준 비교로 정확히 한 행만 강조.
+                    final isSelected = name == _selectedCountry;
                     return ListTile(
                       leading: Text(flag, style: const TextStyle(fontSize: 24)),
                       title: Text(
