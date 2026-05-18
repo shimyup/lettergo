@@ -18,10 +18,47 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   final PageController _pageCtrl = PageController();
   int _currentPage = 0;
 
-  // Selected country from page 0
+  // Selected country from page 0.
+  // Build 297 (HIGH UX audit): device locale 에서 초기값 추론.
+  // 이전엔 '대한민국' 하드코딩 → 미국/유럽 리뷰어가 한국 국기를 본 채 시작.
   String _selectedCountry = '대한민국';
   String _selectedFlag = '🇰🇷';
   String _langCode = 'ko';
+
+  // device locale → 국가/플래그/언어 매핑. _popularCountries 의 'lang' 과 일치
+  // 하는 첫 entry 선택 + region 매핑 (US→United States 등).
+  static const Map<String, List<String>> _localeRegionToCountry = {
+    'KR': ['대한민국', '🇰🇷', 'ko'],
+    'JP': ['日本', '🇯🇵', 'ja'],
+    'US': ['United States', '🇺🇸', 'en'],
+    'GB': ['United Kingdom', '🇬🇧', 'en'],
+    'FR': ['France', '🇫🇷', 'fr'],
+    'DE': ['Deutschland', '🇩🇪', 'de'],
+    'IT': ['Italia', '🇮🇹', 'it'],
+    'ES': ['España', '🇪🇸', 'es'],
+    'BR': ['Brasil', '🇧🇷', 'pt'],
+    'IN': ['India', '🇮🇳', 'hi'],
+    'CN': ['中国', '🇨🇳', 'zh'],
+    'AU': ['Australia', '🇦🇺', 'en'],
+    'CA': ['Canada', '🇨🇦', 'en'],
+    'MX': ['México', '🇲🇽', 'es'],
+    'RU': ['Россия', '🇷🇺', 'ru'],
+    'TR': ['Türkiye', '🇹🇷', 'tr'],
+    'EG': ['مصر', '🇪🇬', 'ar'],
+    'ZA': ['South Africa', '🇿🇦', 'en'],
+    'TH': ['ประเทศไทย', '🇹🇭', 'th'],
+    'AR': ['Argentina', '🇦🇷', 'es'],
+    'NL': ['Netherlands', '🇳🇱', 'en'],
+    'SE': ['Sverige', '🇸🇪', 'en'],
+    'NO': ['Norge', '🇳🇴', 'en'],
+    'PT': ['Portugal', '🇵🇹', 'pt'],
+    'ID': ['Indonesia', '🇮🇩', 'en'],
+    'MY': ['Malaysia', '🇲🇾', 'en'],
+    'SG': ['Singapore', '🇸🇬', 'en'],
+    'NZ': ['New Zealand', '🇳🇿', 'en'],
+    'PH': ['Philippines', '🇵🇭', 'en'],
+    'VN': ['Vietnam', '🇻🇳', 'en'],
+  };
 
   // Location permission state
   bool _locationGranted = false;
@@ -70,7 +107,30 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   @override
   void initState() {
     super.initState();
+    _hydrateFromDeviceLocale();
     _checkLocationPermission();
+  }
+
+  void _hydrateFromDeviceLocale() {
+    final locale = WidgetsBinding.instance.platformDispatcher.locale;
+    final region = (locale.countryCode ?? '').toUpperCase();
+    final mapped = _localeRegionToCountry[region];
+    if (mapped != null) {
+      _selectedCountry = mapped[0];
+      _selectedFlag = mapped[1];
+      _langCode = mapped[2];
+      return;
+    }
+    // region 매핑 없으면 language code fallback (예: ko/ja 만 일치하는 경우).
+    final lang = locale.languageCode.toLowerCase();
+    for (final entry in _localeRegionToCountry.entries) {
+      if (entry.value[2] == lang) {
+        _selectedCountry = entry.value[0];
+        _selectedFlag = entry.value[1];
+        _langCode = entry.value[2];
+        return;
+      }
+    }
   }
 
   @override

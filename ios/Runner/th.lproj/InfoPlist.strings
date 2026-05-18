@@ -1,5 +1,4 @@
-"NSLocationWhenInUseUsageDescription" = "ต้องการตำแหน่งของคุณเพื่อค้นหาจดหมายใกล้เคียง";
-"NSLocationAlwaysAndWhenInUseUsageDescription" = "ต้องการตำแหน่งของคุณเพื่อค้นหาจดหมายใกล้เคียง";
-"NSPhotoLibraryUsageDescription" = "ต้องการเข้าถึงคลังรูปภาพเพื่อเปลี่ยนรูปโปรไฟล์ของคุณ";
-"NSPhotoLibraryAddUsageDescription" = "ต้องการสิทธิ์เพื่อบันทึกรูปโปรไฟล์ที่เลือกของคุณ";
-"NSCameraUsageDescription" = "ต้องการเข้าถึงกล้องเพื่อถ่ายรูปสำหรับจดหมายของคุณ";
+"NSLocationWhenInUseUsageDescription" = "ใช้ตำแหน่งของคุณเพื่อแสดงคูปองของร้านค้าที่อยู่ใกล้เคียง";
+"NSLocationAlwaysAndWhenInUseUsageDescription" = "ใช้ตำแหน่งของคุณเพื่อแสดงคูปองของร้านค้าที่อยู่ใกล้เคียง";
+"NSPhotoLibraryUsageDescription" = "ต้องการเข้าถึงคลังรูปภาพเพื่อเปลี่ยนรูปโปรไฟล์และรูปคูปอง";
+"NSPhotoLibraryAddUsageDescription" = "ต้องการสิทธิ์เพื่อบันทึกรูปที่เลือกในแอป";

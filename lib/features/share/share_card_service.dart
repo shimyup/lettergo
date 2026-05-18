@@ -9,6 +9,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
 
 import '../../core/localization/app_localizations.dart';
+import '../../core/localization/language_config.dart';
 import '../../core/theme/app_theme.dart';
 import '../../models/letter.dart';
 import '../journey/journey_stats.dart';
@@ -87,7 +88,7 @@ class ShareCardService {
     _paintBackground(canvas, size);
     _paintHeader(canvas, size, letter, l10n);
     _paintJourneyGraphic(canvas, size, letter, l10n);
-    _paintLetterSnippet(canvas, size, letter);
+    _paintLetterSnippet(canvas, size, letter, langCode: langCode);
     _paintBottomBranding(canvas, size, tagline, brandName);
 
     final picture = recorder.endRecording();
@@ -239,7 +240,12 @@ class ShareCardService {
   }
 
   // ── 편지 한 줄 snippet ──────────────────────────────────────────────────
-  static void _paintLetterSnippet(Canvas canvas, Size size, Letter letter) {
+  static void _paintLetterSnippet(
+    Canvas canvas,
+    Size size,
+    Letter letter, {
+    String? langCode,
+  }) {
     final raw = letter.content.trim().replaceAll('\n', ' ');
     final snippet = raw.length > 70 ? '${raw.substring(0, 70)}…' : raw;
     _drawText(
@@ -251,6 +257,7 @@ class ShareCardService {
       weight: FontWeight.w400,
       maxWidth: _cardWidth - 160.0,
       maxLines: 4,
+      langCode: langCode,
     );
   }
 
@@ -292,7 +299,12 @@ class ShareCardService {
     FontWeight weight = FontWeight.normal,
     double? maxWidth,
     int maxLines = 3,
+    String? langCode,
   }) {
+    // Build 297 (HIGH i18n audit): RTL 언어 (ar/he/fa/ur) 본문이 거꾸로 렌더
+    // 되던 LTR 강제 제거. langCode 미지정 시 호출측 호환 (기존 동작 유지) 위해
+    // ltr fallback.
+    final isRtl = langCode != null && LanguageConfig.isRtl(langCode);
     final tp = TextPainter(
       text: TextSpan(
         text: text,
@@ -303,8 +315,8 @@ class ShareCardService {
           height: 1.3,
         ),
       ),
-      textDirection: TextDirection.ltr,
-      textAlign: TextAlign.left,
+      textDirection: isRtl ? TextDirection.rtl : TextDirection.ltr,
+      textAlign: isRtl ? TextAlign.right : TextAlign.left,
       maxLines: maxLines,
       ellipsis: '…',
     );

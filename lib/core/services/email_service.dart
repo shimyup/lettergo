@@ -200,6 +200,107 @@ class EmailService {
     }
   }
 
+  // Build 297 (P0 audit): 비밀번호 재설정 시 발급된 임시 비밀번호를 이메일로
+  // 전송. 이전엔 release 빌드에서 화면 노출 차단(authTempPasswordHidden)만
+  // 하고 실제 전송 채널이 없어 사용자가 영구 잠겼음.
+  static Future<String?> sendTempPassword({
+    required String to,
+    required String tempPassword,
+    required int expiresInMinutes,
+    String langCode = 'en',
+  }) async {
+    if (!isConfigured) {
+      assert(() {
+        debugPrint('[EmailService] 임시 비밀번호 발송 — 프로바이더 미설정');
+        return true;
+      }());
+      return null;
+    }
+
+    final subject = _tempPasswordSubject(langCode);
+    final textBody = _tempPasswordTextBody(tempPassword, expiresInMinutes, langCode);
+    final htmlBody = _tempPasswordHtmlBody(tempPassword, expiresInMinutes, langCode);
+
+    if (FirebaseConfig.isResendEnabled) {
+      final err = await _sendViaResend(
+        to: to,
+        subject: subject,
+        htmlBody: htmlBody,
+        textBody: textBody,
+        langCode: langCode,
+      );
+      if (err == null) return null;
+      if (!FirebaseConfig.isSendgridEnabled) return err;
+    }
+
+    return _sendViaSendgrid(
+      to: to,
+      subject: subject,
+      htmlBody: htmlBody,
+      textBody: textBody,
+      langCode: langCode,
+    );
+  }
+
+  static String _tempPasswordSubject(String langCode) {
+    const m = <String, String>{
+      'ko': '[Thiscount] 임시 비밀번호 발급',
+      'en': '[Thiscount] Temporary Password',
+      'ja': '[Thiscount] 仮パスワードのお知らせ',
+      'zh': '[Thiscount] 临时密码已发放',
+      'fr': '[Thiscount] Mot de passe temporaire',
+      'de': '[Thiscount] Vorübergehendes Passwort',
+      'es': '[Thiscount] Contraseña temporal',
+      'pt': '[Thiscount] Senha temporária',
+      'ru': '[Thiscount] Временный пароль',
+    };
+    return m[langCode] ?? m['en']!;
+  }
+
+  static String _tempPasswordTextBody(String pw, int minutes, String langCode) {
+    switch (langCode) {
+      case 'ko':
+        return '임시 비밀번호: $pw\n유효 시간: $minutes분\n로그인 후 반드시 새 비밀번호로 변경해주세요.\n본인이 요청하지 않았다면 즉시 비밀번호를 변경해주세요.';
+      case 'ja':
+        return '仮パスワード: $pw\n有効期間: $minutes分\nログイン後、必ず新しいパスワードに変更してください。';
+      case 'zh':
+        return '临时密码: $pw\n有效期: $minutes 分钟\n登录后请立即修改为新密码。';
+      case 'fr':
+        return 'Mot de passe temporaire: $pw\nValidité: $minutes minutes\nChangez votre mot de passe après vous être connecté.';
+      case 'de':
+        return 'Vorübergehendes Passwort: $pw\nGültig für $minutes Minuten\nBitte ändern Sie es nach dem Login.';
+      case 'es':
+        return 'Contraseña temporal: $pw\nVálida por $minutes minutos\nCámbiala tras iniciar sesión.';
+      case 'pt':
+        return 'Senha temporária: $pw\nVálida por $minutes minutos\nAltere após o login.';
+      case 'ru':
+        return 'Временный пароль: $pw\nДействителен $minutes мин.\nИзмените после входа.';
+      default:
+        return 'Temporary password: $pw\nValid for $minutes minutes\nPlease change it after logging in.';
+    }
+  }
+
+  static String _tempPasswordHtmlBody(String pw, int minutes, String langCode) {
+    final subject = _tempPasswordSubject(langCode);
+    final note = _tempPasswordTextBody(pw, minutes, langCode).replaceAll('\n', '<br>');
+    return '''
+<!DOCTYPE html>
+<html><head><meta charset="UTF-8"></head>
+<body style="margin:0;padding:24px;background:#F5F6FA;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;color:#111827;">
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="max-width:520px;margin:0 auto;background:#FFFFFF;border-radius:16px;border:1px solid #E5E7EB;">
+    <tr><td style="padding:32px 32px 0 32px;text-align:center;">
+      <div style="font-size:24px;font-weight:800;color:#111827;letter-spacing:0.5px;">Thiscount</div>
+      <div style="font-size:13px;color:#6B7280;margin-top:6px;">$subject</div>
+    </td></tr>
+    <tr><td style="padding:24px 32px 8px 32px;text-align:center;">
+      <div style="font-size:13px;color:#6B7280;margin-bottom:8px;">temporary password</div>
+      <div style="display:inline-block;padding:14px 22px;font-size:24px;font-weight:800;letter-spacing:2px;background:#F3F4F6;border-radius:12px;color:#111827;">$pw</div>
+    </td></tr>
+    <tr><td style="padding:8px 32px 32px 32px;text-align:center;font-size:13px;color:#6B7280;line-height:1.6;">$note</td></tr>
+  </table>
+</body></html>''';
+  }
+
   // ── 네트워크 에러 메시지 ────────────────────────────────────────────────────
   static String _networkErrorMsg(String langCode) {
     const msgs = <String, String>{
