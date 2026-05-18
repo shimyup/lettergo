@@ -3955,6 +3955,52 @@ class AppL10n {
     'th': 'ฉันยอมรับ',
   });
 
+  // Build 282: 전체 동의 (필수+선택 일괄 토글)
+  String get authAgreeAllTitle => _t({
+    'ko': '전체 동의',
+    'en': 'Agree to all',
+    'ja': 'すべてに同意',
+    'zh': '全部同意',
+    'fr': 'Tout accepter',
+    'de': 'Allem zustimmen',
+    'es': 'Aceptar todo',
+    'pt': 'Concordar com tudo',
+    'ru': 'Согласиться со всем',
+    'tr': 'Tümünü kabul et',
+    'ar': 'الموافقة على الكل',
+    'it': 'Accetta tutto',
+    'hi': 'सभी से सहमत',
+    'th': 'ยอมรับทั้งหมด',
+  });
+
+  String get authAgreeAllDesc => _t({
+    'ko': '개인정보·이용약관·만 14세 이상·위치(선택) 동의를 한 번에 체크합니다. 개별 항목은 아래에서 조정할 수 있어요.',
+    'en':
+        'Check Privacy, Terms, age 14+, and location (optional) all at once. You can still adjust each item below.',
+    'ja': 'プライバシー・利用規約・14歳以上・位置情報（任意）に一括同意します。下で個別に変更できます。',
+    'zh': '一次性同意隐私、条款、14岁以上、位置（可选）。可在下方单独调整。',
+    'fr':
+        'Cochez en une fois Confidentialité, Conditions, 14 ans+ et localisation (facultatif). Chaque élément reste modifiable ci-dessous.',
+    'de':
+        'Datenschutz, AGB, 14+ und Standort (optional) auf einmal akzeptieren. Einzelne Punkte lassen sich unten anpassen.',
+    'es':
+        'Acepta Privacidad, Términos, 14+ y ubicación (opcional) de una vez. Puedes ajustar cada elemento abajo.',
+    'pt':
+        'Aceite Privacidade, Termos, 14+ e localização (opcional) de uma vez. Você pode ajustar cada item abaixo.',
+    'ru':
+        'Согласитесь сразу со всем: конфиденциальность, условия, 14+, геолокация (необязательно). Можно изменить ниже.',
+    'tr':
+        'Gizlilik, Şartlar, 14+ ve konum (isteğe bağlı) için tek seferde onay verin. Aşağıdan tek tek değiştirebilirsiniz.',
+    'ar':
+        'وافق على الخصوصية والشروط و14+ والموقع (اختياري) دفعة واحدة. يمكنك تعديل كل بند أدناه.',
+    'it':
+        'Accetta in un colpo solo Privacy, Termini, 14+ e posizione (facoltativa). Ogni voce è modificabile sotto.',
+    'hi':
+        'गोपनीयता, शर्तें, 14+ और स्थान (वैकल्पिक) पर एक साथ सहमति दें। प्रत्येक मद नीचे बदला जा सकता है।',
+    'th':
+        'ยอมรับนโยบายความเป็นส่วนตัว, ข้อกำหนด, อายุ 14+ และตำแหน่ง (ทางเลือก) ในครั้งเดียว ปรับแยกรายการได้ด้านล่าง',
+  });
+
   // ── Compose Screen ──────────────────────────────────────────────────
   // ── Compose Screen ──────────────────────────────────────────────────────
 
