@@ -1087,6 +1087,17 @@ class _SignupTabState extends State<_SignupTab> {
   // 한국 정보통신망법 제31조 + GDPR Art.8 (EU 16세 미만 별도 동의 필요).
   // 향후 launch 직전 생년월일 입력으로 강화 예정. 베타에선 self-attestation 으로 시작.
   bool _agreeAgeAbove14 = false;
+
+  // Build 296 (P1 audit): GDPR Art.8 default 는 16+. EU 회원국 선택 시 16 으로
+  // 강화, 그 외는 KISA 정보통신망법 제31조 14+ 유지. 영국은 Brexit 후 UK-GDPR
+  // (13+) 이지만 일관성 위해 14+ 로 묶음.
+  static const _euGdprCountries = <String>{
+    '프랑스',
+    '독일',
+    '이탈리아',
+    '스페인',
+  };
+  int get _minAge => _euGdprCountries.contains(_selectedCountry) ? 16 : 14;
   // Build 286 (P0 KISA 정보통신망법 제24조의2): 개인정보 제3자 제공 동의.
   // Firebase / Stadia Maps / RevenueCat 등 처리 위탁 업체 명시. 별도 동의로
   // privacy 동의와 분리 — 사용자가 의식적으로 인지하도록 함.
@@ -1579,9 +1590,11 @@ class _SignupTabState extends State<_SignupTab> {
         permission == LocationPermission.whileInUse ||
         permission == LocationPermission.always;
     if (!mounted) return;
+    // Build 296 (P1 audit): `deniedForever` 는 사용자가 시스템 설정에서만 풀
+    // 수 있는 상태이므로 동의 체크를 자동 ON 으로 두면 `_agreeAll` 이 false
+    // positive 가 됨. 명시적 OFF + Open Settings 안내가 정확한 fallback.
     setState(() {
-      _agreeLocation =
-          granted || permission == LocationPermission.deniedForever;
+      _agreeLocation = granted;
       _locationGranted = granted;
     });
     if (!granted) {
@@ -1920,12 +1933,13 @@ class _SignupTabState extends State<_SignupTab> {
           // ── 6-2. Build 276 (P0): 만 14세 이상 동의 (KISA 정보통신망법 제31조 +
           // GDPR Art.8). 현재 self-attestation. 향후 launch 직전 생년월일 강화.
           // Build 277: 한·영 분기 → 14언어 풀 번역.
+          // Build 296: EU 회원국 (프랑스/독일/이탈리아/스페인) 선택 시 16+ 분기.
           _ConsentCard(
             checked: _agreeAgeAbove14,
             icon: Icons.cake_rounded,
             iconColor: AppColors.coupon,
-            title: l10n.authAgeAbove14Title,
-            description: l10n.authAgeAbove14Desc,
+            title: l10n.authAgeAboveTitle(_minAge),
+            description: l10n.authAgeAboveDesc(_minAge),
             langCode: widget.langCode,
             onCheckChanged: (v) =>
                 setState(() => _agreeAgeAbove14 = v ?? false),
