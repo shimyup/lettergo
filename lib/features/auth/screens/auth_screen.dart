@@ -1087,6 +1087,17 @@ class _SignupTabState extends State<_SignupTab> {
   // 한국 정보통신망법 제31조 + GDPR Art.8 (EU 16세 미만 별도 동의 필요).
   // 향후 launch 직전 생년월일 입력으로 강화 예정. 베타에선 self-attestation 으로 시작.
   bool _agreeAgeAbove14 = false;
+
+  // Build 296 (P1 audit): GDPR Art.8 default 는 16+. EU 회원국 선택 시 16 으로
+  // 강화, 그 외는 KISA 정보통신망법 제31조 14+ 유지. 영국은 Brexit 후 UK-GDPR
+  // (13+) 이지만 일관성 위해 14+ 로 묶음.
+  static const _euGdprCountries = <String>{
+    '프랑스',
+    '독일',
+    '이탈리아',
+    '스페인',
+  };
+  int get _minAge => _euGdprCountries.contains(_selectedCountry) ? 16 : 14;
   // Build 286 (P0 KISA 정보통신망법 제24조의2): 개인정보 제3자 제공 동의.
   // Firebase / Stadia Maps / RevenueCat 등 처리 위탁 업체 명시. 별도 동의로
   // privacy 동의와 분리 — 사용자가 의식적으로 인지하도록 함.
@@ -1493,7 +1504,10 @@ class _SignupTabState extends State<_SignupTab> {
                     final name = country['name']!;
                     final flag = country['flag']!;
                     final code = _countryCodes[name] ?? '+1';
-                    final isSelected = code == _selectedCountryCode;
+                    // Build 296 (P2 audit): 코드(+1) 가 미국/캐나다 둘에 공유돼
+                    // 코드만 비교하면 양쪽 모두 selected 로 보이는 cosmetic 버그.
+                    // 국가명 기준 비교로 정확히 한 행만 강조.
+                    final isSelected = name == _selectedCountry;
                     return ListTile(
                       leading: Text(flag, style: const TextStyle(fontSize: 24)),
                       title: Text(
@@ -1532,6 +1546,35 @@ class _SignupTabState extends State<_SignupTab> {
     );
   }
 
+  // Build 296: 전체 동의 — 필수 4건 + 위치(선택) 일괄 토글. 위치는 OS 권한
+  // 흐름을 그대로 호출하므로 거부 시 위치만 해제, 나머지 4건은 ON 보존.
+  bool get _agreeAll =>
+      _agreePrivacy &&
+      _agreeTerms &&
+      _agreeAgeAbove14 &&
+      _agreeThirdPartySharing &&
+      _agreeLocation;
+
+  Future<void> _onAgreeAllTap(bool? checked) async {
+    final next = checked ?? false;
+    setState(() {
+      _agreePrivacy = next;
+      _agreeTerms = next;
+      _agreeAgeAbove14 = next;
+      _agreeThirdPartySharing = next;
+    });
+    if (next) {
+      if (!_agreeLocation) {
+        await _onLocationConsentTap(true);
+      }
+    } else {
+      setState(() {
+        _agreeLocation = false;
+        _locationGranted = false;
+      });
+    }
+  }
+
   /// 위치 동의 체크박스 탭 → OS 권한 요청
   Future<void> _onLocationConsentTap(bool? checked) async {
     if (checked != true) {
@@ -1550,9 +1593,11 @@ class _SignupTabState extends State<_SignupTab> {
         permission == LocationPermission.whileInUse ||
         permission == LocationPermission.always;
     if (!mounted) return;
+    // Build 296 (P1 audit): `deniedForever` 는 사용자가 시스템 설정에서만 풀
+    // 수 있는 상태이므로 동의 체크를 자동 ON 으로 두면 `_agreeAll` 이 false
+    // positive 가 됨. 명시적 OFF + Open Settings 안내가 정확한 fallback.
     setState(() {
-      _agreeLocation =
-          granted || permission == LocationPermission.deniedForever;
+      _agreeLocation = granted;
       _locationGranted = granted;
     });
     if (!granted) {
@@ -1851,6 +1896,15 @@ class _SignupTabState extends State<_SignupTab> {
           ),
           const SizedBox(height: 20),
 
+          // ── 6-0. Build 296: 전체 동의 (필수 4 + 선택 위치 일괄 토글) ──────
+          _AgreeAllCard(
+            checked: _agreeAll,
+            title: l10n.authAgreeAllTitle,
+            description: l10n.authAgreeAllDesc,
+            onChanged: _onAgreeAllTap,
+          ),
+          const SizedBox(height: 12),
+
           // ── 6. 개인정보 동의 ───────────────────────────────────────────────
           _ConsentCard(
             checked: _agreePrivacy,
@@ -1882,12 +1936,13 @@ class _SignupTabState extends State<_SignupTab> {
           // ── 6-2. Build 276 (P0): 만 14세 이상 동의 (KISA 정보통신망법 제31조 +
           // GDPR Art.8). 현재 self-attestation. 향후 launch 직전 생년월일 강화.
           // Build 277: 한·영 분기 → 14언어 풀 번역.
+          // Build 296: EU 회원국 (프랑스/독일/이탈리아/스페인) 선택 시 16+ 분기.
           _ConsentCard(
             checked: _agreeAgeAbove14,
             icon: Icons.cake_rounded,
             iconColor: AppColors.coupon,
-            title: l10n.authAgeAbove14Title,
-            description: l10n.authAgeAbove14Desc,
+            title: l10n.authAgeAboveTitle(_minAge),
+            description: l10n.authAgeAboveDesc(_minAge),
             langCode: widget.langCode,
             onCheckChanged: (v) =>
                 setState(() => _agreeAgeAbove14 = v ?? false),
@@ -2814,6 +2869,81 @@ class _ConsentCard extends StatelessWidget {
             ],
           ),
         ],
+      ),
+    );
+  }
+}
+
+// Build 296: 전체 동의 카드 — 강조 스타일 (gold 보더 + teal-fill). 행 전체 탭 가능.
+class _AgreeAllCard extends StatelessWidget {
+  final bool checked;
+  final String title;
+  final String description;
+  final ValueChanged<bool?>? onChanged;
+
+  const _AgreeAllCard({
+    required this.checked,
+    required this.title,
+    required this.description,
+    this.onChanged,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: () => onChanged?.call(!checked),
+      borderRadius: BorderRadius.circular(14),
+      child: Container(
+        padding: const EdgeInsets.fromLTRB(14, 12, 14, 14),
+        decoration: BoxDecoration(
+          color: checked
+              ? AppColors.teal.withValues(alpha: 0.12)
+              : AppColors.bgCard,
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(
+            color: checked
+                ? AppColors.teal
+                : AppColors.gold.withValues(alpha: 0.6),
+            width: 1.4,
+          ),
+        ),
+        child: Row(
+          children: [
+            Checkbox(
+              value: checked,
+              onChanged: onChanged,
+              activeColor: AppColors.teal,
+              side: const BorderSide(color: AppColors.textMuted),
+              materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+              visualDensity: VisualDensity.compact,
+            ),
+            const SizedBox(width: 6),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: const TextStyle(
+                      color: AppColors.textPrimary,
+                      fontSize: 14,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    description,
+                    style: const TextStyle(
+                      color: AppColors.textSecondary,
+                      fontSize: 11,
+                      height: 1.45,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

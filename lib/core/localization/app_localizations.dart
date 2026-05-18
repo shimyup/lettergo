@@ -3955,6 +3955,52 @@ class AppL10n {
     'th': 'ฉันยอมรับ',
   });
 
+  // Build 296: 전체 동의 (필수 4건 + 선택 위치 일괄 토글)
+  String get authAgreeAllTitle => _t({
+    'ko': '전체 동의',
+    'en': 'Agree to all',
+    'ja': 'すべてに同意',
+    'zh': '全部同意',
+    'fr': 'Tout accepter',
+    'de': 'Allem zustimmen',
+    'es': 'Aceptar todo',
+    'pt': 'Concordar com tudo',
+    'ru': 'Согласиться со всем',
+    'tr': 'Tümünü kabul et',
+    'ar': 'الموافقة على الكل',
+    'it': 'Accetta tutto',
+    'hi': 'सभी से सहमत',
+    'th': 'ยอมรับทั้งหมด',
+  });
+
+  String get authAgreeAllDesc => _t({
+    'ko': '개인정보·이용약관·만 14세 이상·제3자 제공·위치(선택) 동의를 한 번에 체크합니다. 개별 항목은 아래에서 조정할 수 있어요.',
+    'en':
+        'Check Privacy, Terms, age 14+, third-party sharing, and location (optional) all at once. You can still adjust each item below.',
+    'ja': 'プライバシー・利用規約・14歳以上・第三者提供・位置情報（任意）に一括同意します。下で個別に変更できます。',
+    'zh': '一次性同意隐私、条款、14岁以上、第三方提供、位置（可选）。可在下方单独调整。',
+    'fr':
+        'Cochez en une fois Confidentialité, Conditions, 14 ans+, partage tiers et localisation (facultatif). Chaque élément reste modifiable ci-dessous.',
+    'de':
+        'Datenschutz, AGB, 14+, Weitergabe an Dritte und Standort (optional) auf einmal akzeptieren. Einzelne Punkte lassen sich unten anpassen.',
+    'es':
+        'Acepta Privacidad, Términos, 14+, terceros y ubicación (opcional) de una vez. Puedes ajustar cada elemento abajo.',
+    'pt':
+        'Aceite Privacidade, Termos, 14+, terceiros e localização (opcional) de uma vez. Você pode ajustar cada item abaixo.',
+    'ru':
+        'Согласитесь сразу со всем: конфиденциальность, условия, 14+, передача третьим лицам, геолокация (необязательно). Можно изменить ниже.',
+    'tr':
+        'Gizlilik, Şartlar, 14+, üçüncü taraf paylaşımı ve konum (isteğe bağlı) için tek seferde onay verin. Aşağıdan tek tek değiştirebilirsiniz.',
+    'ar':
+        'وافق على الخصوصية والشروط و14+ ومشاركة الأطراف الثالثة والموقع (اختياري) دفعة واحدة. يمكنك تعديل كل بند أدناه.',
+    'it':
+        'Accetta in un colpo solo Privacy, Termini, 14+, condivisione con terzi e posizione (facoltativa). Ogni voce è modificabile sotto.',
+    'hi':
+        'गोपनीयता, शर्तें, 14+, तृतीय-पक्ष साझाकरण और स्थान (वैकल्पिक) पर एक साथ सहमति दें। प्रत्येक मद नीचे बदला जा सकता है।',
+    'th':
+        'ยอมรับนโยบายความเป็นส่วนตัว, ข้อกำหนด, อายุ 14+, การให้บุคคลที่สาม และตำแหน่ง (ทางเลือก) ในครั้งเดียว ปรับแยกรายการได้ด้านล่าง',
+  });
+
   // ── Compose Screen ──────────────────────────────────────────────────
   // ── Compose Screen ──────────────────────────────────────────────────────
 
@@ -9793,40 +9839,49 @@ class AppL10n {
   });
 
   // Build 277: 14세 미만 가입 차단 동의 (KISA 정보통신망법 + GDPR Art.8).
-  String get authAgeAbove14Title => _t({
-    'ko': '만 14세 이상입니다 (필수)',
-    'en': 'I am 14 years or older (Required)',
-    'ja': '14歳以上です(必須)',
-    'zh': '我已满 14 岁(必填)',
-    'fr': "J'ai 14 ans ou plus (Obligatoire)",
-    'de': 'Ich bin 14 Jahre oder älter (Erforderlich)',
-    'es': 'Tengo 14 años o más (Obligatorio)',
-    'pt': 'Tenho 14 anos ou mais (Obrigatório)',
-    'ru': 'Мне 14 лет или больше (Обязательно)',
-    'tr': '14 yaşında veya daha büyüğüm (Zorunlu)',
-    'ar': 'عمري 14 سنة أو أكثر (إلزامي)',
-    'it': 'Ho 14 anni o più (Obbligatorio)',
-    'hi': 'मेरी आयु 14 वर्ष या अधिक है (आवश्यक)',
-    'th': 'ฉันอายุ 14 ปีขึ้นไป (จำเป็น)',
+  // Build 296: EU 회원국 (프랑스/독일/이탈리아/스페인) 선택 시 16+ 분기.
+  String authAgeAboveTitle(int age) => _t({
+    'ko': '만 $age세 이상입니다 (필수)',
+    'en': 'I am $age years or older (Required)',
+    'ja': '$age歳以上です(必須)',
+    'zh': '我已满 $age 岁(必填)',
+    'fr': "J'ai $age ans ou plus (Obligatoire)",
+    'de': 'Ich bin $age Jahre oder älter (Erforderlich)',
+    'es': 'Tengo $age años o más (Obligatorio)',
+    'pt': 'Tenho $age anos ou mais (Obrigatório)',
+    'ru': 'Мне $age лет или больше (Обязательно)',
+    'tr': '$age yaşında veya daha büyüğüm (Zorunlu)',
+    'ar': 'عمري $age سنة أو أكثر (إلزامي)',
+    'it': 'Ho $age anni o più (Obbligatorio)',
+    'hi': 'मेरी आयु $age वर्ष या अधिक है (आवश्यक)',
+    'th': 'ฉันอายุ $age ปีขึ้นไป (จำเป็น)',
   });
 
-  String get authAgeAbove14Desc => _t({
-    'ko': '한국 정보통신망법 및 EU GDPR 에 따라 만 14세 미만은 가입할 수 없습니다.',
-    'en': 'Per Korean ICT Network Act & EU GDPR, users under 14 cannot sign up.',
-    'ja': '韓国情報通信網法および EU GDPR により、14歳未満は登録できません。',
-    'zh': '根据韩国信息通信网络法和欧盟 GDPR，未满 14 岁不可注册。',
+  String authAgeAboveDesc(int age) => _t({
+    'ko': '한국 정보통신망법 및 EU GDPR Art.8 에 따라 만 $age세 미만은 가입할 수 없습니다.',
+    'en':
+        'Per Korean ICT Network Act & EU GDPR Art.8, users under $age cannot sign up.',
+    'ja': '韓国情報通信網法および EU GDPR Art.8 により、$age歳未満は登録できません。',
+    'zh': '根据韩国信息通信网络法和欧盟 GDPR Art.8，未满 $age 岁不可注册。',
     'fr':
-        'Selon la loi coréenne sur les TIC et le RGPD, les moins de 14 ans ne peuvent pas s\'inscrire.',
+        "Selon la loi coréenne sur les TIC et le RGPD Art.8, les moins de $age ans ne peuvent pas s'inscrire.",
     'de':
-        'Laut koreanischem IKT-Gesetz & EU-DSGVO können Nutzer unter 14 sich nicht registrieren.',
-    'es': 'Según la Ley TIC coreana y el RGPD, menores de 14 no pueden registrarse.',
-    'pt': 'Pela Lei TIC coreana e GDPR, menores de 14 não podem se cadastrar.',
-    'ru': 'По закону Кореи об ИКТ и GDPR, лицам до 14 лет регистрация запрещена.',
-    'tr': 'Kore BT Kanunu ve AB GDPR uyarınca 14 yaşın altındakiler kayıt olamaz.',
-    'ar': 'وفقًا لقانون كوريا للشبكات وGDPR، لا يمكن للأشخاص دون 14 عامًا التسجيل.',
-    'it': 'Per la Legge ICT coreana e il GDPR, sotto i 14 anni non è possibile registrarsi.',
-    'hi': 'कोरियाई ICT कानून और GDPR के तहत, 14 वर्ष से कम आयु वाले पंजीकरण नहीं कर सकते।',
-    'th': 'ตามกฎหมาย ICT เกาหลีและ GDPR ผู้ที่อายุต่ำกว่า 14 ปีไม่สามารถสมัครได้',
+        'Laut koreanischem IKT-Gesetz & EU-DSGVO Art.8 können Nutzer unter $age sich nicht registrieren.',
+    'es':
+        'Según la Ley TIC coreana y el RGPD Art.8, menores de $age no pueden registrarse.',
+    'pt':
+        'Pela Lei TIC coreana e GDPR Art.8, menores de $age não podem se cadastrar.',
+    'ru':
+        'По закону Кореи об ИКТ и GDPR Art.8, лицам до $age лет регистрация запрещена.',
+    'tr':
+        'Kore BT Kanunu ve AB GDPR Md.8 uyarınca $age yaşın altındakiler kayıt olamaz.',
+    'ar':
+        'وفقًا لقانون كوريا للشبكات وGDPR Art.8، لا يمكن للأشخاص دون $age عامًا التسجيل.',
+    'it':
+        "Per la Legge ICT coreana e il GDPR Art.8, sotto i $age anni non è possibile registrarsi.",
+    'hi':
+        'कोरियाई ICT कानून और GDPR Art.8 के तहत, $age वर्ष से कम आयु वाले पंजीकरण नहीं कर सकते।',
+    'th': 'ตามกฎหมาย ICT เกาหลีและ GDPR Art.8 ผู้ที่อายุต่ำกว่า $age ปีไม่สามารถสมัครได้',
   });
 
   String get locationDeniedBanner => _t({

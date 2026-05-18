@@ -959,6 +959,9 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
     _brandExactDropCredits += amount;
     final prefs = await SharedPreferences.getInstance();
     await prefs.setInt('brandExactDropCredits', _brandExactDropCredits);
+    // Build 296 (P0 audit): Firestore 즉시 동기화 — 충전 직후 다른 기기/재설치
+    // 에서도 즉시 복구 가능. await 으로 묶어 결제 → 충전 → 다음 액션 일관성.
+    await _saveUserToFirestore();
     notifyListeners();
   }
 
@@ -969,6 +972,9 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
     _brandExactDropCredits--;
     final prefs = await SharedPreferences.getInstance();
     await prefs.setInt('brandExactDropCredits', _brandExactDropCredits);
+    // Build 296 (P0 audit): 발송 흐름 막지 않도록 fire-and-forget 으로 sync.
+    // _saveUserToFirestore 자체가 3-retry 내장이라 transient 실패 흡수.
+    unawaited(_saveUserToFirestore());
     notifyListeners();
     return true;
   }
@@ -4171,6 +4177,13 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
         'brandExtraMonthlyQuota': {
           'integerValue': '$_brandExtraMonthlyQuota',
         },
+        // Build 296 (P1 audit): ExactDrop 크레딧 (100통=₩10,000) Firestore
+        // 영구화. 이전엔 SharedPreferences 만 → 기기 재설치/로그인 변경 시
+        // 결제 손실. 재로그인 시 _fetchUserFromFirestore 가 이 필드를 읽어
+        // 복구. 클라이언트 측 prefs 는 캐시 역할.
+        'brandExactDropCredits': {
+          'integerValue': '$_brandExactDropCredits',
+        },
         if (_appliedInviteCode != null)
           'inviteAppliedCode': {'stringValue': _appliedInviteCode!},
         if (_lastInviteRewardAt != null)
@@ -4252,6 +4265,10 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
       }
       final serverCredits = data['inviteRewardCredits'] as int? ?? 0;
       final serverBrandExtraQuota = data['brandExtraMonthlyQuota'] as int? ?? 0;
+      // Build 296 (P1 audit): ExactDrop 크레딧 server-as-truth. Firestore 값이
+      // 클라이언트 prefs 와 다르면 server 값으로 정정 (재설치 후 복구 경로).
+      final serverExactDropCredits =
+          data['brandExactDropCredits'] as int? ?? _brandExactDropCredits;
       final serverAppliedCode = (data['inviteAppliedCode'] as String?)?.trim();
       final rewardAtRaw = data['inviteRewardAt'] as String?;
 
@@ -4262,6 +4279,13 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
       }
       if (_brandExtraMonthlyQuota != serverBrandExtraQuota) {
         _brandExtraMonthlyQuota = serverBrandExtraQuota;
+        changed = true;
+      }
+      if (_brandExactDropCredits != serverExactDropCredits) {
+        _brandExactDropCredits = serverExactDropCredits;
+        // 캐시도 동기 갱신 — 다음 부팅 때 prefs 가 stale 하지 않도록.
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.setInt('brandExactDropCredits', _brandExactDropCredits);
         changed = true;
       }
       final normalizedApplied =
