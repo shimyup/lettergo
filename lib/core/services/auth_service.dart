@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:math';
 import 'package:flutter/foundation.dart';
@@ -507,6 +508,50 @@ class AuthService {
   static String _hashOtp(String otp) =>
       sha256.convert(utf8.encode(otp)).toString();
 
+  // Build 297 (HIGH security audit): OTP rate-limit / verify-failure 카운터 영구화.
+  // 이전엔 static in-memory 만 → 앱 재시작으로 카운터 우회 → 5회 발급 후 kill
+  // → 다시 5회 발급... 반복으로 brute-force 가능. secure storage 에 직렬화.
+  static const _keyOtpRateState = 'otp_rate_state_v1';
+  static bool _otpRateStateRestored = false;
+
+  static Future<void> restoreOtpRateState() async {
+    if (_otpRateStateRestored) return;
+    _otpRateStateRestored = true;
+    try {
+      final raw = await _readSecure(_keyOtpRateState);
+      if (raw == null || raw.isEmpty) return;
+      final map = jsonDecode(raw) as Map<String, dynamic>;
+      _emailOtpRequestCount = (map['emailCount'] as int?) ?? 0;
+      _emailOtpWindowStart =
+          DateTime.tryParse(map['emailWindowStart'] as String? ?? '');
+      _lastEmailOtpSentAt =
+          DateTime.tryParse(map['emailLastSent'] as String? ?? '');
+      _phoneOtpRequestCount = (map['phoneCount'] as int?) ?? 0;
+      _phoneOtpWindowStart =
+          DateTime.tryParse(map['phoneWindowStart'] as String? ?? '');
+      _lastPhoneOtpSentAt =
+          DateTime.tryParse(map['phoneLastSent'] as String? ?? '');
+      _otpVerifyFailures = (map['verifyFails'] as int?) ?? 0;
+    } catch (_) {
+      // corrupt — wipe.
+      await _deleteSecure(_keyOtpRateState);
+    }
+  }
+
+  static void _persistOtpRateState() {
+    // fire-and-forget — 호출자 (generateEmailOtp 등) sync 시그니처 유지.
+    final payload = jsonEncode({
+      'emailCount': _emailOtpRequestCount,
+      'emailWindowStart': _emailOtpWindowStart?.toIso8601String(),
+      'emailLastSent': _lastEmailOtpSentAt?.toIso8601String(),
+      'phoneCount': _phoneOtpRequestCount,
+      'phoneWindowStart': _phoneOtpWindowStart?.toIso8601String(),
+      'phoneLastSent': _lastPhoneOtpSentAt?.toIso8601String(),
+      'verifyFails': _otpVerifyFailures,
+    });
+    unawaited(_writeSecure(_keyOtpRateState, payload));
+  }
+
   /// 6자리 OTP 생성 및 반환.
   /// Rate limit 초과 시 null 반환 (UI에서 에러 메시지 표시).
   /// 실제 서비스에서는 이 코드를 이메일 발송 API와 연동.
@@ -540,6 +585,7 @@ class AuthService {
     _pendingOtpEmail = email.trim().toLowerCase();
     _otpExpiresAt = now.add(_otpTtl);
     _otpVerifyFailures = 0; // 새 OTP 발급 시 실패 카운터 리셋
+    _persistOtpRateState();
     // 이메일 발송 연동 필요: Firebase Extensions "Trigger Email" 또는
     // SendGrid / Mailgun 등의 SMTP API를 사용하여 _pendingOtp 코드를 발송하세요.
     // 예) await EmailService.sendOtp(email: email, code: code);
@@ -587,8 +633,10 @@ class AuthService {
         _pendingOtpEmail = null;
         _otpExpiresAt = null;
         _otpVerifyFailures = 0;
+        _persistOtpRateState();
         return _authMsg('otp_too_many_attempts', langCode);
       }
+      _persistOtpRateState();
       return _authMsg('otp_invalid', langCode);
     }
     // 인증 성공 → OTP 무효화 + 실패 카운터 리셋
@@ -596,6 +644,7 @@ class AuthService {
     _pendingOtpEmail = null;
     _otpExpiresAt = null;
     _otpVerifyFailures = 0;
+    _persistOtpRateState();
     return null;
   }
 
@@ -665,6 +714,7 @@ class AuthService {
     _pendingPhoneOtpHash = _hashOtp(code);
     _pendingOtpPhone = phoneNumber.replaceAll(RegExp(r'[\s\-\(\)]'), '');
     _otpExpiresAt = now.add(_otpTtl);
+    _persistOtpRateState();
 
     // Twilio를 통한 실제 SMS 발송
     final smsError = await SmsService.sendOtp(
@@ -1022,6 +1072,10 @@ class AuthService {
   /// 로그인 - nickname + password
   // Build 294 (P1 보안): 비밀번호 brute-force 차단. OTP 5회 잠금과 동일 패턴.
   // 5회 연속 실패 시 15분 lockout. 정상 사용자는 자기 비밀번호 알므로 영향 없음.
+  // Build 297 (MED audit): SharedPreferences → FlutterSecureStorage 로 이동.
+  // 이전엔 Android "앱 데이터 지우기" 또는 rooted 환경에서 SharedPreferences
+  // 만 지우면 lockout 이 풀려 brute-force 가능했음. secure storage 는 keychain/
+  // EncryptedSharedPreferences 라 root 가 아니어도 wipe 불가.
   static const _keyLoginAttempts = 'login_failed_attempts';
   static const _keyLoginLockoutUntil = 'login_lockout_until';
   static const _maxLoginAttempts = 5;
@@ -1038,8 +1092,9 @@ class AuthService {
     final prefs = await SharedPreferences.getInstance();
     await _migrateLegacyAuthDataIfNeeded(prefs);
 
-    // Build 294: lockout 체크. 15분 윈도우 내 5회 실패 후 잠금.
-    final lockoutUntilMs = prefs.getInt(_keyLoginLockoutUntil) ?? 0;
+    // Build 297: lockout state 를 secure storage 에서 읽기.
+    final lockoutUntilMs =
+        int.tryParse((await _readSecure(_keyLoginLockoutUntil)) ?? '') ?? 0;
     if (lockoutUntilMs > 0 &&
         DateTime.now().millisecondsSinceEpoch < lockoutUntilMs) {
       final remainingMin = ((lockoutUntilMs -
@@ -1052,8 +1107,8 @@ class AuthService {
     // 만료된 lockout 은 클리어.
     if (lockoutUntilMs > 0 &&
         DateTime.now().millisecondsSinceEpoch >= lockoutUntilMs) {
-      await prefs.remove(_keyLoginLockoutUntil);
-      await prefs.setInt(_keyLoginAttempts, 0);
+      await _deleteSecure(_keyLoginLockoutUntil);
+      await _writeSecure(_keyLoginAttempts, '0');
     }
 
     final savedUsername = await _readSecure(_keyUsername);
@@ -1071,7 +1126,7 @@ class AuthService {
         savedEmail.isNotEmpty &&
         savedEmail.toLowerCase() == inputLower;
     if (!usernameMatch && !emailMatch) {
-      await _recordLoginFailure(prefs);
+      await _recordLoginFailure();
       return _authMsg('login_failed', langCode);
     }
 
@@ -1106,13 +1161,13 @@ class AuthService {
         await _deleteSecure(_keyTempPasswordExpiresAt);
       }
 
-      await _recordLoginFailure(prefs);
+      await _recordLoginFailure();
       return _authMsg('login_failed', langCode);
     }
 
-    // Build 294: 성공 시 attempts counter 리셋.
-    await prefs.setInt(_keyLoginAttempts, 0);
-    await prefs.remove(_keyLoginLockoutUntil);
+    // Build 294: 성공 시 attempts counter 리셋 (Build 297: secure storage).
+    await _writeSecure(_keyLoginAttempts, '0');
+    await _deleteSecure(_keyLoginLockoutUntil);
 
     await _deleteSecure(_keyTempPasswordHash);
     await _deleteSecure(_keyTempPasswordExpiresAt);
@@ -1122,14 +1177,17 @@ class AuthService {
   }
 
   // Build 294: 로그인 실패 카운팅 + 5회 도달 시 15분 lockout 발화.
-  static Future<void> _recordLoginFailure(SharedPreferences prefs) async {
-    final attempts = (prefs.getInt(_keyLoginAttempts) ?? 0) + 1;
-    await prefs.setInt(_keyLoginAttempts, attempts);
+  // Build 297 (MED audit): secure storage 로 이동 — Android "앱 데이터 지우기"
+  // 로 lockout 우회되던 경로 차단.
+  static Future<void> _recordLoginFailure() async {
+    final attempts =
+        (int.tryParse((await _readSecure(_keyLoginAttempts)) ?? '') ?? 0) + 1;
+    await _writeSecure(_keyLoginAttempts, '$attempts');
     if (attempts >= _maxLoginAttempts) {
       final lockoutUntil = DateTime.now()
           .add(_loginLockoutDuration)
           .millisecondsSinceEpoch;
-      await prefs.setInt(_keyLoginLockoutUntil, lockoutUntil);
+      await _writeSecure(_keyLoginLockoutUntil, '$lockoutUntil');
     }
   }
 

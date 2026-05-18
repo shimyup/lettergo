@@ -71,7 +71,11 @@ void main() async {
   ]);
   // Build 258: 영구 어드민 계정 (ceo@airony.xyz / 0000) 자동 부트스트랩.
   // 이미 어떤 계정이라도 있으면 no-op. 없을 때만 자동 가입.
+  // Build 297 (P0 audit): kDebugMode 가드 — release 빌드 no-op.
   await AuthService.bootstrapAdminIfNeeded();
+  // Build 297 (HIGH security audit): OTP rate-limit / verify-failure 카운터
+  // 를 secure storage 에서 복원. 앱 재시작으로 카운터 우회 (brute-force) 차단.
+  await AuthService.restoreOtpRateState();
 
   final results = await Future.wait<dynamic>([
     AuthService.isLoggedIn(),
