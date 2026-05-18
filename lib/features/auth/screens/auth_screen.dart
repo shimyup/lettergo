@@ -1532,6 +1532,35 @@ class _SignupTabState extends State<_SignupTab> {
     );
   }
 
+  // Build 296: 전체 동의 — 필수 4건 + 위치(선택) 일괄 토글. 위치는 OS 권한
+  // 흐름을 그대로 호출하므로 거부 시 위치만 해제, 나머지 4건은 ON 보존.
+  bool get _agreeAll =>
+      _agreePrivacy &&
+      _agreeTerms &&
+      _agreeAgeAbove14 &&
+      _agreeThirdPartySharing &&
+      _agreeLocation;
+
+  Future<void> _onAgreeAllTap(bool? checked) async {
+    final next = checked ?? false;
+    setState(() {
+      _agreePrivacy = next;
+      _agreeTerms = next;
+      _agreeAgeAbove14 = next;
+      _agreeThirdPartySharing = next;
+    });
+    if (next) {
+      if (!_agreeLocation) {
+        await _onLocationConsentTap(true);
+      }
+    } else {
+      setState(() {
+        _agreeLocation = false;
+        _locationGranted = false;
+      });
+    }
+  }
+
   /// 위치 동의 체크박스 탭 → OS 권한 요청
   Future<void> _onLocationConsentTap(bool? checked) async {
     if (checked != true) {
@@ -1850,6 +1879,15 @@ class _SignupTabState extends State<_SignupTab> {
             ),
           ),
           const SizedBox(height: 20),
+
+          // ── 6-0. Build 296: 전체 동의 (필수 4 + 선택 위치 일괄 토글) ──────
+          _AgreeAllCard(
+            checked: _agreeAll,
+            title: l10n.authAgreeAllTitle,
+            description: l10n.authAgreeAllDesc,
+            onChanged: _onAgreeAllTap,
+          ),
+          const SizedBox(height: 12),
 
           // ── 6. 개인정보 동의 ───────────────────────────────────────────────
           _ConsentCard(
@@ -2814,6 +2852,81 @@ class _ConsentCard extends StatelessWidget {
             ],
           ),
         ],
+      ),
+    );
+  }
+}
+
+// Build 296: 전체 동의 카드 — 강조 스타일 (gold 보더 + teal-fill). 행 전체 탭 가능.
+class _AgreeAllCard extends StatelessWidget {
+  final bool checked;
+  final String title;
+  final String description;
+  final ValueChanged<bool?>? onChanged;
+
+  const _AgreeAllCard({
+    required this.checked,
+    required this.title,
+    required this.description,
+    this.onChanged,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: () => onChanged?.call(!checked),
+      borderRadius: BorderRadius.circular(14),
+      child: Container(
+        padding: const EdgeInsets.fromLTRB(14, 12, 14, 14),
+        decoration: BoxDecoration(
+          color: checked
+              ? AppColors.teal.withValues(alpha: 0.12)
+              : AppColors.bgCard,
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(
+            color: checked
+                ? AppColors.teal
+                : AppColors.gold.withValues(alpha: 0.6),
+            width: 1.4,
+          ),
+        ),
+        child: Row(
+          children: [
+            Checkbox(
+              value: checked,
+              onChanged: onChanged,
+              activeColor: AppColors.teal,
+              side: const BorderSide(color: AppColors.textMuted),
+              materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+              visualDensity: VisualDensity.compact,
+            ),
+            const SizedBox(width: 6),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: const TextStyle(
+                      color: AppColors.textPrimary,
+                      fontSize: 14,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    description,
+                    style: const TextStyle(
+                      color: AppColors.textSecondary,
+                      fontSize: 11,
+                      height: 1.45,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
