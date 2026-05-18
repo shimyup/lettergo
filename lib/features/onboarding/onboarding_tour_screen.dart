@@ -25,10 +25,20 @@ class OnboardingTourScreen extends StatefulWidget {
   }
 
   /// 다음 라우트 결정 헬퍼. 처음이면 tour, 아니면 기존 onboarding.
+  /// Build 298 (P0 i18n audit): tour 콘텐츠가 한국어 only — 다른 언어 사용자
+  /// 에게 한글 화면을 노출시키지 않기 위해 비-ko 단말은 자동 skip 처리.
+  /// markSeen 까지 함께 호출해 두 번째 진입에도 안 보이도록 유지.
+  /// (tour 14언어 풀 번역은 별도 PR — 회복 시 이 분기 제거.)
   static Future<String> nextRouteAfterSplash() async {
     final prefs = await SharedPreferences.getInstance();
     final seen = prefs.getBool('seen_onboarding_tour') ?? false;
-    return seen ? '/onboarding' : routeName;
+    if (seen) return '/onboarding';
+    final locale = WidgetsBinding.instance.platformDispatcher.locale;
+    if (locale.languageCode.toLowerCase() != 'ko') {
+      await markSeen();
+      return '/onboarding';
+    }
+    return routeName;
   }
 
   @override
