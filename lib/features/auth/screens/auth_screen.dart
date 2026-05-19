@@ -1468,6 +1468,9 @@ class _SignupTabState extends State<_SignupTab> {
     // 가 전제. 이전 흐름은 setUser 전에 호출 → guest 가드로 early return →
     // 모든 신규 가입자 trial 미부여 회귀. setUser 가 끝난 다음 trial 부여.
     final user = await AuthService.getCurrentUser();
+    // Build 311: 신규 가입은 무조건 온보딩 표시 — 같은 디바이스에 다른 사람이
+    // 가입할 때도 동작. 이전 사용자의 markSeen 잔존 무시.
+    await AuthService.resetOnboardingFlags();
     if (user != null) await widget.onSignupSuccess(user);
 
     try {

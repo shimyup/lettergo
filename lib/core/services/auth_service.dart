@@ -1483,6 +1483,15 @@ class AuthService {
     await prefs.setBool('onboarding_v2_complete', true);
   }
 
+  /// Build 311: 회원가입 직후 / 설정에서 "다시 보기" 시 호출.
+  /// SharedPreferences 의 온보딩 + 인포그래픽 투어 marker 둘 다 false 로 reset.
+  /// 다음 splash 또는 auth-success route 가 /onboarding 으로 진입함.
+  static Future<void> resetOnboardingFlags() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('onboarding_v2_complete', false);
+    await prefs.setBool('seen_onboarding_tour', false);
+  }
+
   // Save onboarding country selection
   static Future<void> saveOnboardingCountry({
     required String country,
