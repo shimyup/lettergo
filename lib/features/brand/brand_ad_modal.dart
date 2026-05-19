@@ -267,12 +267,16 @@ class _BrandAdDialog extends StatelessWidget {
 
   Widget _buildImage(String url) {
     final isNet = url.startsWith('http://') || url.startsWith('https://');
+    // Build 304: 광고 이미지 디코드 해상도 cap — 원본이 4K 라도 1024px
+    // 까지만 메모리에 적재 (modal 상단 half-screen 렌더에 충분).
+    const cacheW = 1024;
     if (isNet) {
       return Image.network(
         url,
         width: double.infinity,
         height: double.infinity,
         fit: BoxFit.cover,
+        cacheWidth: cacheW,
         errorBuilder: (_, __, ___) => _buildPlaceholder(),
       );
     }

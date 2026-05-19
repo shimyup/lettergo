@@ -180,6 +180,22 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
   final List<Letter> _inbox = [];
   List<Letter> get inbox => List.unmodifiable(_inbox);
 
+  // Build 304: inbox 무한 누적 차단 (저장 용량 / 직렬화 비용 / UI 렌더 폭주).
+  // 한도 초과 시 도착 시각이 오래된 편지부터 trim. read/unread 무관 — 5백 통
+  // 도달은 1년 이상 사용자에서만 발생하는 비정상 케이스이고, 오래된 광고/시스템
+  // 편지부터 정리되는 것이 바람직.
+  static const int _inboxMaxSize = 500;
+  void _capInbox() {
+    if (_inbox.length <= _inboxMaxSize) return;
+    // 도착(arrivedAt) → 발송(sentAt) 순으로 최신 우선 정렬.
+    _inbox.sort((a, b) {
+      final aT = (a.arrivedAt ?? a.sentAt).millisecondsSinceEpoch;
+      final bT = (b.arrivedAt ?? b.sentAt).millisecondsSinceEpoch;
+      return bT.compareTo(aT);
+    });
+    _inbox.removeRange(_inboxMaxSize, _inbox.length);
+  }
+
   // ── 내가 보낸 편지 ──────────────────────────────────────────────────────────
   final List<Letter> _sent = [];
   List<Letter> get sent => List.unmodifiable(_sent);
@@ -2338,6 +2354,7 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
           _inbox.add(Letter.fromJson(j as Map<String, dynamic>));
         } catch (_) {}
       }
+      _capInbox(); // Build 304: 복원 직후에도 cap 강제 (이전 저장이 컸을 수 있음).
     }
     // Build 202 — 테스트용 브랜드 광고 편지 (사진 + coupon 카테고리).
     // BrandAdModal 의 featuredBrandPromo 가 이 편지를 픽업해서 온보딩 후 모달
@@ -3545,6 +3562,7 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
       }
       _lastLetterSyncAt = DateTime.now();
       if (added > 0) {
+        _capInbox(); // Build 304: 동기화 배치 추가 후 cap 강제.
         notifyListeners();
         _saveToPrefs();
       }
@@ -4209,9 +4227,37 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
     await _saveUserToFirestore(markLoggedOut: true);
   }
 
+  // Build 304: in-flight 직렬화 체인. 동일 user 의 동시 저장이 race condition
+  // 없이 FIFO 순으로 실행되도록 보장. 이전엔 6개 이상 호출처가 unawaited 로
+  // 동시 발사 → updateMask 가 다른 필드 묶음에 last-write-wins 충돌 발생.
+  Future<void>? _saveUserChain;
+
   Future<void> _saveUserToFirestore({bool markLoggedOut = false}) async {
     if (_currentUser.id == 'guest') return;
     if (!FirebaseConfig.kFirebaseEnabled) return;
+    final prev = _saveUserChain;
+    // 새로 발행한 future 를 다음 호출자가 await 하도록 chain 연결.
+    Future<void> run() async {
+      if (prev != null) {
+        try {
+          await prev;
+        } catch (_) {/* 이전 실패는 무시 — 우리는 새 시도 */}
+      }
+      await _doSaveUserToFirestore(markLoggedOut: markLoggedOut);
+    }
+    final future = run();
+    _saveUserChain = future;
+    try {
+      await future;
+    } finally {
+      // 자기 자신이 마지막이면 체인 해제 — 메모리 누수 방지.
+      if (identical(_saveUserChain, future)) {
+        _saveUserChain = null;
+      }
+    }
+  }
+
+  Future<void> _doSaveUserToFirestore({bool markLoggedOut = false}) async {
     try {
       // Build 207: GPS 좌표 ~100m 정밀도로 coarsen.
       // 이전엔 cm 정밀도 그대로 업로드 → 자택 핀포인트 가능. firestore.rules

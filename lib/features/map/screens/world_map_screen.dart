@@ -2993,7 +2993,17 @@ class _UnreadDeliveredMarker extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return AnimatedBuilder(
+    // Build 304 (a11y): 마커가 도착한 편지임을 스크린리더에 알린다.
+    final tierLabel = letter.senderTier == LetterSenderTier.brand
+        ? 'Brand'
+        : letter.senderTier == LetterSenderTier.premium
+            ? 'Premium'
+            : 'Letter';
+    return Semantics(
+      label: isNearest
+          ? '$tierLabel, ${nearestLabel.isEmpty ? 'nearest' : nearestLabel}'
+          : tierLabel,
+      child: AnimatedBuilder(
       animation: pulseController,
       builder: (_, __) {
         final phase = (pulseController.value * 2 * pi) % (2 * pi);
@@ -3176,6 +3186,7 @@ class _UnreadDeliveredMarker extends StatelessWidget {
           ],
         );
       },
+    ),
     );
   }
 }
@@ -4013,23 +4024,28 @@ class _PickupSheet extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 20),
-          GestureDetector(
-            onTap: onPickup,
-            child: Container(
-              width: double.infinity,
-              padding: const EdgeInsets.symmetric(vertical: 16),
-              alignment: Alignment.center,
-              decoration: BoxDecoration(
-                color: AppColors.bgDeep,
-                borderRadius: BorderRadius.circular(14),
-              ),
-              child: Text(
-                l10n.mapPickUpLetter,
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 15,
-                  fontWeight: FontWeight.w800,
-                  letterSpacing: -0.2,
+          // Build 304 (a11y): VoiceOver/TalkBack — 픽업 버튼임을 명시.
+          Semantics(
+            button: true,
+            label: l10n.mapPickUpLetter,
+            child: GestureDetector(
+              onTap: onPickup,
+              child: Container(
+                width: double.infinity,
+                padding: const EdgeInsets.symmetric(vertical: 16),
+                alignment: Alignment.center,
+                decoration: BoxDecoration(
+                  color: AppColors.bgDeep,
+                  borderRadius: BorderRadius.circular(14),
+                ),
+                child: Text(
+                  l10n.mapPickUpLetter,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 15,
+                    fontWeight: FontWeight.w800,
+                    letterSpacing: -0.2,
+                  ),
                 ),
               ),
             ),

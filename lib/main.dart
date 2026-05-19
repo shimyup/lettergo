@@ -13,6 +13,7 @@ import 'core/services/feedback_service.dart';
 import 'core/services/geocoding_service.dart';
 import 'core/services/notification_service.dart';
 import 'core/services/purchase_service.dart';
+import 'core/services/secure_clock.dart';
 import 'state/app_state.dart';
 import 'features/splash/splash_screen.dart'; // kept for route
 import 'features/auth/screens/auth_screen.dart';
@@ -68,6 +69,8 @@ void main() async {
     GeocodingService.instance.initialize(),
     // Build 182: 사운드 효과 프리로드. asset 경로 에러는 silent fail.
     FeedbackService.init(),
+    // Build 304: 시계 되돌리기 우회 차단 — trial/OTP/lockout 만료 검증에 사용.
+    SecureClock.init(),
   ]);
   // Build 258: 영구 어드민 계정 (ceo@airony.xyz / 0000) 자동 부트스트랩.
   // 이미 어떤 계정이라도 있으면 no-op. 없을 때만 자동 가입.
