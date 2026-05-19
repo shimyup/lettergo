@@ -43,7 +43,8 @@ void main() {
       expect(find.text('메시지 줍는 4단계'), findsOneWidget);
     });
 
-    testWidgets('Skip → markSeen + /onboarding 으로 라우팅', (tester) async {
+    // Build 301: skip 만 누르면 markSeen 호출 안 됨 (베타 테스트 모드).
+    testWidgets('Skip (기본) → markSeen 호출 X + /onboarding 라우팅', (tester) async {
       await tester.pumpWidget(MaterialApp(
         home: const OnboardingTourScreen(),
         routes: {
@@ -54,7 +55,26 @@ void main() {
       await tester.tap(find.text('건너뛰기'));
       await tester.pumpAndSettle();
       expect(find.text('OnboardingScreenMock'), findsOneWidget);
+      final prefs = await SharedPreferences.getInstance();
+      // 체크박스 미선택 → markSeen 미호출 (다음번에도 보임)
+      expect(prefs.getBool('seen_onboarding_tour'), isNot(true));
+    });
 
+    testWidgets('"다음부터 보지 않기" 체크 + Skip → markSeen 호출 O', (tester) async {
+      await tester.pumpWidget(MaterialApp(
+        home: const OnboardingTourScreen(),
+        routes: {
+          '/onboarding': (_) =>
+              const Scaffold(body: Text('OnboardingScreenMock')),
+        },
+      ));
+      // 체크박스 탭
+      await tester.tap(find.text('다음부터 보지 않기'));
+      await tester.pumpAndSettle();
+      // Skip
+      await tester.tap(find.text('건너뛰기'));
+      await tester.pumpAndSettle();
+      expect(find.text('OnboardingScreenMock'), findsOneWidget);
       final prefs = await SharedPreferences.getInstance();
       expect(prefs.getBool('seen_onboarding_tour'), isTrue);
     });
