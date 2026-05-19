@@ -26,6 +26,12 @@ service cloud.firestore {
       return request.auth != null;
     }
 
+    // Build 303 (MED audit): public-read collection 의 list query 한도 cap.
+    // 사용자가 unbounded list 로 read 폭증 시도 차단 (cost protection).
+    function reasonableListLimit() {
+      return request.query.limit <= 100;
+    }
+
     // 익명 편지가 정말 익명인지 검증.
     //   senderId  → "anon_" prefix (per-letter unique, 역추적 불가)
     //   senderName → 고정 sentinel '__anonymous__' (UI 가 i18n 으로 치환)
@@ -152,8 +158,9 @@ service cloud.firestore {
       //     (latitude/longitude/countryFlag/username/카운터 — phone/email 제외)
       //   - latitude/longitude 는 ~110m 정밀도로 round 후 저장
       //   - 클라이언트 코드가 `isMapPublic=false` 인 사용자를 즉시 skip
+      // Build 303: list 호출 시 pageSize ≤ 100 강제 (cost protection).
       allow read: if true;
-      allow list: if true;
+      allow list: if reasonableListLimit();
 
       allow create: if isSignedIn() && isValidUserCreate(request.resource.data);
       // banned/isPremium/isBrand 변경 차단 — 모더레이션/티어는 admin REST 전용.
@@ -173,8 +180,9 @@ service cloud.firestore {
     match /letters/{letterId} {
       // map 동기화·픽업을 위해 누구나 read/list. (본문은 사용자가 공개를
       // 전제로 작성한다는 정책.)
+      // Build 303: list pageSize ≤ 100 (cost protection).
       allow read: if true;
-      allow list: if true;
+      allow list: if reasonableListLimit();
 
       // create 시 본문 크기·익명 enforcement 검증.
       allow create: if isSignedIn() && isValidLetterCreate(request.resource.data);
@@ -237,7 +245,9 @@ service cloud.firestore {
     }
 
     match /brand_zones/{zoneId} {
-      allow read, list: if true;
+      // Build 303: list cap (cost protection).
+      allow read: if true;
+      allow list: if reasonableListLimit();
       allow create: if isSignedIn() && isValidBrandZoneCreate(request.resource.data);
       allow update: if isSignedIn()
                   && isAllowedBrandZoneUpdate()

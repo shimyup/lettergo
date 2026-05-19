@@ -1008,19 +1008,23 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
       }
     }
 
-    // Build 300 (P0 audit): claim doc 을 grant 보다 먼저 write. 이전 흐름은
-    // grant() → setDocument 였는데 setDocument 실패 시 local trial 만 부여되어
-    // 다음번 signup 시 doc 조회 = null → re-grant farming 가능. 순서를 뒤집고
-    // 실패 시 _welcomeTrialClaimedAt 도 reset.
+    // Build 300/303 (P0 audit): claim doc 을 grant 보다 먼저 atomic create.
+    // Build 303 (HIGH audit): TOCTOU race 차단 — 이전 setDocument 는 두 디바
+    // 이스 동시 가입 시 양쪽 모두 success 가능 (last-writer-wins).
+    // createDocumentIfAbsent 가 firestore precondition currentDocument.exists
+    // =false 사용 → 두 번째 호출은 ALREADY_EXISTS 로 fail → 한쪽만 trial 부여.
     final claimedAtNow = DateTime.now();
     if (FirebaseConfig.kFirebaseEnabled) {
-      try {
-        await FirestoreService.setDocument(claimPath, {
-          'claimedAt': claimedAtNow.toUtc().toIso8601String(),
-        });
-      } catch (_) {
-        // 기록 실패 — grant 거부. 다음 시도 (retry hook 또는 다음 cold-start) 에
-        // 다시 시도 가능. 사용자에겐 silent fallback.
+      final result = await FirestoreService.createDocumentIfAbsent(claimPath, {
+        'claimedAt': claimedAtNow.toUtc().toIso8601String(),
+      });
+      if (result == CreateDocumentResult.alreadyExists) {
+        // 다른 디바이스 가 먼저 claim — re-grant 차단.
+        _welcomeTrialClaimedAt = claimedAtNow;
+        return false;
+      }
+      if (result != CreateDocumentResult.created) {
+        // 통신 실패 — 다음 cold-start hook 에서 다시 시도.
         return false;
       }
     }
@@ -2914,10 +2918,19 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
     if (!FirebaseConfig.kFirebaseEnabled) return;
     if (!FirebaseAuthService.isSignedIn) return;
     try {
+      // Build 303 (HIGH cost audit): map sync 에 필요한 필드만 fetch — egress
+       // 비용 ~10× 절감 (image url / content 본문 / redemption 정보 제외).
       final docs = await FirestoreService.queryCollection(
         'letters',
         orderBy: 'sentAt desc',
         limit: 50,
+        maskFieldPaths: const [
+          'id', 'senderId', 'senderCountry', 'senderCountryFlag',
+          'destinationCountry', 'destinationCountryFlag',
+          'destinationCity', 'originLat', 'originLng',
+          'destinationLat', 'destinationLng', 'sentAt',
+          'status', 'estimatedTotalMinutes',
+        ],
       );
       if (docs.isEmpty) return;
 

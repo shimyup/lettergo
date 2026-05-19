@@ -446,7 +446,17 @@ class AuthService {
   // 평문 대신 SHA-256 해시로 보관 → 메모리 덤프 시 원본 코드 노출 방지
   static String? _pendingOtpHash; // SHA-256(OTP)
   static String? _pendingOtpEmail;
-  static DateTime? _otpExpiresAt;
+  // Build 303 (P0 audit): _otpExpiresAt 가 email/phone 공유였음 — email
+  // verify 실패 5회 → 양쪽 모두 null reset 되어 정상 사용자의 phone OTP 도
+  // 즉시 무효화되던 결함. email/phone 별도 만료시각으로 분리.
+  static DateTime? _emailOtpExpiresAt;
+  static DateTime? _phoneOtpExpiresAt;
+  // Legacy alias — verifyEmailOtp 가 _emailOtpExpiresAt 로 마이그레이션.
+  // generatePhoneOtp 는 _phoneOtpExpiresAt 로 변경.
+  // 외부 getter `otpRemainingSeconds` 는 email 채널 기준 유지.
+  // (호출자 auth_screen 의 email 흐름 일치.)
+  // ignore: unused_field
+  static const String _otpExpiresAtMigrationNote = 'split-Build303';
   static const _otpTtl = Duration(minutes: 10);
   // Build 286 (보안): OTP 검증 실패 brute-force 차단.
   // 6자리 OTP = 10^6 = 100만 조합. TTL 10분 동안 무제한 검증 가능했음.
@@ -590,7 +600,7 @@ class AuthService {
     final code = List.generate(6, (_) => rng.nextInt(10)).join();
     _pendingOtpHash = _hashOtp(code); // 평문 대신 해시만 보관
     _pendingOtpEmail = email.trim().toLowerCase();
-    _otpExpiresAt = now.add(_otpTtl);
+    _emailOtpExpiresAt = now.add(_otpTtl);
     _otpVerifyFailures = 0; // 새 OTP 발급 시 실패 카운터 리셋
     _persistOtpRateState();
     // 이메일 발송 연동 필요: Firebase Extensions "Trigger Email" 또는
@@ -624,10 +634,11 @@ class AuthService {
     if (_pendingOtpEmail != email.trim().toLowerCase()) {
       return _authMsg('otp_email_mismatch', langCode);
     }
-    if (_otpExpiresAt == null || DateTime.now().isAfter(_otpExpiresAt!)) {
+    if (_emailOtpExpiresAt == null ||
+        DateTime.now().isAfter(_emailOtpExpiresAt!)) {
       _pendingOtpHash = null;
       _pendingOtpEmail = null;
-      _otpExpiresAt = null;
+      _emailOtpExpiresAt = null;
       return _authMsg('otp_expired', langCode);
     }
     // 입력값을 해시화하여 저장된 해시와 비교 (타이밍 공격 방지)
@@ -638,7 +649,7 @@ class AuthService {
       if (_otpVerifyFailures >= _maxOtpVerifyAttempts) {
         _pendingOtpHash = null;
         _pendingOtpEmail = null;
-        _otpExpiresAt = null;
+        _emailOtpExpiresAt = null;
         _otpVerifyFailures = 0;
         _persistOtpRateState();
         return _authMsg('otp_too_many_attempts', langCode);
@@ -649,16 +660,16 @@ class AuthService {
     // 인증 성공 → OTP 무효화 + 실패 카운터 리셋
     _pendingOtpHash = null;
     _pendingOtpEmail = null;
-    _otpExpiresAt = null;
+    _emailOtpExpiresAt = null;
     _otpVerifyFailures = 0;
     _persistOtpRateState();
     return null;
   }
 
-  /// OTP 만료까지 남은 초
+  /// OTP 만료까지 남은 초 (email 채널 기준 — auth_screen 의 기본 카운트다운)
   static int get otpRemainingSeconds {
-    if (_otpExpiresAt == null) return 0;
-    final remaining = _otpExpiresAt!.difference(DateTime.now()).inSeconds;
+    if (_emailOtpExpiresAt == null) return 0;
+    final remaining = _emailOtpExpiresAt!.difference(DateTime.now()).inSeconds;
     return remaining.clamp(0, 600);
   }
 
@@ -720,7 +731,8 @@ class AuthService {
     final code = List.generate(6, (_) => rng.nextInt(10)).join();
     _pendingPhoneOtpHash = _hashOtp(code);
     _pendingOtpPhone = phoneNumber.replaceAll(RegExp(r'[\s\-\(\)]'), '');
-    _otpExpiresAt = now.add(_otpTtl);
+    _phoneOtpExpiresAt = now.add(_otpTtl);
+    _otpVerifyFailures = 0;
     _persistOtpRateState();
 
     // Twilio를 통한 실제 SMS 발송
@@ -762,19 +774,35 @@ class AuthService {
     if (_pendingOtpPhone != cleaned) {
       return _authMsg('otp_phone_mismatch', langCode);
     }
-    if (_otpExpiresAt == null || DateTime.now().isAfter(_otpExpiresAt!)) {
+    if (_phoneOtpExpiresAt == null ||
+        DateTime.now().isAfter(_phoneOtpExpiresAt!)) {
       _pendingPhoneOtpHash = null;
       _pendingOtpPhone = null;
-      _otpExpiresAt = null;
+      _phoneOtpExpiresAt = null;
       return _authMsg('otp_expired', langCode);
     }
+    // Build 303 (P0 audit): phone OTP brute-force 카운터 추가. Build 286 이
+    // email 만 보호 → phone 6자리 10^6 조합 무제한 in-memory 비교 가능했음.
+    // 5회 실패 후 OTP 즉시 무효화 (email 과 동일 정책).
     if (_pendingPhoneOtpHash != _hashOtp(otp.trim())) {
+      _otpVerifyFailures++;
+      if (_otpVerifyFailures >= _maxOtpVerifyAttempts) {
+        _pendingPhoneOtpHash = null;
+        _pendingOtpPhone = null;
+        _phoneOtpExpiresAt = null;
+        _otpVerifyFailures = 0;
+        _persistOtpRateState();
+        return _authMsg('otp_too_many_attempts', langCode);
+      }
+      _persistOtpRateState();
       return _authMsg('otp_invalid', langCode);
     }
-    // 인증 성공 → OTP 무효화
+    // 인증 성공 → OTP 무효화 + 실패 카운터 리셋
     _pendingPhoneOtpHash = null;
     _pendingOtpPhone = null;
-    _otpExpiresAt = null;
+    _phoneOtpExpiresAt = null;
+    _otpVerifyFailures = 0;
+    _persistOtpRateState();
     return null;
   }
 
