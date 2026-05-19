@@ -671,8 +671,13 @@ class _PremiumScreenState extends State<PremiumScreen> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     TextButton(
+                      // Build 299 (MED audit): paywall 의 Terms/Privacy 링크를
+                      // localized URL 로 — 비-ko 사용자가 한국어 페이지 보던
+                      // 회귀 차단 (Apple 3.1.2 i18n 일관성).
                       onPressed: () => launchUrl(
-                        Uri.parse(AppLinks.termsOfService),
+                        Uri.parse(
+                          AppLinks.termsForCountry(state.currentUser.country),
+                        ),
                         mode: LaunchMode.inAppBrowserView,
                       ),
                       style: TextButton.styleFrom(
@@ -699,7 +704,11 @@ class _PremiumScreenState extends State<PremiumScreen> {
                     ),
                     TextButton(
                       onPressed: () => launchUrl(
-                        Uri.parse(AppLinks.privacyPolicy),
+                        Uri.parse(
+                          AppLinks.privacyPolicyForCountry(
+                            state.currentUser.country,
+                          ),
+                        ),
                         mode: LaunchMode.inAppBrowserView,
                       ),
                       style: TextButton.styleFrom(

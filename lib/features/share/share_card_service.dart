@@ -86,10 +86,13 @@ class ShareCardService {
     final size = Size(_cardWidth.toDouble(), _cardHeight.toDouble());
 
     _paintBackground(canvas, size);
-    _paintHeader(canvas, size, letter, l10n);
-    _paintJourneyGraphic(canvas, size, letter, l10n);
+    // Build 299 (HIGH audit): langCode 를 모든 텍스트 paint 함수에 전달.
+    // 이전엔 snippet 만 RTL 분기 했음 → Arabic share-card 의 header/journey/
+    // branding 영역이 여전히 LTR 로 렌더되어 일관성 깨졌음.
+    _paintHeader(canvas, size, letter, l10n, langCode: langCode);
+    _paintJourneyGraphic(canvas, size, letter, l10n, langCode: langCode);
     _paintLetterSnippet(canvas, size, letter, langCode: langCode);
-    _paintBottomBranding(canvas, size, tagline, brandName);
+    _paintBottomBranding(canvas, size, tagline, brandName, langCode: langCode);
 
     final picture = recorder.endRecording();
     final image = await picture.toImage(_cardWidth, _cardHeight);
@@ -135,8 +138,9 @@ class ShareCardService {
     Canvas canvas,
     Size size,
     Letter letter,
-    AppL10n l10n,
-  ) {
+    AppL10n l10n, {
+    String? langCode,
+  }) {
     // "A letter arrived from {country}" 두 줄로 분리 렌더링
     _drawText(
       canvas,
@@ -145,6 +149,7 @@ class ShareCardService {
       fontSize: 54,
       color: const Color(0xFFE8E8E0),
       weight: FontWeight.w500,
+      langCode: langCode,
     );
     _drawText(
       canvas,
@@ -154,6 +159,7 @@ class ShareCardService {
       color: AppColors.gold,
       weight: FontWeight.w800,
       maxLines: 2,
+      langCode: langCode,
     );
   }
 
@@ -162,8 +168,9 @@ class ShareCardService {
     Canvas canvas,
     Size size,
     Letter letter,
-    AppL10n l10n,
-  ) {
+    AppL10n l10n, {
+    String? langCode,
+  }) {
     // 카드 배경
     final cardRect = RRect.fromLTRBR(
       80, 440, size.width - 80, 1200,
@@ -224,6 +231,7 @@ class ShareCardService {
       fontSize: 44,
       color: const Color(0xFFE8E8E0).withValues(alpha: 0.9),
       weight: FontWeight.w600,
+      langCode: langCode,
     );
 
     // 이동 거리
@@ -235,6 +243,7 @@ class ShareCardService {
         offset: const Offset(120, 1140),
         fontSize: 32,
         color: const Color(0xFFE8E8E0).withValues(alpha: 0.6),
+        langCode: langCode,
       );
     }
   }
@@ -266,8 +275,9 @@ class ShareCardService {
     Canvas canvas,
     Size size,
     String tagline,
-    String brandName,
-  ) {
+    String brandName, {
+    String? langCode,
+  }) {
     _drawText(
       canvas,
       tagline,
@@ -277,6 +287,7 @@ class ShareCardService {
       weight: FontWeight.w400,
       maxWidth: _cardWidth - 160.0,
       maxLines: 2,
+      langCode: langCode,
     );
     _drawText(
       canvas,
@@ -285,6 +296,7 @@ class ShareCardService {
       fontSize: 44,
       color: AppColors.gold,
       weight: FontWeight.w700,
+      langCode: langCode,
     );
   }
 

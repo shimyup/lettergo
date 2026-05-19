@@ -61,12 +61,33 @@ void main() {
   });
 
   group('OnboardingTourScreen.nextRouteAfterSplash', () {
-    test('처음 → /onboarding_tour', () async {
+    // Build 298 (P0 i18n audit): tour 콘텐츠가 한국어 only — 비-ko 단말은 자동
+    // skip 처리. test 환경의 default locale 은 보통 en — 비-ko 분기 검증.
+    test('처음 + ko locale → /onboarding_tour', () async {
       SharedPreferences.setMockInitialValues({});
+      final dispatcher =
+          TestWidgetsFlutterBinding.ensureInitialized().platformDispatcher;
+      dispatcher.localeTestValue = const Locale('ko', 'KR');
+      addTearDown(dispatcher.clearLocaleTestValue);
       expect(
         await OnboardingTourScreen.nextRouteAfterSplash(),
         equals('/onboarding_tour'),
       );
+    });
+
+    test('처음 + 비-ko locale → /onboarding (auto-skip)', () async {
+      SharedPreferences.setMockInitialValues({});
+      final dispatcher =
+          TestWidgetsFlutterBinding.ensureInitialized().platformDispatcher;
+      dispatcher.localeTestValue = const Locale('en', 'US');
+      addTearDown(dispatcher.clearLocaleTestValue);
+      expect(
+        await OnboardingTourScreen.nextRouteAfterSplash(),
+        equals('/onboarding'),
+      );
+      // markSeen 도 호출됐는지 확인.
+      final prefs = await SharedPreferences.getInstance();
+      expect(prefs.getBool('seen_onboarding_tour'), isTrue);
     });
 
     test('이미 본 → /onboarding', () async {

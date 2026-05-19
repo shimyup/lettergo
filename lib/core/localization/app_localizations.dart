@@ -1668,7 +1668,7 @@ class AppL10n {
     'de': 'Benachrichtigung für nahe Belohnungen',
     'es': 'Notificación de recompensa cercana',
     'pt': 'Notificação de recompensa próxima',
-    'ru': 'Уведомление о ближайших наградых',
+    'ru': 'Уведомление о ближайших наградах',
     'tr': 'Yakındaki ödül bildirimi',
     'ar': 'إشعار المكافآت القريبة',
     'it': 'Notifica ricompensa vicina',
@@ -1974,7 +1974,7 @@ class AppL10n {
     'ja': '夜の便箋 · 画像無制限',
     'zh': '夜间主题优惠券纸 · 无限图片',
     'fr': 'Papeterie nocturne · images illimitées',
-    'de': 'Nachtbelohnungspapier · unbegrenzte Bilder',
+    'de': 'Nacht-Designvorlage · unbegrenzte Bilder',
     'es': 'Papel nocturno · imágenes ilimitadas',
     'pt': 'Papel noturno · imagens ilimitadas',
     'ru': 'Ночной дизайн · безлимитные изображения',
@@ -2100,7 +2100,7 @@ class AppL10n {
     'ko': '무제한 하늘길 · 답장 우선 도착',
     'en': 'Unlimited skyways · priority reply delivery',
     'ja': '無制限エアルート · 返信が優先到着',
-    'zh': '无限空邮 · 回优惠券优先送达',
+    'zh': '无限空邮 · 回信优先送达',
     'fr': 'Voies aériennes illimitées · priorité des réponses',
     'de': 'Unbegrenzte Luftwege · Antworten mit Vorrang',
     'es': 'Vías aéreas ilimitadas · respuestas prioritarias',
@@ -2134,10 +2134,10 @@ class AppL10n {
     'ja': '今週のふりかえり',
     'zh': '本周回顾',
     'fr': 'La semaine en récompenses',
-    'de': 'Diese Woche in Belohnungenn',
+    'de': 'Diese Woche in Belohnungen',
     'es': 'Esta semana en recompensas',
     'pt': 'Esta semana em recompensas',
-    'ru': 'Неделя в наградых',
+    'ru': 'Неделя в наградах',
     'tr': 'Ödüllarla bu hafta',
     'ar': 'هذا الأسبوع في المكافآت',
     'it': 'La settimana in ricompense',
@@ -2223,7 +2223,7 @@ class AppL10n {
         'Du hast auf diesen Brief bereits geantwortet — eine Antwort pro Brief',
     'es': 'Ya respondiste a esta recompensa — una respuesta por recompensa',
     'pt': 'Você já respondeu a esta recompensa — uma resposta por recompensa',
-    'ru': 'Вы уже ответили на это письмо — один ответ на награда',
+    'ru': 'Вы уже ответили на это письмо — один ответ на награду',
     'tr': 'Bu mektuba zaten cevap verdin — ödül başına bir cevap',
     'ar': 'لقد رددت على هذه المكافأة مسبقاً — رد واحد لكل مكافأة',
     'it': 'Hai già risposto a questa ricompensa — una risposta per ricompensa',
@@ -2239,7 +2239,7 @@ class AppL10n {
     'de': 'Eine Antwort pro Belohnung',
     'es': 'Una respuesta por recompensa',
     'pt': 'Uma resposta por recompensa',
-    'ru': 'Один ответ на награда',
+    'ru': 'Один ответ на награду',
     'tr': 'Ödül başına bir cevap',
     'ar': 'رد واحد لكل مكافأة',
     'it': 'Una risposta per ricompensa',
@@ -2268,7 +2268,7 @@ class AppL10n {
     'ja': '創作の特典です',
     'zh': '这是一封创作优惠券',
     'fr': 'Une récompense de curation',
-    'de': 'Ein kuratierter Belohnung',
+    'de': 'Ein kuratierte Belohnung',
     'es': 'Una recompensa curada',
     'pt': 'Uma recompensa curada',
     'ru': 'Награда-миниатюра',
@@ -2308,7 +2308,7 @@ class AppL10n {
     'ko': '이 사람은 당신의 답을 기다리고 있을지 몰라요',
     'en': 'Someone, somewhere, may be waiting for your reply',
     'ja': 'この人はあなたの返事を待っているかもしれません',
-    'zh': '这个人也许正在等待你的回优惠券',
+    'zh': '这个人也许正在等待你的回信',
     'fr': 'Cette personne attend peut-être votre réponse',
     'de': 'Jemand wartet vielleicht gerade auf deine Antwort',
     'es': 'Alguien podría estar esperando tu respuesta',
@@ -2341,7 +2341,7 @@ class AppL10n {
     'en':
         '"Did a reward arrive for me today?"\nA quiet 8 AM nudge to open your mailbox — nothing noisy.',
     'ja': '「今日、特典は届いたかな？」\n毎朝8時に、そっと特典箱を開くようお知らせします。',
-    'zh': '"今天有我的信吗？"\n每天早上 8 点轻轻提醒你打开优惠券箱——不喧哗。',
+    'zh': '"今天有我的信吗？"\n每天早上 8 点轻轻提醒你打开信箱——不喧哗。',
     'fr':
         '"Ai-je reçu une lettre aujourd\'hui ?"\nUn rappel doux à 8h pour ouvrir votre boîte.',
     'de':
@@ -2479,7 +2479,7 @@ class AppL10n {
     'ko': '혜택 도착·DM·아침 리마인더',
     'en': 'Arrivals, DMs, and the daily nudge',
     'ja': '到着・DM・朝のリマインダー',
-    'zh': '优惠券到达·私优惠券·清晨提醒',
+    'zh': '优惠券到达·私信·清晨提醒',
     'fr': 'Arrivées, messages et rappel quotidien',
     'de': 'Ankünfte, DMs und tägliche Erinnerung',
     'es': 'Llegadas, DMs y recordatorio diario',
@@ -2516,7 +2516,7 @@ class AppL10n {
     'de': 'Tägliche Belohnung-Erinnerung',
     'es': 'Recordatorio de recompensas de hoy',
     'pt': 'Lembrete das recompensas de hoje',
-    'ru': 'Напоминание о сегодняшних наградых',
+    'ru': 'Напоминание о сегодняшних наградах',
     'tr': 'Bugünkü ödül hatırlatıcısı',
     'ar': 'تذكير بمكافآت اليوم',
     'it': 'Promemoria ricompense di oggi',
@@ -2527,9 +2527,9 @@ class AppL10n {
     'ko': '매일 오전 8시에 수집첩을 열어보도록 알려드려요',
     'en': 'A gentle 8:00 AM nudge to check your mailbox',
     'ja': '毎朝8時に特典を確認するようお知らせします',
-    'zh': '每天早上 8 点温柔提醒你查看优惠券箱',
+    'zh': '每天早上 8 点温柔提醒你查看信箱',
     'fr': 'Un rappel doux à 8h00 pour ouvrir votre boîte',
-    'de': 'Ein sanfter Hinweis um 8:00 Uhr, den Belohnungkasten zu öffnen',
+    'de': 'Ein sanfter Hinweis um 8:00 Uhr, den Postfach zu öffnen',
     'es': 'Un suave aviso a las 8:00 para revisar tu buzón',
     'pt': 'Um lembrete gentil às 8h para abrir sua caixa de recompensas',
     'ru': 'Лёгкое напоминание в 8:00 открыть почтовый ящик',
@@ -2934,7 +2934,7 @@ class AppL10n {
     'ko': '계정 정보 확인',
     'en': 'Account Information',
     'ja': 'アカウント情報確認',
-    'zh': '账号优惠券息确认',
+    'zh': '账号信息确认',
     'fr': 'Informations du compte',
     'de': 'Kontoinformationen',
     'es': 'Información de la cuenta',
@@ -3134,7 +3134,7 @@ class AppL10n {
     'ar': 'تم إصدار كلمة مرور مؤقتة',
     'it': 'Password temporanea emessa',
     'hi': 'अस्थायी पासवर्ड जारी किया गया',
-    'th': 'ออกรหัสผ่านชั่ว���ราวแล้ว',
+    'th': 'ออกรหัสผ่านชั่วคราวแล้ว',
   });
 
   String get authTempPasswordLabel => _t({
@@ -3240,7 +3240,7 @@ class AppL10n {
     'ar': 'يجب الموافقة على سياسة الخصوصية للتسجيل.',
     'it': 'Devi accettare l\'informativa sulla privacy per registrarti.',
     'hi': 'साइनअप करने के लिए गोपनीयता नीति से सहमत होना आवश्यक है।',
-    'th': 'คุณต้องยอมรับนโยบายความเป็นส��วนตัวเพื่อสมัครสมาชิก',
+    'th': 'คุณต้องยอมรับนโยบายความเป็นส่วนตัวเพื่อสมัครสมาชิก',
   });
 
   String get authEnterEmail => _t({
@@ -3397,7 +3397,7 @@ class AppL10n {
     'de': 'traveler42   (Buchstabe am Anfang, 2-20 Zeichen: Buchst./Ziffern/_)',
     'es': 'traveler42   (inicia con letra, 2-20 alfanumérico/_)',
     'pt': 'traveler42   (inicia com letra, 2-20 alfanumérico/_)',
-    'ru': 'traveler42   (��ачало с буквы, 2-20 букв/цифр/_)',
+    'ru': 'traveler42   (начало с буквы, 2-20 букв/цифр/_)',
     'tr': 'traveler42   (harf ile başlar, 2-20 harf/rakam/_)',
     'ar': 'traveler42   (يبدأ بحرف، 2-20 حرف/رقم/_)',
     'it': 'traveler42   (inizia con ricompensa, 2-20 alfanum./_)',
@@ -3532,7 +3532,7 @@ class AppL10n {
     'hi':
         'संग्रह: ईमेल, उपनाम, देश, स्थान (शहर स्तर)\nउद्देश्य: सेवा प्रदान, खाता प्रबंधन',
     'th':
-        '���้อมูลที่เก็บ: อีเมล, ชื่อเล่น, ประเทศ, ตำแหน่ง (ระดับเมือง)\nวัตถุประสงค์: ให้บริการ, จัดการบัญชี',
+        'ข้อมูลที่เก็บ: อีเมล, ชื่อเล่น, ประเทศ, ตำแหน่ง (ระดับเมือง)\nวัตถุประสงค์: ให้บริการ, จัดการบัญชี',
   });
 
   String get authLocationOptional => _t({
@@ -3546,7 +3546,7 @@ class AppL10n {
     'pt': '(Opcional) Consentimento de acesso à localização',
     'ru': '(Необязательно) Согласие на доступ к местоположению',
     'tr': '(İsteğe bağlı) Konum erişimi onayı',
-    'ar': '(��ختياري) الموافقة على الوصول إلى الموقع',
+    'ar': '(اختياري) الموافقة على الوصول إلى الموقع',
     'it': '(Facoltativo) Consenso accesso alla posizione',
     'hi': '(वैकल्पिक) स्थान पहुँच सहमति',
     'th': '(ไม่บังคับ) ยินยอมใช้ตำแหน่งปัจจุบัน',
@@ -3826,7 +3826,7 @@ class AppL10n {
     'zh': '服务提供、优惠券发送和接收、账号管理',
     'fr':
         'Fourniture du service, envoi et réception de lettres, gestion du compte',
-    'de': 'Dienstleistung, Senden und Empfangen von Belohnungenn, Kontoverwaltung',
+    'de': 'Dienstleistung, Senden und Empfangen von Belohnungen, Kontoverwaltung',
     'es':
         'Prestación del servicio, envío y recepción de cartas, gestión de cuenta',
     'pt':
@@ -3899,7 +3899,7 @@ class AppL10n {
     'ko': '수집된 개인정보는 제3자에게 제공되지 않습니다.',
     'en': 'Collected personal data is not shared with third parties.',
     'ja': '収集された個人情報は第三者に提供されません。',
-    'zh': '收集的个人优惠券息不会提供给第三方。',
+    'zh': '收集的个人信息不会提供给第三方。',
     'fr':
         'Les données personnelles collectées ne sont pas partagées avec des tiers.',
     'de':
@@ -3949,7 +3949,7 @@ class AppL10n {
   });
 
   String get authSelectResidenceCountry => _t({
-    'ko': '��주 국가 선택',
+    'ko': '거주 국가 선택',
     'en': 'Select Country of Residence',
     'ja': '居住国を選択',
     'zh': '选择居住国家',
@@ -4202,7 +4202,7 @@ class AppL10n {
     'ja': '特典の内容を書いてください ✍️',
     'zh': '请写优惠券内容 ✍️',
     'fr': 'Veuillez écrire votre récompense ✍️',
-    'de': 'Bitte schreiben Sie Ihren Belohnung ✍️',
+    'de': 'Bitte schreiben Sie Ihre Belohnung ✍️',
     'es': 'Por favor escribe tu recompensa ✍️',
     'pt': 'Por favor escreva sua recompensa ✍️',
     'ru': 'Пожалуйста, напишите награда ✍️',
@@ -4364,7 +4364,7 @@ class AppL10n {
     'ko': '💌  답장이 ${name}에게 출발했어요!',
     'en': '💌  Your reply to $name is on its way!',
     'ja': '💌  ${name}への返信が出発しました！',
-    'zh': '💌  给${name}的回优惠券已出发！',
+    'zh': '💌  给${name}的回信已出发！',
     'fr': '💌  Votre réponse à $name est en route !',
     'de': '💌  Ihre Antwort an $name ist unterwegs!',
     'es': '💌  ¡Tu respuesta a $name va en camino!',
@@ -4434,10 +4434,10 @@ class AppL10n {
     'ja': '✈️  特典が世界のどこかへ出発しました！🌍',
     'zh': '✈️  优惠券已发往世界某处！🌍',
     'fr': '✈️  Votre récompense est partie quelque part dans le monde ! 🌍',
-    'de': '✈️  Ihr Belohnung ist irgendwohin in die Welt unterwegs! 🌍',
+    'de': '✈️  Ihre Belohnung ist irgendwohin in die Welt unterwegs! 🌍',
     'es': '✈️  ¡Tu recompensa partió a algún lugar del mundo! 🌍',
     'pt': '✈️  Sua recompensa partiu para algum lugar do mundo! 🌍',
-    'ru': '✈️  Ваше награда отправилось куда-то в мир! 🌍',
+    'ru': '✈️  Ваша награда отправилась куда-то в мир! 🌍',
     'tr': '✈️  Mektubunuz dünyada bir yere yola çıktı! 🌍',
     'ar': '✈️  مكافأتك انطلقت إلى مكان ما في العالم! 🌍',
     'it': '✈️  La tua ricompensa è partita da qualche parte nel mondo! 🌍',
@@ -4451,10 +4451,10 @@ class AppL10n {
     'ja': '✈️  特典が$flag ${country}へ出発しました！',
     'zh': '✈️  优惠券已发往$flag $country！',
     'fr': '✈️  Votre récompense est partie vers $flag $country !',
-    'de': '✈️  Ihr Belohnung ist nach $flag $country unterwegs!',
+    'de': '✈️  Ihre Belohnung ist nach $flag $country unterwegs!',
     'es': '✈️  ¡Tu recompensa partió a $flag $country!',
     'pt': '✈️  Sua recompensa partiu para $flag $country!',
-    'ru': '✈️  Ваше награда отправилось в $flag $country!',
+    'ru': '✈️  Ваша награда отправилась в $flag $country!',
     'tr': '✈️  Mektubunuz $flag $country\'ya yola çıktı!',
     'ar': '✈️  مكافأتك انطلقت إلى $flag $country!',
     'it': '✈️  La tua ricompensa è partita per $flag $country!',
@@ -4491,7 +4491,7 @@ class AppL10n {
     'ko': '답장 쓰기',
     'en': 'Write Reply',
     'ja': '返信を書く',
-    'zh': '写回优惠券',
+    'zh': '写回信',
     'fr': 'Écrire une réponse',
     'de': 'Antwort schreiben',
     'es': 'Escribir respuesta',
@@ -4850,7 +4850,7 @@ class AppL10n {
     'de': 'Dieser Belohnung wird irgendwohin in die Welt fließen',
     'es': 'Esta recompensa fluirá a algún lugar del mundo',
     'pt': 'Esta recompensa fluirá para algum lugar do mundo',
-    'ru': 'Это награда уплывёт куда-то в мир',
+    'ru': 'Эта награда уплывёт куда-то в мир',
     'tr': 'Bu ödül dünyanın bir yerine akacak',
     'ar': 'ستنساب هذه المكافأة إلى مكان ما في العالم',
     'it': 'Questa ricompensa viaggerà da qualche parte nel mondo',
@@ -6152,7 +6152,7 @@ class AppL10n {
     'de': 'Schreib, was du in diesem Belohnung mitteilen möchtest...',
     'es': 'Escribe lo que quieres decir en esta recompensa...',
     'pt': 'Escreve o que queres dizer nesta recompensa...',
-    'ru': 'Напишите, что хотите передать в этом награде...',
+    'ru': 'Напишите, что хотите передать в этой награде...',
     'tr': 'Bu ödülta paylaşmak istediklerini yaz...',
     'ar': 'اكتب ما تودّ قوله في هذه المكافأة...',
     'it': 'Scrivi ciò che vuoi dire in questa ricompensa...',
@@ -7469,7 +7469,7 @@ class AppL10n {
     'ko': '답장 보내기',
     'en': 'Send Reply',
     'ja': '返信を送る',
-    'zh': '发送回优惠券',
+    'zh': '发送回信',
     'fr': 'Envoyer la réponse',
     'de': 'Antwort senden',
     'es': 'Enviar respuesta',
@@ -7488,10 +7488,10 @@ class AppL10n {
     'ja': '特典が出発します...',
     'zh': '优惠券正在出发...',
     'fr': 'Votre récompense part...',
-    'de': 'Ihr Belohnung geht auf die Reise...',
+    'de': 'Ihre Belohnung geht auf die Reise...',
     'es': 'Tu recompensa está partiendo...',
     'pt': 'Sua recompensa está partindo...',
-    'ru': 'Ваше награда отправляется...',
+    'ru': 'Ваша награда отправляется...',
     'tr': 'Mektubunuz yola çıkıyor...',
     'ar': 'مكافأتك في طريقها...',
     'it': 'La tua ricompensa sta partendo...',
@@ -7663,7 +7663,7 @@ class AppL10n {
     'ko': 'DM',
     'en': 'DM',
     'ja': 'DM',
-    'zh': '私优惠券',
+    'zh': '私信',
     'fr': 'DM',
     'de': 'DM',
     'es': 'DM',
@@ -7685,7 +7685,7 @@ class AppL10n {
     'de': 'Dieser Belohnung kann nur vor Ort geöffnet werden',
     'es': 'Esta recompensa solo se puede abrir en el lugar',
     'pt': 'Esta recompensa só pode ser aberta no local',
-    'ru': 'Это награда можно открыть только на месте',
+    'ru': 'Эту награду можно открыть только на месте',
     'tr': 'Bu ödül yalnızca yerinde açılabilir',
     'ar': 'لا يمكن فتح هذه المكافأة إلا محليًا',
     'it': 'Questa ricompensa può essere aperta solo in loco',
@@ -7796,7 +7796,7 @@ class AppL10n {
     'es':
         '¿Eliminar esta carta?\nLas cartas eliminadas no se pueden recuperar.',
     'pt': 'Excluir esta recompensa?\nRecompensas excluídas não podem ser recuperadas.',
-    'ru': 'Удалить это награда?\nУдалённые награды нельзя восстановить.',
+    'ru': 'Удалить эту награду?\nУдалённые награды нельзя восстановить.',
     'tr':
         'Bu mektubu silmek istiyor musunuz?\nSilinen mektuplar geri alınamaz.',
     'ar': 'هل تريد حذف هذه المكافأة؟\nلا يمكن استعادة المكافآت المحذوفة.',
@@ -7816,7 +7816,7 @@ class AppL10n {
         'Dieser Brief kann nicht wiederhergestellt werden.\nWirklich löschen?',
     'es': 'Esta recompensa no se puede recuperar.\n¿Estás seguro?',
     'pt': 'Esta recompensa não pode ser recuperada.\nTem certeza?',
-    'ru': 'Это награда нельзя будет восстановить.\nВы уверены?',
+    'ru': 'Эту награду нельзя будет восстановить.\nВы уверены?',
     'tr': 'Bu ödül geri alınamaz.\nEmin misiniz?',
     'ar': 'لا يمكن استعادة هذه المكافأة.\nهل أنت متأكد؟',
     'it': 'Questa ricompensa non può essere recuperata.\nSei sicuro?',
@@ -8127,7 +8127,7 @@ class AppL10n {
     'en':
         '• All rewards and DM history\n• Tower and activity score\n• Stamp album\n• Account info',
     'ja': '• すべての特典とDM履歴\n• タワーとアクティビティスコア\n• スタンプアルバム\n• アカウント情報',
-    'zh': '• 所有优惠券和私信记录\n• 塔和活跃度分数\n• 邮票收集册\n• 账号优惠券息',
+    'zh': '• 所有优惠券和私信记录\n• 塔和活跃度分数\n• 邮票收集册\n• 账号信息',
     'fr':
         '• Toutes les lettres et DM\n• Tour et score d’activité\n• Album de timbres\n• Info du compte',
     'de':
@@ -8855,7 +8855,7 @@ class AppL10n {
     'ko': '아직 DM 대화가 없어요',
     'en': 'No DM conversations yet',
     'ja': 'まだDMはありません',
-    'zh': '还没有私优惠券对话',
+    'zh': '还没有私信对话',
     'fr': 'Pas encore de conversations DM',
     'de': 'Noch keine DM-Unterhaltungen',
     'es': 'Aún no hay conversaciones DM',
@@ -8872,7 +8872,7 @@ class AppL10n {
     'ko': '받은 받은 혜택에서 발신자를 팔로우하면\n맞팔 시 DM 대화가 시작돼요',
     'en': 'Follow a sender from your inbox\nand DM opens when they follow back',
     'ja': '受信箱から送信者をフォローすると\n相互フォローでDMが開始されます',
-    'zh': '在收件箱中关注发件人\n互相关注后即可开始私优惠券',
+    'zh': '在收件箱中关注发件人\n互相关注后即可开始私信',
     'fr':
         'Suivez un expéditeur depuis votre boîte\nle DM s\'ouvre quand il vous suit aussi',
     'de':
@@ -9170,7 +9170,7 @@ class AppL10n {
     'tr': 'Satın alma başarısız. Lütfen daha sonra tekrar deneyin.',
     'ar': 'فشل الشراء. يرجى المحاولة لاحقاً.',
     'it': 'Acquisto non riuscito. Riprova più tardi.',
-    'hi': 'खरीदारी विफल। क��पया बाद में पुनः प्रयास करें।',
+    'hi': 'खरीदारी विफल। कृपया बाद में पुनः प्रयास करें।',
     'th': 'ซื้อไม่สำเร็จ กรุณาลองใหม่ภายหลัง',
   });
 
@@ -9214,10 +9214,10 @@ class AppL10n {
     'ja': '画像+リンク付き特典で応答率アップ（1日20通）',
     'zh': '图片+链接优惠券提高回复率（每日20封）',
     'fr': 'Boostez le taux de réponse avec des récompenses image+lien (20/jour)',
-    'de': 'Antwortrate mit Bild+Link-Belohnungenn steigern (20/Tag)',
+    'de': 'Antwortrate mit Bild+Link-Belohnungen steigern (20/Tag)',
     'es': 'Aumenta la tasa de respuesta con recompensas con imagen+enlace (20/día)',
     'pt': 'Aumente a taxa de resposta com recompensas com imagem+link (20/dia)',
-    'ru': 'Повысьте отклик с наградыми с фото+ссылкой (20/день)',
+    'ru': 'Повысьте отклик с наградами с фото+ссылкой (20/день)',
     'tr': 'Resim+link ödüllerla yanıt oranını artır (günde 20)',
     'ar': 'عزز معدل الاستجابة بمكافآت صور+روابط (20/يوم)',
     'it': 'Aumenta il tasso di risposta con ricompense immagine+link (20/giorno)',
@@ -9395,7 +9395,7 @@ class AppL10n {
     'hi':
         'अगली बिलिंग तिथि से मुफ्त योजना पर स्विच होगा।\nतब तक आप वर्तमान सदस्यता का उपयोग जारी रख सकते हैं।',
     'th':
-        'จะเปลี่ยนเป็นแพ็กเกจฟรีตั้งแต่วัน��รียกเก็บเงินถัดไป\nคุณยังใช้งานแพ็กเกจปัจจุบันได้จนกว่าจะถึงวันนั้น',
+        'จะเปลี่ยนเป็นแพ็กเกจฟรีตั้งแต่วันเรียกเก็บเงินถัดไป\nคุณยังใช้งานแพ็กเกจปัจจุบันได้จนกว่าจะถึงวันนั้น',
   });
 
   String get premiumCancelViaStore => _t({
@@ -9470,8 +9470,8 @@ class AppL10n {
     'pt':
         '30 cartas/dia · cartas imagem+link\nTorre personalizada · entrega expressa',
     'ru':
-        '30 писем/день · п��сьма с фото+ссылкой\nКастомная башня · экспресс-доставка',
-    'tr': 'Günde 30 · resim+link ödüller\nÖzel kule �� ekspres teslimat',
+        '30 писем/день · письма с фото+ссылкой\nКастомная башня · экспресс-доставка',
+    'tr': 'Günde 30 · resim+link ödüller\nÖzel kule + ekspres teslimat',
     'ar': '30 مكافأة/يوم · مكافآت صور+روابط\nبرج مخصص · توصيل سريع',
     'it':
         '30 lettere/giorno · lettere immagine+link\nTorre personalizzata · consegna espressa',
@@ -9539,7 +9539,7 @@ class AppL10n {
     'de': 'Massenversand an mehrere Länder gleichzeitig',
     'es': 'Envío masivo a múltiples países simultáneamente',
     'pt': 'Envio em massa para vários países simultaneamente',
-    'ru': 'Массовая рассылка в несколько стр��н одновременно',
+    'ru': 'Массовая рассылка в несколько стран одновременно',
     'tr': 'Birden fazla ülkeye aynı anda toplu gönderim',
     'ar': 'إرسال جماعي لعدة دول في وقت واحد',
     'it': 'Invio in massa a più paesi contemporaneamente',
@@ -9550,7 +9550,7 @@ class AppL10n {
   String get premiumBrandFeature4 => _t({
     'ko': '공식 인증 배지 표시',
     'en': 'Official verified badge',
-    'ja': '公式��証バッジ表示',
+    'ja': '公式認証バッジ表示',
     'zh': '显示官方认证徽章',
     'fr': 'Badge vérifié officiel',
     'de': 'Offizielles Verifizierungsabzeichen',
@@ -9570,10 +9570,10 @@ class AppL10n {
     'ja': '特典に通報ボタン非表示',
     'zh': '优惠券不显示举报按钮',
     'fr': 'Pas de bouton de signalement sur les récompenses',
-    'de': 'Kein Melden-Button auf Belohnungenn',
+    'de': 'Kein Melden-Button auf Belohnungen',
     'es': 'Sin botón de reporte en recompensas',
     'pt': 'Sem botão de denúncia nas recompensas',
-    'ru': 'Без кнопки жалобы на ��исьмах',
+    'ru': 'Без кнопки жалобы на письмах',
     'tr': 'Ödüllarda şikayet butonu yok',
     'ar': 'بدون زر بلاغ على المكافآت',
     'it': 'Nessun pulsante segnala sulle ricompense',
@@ -9757,7 +9757,7 @@ class AppL10n {
     'ar': 'سيظهر تاريخ التجديد التلقائي بعد بدء الاشتراك.',
     'it':
         'La data di rinnovo automatico verrà mostrata dopo l\'inizio dell\'abbonamento.',
-    'hi': 'स्वत: नवीनीकरण तिथि सदस्य��ा शुरू होने के बाद दिखाई जाएगी।',
+    'hi': 'स्वत: नवीनीकरण तिथि सदस्यता शुरू होने के बाद दिखाई जाएगी।',
     'th': 'วันต่ออายุอัตโนมัติจะแสดงหลังเริ่มสมัครสมาชิก',
   });
 
@@ -10122,7 +10122,7 @@ class AppL10n {
     'ko': '친구에게 1개월 프리미엄 선물\n(일반가 ₩9,900, 10% 할인)',
     'en': 'Gift 1 month of Premium to a friend\n(Regular ₩9,900, 10% off)',
     'ja': '友達に1ヶ月プレミアムをプレゼント\n（通常価格₩9,900、10%割引）',
-    'zh': '送好友1个��高级版\n（原价₩9,900，9折优惠）',
+    'zh': '送好友1个月高级版\n（原价₩9,900，9折优惠）',
     'fr':
         'Offrez 1 mois de Premium à un ami\n(Prix normal ₩9 900, remise de 10%)',
     'de':
@@ -10236,7 +10236,7 @@ class AppL10n {
     'pt':
         'Insira o código no app para ativar 1 mês de Premium!\n✉️ Conecte-se com pessoas do mundo inteiro por cartas.',
     'ru':
-        'Введите код в приложении, чтобы активировать 1 месяц Премиума!\n✉️ Общайтесь с людьми по всему миру ч��рез письма.',
+        'Введите код в приложении, чтобы активировать 1 месяц Премиума!\n✉️ Общайтесь с людьми по всему миру через письма.',
     'tr':
         'Uygulamada kodu girerek 1 aylık Premium aktif edin!\n✉️ Mektuplarla dünya genelinde bağlantı kurun.',
     'ar':
@@ -10244,7 +10244,7 @@ class AppL10n {
     'it':
         'Inserisci il codice nell\'app per attivare 1 mese di Premium!\n✉️ Connettiti con persone in tutto il mondo tramite ricompense.',
     'hi':
-        'ऐप में कोड दर्ज करके 1 महीन�� का Premium सक्रिय करें!\n✉️ पत्रों के माध्यम से दुनिया ��र के लोगों से जुड़ें।',
+        'ऐप में कोड दर्ज करके 1 महीने का Premium सक्रिय करें!\n✉️ पत्रों के माध्यम से दुनिया भर के लोगों से जुड़ें।',
     'th':
         'กรอกโค้ดในแอปเพื่อเปิดใช้งาน Premium 1 เดือน!\n✉️ เชื่อมต่อกับผู้คนทั่วโลกผ่านจดหมาย',
   });
@@ -10355,7 +10355,7 @@ class AppL10n {
   String get premiumInviteAlreadyUsed => _t({
     'ko': '초대 코드는 계정당 1회만 사용할 수 있어요.',
     'en': 'Invite code can only be used once per account.',
-    'ja': '招待コードはアカウントごと���1回のみ使用できます。',
+    'ja': '招待コードはアカウントごとに1回のみ使用できます。',
     'zh': '邀请码每个账户只能使用一次。',
     'fr': 'Le code d\'invitation ne peut être utilisé qu\'une fois par compte.',
     'de': 'Der Einladungscode kann nur einmal pro Konto verwendet werden.',
@@ -10372,7 +10372,7 @@ class AppL10n {
   String get premiumInviteInvalid => _t({
     'ko': '코드 형식을 확인해주세요. (영문/숫자 6자리)',
     'en': 'Please check the code format. (6 alphanumeric characters)',
-    'ja': 'コード形式を確認してください。（英数���6桁）',
+    'ja': 'コード形式を確認してください。（英数字6桁）',
     'zh': '请检查代码格式。（6位字母数字）',
     'fr': 'Veuillez vérifier le format du code. (6 caractères alphanumériques)',
     'de': 'Bitte überprüfen Sie das Code-Format. (6 alphanumerische Zeichen)',
@@ -10383,7 +10383,7 @@ class AppL10n {
     'ar': 'يرجى التحقق من صيغة الكود. (6 أحرف وأرقام)',
     'it': 'Controlla il formato del codice. (6 caratteri alfanumerici)',
     'hi': 'कृपया कोड प्रारूप जांचें। (6 अक्षर/अंक)',
-    'th': 'กรุณาตรวจสอบรูปแบบโค้ด (ต��วอักษร/ตัวเลข 6 หลัก)',
+    'th': 'กรุณาตรวจสอบรูปแบบโค้ด (ตัวอักษร/ตัวเลข 6 หลัก)',
   });
 
   String get premiumInviteServerUnavailable => _t({
@@ -10476,7 +10476,7 @@ class AppL10n {
     'tr': 'Kod doğrulama sunucu tarafında yapılır. (Hesap başına bir kez)',
     'ar': 'يتم التحقق من الكود من جهة الخادم. (مرة واحدة لكل حساب)',
     'it': 'La verifica del codice avviene lato server. (Una volta per account)',
-    'hi': 'कोड सत्यापन सर्वर-साइड होता ह���। (प्रति खाता एक बार)',
+    'hi': 'कोड सत्यापन सर्वर-साइड होता है। (प्रति खाता एक बार)',
     'th': 'การตรวจสอบโค้ดทำที่เซิร์ฟเวอร์ (ครั้งเดียวต่อบัญชี)',
   });
 
@@ -10591,7 +10591,7 @@ class AppL10n {
     'hi':
         'बोनस क्रेडिट पाने के लिए कोड दर्ज करें!\nमानचित्र पर पत्रों की वास्तविक समय यात्रा देखें\nऔर किसी विशेष व्यक्ति तक पहुंचें 🌍',
     'th':
-        'กรอกโค้ดเพื่อรับเครดิตโบนัส!\nดูจดหมายเดินทางบนแ��นที่แบบเรียลไทม์\nและไปถึงคนพิเศษ 🌍',
+        'กรอกโค้ดเพื่อรับเครดิตโบนัส!\nดูจดหมายเดินทางบนแผนที่แบบเรียลไทม์\nและไปถึงคนพิเศษ 🌍',
   });
 
   String get premiumInviteShareSubject => _t({
@@ -10879,9 +10879,9 @@ class AppL10n {
     'pt': 'Envio em massa',
     'ru': 'Массовая рассылка',
     'tr': 'Toplu gönderim',
-    'ar': 'إرسال ��ماعي',
+    'ar': 'إرسال جماعي',
     'it': 'Invio in massa',
-    'hi': '���ल्क भेजें',
+    'hi': 'थोक भेजें',
     'th': 'ส่งจำนวนมาก',
   });
 
@@ -11014,7 +11014,7 @@ class AppL10n {
         'If you switch to the Free plan:\n• You will switch to Free after the current billing period\n• No charges from the next billing date\n• You can continue using all features during the current period',
     'ja':
         '無料プランに変更すると：\n• 現在の決済期間終了後に無料に変更されます\n• 次の決済日から料金は発生しません\n• 現在の期間中は全機能をご利用いただけます',
-    'zh': '切换到免费���案后：\n• 当前付费期结束后切换为免费\n• 下一个付款日起不再收费\n• 当前期间内可继续使用所有功能',
+    'zh': '切换到免费方案后：\n• 当前付费期结束后切换为免费\n• 下一个付款日起不再收费\n• 当前期间内可继续使用所有功能',
     'fr':
         'Si vous passez au forfait gratuit :\n• Vous passerez en gratuit après la période de facturation actuelle\n• Aucun frais à partir de la prochaine date de facturation\n• Vous pouvez continuer à utiliser toutes les fonctions pendant la période actuelle',
     'de':
@@ -11028,7 +11028,7 @@ class AppL10n {
     'tr':
         'Ücretsiz plana geçerseniz:\n• Mevcut fatura döneminden sonra ücretsiz olacaksınız\n• Sonraki fatura tarihinden itibaren ücret alınmaz\n• Mevcut dönem boyunca tüm özellikleri kullanmaya devam edebilirsiniz',
     'ar':
-        'عند التبديل إلى الخطة المجانية:\n• ستنتقل إلى المجانية بعد فترة الفوترة الحالية\n• لن يتم ت��صيل رسوم من تاريخ الفوترة التالي\n• يمكنك الاستمرار في استخدام جميع الميزات خلال الفترة الحالية',
+        'عند التبديل إلى الخطة المجانية:\n• ستنتقل إلى المجانية بعد فترة الفوترة الحالية\n• لن يتم تحصيل رسوم من تاريخ الفوترة التالي\n• يمكنك الاستمرار في استخدام جميع الميزات خلال الفترة الحالية',
     'it':
         'Se passi al piano gratuito:\n• Passerai a Gratuito dopo il periodo di fatturazione attuale\n• Nessun addebito dalla prossima data di fatturazione\n• Puoi continuare a usare tutte le funzioni durante il periodo attuale',
     'hi':
@@ -11051,7 +11051,7 @@ class AppL10n {
     'tr': 'Bir sonraki fatura tarihinden itibaren ücretsiz plana geçeceksiniz',
     'ar': 'ستنتقل إلى الخطة المجانية من تاريخ الفوترة التالي',
     'it': 'Passerai al piano gratuito dalla prossima data di fatturazione',
-    'hi': 'अगली बिलिंग तिथि से मुफ्त योजना पर स्विच ��ोगा',
+    'hi': 'अगली बिलिंग तिथि से मुफ्त योजना पर स्विच होगा',
     'th': 'จะเปลี่ยนเป็นแพ็กเกจฟรีตั้งแต่วันบิลถัดไป',
   });
 
@@ -11070,7 +11070,7 @@ class AppL10n {
     'tr': 'Ücretsiz plana geçiş planlandı',
     'ar': 'مقرر التبديل إلى المجانية',
     'it': 'Passaggio a gratuito previsto',
-    'hi': 'मुफ्त योजना बदलाव निर्धारि��',
+    'hi': 'मुफ्त योजना बदलाव निर्धारित',
     'th': 'กำหนดเปลี่ยนเป็นแพ็กเกจฟรี',
   });
 
@@ -11745,7 +11745,7 @@ class AppL10n {
     'ko': '경로 정보 없음',
     'en': 'No route info',
     'ja': '経路情報なし',
-    'zh': '无路线优惠券息',
+    'zh': '无路线信息',
     'fr': 'Aucun itinéraire',
     'de': 'Keine Routeninformation',
     'es': 'Sin información de ruta',
@@ -12318,7 +12318,7 @@ class AppL10n {
     'ja': '${country}からの特典を受け取りました！',
     'zh': '收到了来自${country}的优惠券！',
     'fr': 'Vous avez reçu une récompense de $country !',
-    'de': 'Sie haben einen Belohnung aus $country erhalten!',
+    'de': 'Sie haben eine Belohnung aus $country erhalten!',
     'es': '¡Recibiste una recompensa de $country!',
     'pt': 'Você recebeu uma recompensa de $country!',
     'ru': 'Вы получили награда из $country!',
@@ -12956,7 +12956,7 @@ class AppL10n {
     'en':
         'Brand accounts cannot use DM.\nPlease communicate with recipients through promos.',
     'ja': 'ブランドアカウントはDMを使用できません。\n特典の送信で受信者とコミュニケーションしてください。',
-    'zh': '品牌账号无法使用私优惠券功能。\n请通过发送优惠券与收件人沟通。',
+    'zh': '品牌账号无法使用私信功能。\n请通过发送优惠券与收件人沟通。',
     'fr':
         'Les comptes de marque ne peuvent pas utiliser les MP.\nCommuniquez avec les destinataires via les lettres.',
     'de':
@@ -12985,7 +12985,7 @@ class AppL10n {
         'Quick Message (DM) is for premium members only.\nUpgrade to Premium for DM access and $premiumLimit promos/day.',
     'ja':
         'クイックレター（DM）はプレミアム会員限定です。\nプレミアムにアップグレードするとDMと1日${premiumLimit}通の送信が可能です。',
-    'zh': '快信（私信）仅限高级会员使用。\n升级高级版即可使用私优惠券功能，每日发送$premiumLimit封。',
+    'zh': '快信（私信）仅限高级会员使用。\n升级高级版即可使用私信功能，每日发送$premiumLimit封。',
     'fr':
         'La lettre rapide (MP) est réservée aux membres premium.\nPassez au Premium pour les MP et $premiumLimit lettres/jour.',
     'de':
@@ -13017,7 +13017,7 @@ class AppL10n {
     'de': 'Premium-Expressversand ist auf $limit Belohnungen/Tag begrenzt.',
     'es': 'El envío exprés premium está limitado a $limit recompensas/día.',
     'pt': 'A entrega expressa premium é limitada a $limit recompensas/dia.',
-    'ru': 'Премиум экспресс-доставка ограничена $limit наградыми/день.',
+    'ru': 'Премиум экспресс-доставка ограничена $limit наградами/день.',
     'tr': 'Premium ekspres teslimat günde $limit ödülla sınırlıdır.',
     'ar': 'التوصيل السريع المميز محدود بـ $limit مكافآت/يوم.',
     'it': 'La consegna express premium è limitata a $limit ricompense/giorno.',
@@ -13087,7 +13087,7 @@ class AppL10n {
         'You\'ve used all $freeLimit free promos today.\nUpgrade to Premium to send up to $premiumLimit/day and multiply your reply chances by 10x.',
     'ja':
         '本日の無料枠（${freeLimit}通）を使い切りました。\nプレミアムにアップグレードすると1日${premiumLimit}通まで送信でき、返信チャンスが最大10倍に。',
-    'zh': '今日免费额度（$freeLimit封）已用完。\n升级Premium每日可发$premiumLimit封，回优惠券机会增加10倍。',
+    'zh': '今日免费额度（$freeLimit封）已用完。\n升级Premium每日可发$premiumLimit封，回信机会增加10倍。',
     'fr':
         'Vous avez utilisé vos $freeLimit lettres gratuites aujourd\'hui.\nPassez au Premium pour envoyer jusqu\'à $premiumLimit/jour et multiplier vos chances de réponse par 10.',
     'de':
@@ -13286,7 +13286,7 @@ class AppL10n {
     'en':
         'You\'ve reached this month\'s premium limit ($premiumLimit), including DM quota.',
     'ja': '今月のプレミアム送信上限（${premiumLimit}通）に達しました。DMクォータを含みます。',
-    'zh': '已达本月高级发送上限（$premiumLimit封），含私优惠券配额。',
+    'zh': '已达本月高级发送上限（$premiumLimit封），含私信配额。',
     'fr':
         'Vous avez atteint la limite mensuelle premium ($premiumLimit), quota MP inclus.',
     'de':
@@ -13588,7 +13588,7 @@ class AppL10n {
     'ja': '⚠️ あなたの特典が通報されました',
     'zh': '⚠️ 您的优惠券被举报了',
     'fr': '⚠️ Votre récompense a été signalée',
-    'de': '⚠️ Ihr Belohnung wurde gemeldet',
+    'de': '⚠️ Ihre Belohnung wurde gemeldet',
     'es': '⚠️ Tu recompensa ha sido reportada',
     'pt': '⚠️ Sua recompensa foi denunciada',
     'ru': '⚠️ На ваше награда пожаловались',
@@ -13756,7 +13756,7 @@ class AppL10n {
     'de': 'Dieser Belohnung wurde bereits von $maxReaders Personen gelesen 📪',
     'es': 'Esta recompensa ya fue leída por $maxReaders personas 📪',
     'pt': 'Esta recompensa já foi lida por $maxReaders pessoas 📪',
-    'ru': 'Это награда уже прочитали $maxReaders человек 📪',
+    'ru': 'Эту награду уже забрали $maxReaders человек 📪',
     'tr': 'Bu ödül zaten $maxReaders kişi tarafından okundu 📪',
     'ar': 'تمت قراءة هذه المكافأة من قبل $maxReaders أشخاص 📪',
     'it': 'Questa ricompensa è già stata letta da $maxReaders persone 📪',
@@ -14251,7 +14251,7 @@ class AppL10n {
     'ko': '앱 정보',
     'en': 'App Info',
     'ja': 'アプリ情報',
-    'zh': '应用优惠券息',
+    'zh': '应用信息',
     'fr': 'Infos de l\'app',
     'de': 'App-Info',
     'es': 'Info de la app',
@@ -14475,7 +14475,7 @@ class AppL10n {
         '• Pick up rewards dropped near you\n• Mark the origin of promos you send\n• Location is used only for this service\n\n❗ Without consent you cannot pick up or send rewards.',
     'ja':
         '• 周辺にある特典を拾えます\n• 送ったプロモの出発地点を記録します\n• 位置情報はサービス提供以外に使用しません\n\n❗ 同意しないと特典を拾ったり送ったりできません。',
-    'zh': '• 拾取你附近的优惠\n• 记录你发送的推广内容起点\n• 位置优惠券息仅用于本服务\n\n❗ 不同意将无法拾取或发送优惠。',
+    'zh': '• 拾取你附近的优惠\n• 记录你发送的推广内容起点\n• 位置信息仅用于本服务\n\n❗ 不同意将无法拾取或发送优惠。',
     'fr':
         '• Récupérer les avantages déposés près de vous\n• Marquer l\'origine des promos que vous envoyez\n• Utilisé uniquement pour ce service\n\n❗ Sans consentement, impossible d\'envoyer ou de récupérer des avantages.',
     'de':
@@ -15845,7 +15845,7 @@ class AppL10n {
     'ko': '답장을 기다리는 중...',
     'en': 'Waiting for replies...',
     'ja': '返信を待っている...',
-    'zh': '等待回优惠券中...',
+    'zh': '等待回信中...',
     'fr': 'En attente de réponses...',
     'de': 'Warten auf Antworten...',
     'es': 'Esperando respuestas...',
@@ -16053,7 +16053,7 @@ class AppL10n {
     'ko': '스팸 / 광고성 내용',
     'en': 'Spam / Advertising',
     'ja': 'スパム / 広告',
-    'zh': '垃圾优惠券息 / 广告',
+    'zh': '垃圾信息 / 广告',
     'fr': 'Spam / Publicité',
     'de': 'Spam / Werbung',
     'es': 'Spam / Publicidad',
@@ -16092,7 +16092,7 @@ class AppL10n {
     'de': 'Belohnung melden',
     'es': 'Reportar recompensa',
     'pt': 'Denunciar recompensa',
-    'ru': 'Пожаловаться на награда',
+    'ru': 'Пожаловаться на награду',
     'tr': 'Mektubu şikayet et',
     'ar': 'الإبلاغ عن المكافأة',
     'it': 'Segnala ricompensa',
@@ -16472,7 +16472,7 @@ class AppL10n {
     'ko': '${name}님과 DM 대화',
     'en': 'DM with $name',
     'ja': '${name}さんとDM',
-    'zh': '与 $name 私优惠券',
+    'zh': '与 $name 私信',
     'fr': 'DM avec $name',
     'de': 'DM mit $name',
     'es': 'DM con $name',
@@ -17115,7 +17115,7 @@ class AppL10n {
     'en':
         'Plain brand message. Use when sending a story, announcement, or greeting without a code or image.',
     'ja': '一般のブランドメッセージ。割引コードや画像なしで自由なメッセージを送るときに。',
-    'zh': '普通品牌优惠券息。无优惠码或图片，仅发送品牌故事或通知时选择。',
+    'zh': '普通品牌信息。无优惠码或图片，仅发送品牌故事或通知时选择。',
     'fr':
         "Message de marque libre. À utiliser pour une annonce ou histoire sans code ni image.",
     'de':
@@ -17994,7 +17994,7 @@ class AppL10n {
     'ja': '🎉 最初の特典を拾いました！',
     'zh': '🎉 拾起你的第一封优惠券！',
     'fr': '🎉 Première récompense ramassée !',
-    'de': '🎉 Ersten Belohnung aufgehoben!',
+    'de': '🎉 Erste Belohnung aufgehoben!',
     'es': '🎉 ¡Primera recompensa recogida!',
     'pt': '🎉 Primeira recompensa apanhada!',
     'ru': '🎉 Первое награда поднято!',
@@ -19064,7 +19064,7 @@ class AppL10n {
     'ko': '답장 쓰기',
     'en': 'Write Reply',
     'ja': '返信を書く',
-    'zh': '写回优惠券',
+    'zh': '写回信',
     'fr': 'Écrire une réponse',
     'de': 'Antwort schreiben',
     'es': 'Escribir respuesta',
@@ -19420,7 +19420,7 @@ class AppL10n {
     'ko': '앱 정보',
     'en': 'App Info',
     'ja': 'アプリ情報',
-    'zh': '应用优惠券息',
+    'zh': '应用信息',
     'fr': "Infos de l'app",
     'de': 'App-Info',
     'es': 'Info de la app',
@@ -20049,7 +20049,7 @@ class AppL10n {
     'ja': '2km以内に届いた特典を通知',
     'zh': '优惠券到达2km以内时通知',
     'fr': 'Notifier quand une récompense arrive à moins de 2 km',
-    'de': 'Benachrichtigen, wenn ein Belohnung innerhalb von 2 km ankommt',
+    'de': 'Benachrichtigen, wenn eine Belohnung innerhalb von 2 km ankommt',
     'es': 'Notificar cuando una recompensa llegue a menos de 2 km',
     'pt': 'Notificar quando uma recompensa chegar a menos de 2 km',
     'ru': 'Уведомлять, когда награда прибудет в радиусе 2 км',
@@ -22216,7 +22216,7 @@ class AppL10n {
     'ko': '스팸',
     'en': 'Spam',
     'ja': 'スパム',
-    'zh': '垃圾优惠券息',
+    'zh': '垃圾信息',
     'fr': 'Spam',
     'de': 'Spam',
     'es': 'Spam',
@@ -22456,9 +22456,9 @@ class AppL10n {
     'ko': '수집첩 도착 💌',
     'en': 'In your mailbox 💌',
     'ja': 'ポストに到着 💌',
-    'zh': '已投入优惠券箱 💌',
+    'zh': '已投入信箱 💌',
     'fr': 'Dans votre boîte aux récompenses 💌',
-    'de': 'Im Belohnungkasten 💌',
+    'de': 'Im Postfach 💌',
     'es': 'En tu buzón 💌',
     'pt': 'Na sua caixa de correio 💌',
     'ru': 'В вашем почтовом ящике 💌',
@@ -22806,10 +22806,10 @@ class AppL10n {
     'ja': 'お特典の配送が始まりました 🚚✈️🚢',
     'zh': '您的优惠券已开始运送 🚚✈️🚢',
     'fr': 'Votre récompense est en acheminement 🚚✈️🚢',
-    'de': 'Ihr Belohnung ist nun im Versand 🚚✈️🚢',
+    'de': 'Ihre Belohnung ist nun im Versand 🚚✈️🚢',
     'es': 'Tu recompensa está ahora en tránsito 🚚✈️🚢',
     'pt': 'Sua recompensa está em trânsito 🚚✈️🚢',
-    'ru': 'Ваше награда в пути 🚚✈️🚢',
+    'ru': 'Ваша награда в пути 🚚✈️🚢',
     'tr': 'Mektubunuz şimdi yolda 🚚✈️🚢',
     'ar': 'مكافأتك الآن في الطريق 🚚✈️🚢',
     'it': 'La tua ricompensa è in consegna 🚚✈️🚢',
@@ -24179,7 +24179,7 @@ class AppL10n {
     'ko': '개인정보 제3자 제공에 동의해주세요',
     'en': 'Please agree to share data with third parties',
     'ja': '個人情報の第三者提供に同意してください',
-    'zh': '请同意向第三方共享个人优惠券息',
+    'zh': '请同意向第三方共享个人信息',
     'fr': 'Veuillez accepter le partage des données avec des tiers',
     'de': 'Bitte stimmen Sie der Datenweitergabe an Dritte zu',
     'es': 'Acepte compartir datos con terceros',
@@ -24197,7 +24197,7 @@ class AppL10n {
     'ko': '개인정보 제3자 제공 동의 (필수)',
     'en': 'Third-Party Data Sharing (Required)',
     'ja': '個人情報の第三者提供に同意 (必須)',
-    'zh': '同意向第三方共享个人优惠券息 (必填)',
+    'zh': '同意向第三方共享个人信息 (必填)',
     'fr': 'Partage de données avec des tiers (Obligatoire)',
     'de': 'Weitergabe an Dritte (Erforderlich)',
     'es': 'Compartir datos con terceros (Obligatorio)',
@@ -24997,7 +24997,7 @@ class AppL10n {
     'de': 'Dieser Belohnung hat schon viele Tage berührt',
     'es': 'Esta recompensa ya ha tocado muchos días',
     'pt': 'Esta recompensa já tocou muitos dias',
-    'ru': 'Это награда уже коснулось многих дней',
+    'ru': 'Эта награда уже коснулась многих дней',
     'tr': 'Bu ödül şimdiden birçok güne dokundu',
     'ar': 'لمست هذه المكافأة بالفعل أياماً كثيرة',
     'it': 'Questa ricompensa ha già toccato molte giornate',
@@ -25014,7 +25014,7 @@ class AppL10n {
     'de': 'Dieser Belohnung hat dich gefunden',
     'es': 'Esta recompensa te encontró',
     'pt': 'Esta recompensa chegou até você',
-    'ru': 'Это награда нашло вас',
+    'ru': 'Эта награда нашла вас',
     'tr': 'Bu ödül sizi buldu',
     'ar': 'وجدتك هذه المكافأة',
     'it': 'Questa ricompensa ti ha trovato',
@@ -25166,7 +25166,7 @@ class AppL10n {
     'ko': '🌍 주변 혜택 줍기와 DM 이 열렸어요',
     'en': '🌍 Nearby pickup and DM are now open',
     'ja': '🌍 近くの特典拾いとDMが解放されました',
-    'zh': '🌍 附近拾取和私优惠券已开放',
+    'zh': '🌍 附近拾取和私信已开放',
     'fr': '🌍 Ramassage local et DM maintenant ouverts',
     'de': '🌍 Belohnungabholung in der Nähe und DM freigeschaltet',
     'es': '🌍 Recogida cercana y DM disponibles',
@@ -25323,7 +25323,7 @@ class AppL10n {
     'ko': '답장',
     'en': 'Replies',
     'ja': '返信',
-    'zh': '回优惠券',
+    'zh': '回信',
     'fr': 'Réponses',
     'de': 'Antworten',
     'es': 'Respuestas',
@@ -25465,7 +25465,7 @@ class AppL10n {
     'ja': '最初の特典を書く',
     'zh': '写下第一封优惠券',
     'fr': 'Écrire votre première récompense',
-    'de': 'Ersten Belohnung schreiben',
+    'de': 'Erste Belohnung schreiben',
     'es': 'Escribir tu primera recompensa',
     'pt': 'Escrever sua primeira recompensa',
     'ru': 'Написать первое награда',
@@ -26145,7 +26145,7 @@ class AppL10n {
     'en':
         'Promo content is publicly readable.\nIt is safer to remove $label before sending.\nSend it anyway?',
     'ja': '特典本文は誰でも読めます。\n$label のような個人情報は除いた方が安全です。\nそのまま送りますか？',
-    'zh': '优惠券正文任何人都能阅读。\n建议移除$label等个人优惠券息。\n仍然发送吗？',
+    'zh': '优惠券正文任何人都能阅读。\n建议移除$label等个人信息。\n仍然发送吗？',
     'fr':
         'Le contenu est public.\nMieux vaut retirer $label.\nEnvoyer quand même ?',
     'de':
@@ -26617,7 +26617,7 @@ class AppL10n {
     'en':
         'Spread your promo messages worldwide. For larger campaigns, switch to Brand.',
     'ja': 'プロモメッセージを世界に届けましょう。大規模な広告には Brand へ。',
-    'zh': '将促销优惠券息发送到全世界。需要更大规模广告请切换到 Brand。',
+    'zh': '将促销信息发送到全世界。需要更大规模广告请切换到 Brand。',
     'fr':
         'Diffusez vos promos dans le monde. Pour de plus grandes campagnes, passez à Brand.',
     'de':
@@ -26683,7 +26683,7 @@ class AppL10n {
     'ko': '내 홍보 메시지 작성하기',
     'en': 'Write my promo message',
     'ja': '自分のプロモを作成',
-    'zh': '撰写我的促销优惠券息',
+    'zh': '撰写我的促销信息',
     'fr': 'Rédiger ma promo',
     'de': 'Promo verfassen',
     'es': 'Escribir mi promo',
@@ -26769,7 +26769,7 @@ class AppL10n {
     'ko': '✉️ 일반 홍보 메시지',
     'en': '✉️ Standard promo message',
     'ja': '✉️ 通常プロモ',
-    'zh': '✉️ 普通促销优惠券息',
+    'zh': '✉️ 普通促销信息',
     'fr': '✉️ Message promo standard',
     'de': '✉️ Standard-Promo',
     'es': '✉️ Promo estándar',
@@ -27467,7 +27467,7 @@ class AppL10n {
     'ko': '운영자가 1-3일 내 연락드릴게요. 이메일/SNS DM 으로 안내드립니다.',
     'en': 'We\'ll reach out in 1-3 days via email or social DM.',
     'ja': '1-3日以内に運営からメール/DM でご連絡します。',
-    'zh': '我们将在 1-3 天内通过邮件/私优惠券联系您。',
+    'zh': '我们将在 1-3 天内通过邮件/私信联系您。',
     'fr': 'Nous vous contacterons sous 1-3 jours par email ou DM.',
     'de': 'Wir melden uns in 1-3 Tagen per E-Mail oder DM.',
     'es': 'Te contactaremos en 1-3 días por email o DM.',

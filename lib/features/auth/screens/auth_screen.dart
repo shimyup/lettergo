@@ -1455,19 +1455,22 @@ class _SignupTabState extends State<_SignupTab> {
 
     // Build 262: 신규 가입 무료 Premium 부여 (cold-start 해소).
     // Build 271: 7일 → 3일 단축.
-    // Build 298 (HIGH audit): server-side claim 검증 — Firestore 의
-    // welcomeTrialClaimedAt 가 비어있을 때만 부여. 계정 삭제 후 재가입 → 무한
-    // trial farming 차단.
+    // Build 298 (HIGH audit): server-side claim 검증 — email-hash 기반.
+    // Build 299 (BLOCKER fix): tryClaimWelcomeTrial 는 _currentUser.id != 'guest'
+    // 가 전제. 이전 흐름은 setUser 전에 호출 → guest 가드로 early return →
+    // 모든 신규 가입자 trial 미부여 회귀. setUser 가 끝난 다음 trial 부여.
+    final user = await AuthService.getCurrentUser();
+    if (user != null) await widget.onSignupSuccess(user);
+
     try {
+      if (!mounted) return;
       final purchase = context.read<PurchaseService>();
       final state = context.read<AppState>();
       await state.tryClaimWelcomeTrial(
+        emailHash: _emailCtrl.text.trim().toLowerCase(),
         grant: () => purchase.grantWelcomeTrial(days: 3),
       );
     } catch (_) {}
-
-    final user = await AuthService.getCurrentUser();
-    if (user != null) await widget.onSignupSuccess(user);
   }
 
   /// OTP 재발송 (이메일)
@@ -1586,6 +1589,17 @@ class _SignupTabState extends State<_SignupTab> {
                         setState(() {
                           _selectedCountryCode = code;
                           // 국가 선택도 동기화
+                          // Build 299 (MED audit): EU GDPR ↔ KR ICT 경계를 넘어
+                          // 가면 _minAge 가 14 ↔ 16 으로 바뀜. 사용자가 이미
+                          // 14+ 동의를 했었더라도 카드 텍스트가 16+ 로 바뀌면
+                          // 동의 의미가 달라지므로 명시적 재동의 요구 (체크
+                          // 해제). 안전한 fallback — 다시 체크하면 1초 비용.
+                          final prevIsEu =
+                              _euGdprCountries.contains(_selectedCountry);
+                          final newIsEu = _euGdprCountries.contains(name);
+                          if (prevIsEu != newIsEu) {
+                            _agreeAgeAbove14 = false;
+                          }
                           _selectedCountry = name;
                           _selectedFlag = flag;
                         });
