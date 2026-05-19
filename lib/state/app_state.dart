@@ -971,14 +971,20 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
   //
   // Returns true 면 trial 부여 진행됨, false 면 이미 수령했거나 server 통신
   // 실패로 skip. UI 는 결과를 사용자 표시할 필요 없음 (조용히 fallback).
+  /// Build 302 (MED audit): 파라미터 명 `emailHash` → `email` (raw email 받는
+  /// 다는 사실 명확화). 함수 내부에서 sha256 으로 해싱. 호출자가 "이미 해시된"
+  /// 값을 전달하는 오해 차단.
   Future<bool> tryClaimWelcomeTrial({
-    required String emailHash,
+    required String email,
     required Future<void> Function() grant,
   }) async {
     if (_currentUser.id == 'guest') return false;
     if (_welcomeTrialClaimedAt != null) return false;
-    final normalized = emailHash.trim().toLowerCase();
-    if (normalized.isEmpty || !normalized.contains('@')) return false;
+    final normalized = email.trim().toLowerCase();
+    // Build 302: 이메일 형식 강화 — local-part + '@' + domain '.' 최소 요구.
+    // 이전엔 '@' 만 검증 → 'a@' 같은 무효 값도 통과 → 의미 없는 claim doc 누적.
+    final emailRe = RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+$');
+    if (normalized.isEmpty || !emailRe.hasMatch(normalized)) return false;
     // Build 299: 이메일 sha256 — 평문 이메일을 인덱스 키로 노출하지 않도록.
     final hash = sha256.convert(utf8.encode(normalized)).toString();
     final claimPath = 'trial_claims/$hash';
@@ -4296,12 +4302,31 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
       final body = jsonEncode({'fields': fields});
       for (int attempt = 0; attempt < 3; attempt++) {
         try {
-          await http.patch(
+          // Build 302 (MED audit): HTTP status code 검사 추가. 이전엔 res
+          // 사용 안 해서 4xx/5xx 도 success 로 간주 → silent data loss
+          // ("settings didn't save" 회귀 가능).
+          final res = await http.patch(
             url,
             headers: {'Content-Type': 'application/json'},
             body: body,
           ).timeout(const Duration(seconds: 20));
-          return; // 성공 시 종료
+          if (res.statusCode >= 200 && res.statusCode < 300) {
+            return; // 성공
+          }
+          // 4xx 는 client error — retry 무의미 (예: rule reject). 단 5xx 는 retry.
+          if (res.statusCode >= 400 && res.statusCode < 500) {
+            debugPrint(
+              '[Firestore] user save client error ${res.statusCode}: ${res.body}',
+            );
+            return;
+          }
+          if (attempt == 2) {
+            debugPrint(
+              '[Firestore] user save failed (${res.statusCode}) after 3 attempts',
+            );
+          } else {
+            await Future.delayed(Duration(seconds: 2 * (attempt + 1)));
+          }
         } catch (e) {
           if (attempt < 2) {
             await Future.delayed(Duration(seconds: 2 * (attempt + 1)));

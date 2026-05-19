@@ -207,6 +207,16 @@ class _GlobalDriftAppState extends State<GlobalDriftApp> {
       if (email != null && email.isNotEmpty) {
         _appState.updateProfile(email: email);
       }
+      // Build 302 (HIGH audit): Welcome trial cold-start 재시도 hook.
+      // signup 시점에 Firestore 일시 장애로 trial 부여 실패한 사용자가 다음
+      // cold-start 에서 다시 시도. tryClaimWelcomeTrial 자체가 server claim
+      // 존재 시 skip 하므로 idempotent — 정상 사용자엔 영향 없음.
+      if (email != null && email.isNotEmpty) {
+        _appState.tryClaimWelcomeTrial(
+          email: email,
+          grant: () => _purchaseService.grantWelcomeTrial(days: 3),
+        );
+      }
     }
     // 저장된 데이터 복원 (편지함, 보낸 편지, 활동 점수, 차단 목록)
     _appState.loadFromPrefs();
@@ -324,11 +334,22 @@ class _GlobalDriftAppState extends State<GlobalDriftApp> {
               Locale('hi'), Locale('th'),
             ],
             // RTL 언어(아랍어 등) 자동 우→좌 방향 처리
+            // Build 302 (MED audit): iOS 시스템 큰 글자 (Dynamic Type max)
+            // 시 UI overflow 방지 — 1.3× 까지만 허용. 그 이상은 clamp.
             builder: (context, child) {
               if (child == null) return const SizedBox.shrink();
-              return Directionality(
-                textDirection: isRtl ? TextDirection.rtl : TextDirection.ltr,
-                child: child,
+              final mq = MediaQuery.of(context);
+              return MediaQuery(
+                data: mq.copyWith(
+                  textScaler: mq.textScaler.clamp(
+                    minScaleFactor: 0.85,
+                    maxScaleFactor: 1.3,
+                  ),
+                ),
+                child: Directionality(
+                  textDirection: isRtl ? TextDirection.rtl : TextDirection.ltr,
+                  child: child,
+                ),
               );
             },
             initialRoute: _getInitialRoute(),

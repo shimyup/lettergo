@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:math';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/painting.dart';
 import 'package:crypto/crypto.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -1251,6 +1252,15 @@ class AuthService {
   static Future<void> logout() async {
     FirebaseAuthService.signOut();
     await _secure.deleteAll();
+    // Build 302 (MED audit): Flutter image cache 도 clear — 이전 사용자가 본
+    // 이미지 (letter / brand voucher / 프로필) 가 PaintingBinding 의 100MB
+    // cache 에 잔존하던 표면 닫음. PaintingBinding 은 main isolate global.
+    try {
+      PaintingBinding.instance.imageCache.clear();
+      PaintingBinding.instance.imageCache.clearLiveImages();
+    } catch (_) {
+      // 테스트 환경에서 PaintingBinding 미초기화 가능 — 무시.
+    }
     await PurchaseService().syncUserIdentity();
   }
 

@@ -992,6 +992,29 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         } catch (_) {}
                       },
                     ),
+                    // Build 302 (HIGH privacy audit): 동의 철회 in-app 경로 안내.
+                    // GDPR Art.7(3) + KISA — 사용자가 모든 (또는 일부) 동의를
+                    // 철회할 수 있어야 함. 현재 모델은 all-or-nothing (회원 탈퇴)
+                    // 이므로 사용자에게 명시 안내 + support 채널 제공.
+                    _tile(
+                      icon: Icons.rule_folder_outlined,
+                      label: l.settingsWithdrawConsent,
+                      subtitle: l.settingsWithdrawConsentDesc,
+                      onTap: () async {
+                        final uri = Uri(
+                          scheme: 'mailto',
+                          path: AppLinks.supportEmail,
+                          queryParameters: {
+                            'subject': 'Consent Withdrawal - Thiscount',
+                            'body':
+                                'I would like to withdraw consent for specific data processing.\n\nUsername: ${user.username}\nEmail: ${user.email ?? "N/A"}\n\nDetails:\n- [ ] Third-party sharing (Firebase / RevenueCat / Resend / Twilio / etc.)\n- [ ] Location processing\n- [ ] Marketing communications\n- [ ] Other (specify): ',
+                          },
+                        );
+                        try {
+                          await launchUrl(uri);
+                        } catch (_) {}
+                      },
+                    ),
 
                     const SizedBox(height: 8),
                     // ── 계정 관리 ────────────────────────────────────────────
