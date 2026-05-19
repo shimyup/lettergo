@@ -8,6 +8,7 @@ import 'package:purchases_flutter/purchases_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../state/app_state.dart';
 import '../config/app_keys.dart';
+import 'secure_clock.dart';
 
 enum ScheduledPlanTarget { free, brand }
 
@@ -277,6 +278,20 @@ class PurchaseService extends ChangeNotifier with WidgetsBindingObserver {
     await _secure.delete(key: _kBetaGrantedKey);
   }
 
+  /// Build 307: 로그아웃 시 즉시 호출. secure storage 삭제 + 메모리 필드
+  /// 동시 reset → 다음 사용자가 같은 디바이스로 로그인했을 때 이전 사용자의
+  /// Premium 상태가 잠시라도 노출되지 않도록. RevenueCat sync 가 늦어도 UI
+  /// 는 안전한 default 부터 시작.
+  Future<void> resetForLogout() async {
+    _isPremium = false;
+    _isBrand = false;
+    _trialExpiry = null;
+    _scheduledPlanChangeDate = null;
+    _scheduledPlanTarget = null;
+    await _clearSecurePremiumState();
+    notifyListeners();
+  }
+
   // 플랜 변경 예약 (다음 결제일부터 반영)
   DateTime? _scheduledPlanChangeDate;
   ScheduledPlanTarget? _scheduledPlanTarget;
@@ -300,11 +315,13 @@ class PurchaseService extends ChangeNotifier with WidgetsBindingObserver {
   // Build 271: trial 만료 시각 — grantWelcomeTrial 시 설정. UI 노출용.
   DateTime? _trialExpiry;
   DateTime? get trialExpiry => _trialExpiry;
+  // Build 304: SecureClock.now() 로 시계 되돌리기 우회 차단. 사용자가
+  // 디바이스 시각을 과거로 되돌려도 trial 이 영원히 활성화되지 않는다.
   bool get isTrialActive =>
-      _trialExpiry != null && DateTime.now().isBefore(_trialExpiry!);
+      _trialExpiry != null && SecureClock.now().isBefore(_trialExpiry!);
   int get trialHoursRemaining {
     if (_trialExpiry == null) return 0;
-    final diff = _trialExpiry!.difference(DateTime.now());
+    final diff = _trialExpiry!.difference(SecureClock.now());
     return diff.isNegative ? 0 : diff.inHours;
   }
 
@@ -531,7 +548,8 @@ class PurchaseService extends ChangeNotifier with WidgetsBindingObserver {
   void _reapplyScheduledPlanChangeIfDue() {
     if (_scheduledPlanChangeDate == null || _scheduledPlanTarget == null)
       return;
-    if (!DateTime.now().isAfter(_scheduledPlanChangeDate!)) return;
+    // Build 306: SecureClock — 시계 되돌리기로 plan downgrade 우회 차단.
+    if (!SecureClock.now().isAfter(_scheduledPlanChangeDate!)) return;
 
     if (_scheduledPlanTarget == ScheduledPlanTarget.free) {
       _isPremium = false;
@@ -613,7 +631,10 @@ class PurchaseService extends ChangeNotifier with WidgetsBindingObserver {
     final giftExpiry = prefs.getInt(PrefKeys.purchaseGiftExpiry) ?? 0;
     if (giftExpiry > 0) {
       final expiry = DateTime.fromMillisecondsSinceEpoch(giftExpiry);
-      if (DateTime.now().isAfter(expiry)) {
+      // Build 306: SecureClock — Build 304 에서 isTrialActive 만 적용했고
+      // 실제 만료 처리 (prefs reset + _isPremium=false) 는 누락. 시계 되돌리기로
+      // trial 영구화 가능했던 회귀 차단.
+      if (SecureClock.now().isAfter(expiry)) {
         if (!_isBrand) {
           _isPremium = false;
           await _saveSecurePremiumState(isPremium: false, isBrand: _isBrand);
@@ -673,7 +694,8 @@ class PurchaseService extends ChangeNotifier with WidgetsBindingObserver {
       return;
     }
 
-    if (DateTime.now().isAfter(date)) {
+    // Build 306: SecureClock — scheduled downgrade 도 시계 우회 차단.
+    if (SecureClock.now().isAfter(date)) {
       if (target == ScheduledPlanTarget.free) {
         _isPremium = false;
         _isBrand = false;
@@ -705,6 +727,9 @@ class PurchaseService extends ChangeNotifier with WidgetsBindingObserver {
     if (_isPremium || _isBrand) return; // 이미 보유 → no-op
     final prefs = await _getPrefs();
     final expiry = DateTime.now().add(Duration(days: days));
+    // Build 304: trial 부여 시각을 SecureClock watermark 에 박는다.
+    // 이후 클럭 되돌리기 시 isTrialActive 가 expiry 보다 앞을 절대 안 봄.
+    SecureClock.touch();
     // Build 290 (P0): 영구 Premium 노출 방지 — prefs 부터 쓰고 (failure surface
     // 가 큰 쪽) 그 다음 secure storage 에 쓴다. 만약 prefs 가 실패하면 secure
     // storage 도 안 쓰여서 다음 launch 에 _isPremium=false 유지 → 영구 unlimited

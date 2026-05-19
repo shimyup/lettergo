@@ -215,7 +215,12 @@ class _LetterReadScreenState extends State<LetterReadScreen>
           _isTranslating = false;
         });
       }
-    } catch (_) {
+    } catch (e, st) {
+      // Build 305: silent swallow 였던 부분 — 디버그 빌드 로그로 원인 surface.
+      assert(() {
+        debugPrint('[LetterRead] translation 실패: $e\n$st');
+        return true;
+      }());
       if (mounted) {
         final l10n = AppL10n.of(context.read<AppState>().currentUser.languageCode);
         setState(() {
@@ -2723,11 +2728,18 @@ class _LetterReadScreenState extends State<LetterReadScreen>
   Widget _buildLetterImage(String imageUrl) {
     final isNetwork =
         imageUrl.startsWith('http://') || imageUrl.startsWith('https://');
+    // Build 304: 디바이스 픽셀 비율에 맞춰 디코드 해상도 제한 — 서버 원본이
+    // 4096px 라도 메모리는 화면 폭만큼만 차지 (decode OOM 회피).
+    final mq = MediaQuery.maybeOf(context);
+    final cacheW = mq == null
+        ? 1024
+        : (mq.size.width * mq.devicePixelRatio).round();
     if (isNetwork) {
       return Image.network(
         imageUrl,
         width: double.infinity,
         fit: BoxFit.cover,
+        cacheWidth: cacheW,
         loadingBuilder: (_, child, progress) {
           if (progress == null) return child;
           return Container(
@@ -2948,6 +2960,10 @@ class _FullscreenImageViewerState extends State<_FullscreenImageViewer> {
                       ? Image.network(
                           widget.imageUrl,
                           fit: BoxFit.contain,
+                          // Build 304: 5x 줌까지 허용하면서 메모리 cap.
+                          // 2048px 면 일반 폰 화면 (414×3=1242) 5x 확대 시
+                          // 충분히 선명, OOM 위험은 차단.
+                          cacheWidth: 2048,
                           errorBuilder: (_, __, ___) => const Icon(
                             Icons.broken_image_rounded,
                             color: Colors.white54,

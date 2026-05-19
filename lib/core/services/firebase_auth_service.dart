@@ -222,29 +222,50 @@ class FirebaseAuthService {
     if (!forceIfExpiringSoon &&
         _tokenExpiry != null &&
         DateTime.now().isBefore(_tokenExpiry!)) return;
-    try {
-      final res = await http
-          .post(
-            Uri.parse(
-              'https://securetoken.googleapis.com/v1/token?key=${FirebaseConfig.apiKey}',
-            ),
-            headers: {'Content-Type': 'application/x-www-form-urlencoded'},
-            body: 'grant_type=refresh_token&refresh_token=$refreshToken',
-          )
-          .timeout(const Duration(seconds: 10));
+    // Build 306: 일시적 네트워크 실패에 대비해 1회 재시도 (exponential backoff
+    // 600ms). 이전엔 한 번 실패하면 다음 Firestore 호출이 401 cascading → 전체
+    // 동기화 중단되는 경로 존재.
+    for (var attempt = 0; attempt < 2; attempt++) {
+      try {
+        final res = await http
+            .post(
+              Uri.parse(
+                'https://securetoken.googleapis.com/v1/token?key=${FirebaseConfig.apiKey}',
+              ),
+              headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+              body: 'grant_type=refresh_token&refresh_token=$refreshToken',
+            )
+            .timeout(const Duration(seconds: 10));
 
-      if (res.statusCode == 200) {
-        final data = jsonDecode(res.body) as Map<String, dynamic>;
-        _idToken = data['id_token'] as String?;
-        _tokenExpiry = DateTime.now().add(const Duration(seconds: 3600));
-        FirestoreService.setIdToken(_idToken ?? '');
+        if (res.statusCode == 200) {
+          final data = jsonDecode(res.body) as Map<String, dynamic>;
+          _idToken = data['id_token'] as String?;
+          _tokenExpiry = DateTime.now().add(const Duration(seconds: 3600));
+          FirestoreService.setIdToken(_idToken ?? '');
+          return;
+        }
+        // 4xx 는 refreshToken 자체가 invalid — 재시도 무의미
+        if (res.statusCode >= 400 && res.statusCode < 500) {
+          if (kDebugMode) {
+            debugPrint('[FirebaseAuthService] refresh 영구 실패 (${res.statusCode})');
+          }
+          return;
+        }
+      } on SocketException {
+        if (kDebugMode) {
+          debugPrint('[FirebaseAuthService] 토큰 갱신 attempt ${attempt + 1} 네트워크 실패');
+        }
+      } on TimeoutException {
+        if (kDebugMode) {
+          debugPrint('[FirebaseAuthService] 토큰 갱신 attempt ${attempt + 1} 타임아웃');
+        }
+      } catch (e, st) {
+        if (kDebugMode) debugPrint('[FirebaseAuthService] 에러: $e\n$st');
+        return; // 알 수 없는 예외는 재시도 무의미
       }
-    } on SocketException {
-      if (kDebugMode) debugPrint('[FirebaseAuthService] 토큰 갱신 실패: 네트워크 연결 없음');
-    } on TimeoutException {
-      if (kDebugMode) debugPrint('[FirebaseAuthService] 토큰 갱신 실패: 응답 시간 초과');
-    } catch (e, st) {
-      if (kDebugMode) debugPrint('[FirebaseAuthService] 에러: $e\n$st');
+      if (attempt == 0) {
+        await Future.delayed(const Duration(milliseconds: 600));
+      }
     }
   }
 }

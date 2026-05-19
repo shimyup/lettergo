@@ -1886,9 +1886,24 @@ class _LetterCard extends StatelessWidget {
     final l10n = AppL10n.of(context.read<AppState>().currentUser.languageCode);
     final accent = _accentColor;
     final highlight = _isUnread && !isLocked;
-    return GestureDetector(
-      onTap: onTap,
-      child: Stack(
+    // Build 304 (a11y): VoiceOver/TalkBack 라벨 — 발신자/내용 prefix/상태.
+    // 기존 AppL10n 키만 사용 (l10n.inboxRead 등). 새 키 추가 회피.
+    final isKo = l10n.languageCode == 'ko';
+    final preview = letter.content.length > 40
+        ? '${letter.content.substring(0, 40)}…'
+        : letter.content;
+    final semanticsLabel = [
+      if (_isUnread) (isKo ? '안 읽음' : 'Unread'),
+      if (isLocked) (isKo ? '잠김' : 'Locked'),
+      letter.senderName,
+      preview,
+    ].where((s) => s.isNotEmpty).join(', ');
+    return Semantics(
+      button: true,
+      label: semanticsLabel,
+      child: GestureDetector(
+        onTap: onTap,
+        child: Stack(
         children: [
           AnimatedContainer(
             duration: const Duration(milliseconds: 200),
@@ -2342,6 +2357,7 @@ class _LetterCard extends StatelessWidget {
               ),
             ),
         ],
+      ),
       ),
     );
   }

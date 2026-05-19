@@ -25,6 +25,8 @@ import '../core/services/geocoding_service.dart';
 import '../core/services/firestore_service.dart';
 import '../core/services/firebase_auth_service.dart';
 import '../core/services/brand_zone_service.dart';
+import '../core/services/purchase_service.dart';
+import '../core/services/secure_clock.dart';
 import '../models/brand_zone.dart';
 import '../core/theme/time_theme.dart';
 import '../models/direct_message.dart';
@@ -130,6 +132,12 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
   List<MapUser> get mapUsers => List.unmodifiable(_mapUsers);
   DateTime? _lastMapUsersFetchedAt;
   bool _isFetchingMapUsers = false;
+  // Build 305: 마지막 map fetch 실패 사유 — UI 가 stale 상태 배지/스낵바
+  // 표시할 수 있도록 노출. 성공 시 null 로 클리어.
+  String? _lastMapSyncError;
+  String? get lastMapSyncError => _lastMapSyncError;
+  DateTime? _lastMapSyncErrorAt;
+  DateTime? get lastMapSyncErrorAt => _lastMapSyncErrorAt;
   // Build 253: 시스템 시간 조작 감지 플래그. 다음 실행 시 lastSeenAt 보다
   // 1분 이상 과거면 true. 향후 anti-cheat 백엔드 연동 신호.
   bool _clockTamperingDetected = false;
@@ -179,6 +187,22 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
   // ── 내 받은 편지함 ──────────────────────────────────────────────────────────
   final List<Letter> _inbox = [];
   List<Letter> get inbox => List.unmodifiable(_inbox);
+
+  // Build 304: inbox 무한 누적 차단 (저장 용량 / 직렬화 비용 / UI 렌더 폭주).
+  // 한도 초과 시 도착 시각이 오래된 편지부터 trim. read/unread 무관 — 5백 통
+  // 도달은 1년 이상 사용자에서만 발생하는 비정상 케이스이고, 오래된 광고/시스템
+  // 편지부터 정리되는 것이 바람직.
+  static const int _inboxMaxSize = 500;
+  void _capInbox() {
+    if (_inbox.length <= _inboxMaxSize) return;
+    // 도착(arrivedAt) → 발송(sentAt) 순으로 최신 우선 정렬.
+    _inbox.sort((a, b) {
+      final aT = (a.arrivedAt ?? a.sentAt).millisecondsSinceEpoch;
+      final bT = (b.arrivedAt ?? b.sentAt).millisecondsSinceEpoch;
+      return bT.compareTo(aT);
+    });
+    _inbox.removeRange(_inboxMaxSize, _inbox.length);
+  }
 
   // ── 내가 보낸 편지 ──────────────────────────────────────────────────────────
   final List<Letter> _sent = [];
@@ -2200,8 +2224,18 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
     }
   }
 
-  void _saveToPrefs() {
-    Future(() async {
+  // Build 307: fire-and-forget 호출자가 65곳 이상이지만 logout/snapshot 처럼
+  // "완료 보장" 이 필요한 곳을 위해 awaitable 변형 노출.
+  /// 65개 호출처에서 호출. 즉시 반환 — 백그라운드에서 저장.
+  void _saveToPrefs() => unawaited(_flushPrefs());
+
+  /// 로그아웃 등 데이터 손실 위험이 큰 경로에서 await 가능.
+  /// inbox / sent / 활동 점수 등 모든 critical state 가 SharedPreferences 에
+  /// 반영될 때까지 대기.
+  Future<void> flushPrefsBlocking() => _flushPrefs();
+
+  Future<void> _flushPrefs() async {
+    try {
       final prefs = await SharedPreferences.getInstance();
       final key = await _getOrCreateEncKey();
       _purgeExpiredReadLetters();
@@ -2320,7 +2354,12 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
       );
       // 줍기 완료 편지 ID 목록 저장
       prefs.setStringList('myPickedUpLetterIds', _myPickedUpLetterIds.toList());
-    });
+    } catch (e) {
+      assert(() {
+        debugPrint('[_flushPrefs] 실패: $e');
+        return true;
+      }());
+    }
   }
 
   // ── SharedPreferences 복원 (main.dart에서 앱 시작 시 호출) ─────────────────
@@ -2329,14 +2368,31 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
     final encKey = await _getOrCreateEncKey(); // 복호화 키 로드
 
     // 받은 편지함 복원
+    // Build 306: jsonDecode 자체가 throw 하면 부팅이 멈췄음 — 손상된 prefs
+    // (앱 강제 종료 / 디스크 corruption) 가 cold-start crash 유발. 전체 단계
+    // try/catch + 빈 list 로 안전하게 시작.
     final inboxJsonRaw = prefs.getString('inbox');
     if (inboxJsonRaw != null) {
-      final inboxJson = _decryptStr(inboxJsonRaw, encKey);
-      _inbox.clear();
-      for (final j in jsonDecode(inboxJson) as List) {
-        try {
-          _inbox.add(Letter.fromJson(j as Map<String, dynamic>));
-        } catch (_) {}
+      try {
+        final inboxJson = _decryptStr(inboxJsonRaw, encKey);
+        final decoded = jsonDecode(inboxJson);
+        _inbox.clear();
+        if (decoded is List) {
+          for (final j in decoded) {
+            try {
+              if (j is Map<String, dynamic>) {
+                _inbox.add(Letter.fromJson(j));
+              }
+            } catch (_) {/* 개별 letter 손상 — 스킵 */}
+          }
+        }
+        _capInbox(); // Build 304: 복원 직후에도 cap 강제 (이전 저장이 컸을 수 있음).
+      } catch (e) {
+        assert(() {
+          debugPrint('[loadFromPrefs] inbox 복원 실패 — 빈 상태로 시작: $e');
+          return true;
+        }());
+        _inbox.clear();
       }
     }
     // Build 202 — 테스트용 브랜드 광고 편지 (사진 + coupon 카테고리).
@@ -3394,9 +3450,20 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
     if (_currentUser.id.isEmpty || _currentUser.id == 'guest') return;
     _syncStartedAt = DateTime.now();
     _syncPaused = false;
-    // 첫 1회 즉시 실행
-    unawaited(_runLetterSync());
-    unawaited(_runMapSync());
+    // 첫 1회 즉시 실행 — 실패해도 다음 주기에 재시도하지만 에러 사유를 surface
+    // 해서 UI 가 stale 표시 가능하도록 한다. (Build 305)
+    _runLetterSync().catchError((e) {
+      assert(() {
+        debugPrint('[Sync] runLetterSync 실패: $e');
+        return true;
+      }());
+    });
+    _runMapSync().catchError((e) {
+      assert(() {
+        debugPrint('[Sync] runMapSync 실패: $e');
+        return true;
+      }());
+    });
     // 편지 수신: 적응형 주기 (처음 5분 30초 → 이후 90초)
     _scheduleNextLetterSync();
     // 지도 타워: 고정 180초 (자주 안 바뀜)
@@ -3545,6 +3612,7 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
       }
       _lastLetterSyncAt = DateTime.now();
       if (added > 0) {
+        _capInbox(); // Build 304: 동기화 배치 추가 후 cap 강제.
         notifyListeners();
         _saveToPrefs();
       }
@@ -4204,14 +4272,50 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
   /// 않은 채 세션만 종료되어, 다른 회원들의 지도에서 해당 타워가 누락되거나
   /// 오래된 좌표로 남는 문제가 발생한다.
   Future<void> snapshotUserForLogout() async {
+    // Build 307: PurchaseService 도 같은 흐름에서 reset → 다음 사용자가 잔존
+    // Premium 을 잠시라도 보지 않게. 그리고 prefs flush 완료까지 대기.
+    try {
+      await PurchaseService().resetForLogout();
+    } catch (_) {/* RC unconfigured 등 — 진행 */}
+    try {
+      await flushPrefsBlocking();
+    } catch (_) {/* prefs corruption — 진행 */}
     if (_currentUser.id.isEmpty || _currentUser.id == 'guest') return;
     if (!FirebaseConfig.kFirebaseEnabled) return;
     await _saveUserToFirestore(markLoggedOut: true);
   }
 
+  // Build 304: in-flight 직렬화 체인. 동일 user 의 동시 저장이 race condition
+  // 없이 FIFO 순으로 실행되도록 보장. 이전엔 6개 이상 호출처가 unawaited 로
+  // 동시 발사 → updateMask 가 다른 필드 묶음에 last-write-wins 충돌 발생.
+  Future<void>? _saveUserChain;
+
   Future<void> _saveUserToFirestore({bool markLoggedOut = false}) async {
     if (_currentUser.id == 'guest') return;
     if (!FirebaseConfig.kFirebaseEnabled) return;
+    final prev = _saveUserChain;
+    // 새로 발행한 future 를 다음 호출자가 await 하도록 chain 연결.
+    Future<void> run() async {
+      if (prev != null) {
+        try {
+          await prev;
+        } catch (_) {/* 이전 실패는 무시 — 우리는 새 시도 */}
+      }
+      await _doSaveUserToFirestore(markLoggedOut: markLoggedOut);
+    }
+    final future = run();
+    _saveUserChain = future;
+    try {
+      await future;
+    } finally {
+      // 자기 자신이 마지막이면 체인 해제 — 메모리 누수 방지.
+      if (identical(_saveUserChain, future)) {
+        _saveUserChain = null;
+      }
+    }
+  }
+
+  Future<void> _doSaveUserToFirestore({bool markLoggedOut = false}) async {
     try {
       // Build 207: GPS 좌표 ~100m 정밀도로 coarsen.
       // 이전엔 cm 정밀도 그대로 업로드 → 자택 핀포인트 가능. firestore.rules
@@ -5356,9 +5460,17 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
           .map((e) => e.value.copyWith(rank: e.key + 1))
           .toList();
       _lastMapUsersFetchedAt = DateTime.now();
+      _lastMapSyncError = null; // Build 305: 성공 시 에러 클리어
+      _lastMapSyncErrorAt = null;
       notifyListeners();
     } catch (e) {
-      debugPrint('[Firestore] fetchMapUsers error: $e');
+      assert(() {
+        debugPrint('[Firestore] fetchMapUsers error: $e');
+        return true;
+      }());
+      // Build 305: 사용자에게 stale 표시 가능하도록 에러 상태 노출.
+      _lastMapSyncError = e.toString();
+      _lastMapSyncErrorAt = DateTime.now();
       // ── 오류 발생 시에도 데모 타워는 항상 표시 ──────────────────────────
       if (_mapUsers.isEmpty) {
         try {
@@ -5369,9 +5481,9 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
               .entries
               .map((e) => e.value.copyWith(rank: e.key + 1))
               .toList();
-          notifyListeners();
         } catch (_) {}
       }
+      notifyListeners(); // 에러 상태도 알린다
     } finally {
       _isFetchingMapUsers = false;
     }
@@ -6166,6 +6278,11 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
     bool triggerNotification = true,
   }) {
     try {
+      // Build 307: SecureClock + zone.isActive 게이트 — 만료된 zone 의 letter
+      // 가 추가로 발급되지 않도록. 서비스 layer 의 trigger 와 별개로
+      // 마지막 라인의 안전망. 시계 우회로 만료 회피도 차단.
+      final secureNow = SecureClock.now();
+      if (!zone.isActive(secureNow)) return;
       final now = DateTime.now();
       final id = 'brand_zone_${zone.id}_${now.millisecondsSinceEpoch}';
 

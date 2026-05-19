@@ -12,6 +12,14 @@ val keystoreProperties = Properties()
 val keystorePropertiesFile = rootProject.file("key.properties")
 if (keystorePropertiesFile.exists()) {
     keystoreProperties.load(FileInputStream(keystorePropertiesFile))
+} else {
+    // Build 307: release 빌드 시 key.properties 누락은 debug signing 으로
+    // fallback 되어 Play Store 가 reject 한다. 빌드 시점에 명시적으로 경고
+    // 출력하여 silent fail 방지. (CI 환경에서도 키 주입 누락 즉시 인지)
+    logger.warn(
+        "⚠️  android/key.properties not found. Release builds will be SIGNED WITH DEBUG KEY " +
+        "and rejected by Play Store. Provide key.properties to enable release signing."
+    )
 }
 
 android {

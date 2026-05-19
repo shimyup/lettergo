@@ -22,18 +22,21 @@ class StampAlbumScreen extends StatelessWidget {
     );
     final l = AppL10n.of(langCode);
 
-    // 받은 편지에서 발신 국가 수집
+    // 받은 편지에서 발신 국가 수집.
+    // Build 305: containsKey + `!` 대신 local var 로 null safety 강제 보강 —
+    // analyzer 가 flow 를 못 따라가 false-positive 가 잡힐 위험 차단.
     final Map<String, _StampEntry> stamps = {};
     for (final letter in inbox) {
       final key = letter.senderCountry;
       final arrived = letter.arrivedAt ?? letter.sentAt;
-      if (stamps.containsKey(key)) {
-        stamps[key]!.count++;
-        if (arrived.isAfter(stamps[key]!.lastReceivedAt)) {
-          stamps[key]!.lastReceivedAt = arrived;
+      final existing = stamps[key];
+      if (existing != null) {
+        existing.count++;
+        if (arrived.isAfter(existing.lastReceivedAt)) {
+          existing.lastReceivedAt = arrived;
         }
-        if (arrived.isBefore(stamps[key]!.firstReceivedAt)) {
-          stamps[key]!.firstReceivedAt = arrived;
+        if (arrived.isBefore(existing.firstReceivedAt)) {
+          existing.firstReceivedAt = arrived;
         }
       } else {
         stamps[key] = _StampEntry(

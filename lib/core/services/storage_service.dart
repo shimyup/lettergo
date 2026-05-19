@@ -103,5 +103,19 @@ class StorageService {
   }
 
   /// 교환권 이미지 저장 경로.
-  static String voucherPath(String letterId) => 'vouchers/$letterId.jpg';
+  /// Build 305 (BLOCKER): uid-scoped 로 변경 — `vouchers/{uid}/{letterId}.jpg`.
+  /// storage.rules 가 `request.auth.uid == {uid}` 검증 → cross-user
+  /// overwrite 차단. 로그인 안 된 상태면 빈 문자열 반환 (caller 가 skip).
+  static String voucherPath(String letterId) {
+    final uid = FirebaseAuthService.currentUid;
+    if (uid == null || uid.isEmpty) return '';
+    return 'vouchers/$uid/$letterId.jpg';
+  }
+
+  /// 일반 편지 첨부 이미지 저장 경로 (uid-scoped).
+  static String letterImagePath(String letterId) {
+    final uid = FirebaseAuthService.currentUid;
+    if (uid == null || uid.isEmpty) return '';
+    return 'letters/$uid/$letterId.jpg';
+  }
 }

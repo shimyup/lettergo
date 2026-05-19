@@ -1023,9 +1023,21 @@ class _ComposeScreenState extends State<ComposeScreen>
     }
   }
 
+  /// Build 306: Bidi/RTL embedding 제어 문자 제거.
+  /// U+202A-U+202E (LRE/RLE/PDF/LRO/RLO) + U+2066-U+2069 (LRI/RLI/FSI/PDI)
+  /// 는 텍스트 방향을 강제로 뒤집어 UI 스푸핑 (예: "@evil.com" 을 "@safe.com"
+  /// 처럼 보이게) 가능. 정상 RTL 언어 (아랍어/히브리어) 사용에는 영향 없음.
+  static final _bidiControlRe = RegExp(
+    // U+202A-U+202E + U+2066-U+2069 — analyzer text_direction 경고 회피용
+    // char-code 생성.
+    String.fromCharCodes([0x5B, 0x202A, 0x2D, 0x202E, 0x2066, 0x2D, 0x2069, 0x5D]),
+  );
+  static String _stripBidiControls(String input) =>
+      input.replaceAll(_bidiControlRe, '');
+
   Future<void> _onSend(AppState state) async {
     final l10n = AppL10n.of(state.currentUser.languageCode);
-    final content = _contentController.text.trim();
+    final content = _stripBidiControls(_contentController.text.trim());
     // Brand 가 쿠폰/교환권 카테고리로 보낼 때는 본문 대신 "사용 방법" 필드가
     // 핵심 콘텐츠가 되므로 20자 최소 규칙을 완화. 본문은 여전히 비어선 안 되고
     // (스낵바·알림·인박스 프리뷰에 쓰임) 1자 이상만 있으면 통과. 일반 편지는
@@ -3532,6 +3544,11 @@ class _ComposeScreenState extends State<ComposeScreen>
       final uploadPath = StorageService.voucherPath(
         'voucher_${DateTime.now().millisecondsSinceEpoch}',
       );
+      // Build 305: uid 없으면 (로그인 안 됨 / Firebase off) 빈 path → 업로드 스킵.
+      if (uploadPath.isEmpty) {
+        if (mounted) setState(() => _isUploadingVoucher = false);
+        return;
+      }
       final url = await StorageService.uploadImage(
         file: File(compressedPath),
         path: uploadPath,

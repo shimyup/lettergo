@@ -13,6 +13,7 @@ import '../localization/language_config.dart';
 import 'firestore_service.dart';
 import 'firebase_auth_service.dart';
 import 'purchase_service.dart';
+import 'secure_clock.dart';
 import 'sms_service.dart';
 
 /// Auth error message localization helper.
@@ -603,6 +604,9 @@ class AuthService {
     _emailOtpExpiresAt = now.add(_otpTtl);
     _otpVerifyFailures = 0; // 새 OTP 발급 시 실패 카운터 리셋
     _persistOtpRateState();
+    // Build 304: SecureClock watermark 박기 — 발급 후 시계 되돌려도
+    // verify 단계에서 `SecureClock.now()` 가 발급 시각 이전을 절대 안 봄.
+    SecureClock.touch(now);
     // 이메일 발송 연동 필요: Firebase Extensions "Trigger Email" 또는
     // SendGrid / Mailgun 등의 SMTP API를 사용하여 _pendingOtp 코드를 발송하세요.
     // 예) await EmailService.sendOtp(email: email, code: code);
@@ -634,8 +638,9 @@ class AuthService {
     if (_pendingOtpEmail != email.trim().toLowerCase()) {
       return _authMsg('otp_email_mismatch', langCode);
     }
+    // Build 304: SecureClock — 시계 되돌리기로 만료된 OTP 재사용 차단.
     if (_emailOtpExpiresAt == null ||
-        DateTime.now().isAfter(_emailOtpExpiresAt!)) {
+        SecureClock.now().isAfter(_emailOtpExpiresAt!)) {
       _pendingOtpHash = null;
       _pendingOtpEmail = null;
       _emailOtpExpiresAt = null;
@@ -669,7 +674,8 @@ class AuthService {
   /// OTP 만료까지 남은 초 (email 채널 기준 — auth_screen 의 기본 카운트다운)
   static int get otpRemainingSeconds {
     if (_emailOtpExpiresAt == null) return 0;
-    final remaining = _emailOtpExpiresAt!.difference(DateTime.now()).inSeconds;
+    final remaining =
+        _emailOtpExpiresAt!.difference(SecureClock.now()).inSeconds;
     return remaining.clamp(0, 600);
   }
 
@@ -734,6 +740,8 @@ class AuthService {
     _phoneOtpExpiresAt = now.add(_otpTtl);
     _otpVerifyFailures = 0;
     _persistOtpRateState();
+    // Build 304: SecureClock watermark (phone OTP 도 동일).
+    SecureClock.touch(now);
 
     // Twilio를 통한 실제 SMS 발송
     final smsError = await SmsService.sendOtp(
@@ -774,8 +782,9 @@ class AuthService {
     if (_pendingOtpPhone != cleaned) {
       return _authMsg('otp_phone_mismatch', langCode);
     }
+    // Build 304: SecureClock — 시계 되돌리기로 만료된 OTP 재사용 차단.
     if (_phoneOtpExpiresAt == null ||
-        DateTime.now().isAfter(_phoneOtpExpiresAt!)) {
+        SecureClock.now().isAfter(_phoneOtpExpiresAt!)) {
       _pendingPhoneOtpHash = null;
       _pendingOtpPhone = null;
       _phoneOtpExpiresAt = null;
@@ -1137,20 +1146,17 @@ class AuthService {
     await _migrateLegacyAuthDataIfNeeded(prefs);
 
     // Build 297: lockout state 를 secure storage 에서 읽기.
+    // Build 304: SecureClock — 시계 되돌리기로 lockout 우회 차단.
     final lockoutUntilMs =
         int.tryParse((await _readSecure(_keyLoginLockoutUntil)) ?? '') ?? 0;
-    if (lockoutUntilMs > 0 &&
-        DateTime.now().millisecondsSinceEpoch < lockoutUntilMs) {
-      final remainingMin = ((lockoutUntilMs -
-                  DateTime.now().millisecondsSinceEpoch) /
-              60000)
-          .ceil();
+    final nowMsSecure = SecureClock.now().millisecondsSinceEpoch;
+    if (lockoutUntilMs > 0 && nowMsSecure < lockoutUntilMs) {
+      final remainingMin = ((lockoutUntilMs - nowMsSecure) / 60000).ceil();
       return _authMsg('login_locked', langCode)
           .replaceAll('{minutes}', '$remainingMin');
     }
     // 만료된 lockout 은 클리어.
-    if (lockoutUntilMs > 0 &&
-        DateTime.now().millisecondsSinceEpoch >= lockoutUntilMs) {
+    if (lockoutUntilMs > 0 && nowMsSecure >= lockoutUntilMs) {
       await _deleteSecure(_keyLoginLockoutUntil);
       await _writeSecure(_keyLoginAttempts, '0');
     }
@@ -1232,6 +1238,8 @@ class AuthService {
           .add(_loginLockoutDuration)
           .millisecondsSinceEpoch;
       await _writeSecure(_keyLoginLockoutUntil, '$lockoutUntil');
+      // Build 304: lockout 트리거 시각을 SecureClock 에 박는다.
+      SecureClock.touch();
     }
   }
 
