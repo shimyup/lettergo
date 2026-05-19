@@ -757,7 +757,17 @@ class AuthService {
       }());
       // Build 207: 릴리스 빌드에서 SMS 발송 실패 시 null 반환 — 코드를 절대
       // 클라이언트로 노출하지 않는다. DEBUG 빌드만 화면 표시용 코드 반환.
-      if (kReleaseMode) return null;
+      // Build 309: SMS 발송 실패 시 release 에서는 pending OTP 상태도 정리.
+      // 이전엔 hash 가 메모리에 남아 attacker 가 알려진 OTP 로 verify 가능
+      // (release 빌드에서 화면에 표시 안 돼도 hash 는 활성). 발송 실패 = OTP
+      // 무효화 → 사용자가 재요청해야 함.
+      if (kReleaseMode) {
+        _pendingPhoneOtpHash = null;
+        _pendingOtpPhone = null;
+        _phoneOtpExpiresAt = null;
+        _persistOtpRateState();
+        return null;
+      }
     }
 
     assert(() {

@@ -4008,6 +4008,13 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
     }
   }
 
+  // Build 309: letter id collision 차단용 4바이트 (8 hex) random suffix.
+  static String _shortRandHex() {
+    final r = Random.secure();
+    final bytes = List<int>.generate(4, (_) => r.nextInt(256));
+    return bytes.map((b) => b.toRadixString(16).padLeft(2, '0')).join();
+  }
+
   // ── Build 308: lastKnown 좌표 캐시 helpers ──────────────────────────────
   Future<void> _ensureLastKnownLoaded() async {
     if (_lastKnownCacheLoaded) return;
@@ -6835,7 +6842,9 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
       return false;
     }
 
-    final id = 'sent_${DateTime.now().millisecondsSinceEpoch}';
+    // Build 309: 1ms 단위 collision 차단 — ms + 8자 hex random suffix.
+    final id =
+        'sent_${DateTime.now().millisecondsSinceEpoch}_${_shortRandHex()}';
     final fromCity = LatLng(_currentUser.latitude, _currentUser.longitude);
 
     // ── 실제 위치 기반 발신국 결정 ─────────────────────────────────────────
@@ -7356,6 +7365,16 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
 
     final letter = _worldLetters[idx];
 
+    // Build 309 (safety): 차단된 발송자 또는 자기 자신 letter 픽업 차단.
+    // blockLetterSender 가 _worldLetters 를 정리하지만 sync 사이에 race 가능.
+    if (_blockedSenderIds.contains(letter.senderId) ||
+        _tempBlockedSenderIds.contains(letter.senderId)) {
+      return _l10n.stateAlreadyTaken;
+    }
+    if (letter.senderId == _currentUser.id) {
+      return _l10n.stateAlreadyTaken;
+    }
+
     // ④ 최대 읽기 인원 초과 확인 (같은 지역 최대 3명)
     if (letter.readCount >= letter.maxReaders) {
       return _l10n.stateMaxReadersReached(letter.maxReaders);
@@ -7824,7 +7843,8 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
       return false;
     }
 
-    final id = 'express_${DateTime.now().millisecondsSinceEpoch}';
+    final id =
+        'express_${DateTime.now().millisecondsSinceEpoch}_${_shortRandHex()}';
     final fromCity = LatLng(_currentUser.latitude, _currentUser.longitude);
     final toCity = LatLng(destLat, destLng);
 
