@@ -1002,18 +1002,24 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
       }
     }
 
-    await grant();
-    _welcomeTrialClaimedAt = DateTime.now();
+    // Build 300 (P0 audit): claim doc 을 grant 보다 먼저 write. 이전 흐름은
+    // grant() → setDocument 였는데 setDocument 실패 시 local trial 만 부여되어
+    // 다음번 signup 시 doc 조회 = null → re-grant farming 가능. 순서를 뒤집고
+    // 실패 시 _welcomeTrialClaimedAt 도 reset.
+    final claimedAtNow = DateTime.now();
     if (FirebaseConfig.kFirebaseEnabled) {
       try {
         await FirestoreService.setDocument(claimPath, {
-          'claimedAt': _welcomeTrialClaimedAt!.toUtc().toIso8601String(),
+          'claimedAt': claimedAtNow.toUtc().toIso8601String(),
         });
       } catch (_) {
-        // 기록 실패 — local trial 은 유지하되 server claim 은 누락.
-        // 다음 signup 흐름에서 doc 조회 실패로 grant 재시도될 수 있음 (양호).
+        // 기록 실패 — grant 거부. 다음 시도 (retry hook 또는 다음 cold-start) 에
+        // 다시 시도 가능. 사용자에겐 silent fallback.
+        return false;
       }
     }
+    await grant();
+    _welcomeTrialClaimedAt = claimedAtNow;
     await _saveUserToFirestore();
     notifyListeners();
     return true;
