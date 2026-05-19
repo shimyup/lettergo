@@ -534,7 +534,8 @@ class PurchaseService extends ChangeNotifier with WidgetsBindingObserver {
   void _reapplyScheduledPlanChangeIfDue() {
     if (_scheduledPlanChangeDate == null || _scheduledPlanTarget == null)
       return;
-    if (!DateTime.now().isAfter(_scheduledPlanChangeDate!)) return;
+    // Build 306: SecureClock — 시계 되돌리기로 plan downgrade 우회 차단.
+    if (!SecureClock.now().isAfter(_scheduledPlanChangeDate!)) return;
 
     if (_scheduledPlanTarget == ScheduledPlanTarget.free) {
       _isPremium = false;
@@ -616,7 +617,10 @@ class PurchaseService extends ChangeNotifier with WidgetsBindingObserver {
     final giftExpiry = prefs.getInt(PrefKeys.purchaseGiftExpiry) ?? 0;
     if (giftExpiry > 0) {
       final expiry = DateTime.fromMillisecondsSinceEpoch(giftExpiry);
-      if (DateTime.now().isAfter(expiry)) {
+      // Build 306: SecureClock — Build 304 에서 isTrialActive 만 적용했고
+      // 실제 만료 처리 (prefs reset + _isPremium=false) 는 누락. 시계 되돌리기로
+      // trial 영구화 가능했던 회귀 차단.
+      if (SecureClock.now().isAfter(expiry)) {
         if (!_isBrand) {
           _isPremium = false;
           await _saveSecurePremiumState(isPremium: false, isBrand: _isBrand);
@@ -676,7 +680,8 @@ class PurchaseService extends ChangeNotifier with WidgetsBindingObserver {
       return;
     }
 
-    if (DateTime.now().isAfter(date)) {
+    // Build 306: SecureClock — scheduled downgrade 도 시계 우회 차단.
+    if (SecureClock.now().isAfter(date)) {
       if (target == ScheduledPlanTarget.free) {
         _isPremium = false;
         _isBrand = false;

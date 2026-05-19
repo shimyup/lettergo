@@ -2351,16 +2351,32 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
     final encKey = await _getOrCreateEncKey(); // 복호화 키 로드
 
     // 받은 편지함 복원
+    // Build 306: jsonDecode 자체가 throw 하면 부팅이 멈췄음 — 손상된 prefs
+    // (앱 강제 종료 / 디스크 corruption) 가 cold-start crash 유발. 전체 단계
+    // try/catch + 빈 list 로 안전하게 시작.
     final inboxJsonRaw = prefs.getString('inbox');
     if (inboxJsonRaw != null) {
-      final inboxJson = _decryptStr(inboxJsonRaw, encKey);
-      _inbox.clear();
-      for (final j in jsonDecode(inboxJson) as List) {
-        try {
-          _inbox.add(Letter.fromJson(j as Map<String, dynamic>));
-        } catch (_) {}
+      try {
+        final inboxJson = _decryptStr(inboxJsonRaw, encKey);
+        final decoded = jsonDecode(inboxJson);
+        _inbox.clear();
+        if (decoded is List) {
+          for (final j in decoded) {
+            try {
+              if (j is Map<String, dynamic>) {
+                _inbox.add(Letter.fromJson(j));
+              }
+            } catch (_) {/* 개별 letter 손상 — 스킵 */}
+          }
+        }
+        _capInbox(); // Build 304: 복원 직후에도 cap 강제 (이전 저장이 컸을 수 있음).
+      } catch (e) {
+        assert(() {
+          debugPrint('[loadFromPrefs] inbox 복원 실패 — 빈 상태로 시작: $e');
+          return true;
+        }());
+        _inbox.clear();
       }
-      _capInbox(); // Build 304: 복원 직후에도 cap 강제 (이전 저장이 컸을 수 있음).
     }
     // Build 202 — 테스트용 브랜드 광고 편지 (사진 + coupon 카테고리).
     // BrandAdModal 의 featuredBrandPromo 가 이 편지를 픽업해서 온보딩 후 모달
