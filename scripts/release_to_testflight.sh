@@ -32,21 +32,40 @@ if [[ -z "$BUILD_NUM" ]]; then
 fi
 echo "==[ Build $BUILD_NUM 출시 파이프라인 시작 ]=="
 
-# 1) .env.local backup + release 모드 플립
+# 1) .env.local backup + TestFlight 베타 모드 플립
+#
+# Build 312: 이전 (Build 304~311) 에는 release 빌드와 동일하게 BETA flag 를
+# 모두 false 로 강제했음 → ASC IAP 미등록 시 "상품정보 없음" 회귀 발생.
+# TestFlight 빌드는 **베타 모드** — 테스터가 결제 흐름을 끝까지 체험 가능:
+#   - BETA_DISABLE_IN_RELEASE=false → 베타 플래그 활성화 허용
+#   - BETA_FREE_PREMIUM=true → Premium 자동 활성화 (테스터 무료 사용)
+#   - BETA_UPGRADE_SIMULATOR=true → ASC IAP 미등록이어도 가짜 결제로 흐름 체험
+#   - BETA_ADMIN_EMAIL=ceo@airony.xyz → admin 화면 접근 (테스트용)
 BACKUP="/tmp/env.local.bak.$BUILD_NUM"
 cp "$ENV_FILE" "$BACKUP"
 echo "[env] backup → $BACKUP"
 
 python3 - <<PY
 with open("$ENV_FILE", "r") as f: c = f.read()
-c = c.replace("BETA_DISABLE_IN_RELEASE=false", "BETA_DISABLE_IN_RELEASE=true")
-c = c.replace("BETA_FREE_PREMIUM=true", "BETA_FREE_PREMIUM=false")
 import re
-c = re.sub(r"BETA_ADMIN_EMAIL=.+", "BETA_ADMIN_EMAIL=", c)
+# 베타 모드 — release 빌드이지만 베타 플래그 활성화
+c = re.sub(r"BETA_DISABLE_IN_RELEASE=.*", "BETA_DISABLE_IN_RELEASE=false", c)
+c = re.sub(r"BETA_FREE_PREMIUM=.*", "BETA_FREE_PREMIUM=true", c)
+if "BETA_UPGRADE_SIMULATOR=" in c:
+    c = re.sub(r"BETA_UPGRADE_SIMULATOR=.*", "BETA_UPGRADE_SIMULATOR=true", c)
+else:
+    c = c.rstrip() + "\nBETA_UPGRADE_SIMULATOR=true\n"
+if "BETA_ADMIN_EMAIL=" in c:
+    c = re.sub(r"BETA_ADMIN_EMAIL=.*", "BETA_ADMIN_EMAIL=ceo@airony.xyz", c)
+else:
+    c = c.rstrip() + "\nBETA_ADMIN_EMAIL=ceo@airony.xyz\n"
 with open("$ENV_FILE", "w") as f: f.write(c)
 PY
-echo "[env] release 모드 적용:"
+echo "[env] testflight 베타 모드 적용:"
 grep "^BETA_" "$ENV_FILE" | sed 's/^/  /'
+
+# preflight 에게 testflight 빌드임을 알림
+export RELEASE_TARGET=testflight
 
 # 빌드/업로드 실패 시 .env.local 원복 보장
 trap 'cp "$BACKUP" "$ENV_FILE"; echo "[env] 원복 (trap)"' EXIT
