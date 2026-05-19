@@ -1137,14 +1137,22 @@ class _SignupTabState extends State<_SignupTab> {
   // 향후 launch 직전 생년월일 입력으로 강화 예정. 베타에선 self-attestation 으로 시작.
   bool _agreeAgeAbove14 = false;
 
-  // Build 296 (P1 audit): GDPR Art.8 default 는 16+. EU 회원국 선택 시 16 으로
-  // 강화, 그 외는 KISA 정보통신망법 제31조 14+ 유지. 영국은 Brexit 후 UK-GDPR
-  // (13+) 이지만 일관성 위해 14+ 로 묶음.
+  // Build 296: GDPR Art.8 default 는 16+. EU 회원국 선택 시 16 으로 강화.
+  // Build 300 (BLOCKER privacy audit): 27 EU + 3 EEA 모두 포함. 이전엔 4국만
+  // → NL/SE/PL/BE/FI/AT/IS/LI/NO 등 EU 청소년이 14+ 동의로 우회 가입 가능.
+  // 일부 회원국은 Art.8 derogation 으로 13~15 로 낮춤 — 본 구현은 보수적
+  // (가장 높은) 16 으로 통일. 후속 PR 에서 per-country lookup 으로 세분화 가능.
   static const _euGdprCountries = <String>{
-    '프랑스',
-    '독일',
-    '이탈리아',
-    '스페인',
+    // EU 27 (한국어 country picker 라벨)
+    '프랑스', '독일', '이탈리아', '스페인',
+    '네덜란드', '폴란드', '벨기에', '오스트리아',
+    '스웨덴', '덴마크', '핀란드', '아일랜드',
+    '포르투갈', '그리스', '체코', '루마니아',
+    '헝가리', '슬로바키아', '불가리아', '크로아티아',
+    '슬로베니아', '리투아니아', '라트비아', '에스토니아',
+    '키프로스', '룩셈부르크', '몰타',
+    // EEA (EU 외 GDPR 적용)
+    '노르웨이', '아이슬란드', '리히텐슈타인',
   };
   int get _minAge => _euGdprCountries.contains(_selectedCountry) ? 16 : 14;
   // Build 286 (P0 KISA 정보통신망법 제24조의2): 개인정보 제3자 제공 동의.

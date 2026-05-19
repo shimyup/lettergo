@@ -900,7 +900,15 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     Consumer<PurchaseService>(
                       builder: (ctx2, purchase, _) {
                         final isPremium = purchase.isPremium || user.isPremium;
-                        if (!isPremium) return const SizedBox.shrink();
+                        // Build 300 (MED audit): trial-only 사용자에게 Apple
+                        // "Manage Subscription" 페이지가 비어있어 혼란.
+                        // 실제 결제 사용자 (_nextBillingDate != null) 일 때만
+                        // 노출. trial 만 활성인 경우 hide.
+                        final hasPaidSubscription =
+                            isPremium && purchase.nextBillingDate != null;
+                        if (!hasPaidSubscription) {
+                          return const SizedBox.shrink();
+                        }
                         return _tile(
                           icon: Icons.subscriptions_outlined,
                           label: l.settingsManageSubscription,

@@ -905,9 +905,18 @@ class AuthService {
     if (migrated) return;
 
     for (final key in _authKeys) {
-      final legacy = key == _keyIsLoggedIn
-          ? (prefs.getBool(key)?.toString())
-          : prefs.getString(key);
+      // Build 300 (MED audit): _keyLoginAttempts / _keyLoginLockoutUntil 는
+      // 이전 빌드 (Build 294) 에서 prefs.setInt() 로 저장됨. getString 만
+      // 시도하면 null → migration silently skip → secure storage 로 이동
+      // 안 되어 Build 297 의 secure-store 강화가 무효화됨. type-aware 처리.
+      final String? legacy;
+      if (key == _keyIsLoggedIn) {
+        legacy = prefs.getBool(key)?.toString();
+      } else if (key == _keyLoginAttempts || key == _keyLoginLockoutUntil) {
+        legacy = prefs.getInt(key)?.toString();
+      } else {
+        legacy = prefs.getString(key);
+      }
       if (legacy == null) continue;
 
       final secureExisting = await _readSecure(key);
@@ -1233,9 +1242,15 @@ class AuthService {
   }
 
   /// 로그아웃
+  /// Build 300 (HIGH audit): 같은 디바이스에서 다른 사용자가 새 가입 흐름
+  /// 진입 시 이전 사용자의 secure storage PII (email/phone/password hash/
+  /// social link) 잔존 → 의도치 않은 cross-user 정보 노출 가능. logout 시점에
+  /// 전체 wipe + Firestore PII pending-delete 제외 (계정 삭제 ≠ 로그아웃).
+  /// 트레이드오프: 사용자가 다시 로그인하려면 username/password 재입력 (자동
+  /// 재로그인 X). 보안 우선 선택.
   static Future<void> logout() async {
-    await _writeSecure(_keyIsLoggedIn, 'false');
     FirebaseAuthService.signOut();
+    await _secure.deleteAll();
     await PurchaseService().syncUserIdentity();
   }
 

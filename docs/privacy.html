@@ -387,9 +387,27 @@
           </tr>
           <tr>
             <td>Resend</td>
-            <td>OTP 인증 이메일 발송</td>
+            <td>OTP 인증 이메일 발송 (1차)</td>
             <td>이메일 주소, OTP 코드 (SHA-256 해시만 서버 저장)</td>
             <td>발송 후 10분 (OTP 만료)</td>
+          </tr>
+          <tr>
+            <td>SendGrid (Twilio)</td>
+            <td>OTP 인증 이메일 발송 (Resend 폴백)</td>
+            <td>이메일 주소, OTP 코드 (Resend 와 동일 — 둘 중 한쪽만 사용)</td>
+            <td>발송 후 10분 (OTP 만료)</td>
+          </tr>
+          <tr>
+            <td>Twilio</td>
+            <td>SMS OTP 인증 코드 발송 (전화번호 가입 선택 시)</td>
+            <td>전화번호, OTP 코드</td>
+            <td>발송 후 10분 (OTP 만료)</td>
+          </tr>
+          <tr>
+            <td>MyMemory · Google Translate</td>
+            <td>메세지 본문 다국어 자동 번역 (사용자가 번역 버튼 탭 시점)</td>
+            <td>메세지 본문 텍스트 (사용자가 명시적으로 번역 요청한 본문만)</td>
+            <td>API 호출 종료 즉시 (외부 서버 저장 없음)</td>
           </tr>
         </table>
         <p style="margin-top:12px;font-size:13px;color:#666;">
@@ -702,9 +720,27 @@
           </tr>
           <tr>
             <td>Resend</td>
-            <td>OTP verification email delivery</td>
+            <td>OTP verification email delivery (primary)</td>
             <td>Email address, OTP (only SHA-256 hash stored server-side)</td>
             <td>10 min post-delivery (OTP expiry)</td>
+          </tr>
+          <tr>
+            <td>SendGrid (Twilio)</td>
+            <td>OTP verification email delivery (Resend fallback)</td>
+            <td>Email address, OTP (same as Resend — either one used)</td>
+            <td>10 min post-delivery (OTP expiry)</td>
+          </tr>
+          <tr>
+            <td>Twilio</td>
+            <td>SMS OTP delivery (when user opts for phone signup)</td>
+            <td>Phone number, OTP code</td>
+            <td>10 min post-delivery (OTP expiry)</td>
+          </tr>
+          <tr>
+            <td>MyMemory · Google Translate</td>
+            <td>On-demand message body translation (when user taps Translate)</td>
+            <td>Message body text (only when user explicitly requests translation)</td>
+            <td>End of API call (no external server retention)</td>
           </tr>
         </table>
         <p style="margin-top:12px;font-size:13px;color:#666;">

@@ -37,6 +37,8 @@ service cloud.firestore {
     }
 
     // 편지 생성 시 검증 — 본문 크기 + 익명 enforcement.
+    // Build 300 (P0 audit): 초기 counter seeding 차단 (likeCount/ratingTotal/
+    // reportCount 등을 큰 값으로 시드해 fake popularity 노출하던 표면 닫음).
     function isValidLetterCreate(data) {
       return data.content is string
           && data.content.size() <= 5000
@@ -44,7 +46,14 @@ service cloud.firestore {
           && data.senderName is string
           && data.senderName.size() <= 100
           && data.isAnonymous is bool
-          && isAnonLetterValid(data);
+          && isAnonLetterValid(data)
+          && (!('likeCount' in data) || data.likeCount == 0)
+          && (!('ratingTotal' in data) || data.ratingTotal == 0)
+          && (!('ratingCount' in data) || data.ratingCount == 0)
+          && (!('reportCount' in data) || data.reportCount == 0)
+          && (!('pickupCount' in data) || data.pickupCount == 0)
+          && (!('readCount' in data) || data.readCount == 0)
+          && (!('redeemedCount' in data) || data.redeemedCount == 0);
     }
 
     // update 로 변경 가능한 필드 화이트리스트 — 카운터 + 도착 상태만.
@@ -99,13 +108,42 @@ service cloud.firestore {
             'customTowerName', 'towerColor', 'towerAccentEmoji',
             'towerRoofStyle', 'towerWindowStyle',
             'preferredCategoryKey',
-            'welcomeTrialClaimedAt',
+            // Build 300: welcomeTrialClaimedAt 는 client update 차단.
+            // 서버측 source of truth = trial_claims/{sha256(email)}.
+            // (client 가 user doc 의 timestamp 를 지워 farming 시도 회로 차단.)
           ]);
     }
 
     function isValidUserCreate(data) {
-      // create 시점에 banned=false 강제 (악의적 self-allowlist 차단).
-      return !('banned' in data) || data.banned == false;
+      // create 시점에 banned/tier/admin self-allowlist 차단.
+      // Build 300 (P0 audit): isPremium/isBrand/isAdmin/roles 도 강제 false/없음.
+      return (!('banned' in data) || data.banned == false)
+          && (!('isPremium' in data) || data.isPremium == false)
+          && (!('isBrand' in data) || data.isBrand == false)
+          && (!('isAdmin' in data) || data.isAdmin == false)
+          && !('roles' in data);
+    }
+
+    // Build 300 (P0 audit): user doc 의 credit 카운터 self-mint 차단.
+    // 사용자가 본인 doc 의 brandExactDropCredits/inviteRewardCredits/
+    // brandExtraMonthlyQuota 를 9999 로 patch 해 결제 우회하던 표면 닫음.
+    // grant 는 admin REST (또는 Cloud Function) 전용. consume 만 client-side.
+    function isReasonableUserCounterDelta() {
+      let curEx = ('brandExactDropCredits' in resource.data
+                   ? resource.data.brandExactDropCredits : 0);
+      let newEx = ('brandExactDropCredits' in request.resource.data
+                   ? request.resource.data.brandExactDropCredits : 0);
+      let curIn = ('inviteRewardCredits' in resource.data
+                   ? resource.data.inviteRewardCredits : 0);
+      let newIn = ('inviteRewardCredits' in request.resource.data
+                   ? request.resource.data.inviteRewardCredits : 0);
+      let curBQ = ('brandExtraMonthlyQuota' in resource.data
+                   ? resource.data.brandExtraMonthlyQuota : 0);
+      let newBQ = ('brandExtraMonthlyQuota' in request.resource.data
+                   ? request.resource.data.brandExtraMonthlyQuota : 0);
+      // 모든 credit 카운터는 client 측에서 감소만 허용 (consume).
+      // 증가는 admin REST.
+      return newEx <= curEx && newIn <= curIn && newBQ <= curBQ;
     }
 
     match /users/{userId} {
@@ -119,7 +157,10 @@ service cloud.firestore {
 
       allow create: if isSignedIn() && isValidUserCreate(request.resource.data);
       // banned/isPremium/isBrand 변경 차단 — 모더레이션/티어는 admin REST 전용.
-      allow update: if isSignedIn() && isAllowedUserUpdate();
+      // Build 300: credit counter 도 client 가 self-mint 차단 (consume 만 허용).
+      allow update: if isSignedIn()
+                  && isAllowedUserUpdate()
+                  && isReasonableUserCounterDelta();
 
       // 회원 탈퇴는 클라이언트가 직접 호출. owner check 불가하지만 1회 호출
       // 후 prefs 가 비워지고 secure storage 도 wipe 되므로 abuse 표면 작음.
@@ -206,14 +247,23 @@ service cloud.firestore {
 
     // ── trial_claims (Build 299) — Welcome trial 1회 farming 차단 ─────
     // sha256(email) 을 doc id 로. 사용자가 계정 삭제 후 재가입 (동일 이메일) →
-    // claim doc 그대로 존재 → 재부여 차단. read 는 클라이언트가 자기 hash 만
-    // 조회 (read:true 로 광범위 허용 — doc 자체가 timestamp 만 보유 PII 없음).
-    // create 는 인증된 사용자가 자기 (또는 어떤) hash 로 가능 — 단 update/
-    // delete 는 차단 (이미 수령된 claim 영구 보존).
+    // claim doc 그대로 존재 → 재부여 차단.
+    // Build 300 (P0 audit):
+    //   - list:false — email-hash 집합 enumerate 차단 (rainbow-table privacy).
+    //     point-read (get) 만 허용 — 자기 hash 단건 조회 가능.
+    //   - create 시 hasOnly(['claimedAt']) + claimedAt 길이 cap — bloat 차단.
+    //   - 사용자가 victim 이메일 hash 를 pre-create 해 trial 차단하던 griefing
+    //     은 owner check 불가 (anonymous Firebase Auth) 라서 100% 막을 수 없음.
+    //     완화: hash 가 random sha256 (64-hex) 패턴인 경우만 허용 + 후속 단계
+    //     에서 admin REST 기반 issuance 로 마이그레이션 (Cloud Function).
     match /trial_claims/{emailHash} {
-      allow read, list: if true;
+      allow get: if true;
+      allow list: if false;
       allow create: if isSignedIn()
-                  && request.resource.data.claimedAt is string;
+                  && emailHash.matches('^[a-f0-9]{64}$')
+                  && request.resource.data.keys().hasOnly(['claimedAt'])
+                  && request.resource.data.claimedAt is string
+                  && request.resource.data.claimedAt.size() < 64;
       allow update, delete: if false;
     }
 

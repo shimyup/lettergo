@@ -73,9 +73,16 @@ class _WorldMapScreenState extends State<WorldMapScreen>
       duration: const Duration(seconds: 2),
       vsync: this,
     )..repeat();
-    // 1초마다 tickNotifier 갱신 → 편지 마커 위치가 sentAt~arrivalTime 기반으로 부드럽게 이동
+    // 1초마다 tickNotifier 갱신 → 편지 마커 위치가 sentAt~arrivalTime 기반으로
+    // 부드럽게 이동. Build 300 (HIGH performance audit): inTransit 편지가
+    // 없으면 marker 위치가 변하지 않으므로 tick 발화를 skip — CPU/배터리 절약.
     _positionTimer = Timer.periodic(const Duration(seconds: 1), (_) {
-      if (mounted) _tickNotifier.value++;
+      if (!mounted) return;
+      final state = context.read<AppState>();
+      final hasInTransit = state.worldLetters.any(
+        (l) => l.status == DeliveryStatus.inTransit,
+      );
+      if (hasInTransit) _tickNotifier.value++;
     });
     // 지도 열릴 때 회원 타워 즉시 로드 + 유저 위치로 자동 이동
     WidgetsBinding.instance.addPostFrameCallback((_) {

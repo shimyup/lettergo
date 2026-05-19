@@ -28,14 +28,15 @@ service firebase.storage {
     }
 
     // Build 297 (HIGH security audit): delete 룰 일괄 차단.
-    // 익명 Firebase Auth 환경에서 isSignedIn() 만 요구하면 어떤 사용자든 다른
-    // 사용자의 voucher / letter / profile 이미지 삭제 가능 → 악의적 사용자가
-    // 모든 브랜드 voucher / 프로필 사진을 wipe 할 수 있는 위협 표면.
-    // 삭제는 admin REST 전용 (account scrub 흐름 + Cloud Function cron).
+    // Build 300 (P0 audit): profile 경로에 uid 검증 추가. vouchers/letters 는
+    // 경로에 uid 가 embed 되어있지 않아 cross-user overwrite 위험이 잔존 —
+    // 후속 PR 에서 path 구조 마이그레이션 (`/vouchers/{uid}/{file}`) 필요.
 
     // ── 교환권 이미지 ──────────────────────────────────────────────────
     // Brand 가 발송하는 voucher 카테고리 편지의 첨부 이미지.
     // 수신자 누구나 read (편지 픽업 후 사용해야 하므로).
+    // 주의: write 가 isSignedIn() 만 — overwrite 위험. uid-scoped path 마이그
+    // 레이션 시 강화 예정.
     match /vouchers/{file=**} {
       allow read: if isSignedIn();
       allow write: if isSignedIn() && isImage() && maxImageSize();
@@ -50,9 +51,14 @@ service firebase.storage {
     }
 
     // ── 프로필 사진 ────────────────────────────────────────────────────
+    // Build 300 (P0 audit): write 가 `request.auth.uid == userId` 검증 추가.
+    // 익명 Firebase Auth 라도 uid 가 디바이스별로 stable 하므로 자기 폴더만
+    // write 가능. 다른 사용자 프로필 사진 임의 덮어쓰던 표면 닫음.
     match /profile/{userId}/{file=**} {
       allow read: if isSignedIn();
-      allow write: if isSignedIn() && isImage() && maxImageSize();
+      allow write: if isSignedIn()
+                 && request.auth.uid == userId
+                 && isImage() && maxImageSize();
       allow delete: if false;
     }
 

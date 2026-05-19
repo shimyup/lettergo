@@ -16,12 +16,24 @@ abstract class AppLinks {
     return '$privacyPolicy?lang=$lang';
   }
 
+  /// Build 300 (MED audit): country 대신 langCode 우선 — '대한민국' 거주
+  /// 비한국인 사용자가 영어 페이지를 봐야 하는 시나리오 대응.
+  static String privacyPolicyForLanguage(String? langCode) {
+    final lang = (langCode ?? '').toLowerCase().startsWith('ko') ? 'ko' : 'en';
+    return '$privacyPolicy?lang=$lang';
+  }
+
   // ── 이용약관 ─────────────────────────────────────────────────────────────
   static const String termsOfService = 'https://thiscount.io/terms.html';
 
   /// 가입 나라에 맞는 이용약관 URL 반환
   static String termsForCountry(String country) {
     final lang = country == '대한민국' ? 'ko' : 'en';
+    return '$termsOfService?lang=$lang';
+  }
+
+  static String termsForLanguage(String? langCode) {
+    final lang = (langCode ?? '').toLowerCase().startsWith('ko') ? 'ko' : 'en';
     return '$termsOfService?lang=$lang';
   }
 

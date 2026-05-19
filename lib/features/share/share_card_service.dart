@@ -97,6 +97,10 @@ class ShareCardService {
     final picture = recorder.endRecording();
     final image = await picture.toImage(_cardWidth, _cardHeight);
     final byteData = await image.toByteData(format: ui.ImageByteFormat.png);
+    // Build 300 (MED audit): ~8MB pixel buffer + picture 즉시 해제 — 반복
+    // share 시 GC 지연으로 메모리 누적 / OOM 위험 차단.
+    image.dispose();
+    picture.dispose();
     return byteData?.buffer.asUint8List();
   }
 
@@ -541,6 +545,10 @@ class ShareCardService {
     final picture = recorder.endRecording();
     final image = await picture.toImage(_cardWidth, _cardHeight);
     final byteData = await image.toByteData(format: ui.ImageByteFormat.png);
+    // Build 300 (MED audit): ~8MB pixel buffer + picture 즉시 해제 — 반복
+    // share 시 GC 지연으로 메모리 누적 / OOM 위험 차단.
+    image.dispose();
+    picture.dispose();
     return byteData?.buffer.asUint8List();
   }
 
@@ -772,6 +780,10 @@ class ShareCardService {
     final picture = recorder.endRecording();
     final image = await picture.toImage(_cardWidth, _cardHeight);
     final byteData = await image.toByteData(format: ui.ImageByteFormat.png);
+    // Build 300 (MED audit): ~8MB pixel buffer + picture 즉시 해제 — 반복
+    // share 시 GC 지연으로 메모리 누적 / OOM 위험 차단.
+    image.dispose();
+    picture.dispose();
     return byteData?.buffer.asUint8List();
   }
 }
