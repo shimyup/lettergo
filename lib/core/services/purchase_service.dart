@@ -159,6 +159,21 @@ class PurchaseService extends ChangeNotifier with WidgetsBindingObserver {
     if (state == AppLifecycleState.resumed) {
       // fire-and-forget — 결과는 notifyListeners 로 UI 전파.
       reevaluateTrialExpiry();
+      // Build 302 (MED audit): RC customerInfo 도 refresh — 환불/외부 취소가
+      // RC 서버에서 발생해도 사용자가 백그라운드 → 포어그라운드 복귀 시
+      // 즉시 entitlement 동기화. 이전엔 cold-start 까지 stale Premium 유지.
+      _refreshCustomerInfoIfReady();
+    }
+  }
+
+  Future<void> _refreshCustomerInfoIfReady() async {
+    if (_isTestMode || _isBetaFreePremium || _isBetaUpgradeSimulator) return;
+    if (!_isRcKeyConfiguredForCurrentPlatform) return;
+    try {
+      final info = await Purchases.getCustomerInfo();
+      _applyCustomerInfo(info);
+    } catch (_) {
+      // 무시 — 다음 resumed 또는 cold-start 에 다시 시도.
     }
   }
 

@@ -1475,7 +1475,7 @@ class _SignupTabState extends State<_SignupTab> {
       final purchase = context.read<PurchaseService>();
       final state = context.read<AppState>();
       await state.tryClaimWelcomeTrial(
-        emailHash: _emailCtrl.text.trim().toLowerCase(),
+        email: _emailCtrl.text.trim().toLowerCase(),
         grant: () => purchase.grantWelcomeTrial(days: 3),
       );
     } catch (_) {}

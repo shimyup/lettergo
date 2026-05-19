@@ -2100,7 +2100,7 @@ class AppL10n {
     'ko': '무제한 하늘길 · 답장 우선 도착',
     'en': 'Unlimited skyways · priority reply delivery',
     'ja': '無制限エアルート · 返信が優先到着',
-    'zh': '无限空邮 · 回信优先送达',
+    'zh': '无限快递 · 回复优先送达',
     'fr': 'Voies aériennes illimitées · priorité des réponses',
     'de': 'Unbegrenzte Luftwege · Antworten mit Vorrang',
     'es': 'Vías aéreas ilimitadas · respuestas prioritarias',
@@ -2223,8 +2223,8 @@ class AppL10n {
         'Du hast auf diesen Brief bereits geantwortet — eine Antwort pro Brief',
     'es': 'Ya respondiste a esta recompensa — una respuesta por recompensa',
     'pt': 'Você já respondeu a esta recompensa — uma resposta por recompensa',
-    'ru': 'Вы уже ответили на это письмо — один ответ на награду',
-    'tr': 'Bu mektuba zaten cevap verdin — ödül başına bir cevap',
+    'ru': 'Вы уже ответили на эту награду — один ответ на награду',
+    'tr': 'Bu ödüle zaten cevap verdin — ödül başına bir cevap',
     'ar': 'لقد رددت على هذه المكافأة مسبقاً — رد واحد لكل مكافأة',
     'it': 'Hai già risposto a questa ricompensa — una risposta per ricompensa',
     'hi': 'आप इस पुरस्कार का पहले ही जवाब दे चुके हैं — एक पुरस्कार, एक जवाब',
@@ -2308,7 +2308,7 @@ class AppL10n {
     'ko': '이 사람은 당신의 답을 기다리고 있을지 몰라요',
     'en': 'Someone, somewhere, may be waiting for your reply',
     'ja': 'この人はあなたの返事を待っているかもしれません',
-    'zh': '这个人也许正在等待你的回信',
+    'zh': '这个人也许正在等待你的回复',
     'fr': 'Cette personne attend peut-être votre réponse',
     'de': 'Jemand wartet vielleicht gerade auf deine Antwort',
     'es': 'Alguien podría estar esperando tu respuesta',
@@ -2341,7 +2341,7 @@ class AppL10n {
     'en':
         '"Did a reward arrive for me today?"\nA quiet 8 AM nudge to open your mailbox — nothing noisy.',
     'ja': '「今日、特典は届いたかな？」\n毎朝8時に、そっと特典箱を開くようお知らせします。',
-    'zh': '"今天有我的信吗？"\n每天早上 8 点轻轻提醒你打开信箱——不喧哗。',
+    'zh': '"今天有我的优惠券吗？"\n每天早上 8 点轻轻提醒你打开信箱——不喧哗。',
     'fr':
         '"Ai-je reçu une lettre aujourd\'hui ?"\nUn rappel doux à 8h pour ouvrir votre boîte.',
     'de':
@@ -8034,8 +8034,8 @@ class AppL10n {
   String get inboxEmptyReceived => _t({
     'ko': '조건에 맞는 받은 혜택이 없어요',
     'en': 'No received rewards match the filter',
-    'ja': '条件に合う受信メールはありません',
-    'zh': '没有符合条件的收件',
+    'ja': '条件に合う受信した特典はありません',
+    'zh': '没有符合条件的优惠券',
     'fr': 'Aucune récompense reçue ne correspond au filtre',
     'de': 'Keine empfangenen Belohnungen passen zum Filter',
     'es': 'No hay recompensas recibidas que coincidan',
@@ -9573,8 +9573,8 @@ class AppL10n {
     'de': 'Kein Melden-Button auf Belohnungen',
     'es': 'Sin botón de reporte en recompensas',
     'pt': 'Sem botão de denúncia nas recompensas',
-    'ru': 'Без кнопки жалобы на письмах',
-    'tr': 'Ödüllarda şikayet butonu yok',
+    'ru': 'Без кнопки жалобы на наградах',
+    'tr': 'Ödüllerde şikayet butonu yok',
     'ar': 'بدون زر بلاغ على المكافآت',
     'it': 'Nessun pulsante segnala sulle ricompense',
     'hi': 'पुरस्कारों पर रिपोर्ट बटन नहीं',
@@ -13065,7 +13065,7 @@ class AppL10n {
         'Quick Message (DM) is for premium members only.\nUpgrade to Premium for DM access and $premiumLimit promos/day.',
     'ja':
         'クイックレター（DM）はプレミアム会員限定です。\nプレミアムにアップグレードするとDMと1日${premiumLimit}通の送信が可能です。',
-    'zh': '快信（私信）仅限高级会员使用。\n升级高级版即可使用私信功能，每日发送$premiumLimit封。',
+    'zh': '快速发送（私信）仅限高级会员使用。\n升级高级版即可使用私信功能，每日发送$premiumLimit封。',
     'fr':
         'La lettre rapide (MP) est réservée aux membres premium.\nPassez au Premium pour les MP et $premiumLimit lettres/jour.',
     'de':
@@ -13450,7 +13450,7 @@ class AppL10n {
       'ko': '📬 수집첩에 새 혜택이 왔어요!',
       'en': '📬 New reward in your collection!',
       'ja': '📬 新しい特典が届きました！',
-      'zh': '📬 信箱里有新优惠券！',
+      'zh': '📬 收件箱里有新优惠券！',
     }),
     _t({
       'ko': '🌊 바다를 건너 혜택이 도착했어요',
@@ -18009,7 +18009,7 @@ class AppL10n {
     'de': '$n Belohnung${n == 1 ? '' : 'e'} in der Nähe',
     'es': '$n recompensa${n == 1 ? '' : 's'} cerca',
     'pt': '$n recompensa${n == 1 ? '' : 's'} por perto',
-    'ru': 'Рядом $n письм${n == 1 ? 'о' : 'а'}',
+    'ru': 'Рядом $n награ${n == 1 ? 'да' : 'д'}',
     'tr': 'Yakınlarda $n ödül',
     'ar': 'يوجد $n مكافآت قربك الآن',
     'it': '$n ricompensa${n == 1 ? '' : 'e'} vicino',
@@ -21895,21 +21895,23 @@ class AppL10n {
     'th': 'ถึงชั้นที่ 50',
   });
 
+  // Build 302: penpal 잔재 14 lang 모두 쿠폰 픽업러 카피로 교체
+  // + de Belohnungfreund 합성 typo (Fugen-s 누락) 해결.
   String get towerBadgePopular => _t({
-    'ko': '인기 카운터',
-    'en': 'Popular Penpal',
-    'ja': '人気のペンパル',
-    'zh': '人气笔友',
-    'fr': 'Correspondant populaire',
-    'de': 'Beliebter Belohnungfreund',
-    'es': 'Corresponsal popular',
-    'pt': 'Correspondente popular',
-    'ru': 'Популярный друг по переписке',
-    'tr': 'Popüler ödül arkadaşı',
-    'ar': 'صديق مراسلة مشهور',
-    'it': 'Amico di penna popolare',
-    'hi': 'लोकप्रिय पेनपाल',
-    'th': 'เพื่อนทางรางวัลยอดนิยม',
+    'ko': '인기 픽업러',
+    'en': 'Popular Picker',
+    'ja': '人気ピッカー',
+    'zh': '人气拾取者',
+    'fr': 'Collecteur populaire',
+    'de': 'Beliebter Sammler',
+    'es': 'Coleccionista popular',
+    'pt': 'Coletor popular',
+    'ru': 'Популярный сборщик',
+    'tr': 'Popüler toplayıcı',
+    'ar': 'جامع شعبي',
+    'it': 'Raccoglitore popolare',
+    'hi': 'लोकप्रिय संग्राहक',
+    'th': 'นักเก็บยอดนิยม',
   });
 
   String get towerBadgePopularDesc => _t({
@@ -22536,7 +22538,7 @@ class AppL10n {
     'ko': '수집첩 도착 💌',
     'en': 'In your mailbox 💌',
     'ja': 'ポストに到着 💌',
-    'zh': '已投入信箱 💌',
+    'zh': '已投入收件箱 💌',
     'fr': 'Dans votre boîte aux récompenses 💌',
     'de': 'Im Postfach 💌',
     'es': 'En tu buzón 💌',
@@ -23699,6 +23701,51 @@ class AppL10n {
     'hi':
         'अपने डेटा की प्रति का अनुरोध करने के लिए support@thiscount.io पर ईमेल करें',
     'th': 'ส่งอีเมลไปที่ support@thiscount.io เพื่อขอสำเนาข้อมูลของคุณ',
+  });
+
+  // Build 302 (HIGH privacy audit): 동의 철회 in-app 안내 (GDPR Art.7(3) / KISA).
+  String get settingsWithdrawConsent => _t({
+    'ko': '동의 철회',
+    'en': 'Withdraw consent',
+    'ja': '同意の撤回',
+    'zh': '撤回同意',
+    'fr': 'Retirer le consentement',
+    'de': 'Einwilligung widerrufen',
+    'es': 'Retirar el consentimiento',
+    'pt': 'Retirar consentimento',
+    'ru': 'Отозвать согласие',
+    'tr': 'Onayı geri al',
+    'ar': 'سحب الموافقة',
+    'it': 'Revoca del consenso',
+    'hi': 'सहमति वापस लें',
+    'th': 'ถอนความยินยอม',
+  });
+
+  String get settingsWithdrawConsentDesc => _t({
+    'ko': '특정 데이터 처리 (제3자 제공·위치·마케팅) 동의를 철회 — 문의 이메일 발송',
+    'en':
+        'Withdraw consent for specific processing (third-party, location, marketing) — opens email',
+    'ja': '特定のデータ処理（第三者提供・位置・マーケティング）の同意を撤回 — メール起動',
+    'zh': '撤回特定数据处理（第三方·位置·营销）的同意 — 打开邮件',
+    'fr':
+        'Retirez le consentement pour un traitement spécifique (tiers, localisation, marketing) — ouvre un email',
+    'de':
+        'Einwilligung für bestimmte Verarbeitung (Dritte, Standort, Marketing) widerrufen — öffnet E-Mail',
+    'es':
+        'Retire el consentimiento para procesamiento específico (terceros, ubicación, marketing) — abre email',
+    'pt':
+        'Retire o consentimento para processamento específico (terceiros, localização, marketing) — abre email',
+    'ru':
+        'Отзовите согласие на конкретную обработку (третьи лица, геолокация, маркетинг) — открывает email',
+    'tr':
+        'Belirli işlemler (üçüncü taraf, konum, pazarlama) için onayı geri alın — e-posta açar',
+    'ar':
+        'اسحب الموافقة على معالجة محددة (طرف ثالث، الموقع، التسويق) — يفتح بريداً إلكترونياً',
+    'it':
+        'Revoca il consenso per elaborazioni specifiche (terzi, posizione, marketing) — apre email',
+    'hi':
+        'विशिष्ट प्रसंस्करण (तृतीय-पक्ष, स्थान, विपणन) के लिए सहमति वापस लें — ईमेल खोलता है',
+    'th': 'ถอนความยินยอมสำหรับการประมวลผลเฉพาะ (บุคคลที่สาม·ตำแหน่ง·การตลาด) — เปิดอีเมล',
   });
 
   // ── Content Policy Dialog ───────────────────────────────────────────────
