@@ -25,6 +25,8 @@ import '../core/services/geocoding_service.dart';
 import '../core/services/firestore_service.dart';
 import '../core/services/firebase_auth_service.dart';
 import '../core/services/brand_zone_service.dart';
+import '../core/services/purchase_service.dart';
+import '../core/services/secure_clock.dart';
 import '../models/brand_zone.dart';
 import '../core/theme/time_theme.dart';
 import '../models/direct_message.dart';
@@ -2222,8 +2224,18 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
     }
   }
 
-  void _saveToPrefs() {
-    Future(() async {
+  // Build 307: fire-and-forget 호출자가 65곳 이상이지만 logout/snapshot 처럼
+  // "완료 보장" 이 필요한 곳을 위해 awaitable 변형 노출.
+  /// 65개 호출처에서 호출. 즉시 반환 — 백그라운드에서 저장.
+  void _saveToPrefs() => unawaited(_flushPrefs());
+
+  /// 로그아웃 등 데이터 손실 위험이 큰 경로에서 await 가능.
+  /// inbox / sent / 활동 점수 등 모든 critical state 가 SharedPreferences 에
+  /// 반영될 때까지 대기.
+  Future<void> flushPrefsBlocking() => _flushPrefs();
+
+  Future<void> _flushPrefs() async {
+    try {
       final prefs = await SharedPreferences.getInstance();
       final key = await _getOrCreateEncKey();
       _purgeExpiredReadLetters();
@@ -2342,7 +2354,12 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
       );
       // 줍기 완료 편지 ID 목록 저장
       prefs.setStringList('myPickedUpLetterIds', _myPickedUpLetterIds.toList());
-    });
+    } catch (e) {
+      assert(() {
+        debugPrint('[_flushPrefs] 실패: $e');
+        return true;
+      }());
+    }
   }
 
   // ── SharedPreferences 복원 (main.dart에서 앱 시작 시 호출) ─────────────────
@@ -4255,6 +4272,14 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
   /// 않은 채 세션만 종료되어, 다른 회원들의 지도에서 해당 타워가 누락되거나
   /// 오래된 좌표로 남는 문제가 발생한다.
   Future<void> snapshotUserForLogout() async {
+    // Build 307: PurchaseService 도 같은 흐름에서 reset → 다음 사용자가 잔존
+    // Premium 을 잠시라도 보지 않게. 그리고 prefs flush 완료까지 대기.
+    try {
+      await PurchaseService().resetForLogout();
+    } catch (_) {/* RC unconfigured 등 — 진행 */}
+    try {
+      await flushPrefsBlocking();
+    } catch (_) {/* prefs corruption — 진행 */}
     if (_currentUser.id.isEmpty || _currentUser.id == 'guest') return;
     if (!FirebaseConfig.kFirebaseEnabled) return;
     await _saveUserToFirestore(markLoggedOut: true);
@@ -6253,6 +6278,11 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
     bool triggerNotification = true,
   }) {
     try {
+      // Build 307: SecureClock + zone.isActive 게이트 — 만료된 zone 의 letter
+      // 가 추가로 발급되지 않도록. 서비스 layer 의 trigger 와 별개로
+      // 마지막 라인의 안전망. 시계 우회로 만료 회피도 차단.
+      final secureNow = SecureClock.now();
+      if (!zone.isActive(secureNow)) return;
       final now = DateTime.now();
       final id = 'brand_zone_${zone.id}_${now.millisecondsSinceEpoch}';
 

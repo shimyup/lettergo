@@ -278,6 +278,20 @@ class PurchaseService extends ChangeNotifier with WidgetsBindingObserver {
     await _secure.delete(key: _kBetaGrantedKey);
   }
 
+  /// Build 307: 로그아웃 시 즉시 호출. secure storage 삭제 + 메모리 필드
+  /// 동시 reset → 다음 사용자가 같은 디바이스로 로그인했을 때 이전 사용자의
+  /// Premium 상태가 잠시라도 노출되지 않도록. RevenueCat sync 가 늦어도 UI
+  /// 는 안전한 default 부터 시작.
+  Future<void> resetForLogout() async {
+    _isPremium = false;
+    _isBrand = false;
+    _trialExpiry = null;
+    _scheduledPlanChangeDate = null;
+    _scheduledPlanTarget = null;
+    await _clearSecurePremiumState();
+    notifyListeners();
+  }
+
   // 플랜 변경 예약 (다음 결제일부터 반영)
   DateTime? _scheduledPlanChangeDate;
   ScheduledPlanTarget? _scheduledPlanTarget;
