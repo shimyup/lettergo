@@ -130,6 +130,12 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
   List<MapUser> get mapUsers => List.unmodifiable(_mapUsers);
   DateTime? _lastMapUsersFetchedAt;
   bool _isFetchingMapUsers = false;
+  // Build 305: 마지막 map fetch 실패 사유 — UI 가 stale 상태 배지/스낵바
+  // 표시할 수 있도록 노출. 성공 시 null 로 클리어.
+  String? _lastMapSyncError;
+  String? get lastMapSyncError => _lastMapSyncError;
+  DateTime? _lastMapSyncErrorAt;
+  DateTime? get lastMapSyncErrorAt => _lastMapSyncErrorAt;
   // Build 253: 시스템 시간 조작 감지 플래그. 다음 실행 시 lastSeenAt 보다
   // 1분 이상 과거면 true. 향후 anti-cheat 백엔드 연동 신호.
   bool _clockTamperingDetected = false;
@@ -3411,9 +3417,20 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
     if (_currentUser.id.isEmpty || _currentUser.id == 'guest') return;
     _syncStartedAt = DateTime.now();
     _syncPaused = false;
-    // 첫 1회 즉시 실행
-    unawaited(_runLetterSync());
-    unawaited(_runMapSync());
+    // 첫 1회 즉시 실행 — 실패해도 다음 주기에 재시도하지만 에러 사유를 surface
+    // 해서 UI 가 stale 표시 가능하도록 한다. (Build 305)
+    _runLetterSync().catchError((e) {
+      assert(() {
+        debugPrint('[Sync] runLetterSync 실패: $e');
+        return true;
+      }());
+    });
+    _runMapSync().catchError((e) {
+      assert(() {
+        debugPrint('[Sync] runMapSync 실패: $e');
+        return true;
+      }());
+    });
     // 편지 수신: 적응형 주기 (처음 5분 30초 → 이후 90초)
     _scheduleNextLetterSync();
     // 지도 타워: 고정 180초 (자주 안 바뀜)
@@ -5402,9 +5419,17 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
           .map((e) => e.value.copyWith(rank: e.key + 1))
           .toList();
       _lastMapUsersFetchedAt = DateTime.now();
+      _lastMapSyncError = null; // Build 305: 성공 시 에러 클리어
+      _lastMapSyncErrorAt = null;
       notifyListeners();
     } catch (e) {
-      debugPrint('[Firestore] fetchMapUsers error: $e');
+      assert(() {
+        debugPrint('[Firestore] fetchMapUsers error: $e');
+        return true;
+      }());
+      // Build 305: 사용자에게 stale 표시 가능하도록 에러 상태 노출.
+      _lastMapSyncError = e.toString();
+      _lastMapSyncErrorAt = DateTime.now();
       // ── 오류 발생 시에도 데모 타워는 항상 표시 ──────────────────────────
       if (_mapUsers.isEmpty) {
         try {
@@ -5415,9 +5440,9 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
               .entries
               .map((e) => e.value.copyWith(rank: e.key + 1))
               .toList();
-          notifyListeners();
         } catch (_) {}
       }
+      notifyListeners(); // 에러 상태도 알린다
     } finally {
       _isFetchingMapUsers = false;
     }

@@ -16,6 +16,20 @@
 	<true/>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
+	<key>CFBundleLocalizations</key>
+	<array>
+		<string>en</string>
+		<string>ko</string>
+		<string>ja</string>
+		<string>zh</string>
+		<string>es</string>
+		<string>fr</string>
+		<string>de</string>
+		<string>pt-BR</string>
+		<string>ar</string>
+		<string>it</string>
+		<string>hi</string>
+	</array>
 	<key>CFBundleDisplayName</key>
 	<string>Thiscount</string>
 	<key>CFBundleExecutable</key>

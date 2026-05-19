@@ -215,7 +215,12 @@ class _LetterReadScreenState extends State<LetterReadScreen>
           _isTranslating = false;
         });
       }
-    } catch (_) {
+    } catch (e, st) {
+      // Build 305: silent swallow 였던 부분 — 디버그 빌드 로그로 원인 surface.
+      assert(() {
+        debugPrint('[LetterRead] translation 실패: $e\n$st');
+        return true;
+      }());
       if (mounted) {
         final l10n = AppL10n.of(context.read<AppState>().currentUser.languageCode);
         setState(() {

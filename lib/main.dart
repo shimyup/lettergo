@@ -80,14 +80,38 @@ void main() async {
   // 를 secure storage 에서 복원. 앱 재시작으로 카운터 우회 (brute-force) 차단.
   await AuthService.restoreOtpRateState();
 
-  final results = await Future.wait<dynamic>([
-    AuthService.isLoggedIn(),
-    _getLocation(),
-  ]);
-  final loggedIn = results[0] as bool;
-  final position = results[1] as Position?;
+  // Build 305 (BLOCKER): 부팅 시 한쪽 future 실패가 다른 한쪽까지 죽이지
+  // 않도록 각자 catch 로 default 복귀. Future.wait 가 throw 하면 전체 부팅
+  // 실패하던 회귀 차단.
+  final loginFuture = AuthService.isLoggedIn().catchError((e) {
+    assert(() {
+      debugPrint('[main] isLoggedIn 실패: $e');
+      return true;
+    }());
+    return false;
+  });
+  final locFuture = _getLocation().catchError((e) {
+    assert(() {
+      debugPrint('[main] getLocation 실패: $e');
+      return true;
+    }());
+    return null as Position?;
+  });
+  final loggedIn = await loginFuture;
+  final position = await locFuture;
 
-  final userData = loggedIn ? await AuthService.getCurrentUser() : null;
+  Map<String, String>? userData;
+  if (loggedIn) {
+    try {
+      userData = await AuthService.getCurrentUser();
+    } catch (e) {
+      assert(() {
+        debugPrint('[main] getCurrentUser 실패: $e');
+        return true;
+      }());
+      userData = null;
+    }
+  }
 
   runApp(
     GlobalDriftApp(
@@ -171,19 +195,30 @@ class _GlobalDriftAppState extends State<GlobalDriftApp> {
       _appState.currentUser.languageCode,
     );
     // 인앱 결제 초기화 후 AppState 프리미엄 상태 동기화
-    _purchaseService.initialize().then((_) {
+    // Build 305 (BLOCKER 후속): chain 중간 실패 시에도 최종 addListener 가
+    // 도달하도록 catchError 보강. initialize 실패해도 listener 는 등록되어
+    // 차후 재시도 / 사용자 manual restore 가 UI 에 반영되도록 함.
+    _purchaseService.initialize().catchError((e) {
+      assert(() {
+        debugPrint('[main] PurchaseService.initialize 실패: $e');
+        return true;
+      }());
+    }).then((_) async {
       if (!mounted) return;
       final userId = widget.initialUserData?['id'];
-      // shimyup@gmail.com → 디버그 빌드에서 자동 브랜드 계정 적용
       final email = widget.initialUserData?['email'];
-      _purchaseService
-          .syncUserIdentity(userId: userId, email: email)
-          .then((_) => _purchaseService.applyTestEmailOverride(email))
-          .then((_) {
-            if (!mounted) return;
-            _onPurchaseChanged();
-            _purchaseService.addListener(_onPurchaseChanged);
-          });
+      try {
+        await _purchaseService.syncUserIdentity(userId: userId, email: email);
+        await _purchaseService.applyTestEmailOverride(email);
+      } catch (e) {
+        assert(() {
+          debugPrint('[main] PurchaseService.syncUserIdentity 실패: $e');
+          return true;
+        }());
+      }
+      if (!mounted) return;
+      _onPurchaseChanged();
+      _purchaseService.addListener(_onPurchaseChanged);
     });
     if (widget.initialLoggedIn && widget.initialUserData != null) {
       // Build 272 (P1 글로벌화): country/countryFlag fallback 의 한국 기본값 제거.

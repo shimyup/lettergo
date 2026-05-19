@@ -3532,6 +3532,11 @@ class _ComposeScreenState extends State<ComposeScreen>
       final uploadPath = StorageService.voucherPath(
         'voucher_${DateTime.now().millisecondsSinceEpoch}',
       );
+      // Build 305: uid 없으면 (로그인 안 됨 / Firebase off) 빈 path → 업로드 스킵.
+      if (uploadPath.isEmpty) {
+        if (mounted) setState(() => _isUploadingVoucher = false);
+        return;
+      }
       final url = await StorageService.uploadImage(
         file: File(compressedPath),
         path: uploadPath,

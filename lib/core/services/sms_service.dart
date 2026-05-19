@@ -59,7 +59,7 @@ class SmsService {
 
       if (response.statusCode == 201 || response.statusCode == 200) {
         assert(() {
-          debugPrint('[SmsService] SMS 발송 성공: $to');
+          debugPrint('[SmsService] SMS 발송 성공: ${_maskPhone(to)}');
           return true;
         }());
         return null; // 성공
@@ -147,5 +147,12 @@ class SmsService {
     }
 
     return '$countryCode$cleaned';
+  }
+
+  /// Build 305: 디버그 로그용 전화번호 마스킹. assert 안에서만 호출되지만,
+  /// debug 빌드 logcat 에서도 풀 번호가 안 보이도록 뒷 4자리만 노출.
+  static String _maskPhone(String phone) {
+    if (phone.length <= 4) return '****';
+    return '${'*' * (phone.length - 4)}${phone.substring(phone.length - 4)}';
   }
 }

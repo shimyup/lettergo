@@ -103,7 +103,7 @@ class EmailService {
 
       if (response.statusCode >= 200 && response.statusCode < 300) {
         assert(() {
-          debugPrint('[EmailService] Resend 발송 성공: $to');
+          debugPrint('[EmailService] Resend 발송 성공: ${_maskEmail(to)}');
           return true;
         }());
         return null; // 성공
@@ -167,7 +167,7 @@ class EmailService {
 
       if (response.statusCode == 202) {
         assert(() {
-          debugPrint('[EmailService] SendGrid 발송 성공: $to');
+          debugPrint('[EmailService] SendGrid 발송 성공: ${_maskEmail(to)}');
           return true;
         }());
         return null; // 성공
@@ -408,5 +408,16 @@ class EmailService {
 </body>
 </html>
 ''';
+  }
+
+  /// Build 305: 디버그 로그용 이메일 마스킹. assert 안에서만 호출되지만,
+  /// debug 빌드의 디바이스 logcat / 스크린샷에서도 풀 이메일이 안 보이도록.
+  static String _maskEmail(String email) {
+    final at = email.indexOf('@');
+    if (at <= 0) return '***';
+    final local = email.substring(0, at);
+    final domain = email.substring(at);
+    final keep = local.length <= 2 ? 1 : 2;
+    return '${local.substring(0, keep)}***$domain';
   }
 }
