@@ -152,6 +152,17 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
   static const int _mapUsersMaxPages = 2;
   static const int _mapUsersMaxCount = 180;
 
+  // Build 308: lastKnown 좌표 로컬 캐시 — 사용자가 GPS 권한 거부 / 잠시 (0,0)
+  // 상태일 때도 Firestore lastKnownLat/Lng 가 항상 마지막 유효 좌표로 유지되도록.
+  // setUser / updateUserLocation 에서 캐시 갱신. _doSaveUserToFirestore 가
+  // 현재 GPS 가 (0,0) 일 때 이 캐시값으로 lastKnown 만 별도 PATCH.
+  // → 가입된 모든 회원이 마지막 GPS 위치로 다른 사용자 지도에 계속 표시됨.
+  static const String _kCachedLastKnownLatKey = 'lkLat_v1';
+  static const String _kCachedLastKnownLngKey = 'lkLng_v1';
+  double _cachedLastKnownLat = 0.0;
+  double _cachedLastKnownLng = 0.0;
+  bool _lastKnownCacheLoaded = false;
+
   // ── 지도 위 편지들 ──────────────────────────────────────────────────────────
   final List<Letter> _worldLetters = [];
   List<Letter> get worldLetters => List.unmodifiable(_worldLetters);
@@ -3939,6 +3950,10 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
     _dailySentCount = 0;
     _dailySentDateKey = _dateKey(DateTime.now());
     _inviteCode = _deriveInviteCode();
+    // Build 308: setUser 의 lat/lng (회원가입 시 Seoul fallback 또는 실 GPS)
+    // 을 lastKnown 캐시에 박는다. 가입 직후 다른 사용자 지도에 표시됨 + 이후
+    // GPS 권한 거부 / (0,0) 상태로 바뀌어도 Firestore 의 lastKnown 보존.
+    _updateLastKnownCache(_currentUser.latitude, _currentUser.longitude);
     notifyListeners();
     // Firestore에 내 정보 저장 + 다른 회원 타워 불러오기
     // Build 293 (P1 race): _saveUserToFirestore 가 완료된 다음 fetchMapUsers
@@ -3993,10 +4008,41 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
     }
   }
 
+  // ── Build 308: lastKnown 좌표 캐시 helpers ──────────────────────────────
+  Future<void> _ensureLastKnownLoaded() async {
+    if (_lastKnownCacheLoaded) return;
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      _cachedLastKnownLat = prefs.getDouble(_kCachedLastKnownLatKey) ?? 0.0;
+      _cachedLastKnownLng = prefs.getDouble(_kCachedLastKnownLngKey) ?? 0.0;
+    } catch (_) {
+      _cachedLastKnownLat = 0.0;
+      _cachedLastKnownLng = 0.0;
+    }
+    _lastKnownCacheLoaded = true;
+  }
+
+  /// 유효한 (0,0 이 아닌) 좌표만 캐시에 반영. fire-and-forget.
+  void _updateLastKnownCache(double lat, double lng) {
+    if (lat == 0.0 && lng == 0.0) return;
+    _cachedLastKnownLat = lat;
+    _cachedLastKnownLng = lng;
+    _lastKnownCacheLoaded = true;
+    unawaited(() async {
+      try {
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.setDouble(_kCachedLastKnownLatKey, lat);
+        await prefs.setDouble(_kCachedLastKnownLngKey, lng);
+      } catch (_) {/* prefs 실패 무시 */}
+    }());
+  }
+
   // ── 위치 업데이트 ─────────────────────────────────────────────────────────
   void updateUserLocation(double lat, double lng) {
     _currentUser.latitude = lat;
     _currentUser.longitude = lng;
+    // Build 308: 유효 좌표 캐시 — 다음 _saveUserToFirestore 가 lastKnown 으로 항상 사용.
+    _updateLastKnownCache(lat, lng);
     notifyListeners();
     _saveUserToFirestore(); // 위치 변경 시 Firestore 업데이트
     // Build 149: 유효한 좌표 첫 확보 시점에 튜토리얼 편지 1통 자동 배치.
@@ -4316,6 +4362,9 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
   }
 
   Future<void> _doSaveUserToFirestore({bool markLoggedOut = false}) async {
+    // Build 308: lastKnown 캐시 로드 — 현재 GPS 가 (0,0) 인 경우에도
+    // 마지막 유효 좌표로 Firestore lastKnown 을 갱신/보존.
+    await _ensureLastKnownLoaded();
     try {
       // Build 207: GPS 좌표 ~100m 정밀도로 coarsen.
       // 이전엔 cm 정밀도 그대로 업로드 → 자택 핀포인트 가능. firestore.rules
@@ -4328,6 +4377,18 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
       // 상태로 일시 저장이 발생해도 마지막 유효 위치를 잃지 않도록 — 로그아웃
       // 후에도 지도에 마지막 GPS 기반으로 회원이 표시되는 흐름 보장.
       final hasValidCoords = coarseLat != 0.0 || coarseLng != 0.0;
+      // Build 308: lastKnown 후보 — 현재 GPS 가 유효하면 그것, 아니면
+      // 로컬 캐시 (마지막으로 유효했던 좌표). 둘 다 (0,0) 이면 안 보냄.
+      double lkLatOut = 0.0;
+      double lkLngOut = 0.0;
+      if (hasValidCoords) {
+        lkLatOut = coarseLat;
+        lkLngOut = coarseLng;
+      } else if (_cachedLastKnownLat != 0.0 || _cachedLastKnownLng != 0.0) {
+        lkLatOut = (_cachedLastKnownLat * 1000).round() / 1000.0;
+        lkLngOut = (_cachedLastKnownLng * 1000).round() / 1000.0;
+      }
+      final hasLastKnown = lkLatOut != 0.0 || lkLngOut != 0.0;
       final fields = <String, Map<String, dynamic>>{
         'id': {'stringValue': _currentUser.id},
         'username': {'stringValue': _currentUser.username},
@@ -4336,12 +4397,12 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
         if (hasValidCoords) 'latitude': {'doubleValue': coarseLat},
         if (hasValidCoords) 'longitude': {'doubleValue': coarseLng},
         // Build 287: 별도 lastKnownLat/Lng 필드 — 로그아웃 후에도 위치 보존.
-        // fetchMapUsers 가 latitude/longitude 가 (0,0) 일 때 이 값을 fallback
-        // 으로 사용하도록 확장 가능.
-        if (hasValidCoords)
-          'lastKnownLatitude': {'doubleValue': coarseLat},
-        if (hasValidCoords)
-          'lastKnownLongitude': {'doubleValue': coarseLng},
+        // fetchMapUsers 가 latitude/longitude 가 (0,0) 일 때 이 값을 fallback.
+        // Build 308: 캐시 fallback 도 인정 — 현재 GPS 가 (0,0) 이어도 가장
+        // 최근 유효 좌표로 lastKnown 을 항상 갱신. 가입된 모든 사용자가 다른
+        // 사용자 지도에 마지막 위치 기반으로 표시되도록.
+        if (hasLastKnown) 'lastKnownLatitude': {'doubleValue': lkLatOut},
+        if (hasLastKnown) 'lastKnownLongitude': {'doubleValue': lkLngOut},
         'isUsernamePublic': {'booleanValue': _currentUser.isUsernamePublic},
         // Build 290 (P1): isMapPublic 을 isUsernamePublic 과 독립으로 저장.
         // 이전엔 같은 값 강제 → 사용자가 둘을 분리 제어 불가했음 (audit E2/E9).
