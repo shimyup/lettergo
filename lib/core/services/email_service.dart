@@ -243,6 +243,7 @@ class EmailService {
   }
 
   static String _tempPasswordSubject(String langCode) {
+    // Build 299 (MED audit): tr/ar/it/hi/th 5언어 추가 (이전엔 영어 fallback).
     const m = <String, String>{
       'ko': '[Thiscount] 임시 비밀번호 발급',
       'en': '[Thiscount] Temporary Password',
@@ -253,6 +254,11 @@ class EmailService {
       'es': '[Thiscount] Contraseña temporal',
       'pt': '[Thiscount] Senha temporária',
       'ru': '[Thiscount] Временный пароль',
+      'tr': '[Thiscount] Geçici şifre',
+      'ar': '[Thiscount] كلمة المرور المؤقتة',
+      'it': '[Thiscount] Password temporanea',
+      'hi': '[Thiscount] अस्थायी पासवर्ड',
+      'th': '[Thiscount] รหัสผ่านชั่วคราว',
     };
     return m[langCode] ?? m['en']!;
   }
@@ -275,6 +281,16 @@ class EmailService {
         return 'Senha temporária: $pw\nVálida por $minutes minutos\nAltere após o login.';
       case 'ru':
         return 'Временный пароль: $pw\nДействителен $minutes мин.\nИзмените после входа.';
+      case 'tr':
+        return 'Geçici şifre: $pw\nGeçerlilik: $minutes dakika\nGiriş yaptıktan sonra şifrenizi değiştirin.';
+      case 'ar':
+        return 'كلمة المرور المؤقتة: $pw\nصالحة لمدة $minutes دقيقة\nيرجى تغييرها بعد تسجيل الدخول.';
+      case 'it':
+        return 'Password temporanea: $pw\nValida per $minutes minuti\nCambiala dopo il login.';
+      case 'hi':
+        return 'अस्थायी पासवर्ड: $pw\n$minutes मिनट के लिए मान्य\nलॉगिन के बाद पासवर्ड बदलें।';
+      case 'th':
+        return 'รหัสผ่านชั่วคราว: $pw\nใช้ได้ $minutes นาที\nเปลี่ยนรหัสผ่านหลังจากเข้าสู่ระบบ';
       default:
         return 'Temporary password: $pw\nValid for $minutes minutes\nPlease change it after logging in.';
     }

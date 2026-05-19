@@ -423,6 +423,10 @@ class AuthService {
     ),
   );
 
+  // Build 297 이전엔 SharedPreferences 에 두던 secrets 가 secure storage 로
+  // 이동. 첫 실행에 prefs → secure 로 복사 + prefs 에서 삭제.
+  // Build 299 (audit MED): 로그인 lockout 카운터도 secure 이동 (Build 297 변경)
+  // 이지만 이 목록엔 빠져있어 prefs 잔존 시 lockout 풀리는 버그 있었음.
   static const List<String> _authKeys = [
     _keyIsLoggedIn,
     _keyUserId,
@@ -433,6 +437,8 @@ class AuthService {
     _keyLanguageCode,
     _keySocialLink,
     _keyPassword,
+    _keyLoginAttempts,
+    _keyLoginLockoutUntil,
   ];
 
   // ── 이메일 인증 OTP ──────────────────────────────────────────────────────────

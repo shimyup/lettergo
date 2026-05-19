@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'package:crypto/crypto.dart';
 import 'dart:math';
 import 'dart:typed_data';
 import 'package:flutter/foundation.dart';
@@ -962,33 +963,37 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
       _currentUser.isBrand && _brandExactDropCredits > 0;
 
   // Build 298 (HIGH billing audit): Welcome trial 1회 한정 claim.
-  // server-as-truth — Firestore 의 welcomeTrialClaimedAt 가 비어있을 때만
-  // trial 부여 (PurchaseService.grantWelcomeTrial) + timestamp 기록.
-  // 사용자가 계정 삭제 → 재가입 해도 동일 user.id 면 grant 거부 (anonymous
-  // Firebase Auth uid 가 device 별로 안정적이라 farming 방지에 충분).
+  // server-as-truth — Firestore `trial_claims/{sha256(email)}` 가 비어있을 때
+  // 만 trial 부여 (PurchaseService.grantWelcomeTrial). 이전엔 users/{id} 에
+  // 키했지만 (Build 298) signUp 이 매번 새 UUID 를 만들고 deleteAccount 가
+  // user doc 을 wipe 하므로 farming 방지 실패. email-hash 는 사용자가 계정
+  // 삭제 후 재가입해도 동일 이메일이면 claim doc 이 보존됨.
   //
   // Returns true 면 trial 부여 진행됨, false 면 이미 수령했거나 server 통신
   // 실패로 skip. UI 는 결과를 사용자 표시할 필요 없음 (조용히 fallback).
   Future<bool> tryClaimWelcomeTrial({
+    required String emailHash,
     required Future<void> Function() grant,
   }) async {
     if (_currentUser.id == 'guest') return false;
     if (_welcomeTrialClaimedAt != null) return false;
+    final normalized = emailHash.trim().toLowerCase();
+    if (normalized.isEmpty || !normalized.contains('@')) return false;
+    // Build 299: 이메일 sha256 — 평문 이메일을 인덱스 키로 노출하지 않도록.
+    final hash = sha256.convert(utf8.encode(normalized)).toString();
+    final claimPath = 'trial_claims/$hash';
 
-    // Firestore 의 현재 user doc 에서 welcomeTrialClaimedAt 만 읽기.
     if (FirebaseConfig.kFirebaseEnabled) {
       try {
-        final doc =
-            await FirestoreService.getDocument('users/${_currentUser.id}');
+        final doc = await FirestoreService.getDocument(claimPath);
         if (doc != null) {
+          // 기존 claim 존재 → 재부여 차단.
           final data = FirestoreService.fromFirestoreDoc(doc);
-          final serverClaimedRaw = data['welcomeTrialClaimedAt'] as String?;
-          if (serverClaimedRaw != null && serverClaimedRaw.isNotEmpty) {
-            final parsed = DateTime.tryParse(serverClaimedRaw)?.toLocal();
-            if (parsed != null) {
-              _welcomeTrialClaimedAt = parsed;
-              return false; // 이미 server 가 claim 보유 → 재부여 차단.
-            }
+          final raw = data['claimedAt'] as String?;
+          if (raw != null && raw.isNotEmpty) {
+            _welcomeTrialClaimedAt =
+                DateTime.tryParse(raw)?.toLocal() ?? DateTime.now();
+            return false;
           }
         }
       } catch (_) {
@@ -999,6 +1004,16 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
 
     await grant();
     _welcomeTrialClaimedAt = DateTime.now();
+    if (FirebaseConfig.kFirebaseEnabled) {
+      try {
+        await FirestoreService.setDocument(claimPath, {
+          'claimedAt': _welcomeTrialClaimedAt!.toUtc().toIso8601String(),
+        });
+      } catch (_) {
+        // 기록 실패 — local trial 은 유지하되 server claim 은 누락.
+        // 다음 signup 흐름에서 doc 조회 실패로 grant 재시도될 수 있음 (양호).
+      }
+    }
     await _saveUserToFirestore();
     notifyListeners();
     return true;

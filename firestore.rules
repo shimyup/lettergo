@@ -204,6 +204,19 @@ service cloud.firestore {
       allow delete: if false;
     }
 
+    // ── trial_claims (Build 299) — Welcome trial 1회 farming 차단 ─────
+    // sha256(email) 을 doc id 로. 사용자가 계정 삭제 후 재가입 (동일 이메일) →
+    // claim doc 그대로 존재 → 재부여 차단. read 는 클라이언트가 자기 hash 만
+    // 조회 (read:true 로 광범위 허용 — doc 자체가 timestamp 만 보유 PII 없음).
+    // create 는 인증된 사용자가 자기 (또는 어떤) hash 로 가능 — 단 update/
+    // delete 는 차단 (이미 수령된 claim 영구 보존).
+    match /trial_claims/{emailHash} {
+      allow read, list: if true;
+      allow create: if isSignedIn()
+                  && request.resource.data.claimedAt is string;
+      allow update, delete: if false;
+    }
+
     // ── 기타 경로는 모두 차단 ───────────────────────────────────────────
     match /{document=**} {
       allow read, write: if false;

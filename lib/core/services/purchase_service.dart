@@ -144,10 +144,23 @@ class ProductInfo {
 }
 
 // ── 구매 서비스 (RevenueCat 기반) ───────────────────────────────────────────
-class PurchaseService extends ChangeNotifier {
+class PurchaseService extends ChangeNotifier with WidgetsBindingObserver {
   static final PurchaseService _instance = PurchaseService._();
   factory PurchaseService() => _instance;
-  PurchaseService._();
+  PurchaseService._() {
+    // Build 299 (MED audit): trial 만료를 foreground 복귀 시점에도 재평가.
+    // _loadFromPrefs 가 cold-start 에서만 호출되어 사용자가 day 3 경계를
+    // foreground 로 넘기면 Premium 이 풀리지 않던 회귀 차단.
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      // fire-and-forget — 결과는 notifyListeners 로 UI 전파.
+      reevaluateTrialExpiry();
+    }
+  }
 
   bool _isPremium = false;
   bool get isPremium => _isPremium;
@@ -558,17 +571,10 @@ class PurchaseService extends ChangeNotifier {
       await prefs.remove(PrefKeys.purchaseIsBrand);
     }
 
-    final giftExpiry = prefs.getInt(PrefKeys.purchaseGiftExpiry) ?? 0;
-    if (giftExpiry > 0) {
-      final expiry = DateTime.fromMillisecondsSinceEpoch(giftExpiry);
-      if (DateTime.now().isAfter(expiry)) {
-        if (!_isBrand) _isPremium = false;
-        await prefs.remove(PrefKeys.purchaseGiftExpiry);
-        _trialExpiry = null;
-      } else {
-        _trialExpiry = expiry;
-      }
-    } else if (_isPremium && !_isBrand && _nextBillingDate == null) {
+    await _evaluateGiftExpiryFromPrefs(prefs);
+
+    if (_trialExpiry == null && _isPremium && !_isBrand &&
+        _nextBillingDate == null) {
       // Build 290 (P0): secure storage 에 _isPremium=true 인데 giftExpiry 도
       // billingDate 도 없으면 무결성 위반 → trial 부여 시 prefs write 실패한
       // 케이스 의심. _isPremium 을 false 로 reset → 영구 무료 Premium 회귀 차단.
@@ -583,6 +589,37 @@ class PurchaseService extends ChangeNotifier {
     );
     await _loadAndApplyScheduledPlanChange(prefs);
     notifyListeners();
+  }
+
+  // Build 299 (MED audit): gift trial 만료를 prefs 기반으로 평가하는 helper.
+  // _loadFromPrefs 가 cold-start 에서만 호출되어 사용자가 day 3 경계를
+  // foreground 로 넘기면 Premium 이 풀리지 않던 회귀를 차단하려고 분리.
+  Future<void> _evaluateGiftExpiryFromPrefs(SharedPreferences prefs) async {
+    final giftExpiry = prefs.getInt(PrefKeys.purchaseGiftExpiry) ?? 0;
+    if (giftExpiry > 0) {
+      final expiry = DateTime.fromMillisecondsSinceEpoch(giftExpiry);
+      if (DateTime.now().isAfter(expiry)) {
+        if (!_isBrand) {
+          _isPremium = false;
+          await _saveSecurePremiumState(isPremium: false, isBrand: _isBrand);
+        }
+        await prefs.remove(PrefKeys.purchaseGiftExpiry);
+        _trialExpiry = null;
+      } else {
+        _trialExpiry = expiry;
+      }
+    } else {
+      _trialExpiry = null;
+    }
+  }
+
+  /// Build 299 (MED audit): AppLifecycleState.resumed 에서 호출해 trial 만료를
+  /// 즉시 재평가. cold-start 외 foreground 복귀 시점도 보장.
+  Future<void> reevaluateTrialExpiry() async {
+    final prefs = await _getPrefs();
+    final prevPremium = _isPremium;
+    await _evaluateGiftExpiryFromPrefs(prefs);
+    if (prevPremium != _isPremium) notifyListeners();
   }
 
   DateTime? _loadDateFromPrefs(SharedPreferences prefs, String key) {
