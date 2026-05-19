@@ -5,8 +5,14 @@
 // 인포그래픽 투어. PageView 의 default physics (swipe + drag) — 자동 timer
 // 없음. 사용자가 자유롭게 swipe 또는 indicator 클릭으로 페이지 이동.
 //
-// 라우팅: 최초 1회 (`SharedPreferences seen_onboarding_tour != true`) 만
-// 표시. "시작" 버튼 → /onboarding (기존 흐름).
+// Build 301: 베타 테스트 모드 — 사용자가 "다음부터 보지 않기" 체크박스를
+// 누르기 전까지 매 launch 마다 노출. 이전엔 markSeen() 이 _start/_skip 에서
+// 무조건 호출되어 첫 진입 후 영영 안 보였음. 테스트 기간 동안 콘텐츠/
+// 카피 검증을 위해 사용자가 명시적으로 끄기 전엔 매번 노출.
+//
+// 라우팅: `SharedPreferences seen_onboarding_tour != true` 면 노출. 사용자가
+// 체크박스 + "시작" 누르면 markSeen 호출 → 다음부터 skip. 체크박스 미선택
+// 으로 "시작" 시 다음 launch 에도 다시 노출.
 
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -52,6 +58,10 @@ class _OnboardingTourScreenState extends State<OnboardingTourScreen> {
   // 5 페이지 + 마지막 CTA — 사용자 swipe 자유, 자동 timer 없음.
   static const int _totalPages = 6;
 
+  // Build 301: 베타 테스트 모드 — 사용자가 명시적으로 체크하기 전까지 매
+  // launch 에 다시 노출. 체크 시에만 markSeen 호출 → 다음번 skip.
+  bool _dontShowAgain = false;
+
   void _next() {
     if (_page < _totalPages - 1) {
       _ctrl.nextPage(
@@ -64,13 +74,17 @@ class _OnboardingTourScreenState extends State<OnboardingTourScreen> {
   }
 
   Future<void> _start() async {
-    await OnboardingTourScreen.markSeen();
+    if (_dontShowAgain) {
+      await OnboardingTourScreen.markSeen();
+    }
     if (!mounted) return;
     Navigator.of(context).pushReplacementNamed('/onboarding');
   }
 
   Future<void> _skip() async {
-    await OnboardingTourScreen.markSeen();
+    if (_dontShowAgain) {
+      await OnboardingTourScreen.markSeen();
+    }
     if (!mounted) return;
     Navigator.of(context).pushReplacementNamed('/onboarding');
   }
@@ -135,7 +149,7 @@ class _OnboardingTourScreenState extends State<OnboardingTourScreen> {
 
             // ── 페이지 indicator ────────────────────────────────────
             Padding(
-              padding: const EdgeInsets.symmetric(vertical: 16),
+              padding: const EdgeInsets.only(top: 16, bottom: 12),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: List.generate(_totalPages, (i) {
@@ -160,6 +174,56 @@ class _OnboardingTourScreenState extends State<OnboardingTourScreen> {
                 }),
               ),
             ),
+
+            // ── "다음부터 보지 않기" 체크박스 (Build 301) ──────────────
+            // 베타 테스트 기간 동안 사용자가 매 launch 마다 tour 를 볼 수 있게
+            // 기본 미체크. 사용자가 명시적으로 체크 + "시작" 눌러야 markSeen.
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24),
+              child: InkWell(
+                onTap: () =>
+                    setState(() => _dontShowAgain = !_dontShowAgain),
+                borderRadius: BorderRadius.circular(8),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 4),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      SizedBox(
+                        width: 20,
+                        height: 20,
+                        child: Checkbox(
+                          value: _dontShowAgain,
+                          onChanged: (v) => setState(
+                            () => _dontShowAgain = v ?? false,
+                          ),
+                          activeColor: p.premium,
+                          checkColor: p.premiumInk,
+                          side: BorderSide(color: p.textMuted, width: 1.4),
+                          materialTapTargetSize:
+                              MaterialTapTargetSize.shrinkWrap,
+                          visualDensity: VisualDensity.compact,
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      Text(
+                        '다음부터 보지 않기',
+                        style: TextStyle(
+                          color: _dontShowAgain
+                              ? p.textPrimary
+                              : p.textSecondary,
+                          fontSize: 13,
+                          fontWeight: FontWeight.w600,
+                          letterSpacing: -0.2,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(height: 12),
 
             // ── CTA ────────────────────────────────────────
             Padding(
