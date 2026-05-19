@@ -38,8 +38,10 @@ abstract class AppLinks {
   }
 
   // ── 고객 지원 ────────────────────────────────────────────────────────────
-  // Build 281: 사용자 노출 지원 채널을 thiscount.io 기준으로 통일.
-  static const String supportEmail = 'support@thiscount.io';
+  // Build 281: 사용자 노출 지원 채널.
+  // Build 310: 1인 운영 단계라 ceo@airony.xyz 로 직접 수신 통일.
+  // thiscount.io 메일 라우팅 셋업 후 다시 support@thiscount.io 로 전환 예정.
+  static const String supportEmail = 'ceo@airony.xyz';
 
   /// Build 221: 앱 마케팅 / 랜딩 페이지
   static const String marketingSite = 'https://thiscount.io';
