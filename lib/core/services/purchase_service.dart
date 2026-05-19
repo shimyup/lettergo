@@ -569,6 +569,12 @@ class PurchaseService extends ChangeNotifier with WidgetsBindingObserver {
         _isBrand ||
         info.entitlements.active.containsKey(_RcEntitlements.premium);
     _nextBillingDate = _parseRevenueCatDate(info.latestExpirationDate);
+    // Build 309: 결제/복원/환불 등 모든 entitlement 변화를 secure storage 에
+    // 즉시 persist. 이전엔 호출처가 명시적으로 _saveSecurePremiumState 를
+    // 불러야 했고 5+ 호출처 중 일부 누락 → 강제 종료 / crash 시 다음 cold-start
+    // 에 stale secure state 로딩 → Premium 사용자가 잠시 Free 로 보이는 회귀.
+    // fire-and-forget — UI 차단 안 함.
+    unawaited(_saveSecurePremiumState(isPremium: _isPremium, isBrand: _isBrand));
   }
 
   DateTime? _parseRevenueCatDate(String? value) {

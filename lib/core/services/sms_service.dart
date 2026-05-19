@@ -66,8 +66,16 @@ class SmsService {
       }
 
       // 에러 처리
-      final errorBody = jsonDecode(response.body);
-      final errorMsg = errorBody['message'] ?? 'Unknown error';
+      // Build 309: response.body 가 비-JSON (예: 503 plain HTML) 일 때
+      // jsonDecode throw → 외부 catch 로 떨어지지만 사용자에게 raw 예외
+      // 노출됨. tryDecode 패턴으로 다듬어 'Unknown error' fallback.
+      String errorMsg = 'Unknown error';
+      try {
+        final errorBody = jsonDecode(response.body);
+        if (errorBody is Map && errorBody['message'] is String) {
+          errorMsg = errorBody['message'] as String;
+        }
+      } catch (_) {/* 비-JSON 응답 — fallback 메시지 유지 */}
       assert(() {
         debugPrint('[SmsService] SMS 발송 실패 (${response.statusCode}): $errorMsg');
         return true;
