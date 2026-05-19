@@ -8201,6 +8201,41 @@ class AppL10n {
     'th': 'ฝ่ายช่วยเหลือ',
   });
 
+  // Build 311: 설정 화면에서 온보딩 다시 보기.
+  String get settingsReplayOnboarding => _t({
+    'ko': '온보딩 다시 보기',
+    'en': 'Replay onboarding',
+    'ja': 'オンボーディングをもう一度',
+    'zh': '重新查看引导',
+    'fr': 'Revoir l\'introduction',
+    'de': 'Onboarding erneut ansehen',
+    'es': 'Volver al onboarding',
+    'pt': 'Rever o onboarding',
+    'ru': 'Повтор онбординга',
+    'tr': 'Onboarding\'ı tekrar gör',
+    'ar': 'إعادة الإعداد',
+    'it': 'Rivedi onboarding',
+    'hi': 'ऑनबोर्डिंग दोबारा देखें',
+    'th': 'ดูออนบอร์ดิงอีกครั้ง',
+  });
+
+  String get settingsReplayOnboardingDesc => _t({
+    'ko': '인포그래픽 투어와 첫 화면을 다시 표시',
+    'en': 'Show infographic tour + intro again',
+    'ja': 'インフォグラフィックツアーと最初の画面を再表示',
+    'zh': '重新显示信息图导览和欢迎画面',
+    'fr': 'Revoir le tour et l\'introduction',
+    'de': 'Tour und Einführung erneut anzeigen',
+    'es': 'Mostrar tour e introducción de nuevo',
+    'pt': 'Mostrar tour e introdução novamente',
+    'ru': 'Снова показать тур и приветствие',
+    'tr': 'Tur ve girişi tekrar göster',
+    'ar': 'إعادة عرض الجولة والمقدمة',
+    'it': 'Rivedi tour e introduzione',
+    'hi': 'टूर और इंट्रो फिर देखें',
+    'th': 'แสดงทัวร์และหน้าแรกอีกครั้ง',
+  });
+
   String get settingsContactUs => _t({
     'ko': '문의하기',
     'en': 'Contact us',

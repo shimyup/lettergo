@@ -1435,17 +1435,28 @@ class PurchaseService extends ChangeNotifier with WidgetsBindingObserver {
         'offeringSnapshot=$offeringSnapshot',
       );
       _setError(
-        '상품 정보를 불러올 수 없습니다. '
-        '(product: $productId)\n'
-        'RevenueCat Offering(default)과 App Store 상품 연결 상태를 확인해주세요.',
+        // Build 311: 베타 빌드는 IAP 가 ASC 콘솔 셋업 전이라 정상 — 사용자에게
+        // 명확히 "테스트 환경" 임을 안내. release 빌드는 진짜 회귀이므로 기술
+        // 메시지 유지.
+        _isTestMode
+            ? '테스트 환경 — IAP 상품이 아직 App Store Connect 에 등록되지 않았습니다.\n'
+                '(product: $productId)\n'
+                '실 결제는 출시 빌드에서만 동작합니다.'
+            : '상품 정보를 불러올 수 없습니다. '
+                '(product: $productId)\n'
+                'RevenueCat Offering(default)과 App Store 상품 연결 상태를 확인해주세요.',
       );
       return;
     }
     // Build 293: 사용자 친화 메시지 + 재시도 안내. 이전엔 기술 용어 (RevenueCat
      // / Offering) 그대로 노출 → 사용자가 어떤 조치할지 모름.
+    // Build 311: 베타 빌드에서는 테스트 환경 안내로 교체.
     _setError(
-      '상품 정보를 불러올 수 없어요.\n'
-      '잠시 후 다시 시도해주세요. 문제가 계속되면 앱을 재시작해보세요.',
+      _isTestMode
+          ? '테스트 환경 — 결제 흐름은 출시 빌드에서만 동작합니다.\n'
+              'TestFlight 베타 테스터는 무료로 모든 기능 사용 가능합니다.'
+          : '상품 정보를 불러올 수 없어요.\n'
+              '잠시 후 다시 시도해주세요. 문제가 계속되면 앱을 재시작해보세요.',
     );
   }
 

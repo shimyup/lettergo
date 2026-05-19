@@ -877,6 +877,22 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     const SizedBox(height: 8),
                     // ── 고객 지원 ───────────────────────────────────────────
                     _sectionHeader(l.settingsSupport),
+                    // Build 311: 온보딩 다시 보기 옵션 — markSeen flag 를 reset 후
+                    // 라우터의 splash 흐름을 재진입시켜 인포그래픽 투어 + 온보딩
+                    // 화면을 처음부터 다시 표시.
+                    _tile(
+                      icon: Icons.replay_circle_filled_rounded,
+                      label: l.settingsReplayOnboarding,
+                      subtitle: l.settingsReplayOnboardingDesc,
+                      onTap: () async {
+                        await AuthService.resetOnboardingFlags();
+                        if (!context.mounted) return;
+                        Navigator.of(context).pushNamedAndRemoveUntil(
+                          '/splash',
+                          (r) => false,
+                        );
+                      },
+                    ),
                     _tile(
                       icon: Icons.help_outline_rounded,
                       label: l.settingsContactUs,
