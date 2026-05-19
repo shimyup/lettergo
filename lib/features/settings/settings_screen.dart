@@ -882,10 +882,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       label: l.settingsContactUs,
                       subtitle: l.settingsContactUsDesc,
                       onTap: () async {
-                        // 이메일 본문/제목은 bilingual 로 유지 (support 팀이 한국어)
+                        // Build 310: 지원 채널 ceo@airony.xyz 로 통일 (출시 전
+                        // 1인 운영 단계 — 모든 사용자 문의 직접 수신).
                         final uri = Uri(
                           scheme: 'mailto',
-                          path: 'support@airony.xyz',
+                          path: 'ceo@airony.xyz',
                           queryParameters: {
                             'subject': '[Thiscount] Support / 문의',
                             'body':

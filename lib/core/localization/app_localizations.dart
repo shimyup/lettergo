@@ -17406,33 +17406,33 @@ class AppL10n {
 
   String get brandExactDropCreditsSheetBody => _t({
     'ko':
-        '지금은 앱 내 결제가 준비 중이라 관리자 승인으로만 지급돼요.\nsupport@thiscount.io 으로 사업자명과 필요한 통 수를 알려주시면 24시간 안에 충전해 드립니다.',
+        '지금은 앱 내 결제가 준비 중이라 관리자 승인으로만 지급돼요.\nceo@airony.xyz 으로 사업자명과 필요한 통 수를 알려주시면 24시간 안에 충전해 드립니다.',
     'en':
-        'In-app purchase is coming soon. For now, credits are granted by admin.\nEmail support@thiscount.io with your business name and desired quantity — topped up within 24 hours.',
+        'In-app purchase is coming soon. For now, credits are granted by admin.\nEmail ceo@airony.xyz with your business name and desired quantity — topped up within 24 hours.',
     'ja':
-        'アプリ内決済は準備中で、現在は管理者承認で支給されます。\nsupport@thiscount.io へ事業者名と希望通数を送ってください。24時間以内にチャージします。',
+        'アプリ内決済は準備中で、現在は管理者承認で支給されます。\nceo@airony.xyz へ事業者名と希望通数を送ってください。24時間以内にチャージします。',
     'zh':
-        '应用内购买正在准备中，目前通过管理员审批发放。\n请发送企业名称和所需数量至 support@thiscount.io，24 小时内充值。',
+        '应用内购买正在准备中，目前通过管理员审批发放。\n请发送企业名称和所需数量至 ceo@airony.xyz，24 小时内充值。',
     'fr':
-        'L\'achat intégré arrive bientôt. En attendant, les crédits sont octroyés par un admin.\nEnvoyez support@thiscount.io votre nom d\'entreprise et quantité — rechargé sous 24h.',
+        'L\'achat intégré arrive bientôt. En attendant, les crédits sont octroyés par un admin.\nEnvoyez ceo@airony.xyz votre nom d\'entreprise et quantité — rechargé sous 24h.',
     'de':
-        'In-App-Kauf kommt bald. Bis dahin werden Guthaben von Admins vergeben.\nMail an support@thiscount.io mit Firmennamen und Menge — innerhalb 24h aufgeladen.',
+        'In-App-Kauf kommt bald. Bis dahin werden Guthaben von Admins vergeben.\nMail an ceo@airony.xyz mit Firmennamen und Menge — innerhalb 24h aufgeladen.',
     'es':
-        'La compra dentro de la app llegará pronto. Por ahora, los admins asignan créditos.\nEnvíe a support@thiscount.io el nombre de su empresa y la cantidad — recarga en 24h.',
+        'La compra dentro de la app llegará pronto. Por ahora, los admins asignan créditos.\nEnvíe a ceo@airony.xyz el nombre de su empresa y la cantidad — recarga en 24h.',
     'pt':
-        'Compra na app em breve. Por agora, créditos são concedidos por admin.\nEmail support@thiscount.io com o nome da empresa e quantidade — em 24h.',
+        'Compra na app em breve. Por agora, créditos são concedidos por admin.\nEmail ceo@airony.xyz com o nome da empresa e quantidade — em 24h.',
     'ru':
-        'Встроенная покупка скоро. Пока кредиты выдаёт администратор.\nПишите на support@thiscount.io с названием бизнеса и количеством — начисление в 24ч.',
+        'Встроенная покупка скоро. Пока кредиты выдаёт администратор.\nПишите на ceo@airony.xyz с названием бизнеса и количеством — начисление в 24ч.',
     'tr':
-        'Uygulama içi satın alma yakında. Şimdilik admin kredi veriyor.\nsupport@thiscount.io adresine işletme adı ve miktarı yazın — 24 saat içinde yüklenir.',
+        'Uygulama içi satın alma yakında. Şimdilik admin kredi veriyor.\nceo@airony.xyz adresine işletme adı ve miktarı yazın — 24 saat içinde yüklenir.',
     'ar':
-        'الشراء داخل التطبيق قريبًا. حاليًا يمنح المسؤول الأرصدة.\nراسل support@thiscount.io باسم النشاط والعدد — شحن خلال 24 ساعة.',
+        'الشراء داخل التطبيق قريبًا. حاليًا يمنح المسؤول الأرصدة.\nراسل ceo@airony.xyz باسم النشاط والعدد — شحن خلال 24 ساعة.',
     'it':
-        'Acquisto in-app in arrivo. Per ora i crediti sono concessi dall\'admin.\nScrivi a support@thiscount.io con nome azienda e quantità — caricato entro 24h.',
+        'Acquisto in-app in arrivo. Per ora i crediti sono concessi dall\'admin.\nScrivi a ceo@airony.xyz con nome azienda e quantità — caricato entro 24h.',
     'hi':
-        'इन-ऐप खरीदारी जल्द आ रही है। अभी क्रेडिट एडमिन द्वारा दिए जाते हैं।\nsupport@thiscount.io पर व्यवसाय नाम और मात्रा भेजें — 24 घंटे में लोड।',
+        'इन-ऐप खरीदारी जल्द आ रही है। अभी क्रेडिट एडमिन द्वारा दिए जाते हैं।\nceo@airony.xyz पर व्यवसाय नाम और मात्रा भेजें — 24 घंटे में लोड।',
     'th':
-        'ซื้อในแอปกำลังมา ตอนนี้แอดมินเป็นผู้อนุมัติ\nส่งชื่อธุรกิจและจำนวนที่ต้องการไปยัง support@thiscount.io — เติมภายใน 24 ชม.',
+        'ซื้อในแอปกำลังมา ตอนนี้แอดมินเป็นผู้อนุมัติ\nส่งชื่อธุรกิจและจำนวนที่ต้องการไปยัง ceo@airony.xyz — เติมภายใน 24 ชม.',
   });
 
   // 카테고리별 redemption 필드 설명 + 힌트 (할인권 코드 vs 교환권 이미지).
@@ -23409,98 +23409,98 @@ class AppL10n {
         '• 삭제권: 계정 삭제 시 모든 데이터가 즉시 삭제됩니다\n'
         '• 이동권: 본인의 데이터 사본을 요청할 수 있습니다\n'
         '• 철회권: 동의를 언제든 철회할 수 있습니다\n'
-        '문의: support@thiscount.io',
+        '문의: ceo@airony.xyz',
     'en':
         '• Right to Access: You may request access to your personal data\n'
         '• Right to Rectification: You may request correction of inaccurate data\n'
         '• Right to Erasure: All data is deleted immediately upon account deletion\n'
         '• Right to Portability: You may request a copy of your data\n'
         '• Right to Withdraw Consent: You may withdraw consent at any time\n'
-        'Contact: support@thiscount.io',
+        'Contact: ceo@airony.xyz',
     'ja':
         '• アクセス権: 収集された個人情報の閲覧を要求できます\n'
         '• 訂正権: 不正確な情報の修正を要求できます\n'
         '• 削除権: アカウント削除時にすべてのデータが即座に削除されます\n'
         '• データポータビリティ権: データのコピーを要求できます\n'
         '• 同意撤回権: いつでも同意を撤回できます\n'
-        'お問い合わせ: support@thiscount.io',
+        'お問い合わせ: ceo@airony.xyz',
     'zh':
         '• 访问权: 您可以请求访问收集的个人信息\n'
         '• 更正权: 您可以请求更正不准确的信息\n'
         '• 删除权: 删除账号时所有数据将立即删除\n'
         '• 可携带权: 您可以请求数据副本\n'
         '• 撤回同意权: 您可以随时撤回同意\n'
-        '联系方式: support@thiscount.io',
+        '联系方式: ceo@airony.xyz',
     'fr':
         '• Droit d\'accès : Vous pouvez demander l\'accès à vos données personnelles\n'
         '• Droit de rectification : Vous pouvez demander la correction des données inexactes\n'
         '• Droit à l\'effacement : Toutes les données sont supprimées lors de la suppression du compte\n'
         '• Droit à la portabilité : Vous pouvez demander une copie de vos données\n'
         '• Droit de retrait : Vous pouvez retirer votre consentement à tout moment\n'
-        'Contact : support@thiscount.io',
+        'Contact : ceo@airony.xyz',
     'de':
         '• Auskunftsrecht: Sie können Zugang zu Ihren personenbezogenen Daten anfordern\n'
         '• Berichtigungsrecht: Sie können die Korrektur ungenauer Daten anfordern\n'
         '• Löschungsrecht: Alle Daten werden bei Kontolöschung sofort gelöscht\n'
         '• Recht auf Datenübertragbarkeit: Sie können eine Kopie Ihrer Daten anfordern\n'
         '• Widerrufsrecht: Sie können Ihre Einwilligung jederzeit widerrufen\n'
-        'Kontakt: support@thiscount.io',
+        'Kontakt: ceo@airony.xyz',
     'es':
         '• Derecho de acceso: Puede solicitar acceso a sus datos personales\n'
         '• Derecho de rectificación: Puede solicitar la corrección de datos inexactos\n'
         '• Derecho de supresión: Todos los datos se eliminan al eliminar la cuenta\n'
         '• Derecho de portabilidad: Puede solicitar una copia de sus datos\n'
         '• Derecho de revocación: Puede retirar su consentimiento en cualquier momento\n'
-        'Contacto: support@thiscount.io',
+        'Contacto: ceo@airony.xyz',
     'pt':
         '• Direito de acesso: Você pode solicitar acesso aos seus dados pessoais\n'
         '• Direito de retificação: Você pode solicitar a correção de dados imprecisos\n'
         '• Direito de exclusão: Todos os dados são excluídos ao deletar a conta\n'
         '• Direito de portabilidade: Você pode solicitar uma cópia dos seus dados\n'
         '• Direito de revogação: Você pode retirar seu consentimento a qualquer momento\n'
-        'Contato: support@thiscount.io',
+        'Contato: ceo@airony.xyz',
     'ru':
         '• Право на доступ: Вы можете запросить доступ к своим персональным данным\n'
         '• Право на исправление: Вы можете запросить исправление неточных данных\n'
         '• Право на удаление: Все данные удаляются при удалении аккаунта\n'
         '• Право на переносимость: Вы можете запросить копию своих данных\n'
         '• Право на отзыв: Вы можете отозвать согласие в любое время\n'
-        'Контакт: support@thiscount.io',
+        'Контакт: ceo@airony.xyz',
     'tr':
         '• Erişim hakkı: Kişisel verilerinize erişim talep edebilirsiniz\n'
         '• Düzeltme hakkı: Yanlış verilerin düzeltilmesini talep edebilirsiniz\n'
         '• Silme hakkı: Hesap silindiğinde tüm veriler hemen silinir\n'
         '• Taşınabilirlik hakkı: Verilerinizin bir kopyasını talep edebilirsiniz\n'
         '• Geri çekme hakkı: Onayınızı istediğiniz zaman geri çekebilirsiniz\n'
-        'İletişim: support@thiscount.io',
+        'İletişim: ceo@airony.xyz',
     'ar':
         '• حق الوصول: يمكنك طلب الوصول إلى بياناتك الشخصية\n'
         '• حق التصحيح: يمكنك طلب تصحيح البيانات غير الدقيقة\n'
         '• حق الحذف: يتم حذف جميع البيانات فور حذف الحساب\n'
         '• حق النقل: يمكنك طلب نسخة من بياناتك\n'
         '• حق السحب: يمكنك سحب موافقتك في أي وقت\n'
-        'التواصل: support@thiscount.io',
+        'التواصل: ceo@airony.xyz',
     'it':
         '• Diritto di accesso: Puoi richiedere l\'accesso ai tuoi dati personali\n'
         '• Diritto di rettifica: Puoi richiedere la correzione di dati inesatti\n'
         '• Diritto alla cancellazione: Tutti i dati vengono eliminati alla cancellazione dell\'account\n'
         '• Diritto alla portabilità: Puoi richiedere una copia dei tuoi dati\n'
         '• Diritto di revoca: Puoi revocare il consenso in qualsiasi momento\n'
-        'Contatto: support@thiscount.io',
+        'Contatto: ceo@airony.xyz',
     'hi':
         '• पहुँच का अधिकार: आप अपने व्यक्तिगत डेटा तक पहुँच का अनुरोध कर सकते हैं\n'
         '• सुधार का अधिकार: आप गलत डेटा में सुधार का अनुरोध कर सकते हैं\n'
         '• मिटाने का अधिकार: खाता हटाने पर सभी डेटा तुरंत हटा दिया जाता है\n'
         '• पोर्टेबिलिटी का अधिकार: आप अपने डेटा की प्रति का अनुरोध कर सकते हैं\n'
         '• सहमति वापसी का अधिकार: आप किसी भी समय सहमति वापस ले सकते हैं\n'
-        'संपर्क: support@thiscount.io',
+        'संपर्क: ceo@airony.xyz',
     'th':
         '• สิทธิ์ในการเข้าถึง: คุณสามารถขอเข้าถึงข้อมูลส่วนบุคคลของคุณ\n'
         '• สิทธิ์ในการแก้ไข: คุณสามารถขอแก้ไขข้อมูลที่ไม่ถูกต้อง\n'
         '• สิทธิ์ในการลบ: ข้อมูลทั้งหมดจะถูกลบเมื่อลบบัญชี\n'
         '• สิทธิ์ในการเคลื่อนย้าย: คุณสามารถขอสำเนาข้อมูลของคุณ\n'
         '• สิทธิ์ในการถอน: คุณสามารถถอนความยินยอมได้ตลอดเวลา\n'
-        'ติดต่อ: support@thiscount.io',
+        'ติดต่อ: ceo@airony.xyz',
   });
 
   String get authPrivacySec7Title => _t({
@@ -23678,29 +23678,29 @@ class AppL10n {
   });
 
   String get settingsRequestDataDesc => _t({
-    'ko': 'support@thiscount.io로 이메일을 보내 데이터 사본을 요청하세요',
-    'en': 'Email support@thiscount.io to request a copy of your data',
-    'ja': 'support@thiscount.ioにメールでデータのコピーをリクエストしてください',
-    'zh': '发送邮件至support@thiscount.io请求数据副本',
+    'ko': 'ceo@airony.xyz로 이메일을 보내 데이터 사본을 요청하세요',
+    'en': 'Email ceo@airony.xyz to request a copy of your data',
+    'ja': 'ceo@airony.xyzにメールでデータのコピーをリクエストしてください',
+    'zh': '发送邮件至ceo@airony.xyz请求数据副本',
     'fr':
-        'Envoyez un email à support@thiscount.io pour demander une copie de vos données',
+        'Envoyez un email à ceo@airony.xyz pour demander une copie de vos données',
     'de':
-        'Senden Sie eine E-Mail an support@thiscount.io, um eine Kopie Ihrer Daten anzufordern',
+        'Senden Sie eine E-Mail an ceo@airony.xyz, um eine Kopie Ihrer Daten anzufordern',
     'es':
-        'Envíe un correo a support@thiscount.io para solicitar una copia de sus datos',
+        'Envíe un correo a ceo@airony.xyz para solicitar una copia de sus datos',
     'pt':
-        'Envie um email para support@thiscount.io para solicitar uma cópia dos seus dados',
+        'Envie um email para ceo@airony.xyz para solicitar uma cópia dos seus dados',
     'ru':
-        'Отправьте email на support@thiscount.io для запроса копии ваших данных',
+        'Отправьте email на ceo@airony.xyz для запроса копии ваших данных',
     'tr':
-        'Verilerinizin bir kopyasını talep etmek için support@thiscount.io adresine e-posta gönderin',
+        'Verilerinizin bir kopyasını talep etmek için ceo@airony.xyz adresine e-posta gönderin',
     'ar':
-        'أرسل بريداً إلكترونياً إلى support@thiscount.io لطلب نسخة من بياناتك',
+        'أرسل بريداً إلكترونياً إلى ceo@airony.xyz لطلب نسخة من بياناتك',
     'it':
-        'Invia un\'email a support@thiscount.io per richiedere una copia dei tuoi dati',
+        'Invia un\'email a ceo@airony.xyz per richiedere una copia dei tuoi dati',
     'hi':
-        'अपने डेटा की प्रति का अनुरोध करने के लिए support@thiscount.io पर ईमेल करें',
-    'th': 'ส่งอีเมลไปที่ support@thiscount.io เพื่อขอสำเนาข้อมูลของคุณ',
+        'अपने डेटा की प्रति का अनुरोध करने के लिए ceo@airony.xyz पर ईमेल करें',
+    'th': 'ส่งอีเมลไปที่ ceo@airony.xyz เพื่อขอสำเนาข้อมูลของคุณ',
   });
 
   // Build 302 (HIGH privacy audit): 동의 철회 in-app 안내 (GDPR Art.7(3) / KISA).

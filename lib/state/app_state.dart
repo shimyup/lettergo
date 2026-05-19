@@ -988,6 +988,13 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
   int _brandExactDropCredits = 0;
   int get brandExactDropCredits => _brandExactDropCredits;
 
+  // Build 310: 베타/테스트 빌드에서 Brand 회원에게 ExactDrop 무료 사용 허용.
+  // 출시 빌드 (`disableInRelease=true` & kReleaseMode) 에서는 false → 정상 차감.
+  static bool get _isBetaBuild =>
+      kDebugMode || !BetaConstants.disableInRelease || !kReleaseMode;
+  bool get exactDropFreeForBeta =>
+      _currentUser.isBrand && _isBetaBuild;
+
   // Build 298 (HIGH billing audit): Welcome trial farming 차단을 위한 server-side
   // claim timestamp. 사용자가 계정 삭제 후 재가입해도 동일 user 에 대해 trial
   // 이 한 번만 부여됨. _saveUserToFirestore 가 자동 영구화하고
@@ -995,7 +1002,8 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
   DateTime? _welcomeTrialClaimedAt;
   DateTime? get welcomeTrialClaimedAt => _welcomeTrialClaimedAt;
   bool get canUseExactDrop =>
-      _currentUser.isBrand && _brandExactDropCredits > 0;
+      _currentUser.isBrand &&
+      (_brandExactDropCredits > 0 || exactDropFreeForBeta);
 
   // Build 298 (HIGH billing audit): Welcome trial 1회 한정 claim.
   // server-as-truth — Firestore `trial_claims/{sha256(email)}` 가 비어있을 때
@@ -1084,6 +1092,9 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
   /// ExactDrop 로 편지 1통을 발송한 후 호출 — 크레딧 차감.
   /// 잔고 부족 시 false 반환 (호출측에서 발송 중단).
   Future<bool> consumeExactDropCredit() async {
+    // Build 310: 베타 빌드 + Brand 회원은 차감 SKIP → 테스트 자유롭게.
+    // 출시 빌드에선 이 분기 false → 기존 차감 로직 동작.
+    if (exactDropFreeForBeta) return true;
     if (_brandExactDropCredits <= 0) return false;
     _brandExactDropCredits--;
     final prefs = await SharedPreferences.getInstance();
