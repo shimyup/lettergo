@@ -78,12 +78,32 @@ require_not_placeholder FIREBASE_STORAGE_BUCKET
 require_not_placeholder REVENUECAT_IOS_KEY
 require_not_placeholder REVENUECAT_ANDROID_KEY
 
-if [[ "${BETA_DISABLE_IN_RELEASE:-true}" != "true" ]]; then
-  fail "BETA_DISABLE_IN_RELEASE must be true (or unset) for release builds"
+# Build 312: 빌드 모드 분기 — 'testflight' = 베타 테스터 결제 시뮬 활성화,
+# 'production' = 출시 신청 빌드 (모든 베타 플래그 강제 false).
+# env var `RELEASE_TARGET` (default: production) 으로 선택.
+RELEASE_TARGET="${RELEASE_TARGET:-production}"
+echo "[preflight] RELEASE_TARGET=$RELEASE_TARGET"
+
+if [[ "$RELEASE_TARGET" == "production" ]]; then
+  # 출시 신청 빌드 — App Store Review 용. 베타 플래그 절대 활성화 안 됨.
+  if [[ "${BETA_DISABLE_IN_RELEASE:-true}" != "true" ]]; then
+    fail "BETA_DISABLE_IN_RELEASE must be true for RELEASE_TARGET=production"
+  fi
+  require_release_false BETA_FREE_PREMIUM
+  require_release_false BETA_UPGRADE_SIMULATOR
+  require_release_empty BETA_ADMIN_EMAIL
+elif [[ "$RELEASE_TARGET" == "testflight" ]]; then
+  # TestFlight 베타 빌드 — ASC IAP 미등록 상태에서도 테스터가 결제 흐름 체험.
+  # BETA_DISABLE_IN_RELEASE=false + BETA_UPGRADE_SIMULATOR=true 가 정상.
+  # BETA_FREE_PREMIUM=true 도 허용 (테스터 자동 Premium).
+  echo "[preflight] testflight 빌드 — 베타 플래그 허용:"
+  echo "  BETA_DISABLE_IN_RELEASE=${BETA_DISABLE_IN_RELEASE:-true}"
+  echo "  BETA_FREE_PREMIUM=${BETA_FREE_PREMIUM:-false}"
+  echo "  BETA_UPGRADE_SIMULATOR=${BETA_UPGRADE_SIMULATOR:-false}"
+  echo "  BETA_ADMIN_EMAIL=${BETA_ADMIN_EMAIL:-}"
+else
+  fail "RELEASE_TARGET must be 'testflight' or 'production' (got: $RELEASE_TARGET)"
 fi
-require_release_false BETA_FREE_PREMIUM
-require_release_false BETA_UPGRADE_SIMULATOR
-require_release_empty BETA_ADMIN_EMAIL
 
 if [[ ! -f "$ROOT_DIR/android/app/google-services.json" ]]; then
   if [[ -f "$SECRETS_DIR/android/google-services.json" ]]; then
