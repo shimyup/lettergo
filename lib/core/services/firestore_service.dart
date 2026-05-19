@@ -130,6 +130,7 @@ class FirestoreService {
     String collectionPath, {
     String? orderBy,
     int limit = 20,
+    List<String>? maskFieldPaths,
   }) async {
     if (!FirebaseConfig.kFirebaseEnabled) return [];
     await FirebaseAuthService.ensureValidToken();
@@ -137,6 +138,12 @@ class FirestoreService {
       var url =
           '${FirebaseConfig.firestoreBase}/$collectionPath?pageSize=$limit';
       if (orderBy != null) url += '&orderBy=$orderBy';
+      // Build 303 (HIGH cost audit): mask.fieldPaths 로 read 비용/egress 절감.
+      // 1K MAU × 30s polling × 50 letters × 평균 doc 8KB → 2.88M reads / 24GB
+      // egress/day. mask 로 ~10× 절감.
+      if (maskFieldPaths != null && maskFieldPaths.isNotEmpty) {
+        url += '&${maskFieldPaths.map((f) => 'mask.fieldPaths=${Uri.encodeQueryComponent(f)}').join('&')}';
+      }
       final res = await http
           .get(Uri.parse(url), headers: _headers)
           .timeout(const Duration(seconds: 10));

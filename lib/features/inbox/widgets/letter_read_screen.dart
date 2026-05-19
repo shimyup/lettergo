@@ -1837,8 +1837,12 @@ class _LetterReadScreenState extends State<LetterReadScreen>
   /// - 보관: letter 를 inbox 에 그대로 두고 화면만 닫음 + 토스트.
   /// - 삭제: 확인 다이얼로그 → state.deleteFromInbox(id) + 화면 닫음 + 토스트.
   Widget _buildBrandActionChooser(BuildContext ctx, Letter letter) {
-    final l10n = AppL10n.of(ctx.read<AppState>().currentUser.languageCode);
-    final canReply = letter.acceptsReplies;
+    final state = ctx.read<AppState>();
+    final l10n = AppL10n.of(state.currentUser.languageCode);
+    // Build 303 (MED audit): banned 사용자의 reply 경로도 차단 (Build 291 의
+    // compose entry 가드 보완). letter 작성자가 acceptsReplies 라도 banned
+    // 사용자는 reply 송신 불가.
+    final canReply = letter.acceptsReplies && !state.currentUser.isBanned;
 
     Widget btn({
       required IconData icon,
