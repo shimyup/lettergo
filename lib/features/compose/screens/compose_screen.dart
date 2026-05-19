@@ -1037,6 +1037,13 @@ class _ComposeScreenState extends State<ComposeScreen>
 
   Future<void> _onSend(AppState state) async {
     final l10n = AppL10n.of(state.currentUser.languageCode);
+    // Build 309: Banned 사용자 차단. Build 291 의 reply 가드 (letter_read_screen)
+    // 가 reply 경로만 막고 compose 진입은 안 막아서, replyToId 직접 전달 시
+    // 우회 가능했음. 모든 발송 경로의 마지막 게이트로 isBanned 재검증.
+    if (state.currentUser.isBanned) {
+      _showError(l10n.composeBannedAccount);
+      return;
+    }
     final content = _stripBidiControls(_contentController.text.trim());
     // Brand 가 쿠폰/교환권 카테고리로 보낼 때는 본문 대신 "사용 방법" 필드가
     // 핵심 콘텐츠가 되므로 20자 최소 규칙을 완화. 본문은 여전히 비어선 안 되고
